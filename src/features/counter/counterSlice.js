@@ -37,6 +37,8 @@ export const incrementAsync = amount => dispatch => {
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
+// You can also use Reselect's createSelector to create memoized selector funcs:
+// https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
 export const selectCount = state => state.counter.value;
 
 export default counterSlice.reducer;
