@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { ConnectedRouter } from 'connected-react-router';
 import * as serviceWorker from './serviceWorker';
 
-import store from './app/store';
+import store, { history } from './app/store';
 
 import './index.css';
 
@@ -13,7 +14,9 @@ const render = () => {
   ReactDOM.render(
     <React.StrictMode>
       <Provider store={store}>
-        <App />
+        <ConnectedRouter history={history}>
+          <App />
+        </ConnectedRouter>
       </Provider>
     </React.StrictMode>,
     document.getElementById('root')
@@ -23,7 +26,7 @@ const render = () => {
 render();
 
 if (process.env.NODE_ENV === 'development' && module.hot) {
-  module.hot.accept('./app/App', render)
+  module.hot.accept('./app/App', render);
 };
 
 // If you want your app to work offline and load faster, you can change

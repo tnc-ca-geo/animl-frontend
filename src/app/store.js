@@ -1,14 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from './rootReducer';
+import { createBrowserHistory } from 'history';
+import createRootReducer from './rootReducer';
+
+export const history = createBrowserHistory();
 
 const store = configureStore({
-  reducer: rootReducer
+  reducer: createRootReducer(history)
 });
 
 if (process.env.NODE_ENV === 'development' && module.hot) {
   module.hot.accept('./rootReducer', () => {
-    const newRootReducer = require('./rootReducer').default;
-    store.replaceReducer(newRootReducer);
+    // Not sure this is going to work...
+    console.log('detected hot rootReducer module... updating');
+    const createNewRootReducer = require('./rootReducer').default;
+    store.replaceReducer(createNewRootReducer(history));
   })
 }
 
