@@ -10,8 +10,6 @@ const store = configureStore({
 
 if (process.env.NODE_ENV === 'development' && module.hot) {
   module.hot.accept('./rootReducer', () => {
-    // Not sure this is going to work...
-    console.log('detected hot rootReducer module... updating');
     const createNewRootReducer = require('./rootReducer').default;
     store.replaceReducer(createNewRootReducer(history));
   })

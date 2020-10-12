@@ -1,26 +1,16 @@
 import React from 'react';
 import {
   Switch,
-  Route,
-  Link
+  Route
 } from 'react-router-dom';
+import NavBar from '../components/NavBar';
 import CounterPage from '../pages/CounterPage';
 import HomePage from '../pages/HomePage';
 
 const App = () => {
   return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/counter">Counter</Link>
-          </li>
-        </ul>
-      </nav>
-
+    <>
+      <NavBar />
       <Switch>
         <Route path="/counter">
           <CounterPage />
@@ -29,7 +19,7 @@ const App = () => {
           <HomePage />
         </Route>
       </Switch>
-    </div>
+    </>
   );
 }
 
