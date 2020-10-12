@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getCameras } from '../../api/animlAPI';
+import { getImages, getCameras } from '../../api/animlAPI';
 
 const imagesInitialState = {
   filters: {
@@ -24,24 +24,17 @@ export const imagesSlice = createSlice({
   initialState: imagesInitialState,
   reducers: {
     getImagesStart: startLoading,
-    getImagesSuccess(state, { payload }) {
-      // const { pageCount, issues, pageLinks } = payload
-      // state.pageCount = pageCount
-      // state.pageLinks = pageLinks
-      // state.isLoading = false
-      // state.error = null
-
-      // issues.forEach(issue => {
-      //   state.issuesByNumber[issue.number] = issue
-      // })
-
-      // state.currentPageIssues = issues.map(issue => issue.number)
+    getImagesSuccess: (state, { payload }) => {
+      state.isLoading = false;
+      state.error = null;
+      state.images = payload.images;
     },
     getImagesFailure: loadingFailed,
     getCamerasStart: startLoading,
     getCamerasSuccess: (state, { payload }) => {
       console.log('Updating state with new available cameras: ', payload);
       state.isLoading = false;
+      state.error = null;
       payload.cameras.forEach((camera) => {
         if (!(camera._id in state.filters.cameras)) {
           state.filters.cameras[camera._id] = { selected: false };
@@ -67,15 +60,15 @@ export const {
   cameraToggled,
 } = imagesSlice.actions;
 
-// export const fetchImages = filters => async dispatch => {
-//   try {
-//     dispatch(getImagesStart());
-//     const images = await getImages(filters);
-//     dispatch(getImagesSuccess(images))
-//   } catch (err) {
-//     dispatch(getImagesFailure(err.toString()))
-//   }
-// };
+export const fetchImages = filters => async dispatch => {
+  try {
+    dispatch(getImagesStart());
+    const images = await getImages(filters);
+    dispatch(getImagesSuccess(images))
+  } catch (err) {
+    dispatch(getImagesFailure(err.toString()))
+  }
+};
 
 export const fetchCameras = () => async dispatch => {
   try {
@@ -92,6 +85,8 @@ export const fetchCameras = () => async dispatch => {
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
+export const selectFilters = state => state.images.filters;
 export const selectCameras = state => state.images.filters.cameras;
+export const selectImages = state => state.images.images;
 
 export default imagesSlice.reducer;
