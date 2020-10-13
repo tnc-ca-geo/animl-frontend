@@ -22,13 +22,11 @@ const CameraFilter = () => {
     console.log('checkbox changed: ', e.target.dataset.sn);
     const sn = e.target.dataset.sn;
     dispatch(cameraToggled(sn));
-  }
+  };
 
   return (
     <Grid>
       {Object.keys(cameras).map((sn) => {
-        console.log('building camera checkbox for camera: ', sn);
-        console.log('checked? ', cameras[sn].selected);
         return (
           <div key={sn}>
             <label>

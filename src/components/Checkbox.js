@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from 'react';
+import styled from 'styled-components';
 
 const CheckboxContainer = styled.div`
   display: inline-block;
@@ -42,19 +42,18 @@ const StyledCheckbox = styled.div`
     visibility: ${props => (props.checked ? 'visible' : 'hidden')};
   }
 `
+// adapted from:
+// https://medium.com/@colebemis/building-a-checkbox-component-with-react-and-styled-components-8d3aa1d826dd
 
-const Checkbox = ({ className, checked, ...props }) => {
-  console.log('ccheckbox checked? ', checked);
-  return (
-    <CheckboxContainer className={className}>
-      <HiddenCheckbox checked={checked} {...props} />
-      <StyledCheckbox checked={checked}>
-        <Icon viewBox="0 0 24 24">
-          <polyline points="20 6 9 17 4 12" />
-        </Icon>
-      </StyledCheckbox>
-    </CheckboxContainer>
-  )
-}
+const Checkbox = ({ className, checked, ...props }) => (
+  <CheckboxContainer className={className}>
+    <HiddenCheckbox checked={checked} {...props} />
+    <StyledCheckbox checked={checked}>
+      <Icon viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12" />
+      </Icon>
+    </StyledCheckbox>
+  </CheckboxContainer>
+);
 
-export default Checkbox
+export default Checkbox;
