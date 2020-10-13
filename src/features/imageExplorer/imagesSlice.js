@@ -1,9 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getImages, getCameras } from '../../api/animlAPI';
+import moment from 'moment';
+import { DATE_FORMAT } from '../../config';
 
 const imagesInitialState = {
   filters: {
     cameras: {},
+    dateCreated: {
+      start: moment().subtract(3, 'months').format(DATE_FORMAT), 
+      end: moment().format(DATE_FORMAT),
+    },
   },
   images: [],
   isLoading: false,
@@ -46,7 +52,14 @@ export const imagesSlice = createSlice({
       console.log('Camera toggled: ', payload);
       const camera = state.filters.cameras[payload];
       camera.selected = !camera.selected;
-    }
+    },
+    dateCreatedFilterChanged: (state, { payload }) => {
+      console.log('Date Created Filter changed : ', payload);
+      state.filters.dateCreated.start = payload.startDate;
+      state.filters.dateCreated.end = payload.endDate;
+      // const camera = state.filters.cameras[payload];
+      // camera.selected = !camera.selected;
+    },
   },
 });
 
@@ -58,6 +71,7 @@ export const {
   getCamerasSuccess,
   getCamerasFailure,
   cameraToggled,
+  dateCreatedFilterChanged,
 } = imagesSlice.actions;
 
 export const fetchImages = filters => async dispatch => {
@@ -86,7 +100,8 @@ export const fetchCameras = () => async dispatch => {
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
 export const selectFilters = state => state.images.filters;
-export const selectCameras = state => state.images.filters.cameras;
+export const selectCameraFilter = state => state.images.filters.cameras;
+export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
 export const selectImages = state => state.images.images;
 
 export default imagesSlice.reducer;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import {
   fetchCameras,
-  selectCameras,
+  selectCameraFilter,
   cameraToggled,
 } from './imagesSlice';
 
@@ -10,7 +10,7 @@ import { Grid, Row, Col } from '../../components/Grid';
 import Checkbox from '../../components/Checkbox';
 
 const CameraFilter = () => {
-  const cameras = useSelector(selectCameras);
+  const cameras = useSelector(selectCameraFilter);
   const dispatch = useDispatch();
 
   useEffect(() => {

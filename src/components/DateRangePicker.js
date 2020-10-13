@@ -9,16 +9,8 @@ const StyledDateRangePicker = styled.div`
 
 `;
 
-const DateRangePickerWrapper = () => {
-  // const [sdate, setSdate] = useState(moment().subtract(3, 'months'));
-  const [sdate, setSdate] = useState(null);
-  const [edate, setEdate] = useState(moment());
-  const [focusedInput, setFocusedInput] = useState(null);
-
-  const handleDatesChange = ({ startDate, endDate }) => {
-    setSdate(startDate);
-    setEdate(endDate);
-  };
+const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
+  const [focusedInput, setFocusedInput] = useState(null); // what does this do?
 
   return (
     <StyledDateRangePicker>

@@ -14,7 +14,7 @@ const ImagesList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('fetching images')
+    console.log('fetching images');
     dispatch(fetchImages(filters));
   }, [filters, dispatch])
 

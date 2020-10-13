@@ -1,11 +1,11 @@
 import { GraphQLClient, gql } from 'graphql-request';
 // import parseLink, { Links } from 'parse-link-header'
+import { API_URL } from '../config';
 
 export async function getImages(filters) {
-  const endpoint = 'https://e1vc45j344.execute-api.us-west-1.amazonaws.com/dev/';
   const query = gql`
-    query getImages($cameras: [String!]) {
-      images (cameras: $cameras) {
+    query getImages($cameras: [String!], $createdStart: Date, $createdEnd: Date) {
+      images (cameras: $cameras, createdStart: $createdStart, createdEnd: $createdEnd) {
         hash
         bucket
         cameraSn
@@ -18,10 +18,12 @@ export async function getImages(filters) {
 
   const variables = {
     cameras: selectedCameras,
+    createdStart: filters.dateCreated.start,
+    createdEnd: filters.dateCreated.end,
   };
   
   try {
-    const graphQLClient = new GraphQLClient(endpoint, {
+    const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {
       //   authorization: 'Bearer MY_TOKEN',
       // },
@@ -36,7 +38,6 @@ export async function getImages(filters) {
 };
 
 export async function getCameras() {
-  const endpoint = 'https://e1vc45j344.execute-api.us-west-1.amazonaws.com/dev/';
   const query = gql`
     {
       cameras {
@@ -46,7 +47,7 @@ export async function getCameras() {
   `
   
   try {
-    const graphQLClient = new GraphQLClient(endpoint, {
+    const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {
       //   authorization: 'Bearer MY_TOKEN',
       // },
