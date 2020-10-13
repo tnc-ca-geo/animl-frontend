@@ -9,6 +9,18 @@ const StyledDateRangePicker = styled.div`
 
 `;
 
+// e.g. styling
+// const StyledWrapper = styled.div`
+//     .DateRangePickerInput {
+//         border-radius: 4px;
+//         overflow: hidden;
+//         justify-content: space-around;
+//     }
+//     .DateInput {
+//         width: 30%;
+//     }
+// `;
+
 const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
   const [focusedInput, setFocusedInput] = useState(null); // what does this do?
 
