@@ -1,31 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux'
 import {
   fetchCameras,
   selectCameraFilter,
   cameraToggled,
 } from './imagesSlice';
-
-import { Grid, Row, Col } from '../../components/Grid';
 import Checkbox from '../../components/Checkbox';
+
+const CheckboxLabel = styled.span`
+  margin-left: 8px;
+  font-family: ${props => props.theme.monoFont};
+  font-size: 14px;
+`;
 
 const CameraFilter = () => {
   const cameras = useSelector(selectCameraFilter);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('fetching cameras')
     dispatch(fetchCameras());
   }, [dispatch])
 
   const handleCheckboxChange = (e) => {
-    console.log('checkbox changed: ', e.target.dataset.sn);
     const sn = e.target.dataset.sn;
     dispatch(cameraToggled(sn));
   };
 
   return (
-    <Grid>
+    <div>
       {Object.keys(cameras).map((sn) => {
         return (
           <div key={sn}>
@@ -35,12 +38,12 @@ const CameraFilter = () => {
                 data-sn={sn}
                 onChange={handleCheckboxChange}
               />
-              <span style={{ marginLeft: 8 }}>{sn}</span>
+              <CheckboxLabel>{sn}</CheckboxLabel>
             </label>
           </div>
         )
       })}
-    </Grid>
+    </div>
   );
 };
 

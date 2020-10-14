@@ -1,25 +1,22 @@
 import React from 'react';
-import { Grid, Row, Col } from '../../components/Grid';
-import CameraFilter from './CameraFilter';
-import DateCreatedFilter from './DateCreatedFilter';
+import styled from 'styled-components';
+import FiltersPanel from './FiltersPanel';
 import ImagesList from './ImagesList';
 
-export function ImageExplorer() {
+const ImageExplorerContainer = styled.div`
+  display: flex;
+  margin: 25px;
+  margin-top: 100px;
+  height: 700px;
+  border: ${props => props.theme.border};
+`;
 
+export function ImageExplorer() {
   return (
-    <Grid>
-      <h3>Cameras</h3>
-      <Row>
-        <CameraFilter />
-      </Row>
-      <h3>Date Created</h3>
-      <Row>
-        <DateCreatedFilter />
-      </Row>
+    <ImageExplorerContainer>
+      <FiltersPanel />
       <h3>Images List</h3>
-      <Row>
-        <ImagesList />
-      </Row>
-    </Grid>
+      <ImagesList />
+    </ImageExplorerContainer>
   );
 }

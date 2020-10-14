@@ -1,7 +1,9 @@
 const theme = {
   border: '1px solid #DEDEDE',
-  // primaryBlack: '#000000',
-  // primaryGray: '#7b7b7b',
+  primaryBlack: '#000000',
+  primaryGray: '#7b7b7b',
+  lightestGray: '#FAFAFA',
+  monoFont: '"Roboto Mono", "Courier New", monospace;',
   // lightGray: '#EAEAEA',
   // accentColor: '#50E3C2',
   // borderRadius: '4px',

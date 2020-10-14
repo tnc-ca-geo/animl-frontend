@@ -5,8 +5,6 @@ import {
   selectFilters,
   selectImages,
 } from './imagesSlice';
-
-import { Grid, Row, Col } from '../../components/Grid';
 import { IMAGE_BUCKET_URL } from '../../config';
 
 const ImagesList = () => {
@@ -21,7 +19,7 @@ const ImagesList = () => {
 
 
   return (
-    <Grid>
+    <div>
       <ul>
         {images.map((img) =>
           <li key={img.hash} >
@@ -32,7 +30,7 @@ const ImagesList = () => {
           </li>
         )}
       </ul>
-    </Grid>
+    </div>
   );
 };
 
