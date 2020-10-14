@@ -1,8 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
 import DateCreatedFilter from './DateCreatedFilter';
+
+const Label = styled.span`
+  margin-left: 15px;
+`;
 
 const FiltersHeader = styled.div`
   display: flex;
@@ -22,7 +27,10 @@ const FiltersPanel = () => {
   return (
     <StyledFiltersPanel>
       <FiltersHeader>
-        Filters
+        <FontAwesomeIcon icon={['fas', 'filter']} />
+        <Label>
+          Filters
+        </Label>
       </FiltersHeader>
       <Accordion
         label='Cameras'

@@ -15,7 +15,6 @@ export function ImageExplorer() {
   return (
     <ImageExplorerContainer>
       <FiltersPanel />
-      <h3>Images List</h3>
       <ImagesList />
     </ImageExplorerContainer>
   );

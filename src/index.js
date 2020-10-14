@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import * as serviceWorker from './serviceWorker';
-
 import store, { history } from './app/store';
+import './assets/fontawesome';
 
 const render = () => {
   const App = require('./app/App').default;

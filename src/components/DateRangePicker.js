@@ -35,7 +35,6 @@ const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
         focusedInput={focusedInput}
         onFocusChange={focusedInput => setFocusedInput(focusedInput)}
         showClearDates={true}
-        showDefaultInputIcon={true}
         small={true}
         hideKeyboardShortcutsPanel={true}
         isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
