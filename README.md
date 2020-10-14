@@ -1,4 +1,34 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+# Animl Frontend
+An frontend web app for viewing & labeling camera trap data.
+
+## `Related repos`
+
+- Animl API               http://github.com/tnc-ca-geo/animl-api
+- Animl base program      http://github.com/tnc-ca-geo/animl-base
+- Animl ingest function   http://github.com/tnc-ca-geo/animl-ingest
+- Animl ML resources      http://github.com/tnc-ca-geo/animl-ml
+- Animl desktop app       https://github.com/tnc-ca-geo/animl-desktop
+
+## `Overview`
+
+Animl is an open, extensible, cloud-based platform for managing camera trap data.
+We are developing this platform because there currently are no software tools that allow 
+organizations using camera traps to:
+
+- ingest data from a variety of camera trap types (wireless, SD card based, IP, etc.)
+- systematically store and manage images in a single centralized, cloud-based repository
+- upload custom object detection and species clasification ML models and configure 
+automated assisted-labeling pipelines
+- Offer frontend web application to view images, review ML-assisted labels, 
+perform manual labeling
+- Offer an API for advanced querying and analysis of camera trap data
+- Offer tools for exporting ML model training data
+
+This repository contains the frontend web application for viewing and 
+interacting with the camera trap data. It was bootstrapped with 
+[Create React App](https://github.com/facebook/create-react-app), using the 
+[Redux](https://redux.js.org/) and 
+[Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
 
