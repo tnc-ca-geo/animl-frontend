@@ -1,4 +1,7 @@
 import React from 'react';
+import { ThemeProvider } from 'styled-components';
+import GlobalStyle from '../theme/GlobalStyle';
+import theme from '../theme'; 
 import {
   Switch,
   Route
@@ -9,17 +12,20 @@ import HomePage from '../pages/HomePage';
 
 const App = () => {
   return (
-    <>
-      <NavBar />
-      <Switch>
-        <Route path="/counter">
-          <CounterPage />
-        </Route>
-        <Route path="/">
-          <HomePage />
-        </Route>
-      </Switch>
-    </>
+    <ThemeProvider theme={theme}>
+      <div>
+        <GlobalStyle />
+        <NavBar />
+        <Switch>
+          <Route path="/counter">
+            <CounterPage />
+          </Route>
+          <Route path="/">
+            <HomePage />
+          </Route>
+        </Switch>
+      </div>
+    </ThemeProvider>
   );
 }
 

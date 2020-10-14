@@ -6,8 +6,6 @@ import * as serviceWorker from './serviceWorker';
 
 import store, { history } from './app/store';
 
-import './index.css';
-
 const render = () => {
   const App = require('./app/App').default;
 
