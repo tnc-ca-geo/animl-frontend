@@ -1,19 +1,47 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { Link, NavLink } from 'react-router-dom';
+import logo from '../assets/animl-logo.svg'
+
+
+const StyledNav = styled.nav`
+  width: 100%;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  padding: 0px 25px;
+  background-color: #FFFFFF;
+  border-bottom: ${props => props.theme.border};
+`;
+
+const Logo = styled(Link)`
+  display: flex;
+  align-items: center;
+`
+
+const NavLinks = styled.div`
+  display: flex;
+`;
 
 const NavBar = () => {
   return (
-    <nav>
-      <ul>
+    <StyledNav>
+      <Logo>
+        <img
+          alt='Animl'
+          src={logo}
+          width='126'
+        />
+      </Logo>
+      {/*<NavLinks>
         <li>
-          <Link to="/">Home</Link>
+          <NavLink to="/">Home</NavLink>
         </li>
         <li>
-          <Link to="/counter">Counter</Link>
+          <NavLink to="/counter">Counter</NavLink>
         </li>
-      </ul>
-    </nav>
+      </NavLinks>*/}
+    </StyledNav>
   );
 };
 

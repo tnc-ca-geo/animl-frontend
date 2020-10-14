@@ -1,4 +1,5 @@
 const theme = {
+  border: '1px solid #DEDEDE',
   // primaryBlack: '#000000',
   // primaryGray: '#7b7b7b',
   // lightGray: '#EAEAEA',
