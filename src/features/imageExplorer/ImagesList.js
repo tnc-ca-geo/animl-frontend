@@ -8,6 +8,11 @@ import {
   selectImages,
 } from './imagesSlice';
 import { IMAGE_BUCKET_URL } from '../../config';
+import ImagesTable from './ImagesTable';
+
+const ImagesListPanel = styled.div`
+  height: 100%;
+`;
 
 const ViewLabel = styled.span`
   font-weight: 700;
@@ -39,11 +44,13 @@ const ImagesListHeader = styled.div`
   justify-content: space-between;
   padding: 0px 20px;
   height: 50px;
+  background-color:  ${props => props.theme.white};
   border-bottom: ${props => props.theme.border};
 `;
 
 const StyledImagesList = styled.div`
   width: 100%;
+  background-color: ${props => props.theme.lightestGray};
 `;
 
 const ImagesList = () => {
@@ -73,16 +80,19 @@ const ImagesList = () => {
           <StyledFontAwesomeIcon icon={['fas', 'grip-horizontal']} />
         </Controls>
       </ImagesListHeader>
-      <ul>
-        {images.map((img) =>
-          <li key={img.hash} >
-            <img
-              src={IMAGE_BUCKET_URL + 'thumbnails/' + img.hash + '-small.jpg'}
-            /> 
-              {img.hash} - {img.cameraSn}
-          </li>
-        )}
-      </ul>
+      <ImagesListPanel>
+        <ImagesTable images={images} />
+        {/*<ul>
+          {images.map((img) =>
+            <li key={img.hash} >
+              <img
+                src={IMAGE_BUCKET_URL + 'thumbnails/' + img.hash + '-small.jpg'}
+              /> 
+                {img.hash} - {img.cameraSn}
+            </li>
+          )}
+          </ul>*/}
+      </ImagesListPanel>
     </StyledImagesList>
   );
 };

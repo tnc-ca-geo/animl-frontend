@@ -1,5 +1,6 @@
 const theme = {
   border: '1px solid #DEDEDE',
+  white: '#FFFFFF',
   primaryBlack: '#000000',
   primaryGray: '#7b7b7b',
   lightestGray: '#FAFAFA',
