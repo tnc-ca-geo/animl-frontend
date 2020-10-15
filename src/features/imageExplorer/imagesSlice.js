@@ -1,14 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getImages, getCameras } from '../../api/animlAPI';
 import moment from 'moment';
-import { DATE_FORMAT } from '../../config';
+import {
+  DATE_FORMAT_EXIF as DFE,
+  DATE_FORMAT_READABLE as DFR,
+  IMAGE_BUCKET_URL } from '../../config';
 
 const imagesInitialState = {
   filters: {
     cameras: {},
     dateCreated: {
-      start: moment().subtract(3, 'months').format(DATE_FORMAT), 
-      end: moment().format(DATE_FORMAT),
+      start: moment().subtract(3, 'months').format(DFE), 
+      end: moment().format(DFE),
     },
   },
   images: [],
@@ -33,7 +36,17 @@ export const imagesSlice = createSlice({
     getImagesSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      state.images = payload.images;
+      const images = payload.images.map((img) => {
+        const thumbUrl = IMAGE_BUCKET_URL + 'thumbnails/' + img.hash +
+          '-small.jpg';
+        const dateCreated = moment(img.dateTimeOriginal).format(DFR);
+        return {
+          thumbUrl,
+          dateCreated,
+          ...img
+        }
+      })
+      state.images = images;
     },
     getImagesFailure: loadingFailed,
     getCamerasStart: startLoading,

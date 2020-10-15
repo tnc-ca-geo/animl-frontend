@@ -7,7 +7,7 @@ import {
 } from './imagesSlice';
 import { Grid, Row, Col } from '../../components/Grid';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
-import { DATE_FORMAT } from '../../config';
+import { DATE_FORMAT_EXIF as DFE } from '../../config';
 
 
 const DateCreatedFilter = () => {
@@ -15,16 +15,16 @@ const DateCreatedFilter = () => {
   const dispatch = useDispatch();
 
   const handleDatesChange = ({ startDate, endDate }) => {
-    startDate = startDate.format(DATE_FORMAT);
-    endDate = endDate.format(DATE_FORMAT);
+    startDate = startDate.format(DFE);
+    endDate = endDate.format(DFE);
     dispatch(dateCreatedFilterChanged({ startDate, endDate }));
   };
 
   return (
     <Grid>
       <DateRangePickerWrapper
-        sdate={moment(start, DATE_FORMAT)}
-        edate={moment(end, DATE_FORMAT)}
+        sdate={moment(start, DFE)}
+        edate={moment(end, DFE)}
         handleDatesChange={handleDatesChange}
       />
     </Grid>

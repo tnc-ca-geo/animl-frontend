@@ -7,8 +7,9 @@ export async function getImages(filters) {
     query getImages($cameras: [String!], $createdStart: Date, $createdEnd: Date) {
       images (cameras: $cameras, createdStart: $createdStart, createdEnd: $createdEnd) {
         hash
-        bucket
+        dateTimeOriginal
         cameraSn
+        make
       }
     }
   `

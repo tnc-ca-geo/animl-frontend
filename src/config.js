@@ -1,4 +1,5 @@
-export const DATE_FORMAT = 'YYYY:MM:DD hh:mm:ss';
+export const DATE_FORMAT_EXIF = 'YYYY:MM:DD hh:mm:ss';
+export const DATE_FORMAT_READABLE = 'YYYY-MM-DD hh:mm:ss';
 
 export const API_URL = 'https://e1vc45j344.execute-api.us-west-1.amazonaws.com/dev/';
 

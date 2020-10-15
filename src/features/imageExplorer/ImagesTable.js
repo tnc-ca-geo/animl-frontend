@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components'
 import { useTable } from 'react-table'
-import { IMAGE_BUCKET_URL } from '../../config';
 
 const Styles = styled.div`
   /* This is required to make the table full-width */
@@ -11,10 +10,10 @@ const Styles = styled.div`
   /* This will make the table scrollable when it gets too small */
   .tableWrap {
     display: block;
+    margin: 15px;
     max-width: 100%;
     overflow-x: scroll;
     overflow-y: hidden;
-    border-bottom: 1px solid black;
   }
 
   table {
@@ -22,7 +21,16 @@ const Styles = styled.div`
     width: 100%;
     border-spacing: 0;
 
+    tbody {
+      tr {
+        background-color: ${props => props.theme.white};
+      }
+    }
+
     tr {
+      td {
+        font-family: ${props => props.theme.monoFont};
+      }
       :last-child {
         td {
           border-bottom: 0;
@@ -34,8 +42,6 @@ const Styles = styled.div`
     td {
       margin: 0;
       padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
 
       /* The secret sauce */
       /* Each cell should grow equally */
@@ -49,6 +55,10 @@ const Styles = styled.div`
         border-right: 0;
       }
     }
+
+    td {
+      border-bottom: 10px solid ${props => props.theme.lightestGray};
+    }
   }
 
   .pagination {
@@ -60,10 +70,9 @@ const ImagesTable = ({ images }) => {
 
   const makeRows = (images) => {
     return images.map((image) => {
-      const thumbUrl = 
-        IMAGE_BUCKET_URL + 'thumbnails/' + image.hash + '-small.jpg';
+      const thumbnail = <img src={image.thumbUrl} />;
       return {
-        thumbnail: <img src={thumbUrl} />,
+        thumbnail,
         ...image,
       }
     })
@@ -73,20 +82,20 @@ const ImagesTable = ({ images }) => {
 
   const columns = React.useMemo(() => [
       {
-        Header: 'Thumbnail',
+        Header: '',
         accessor: 'thumbnail', // accessor is the "key" in the data
       },
       {
-        Header: 'Hash',
-        accessor: 'hash',
+        Header: 'Date Created',
+        accessor: 'dateCreated',
       },
       {
-        Header: 'Bucket',
-        accessor: 'bucket',
-      },
-      {
-        Header: 'Serial Number',
+        Header: 'Camera',
         accessor: 'cameraSn',
+      },
+      {
+        Header: 'Camera make',
+        accessor: 'make',
       },
   ], []);
 
@@ -103,29 +112,31 @@ const ImagesTable = ({ images }) => {
 
   return (
     <Styles>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
-                })}
+      <div className="tableWrap">
+        <table {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row, i) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </Styles>
   );  
 

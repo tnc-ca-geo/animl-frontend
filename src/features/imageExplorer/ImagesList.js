@@ -7,7 +7,6 @@ import {
   selectFilters,
   selectImages,
 } from './imagesSlice';
-import { IMAGE_BUCKET_URL } from '../../config';
 import ImagesTable from './ImagesTable';
 
 const ImagesListPanel = styled.div`
