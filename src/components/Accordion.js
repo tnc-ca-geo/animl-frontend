@@ -6,16 +6,16 @@ const AccordionBody = styled.div`
   margin-top: 10;
   padding: 10px 20px;
   border-bottom: ${props => props.theme.border};
-  background-color: ${props => props.theme.lightestGray};
+  background-color: ${props => props.theme.tokens.colors.$gray1};
 `;
 
 const Chevron = styled.div`
   svg g {
-    fill: ${props => props.theme.primaryGray}
+    fill: ${props => props.theme.tokens.colors.$gray3}
   }
   :hover {
     svg g {
-      fill: ${props => props.theme.primaryBlack}
+      fill: ${props => props.theme.tokens.colors.$gray4}
     }
   }
 `

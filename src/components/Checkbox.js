@@ -30,13 +30,13 @@ const StyledCheckbox = styled.div`
   width: 14px;
   height: 14px;
   background: ${props => (props.checked
-    ? props.theme.primaryBlack
-    : props.theme.lightestGray)};
+    ? props.theme.tokens.colors.$gray4
+    : props.theme.tokens.colors.$gray1)};
   border-radius: 3px;
   border: 1px solid;
   border-color: ${props => (props.checked
-    ? props.theme.primaryBlack
-    : props.theme.primaryGray)};
+    ? props.theme.tokens.colors.$gray4
+    : props.theme.tokens.colors.$gray3)};
   transition: all 150ms;
 
   ${HiddenCheckbox}:focus + & {

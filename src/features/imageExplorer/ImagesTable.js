@@ -2,6 +2,12 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components'
 import { useTable } from 'react-table'
 
+const LabelPill = styled.span`
+  background-color: ${props => props.theme.tokens.colors.$gray2};
+  padding: 4px 8px;
+  border-radius: 4px;
+`
+
 const Styles = styled.div`
   /* This is required to make the table full-width */
   display: block;
@@ -23,7 +29,7 @@ const Styles = styled.div`
 
     tbody {
       tr {
-        background-color: ${props => props.theme.white};
+        background-color: ${props => props.theme.tokens.colors.$gray0};
       }
     }
 
@@ -57,7 +63,7 @@ const Styles = styled.div`
     }
 
     td {
-      border-bottom: 10px solid ${props => props.theme.lightestGray};
+      border-bottom: 10px solid ${props => props.theme.tokens.colors.$gray1};
     }
   }
 
@@ -71,8 +77,27 @@ const ImagesTable = ({ images }) => {
   const makeRows = (images) => {
     return images.map((image) => {
       const thumbnail = <img src={image.thumbUrl} />;
+      
+      const labelCagegories = 
+        <div>
+          {image.labels.map((label, index) => (
+            <LabelPill key={index}>{label.category}</LabelPill>
+          ))}
+        </div>;
+
+      console.log(labelCagegories)
+
+      let needsReview = 'Yes'; 
+      image.labels.forEach((label) => {
+        if (label.validation.reviewed) {
+          needsReview = 'No';
+        }
+      });
+
       return {
         thumbnail,
+        labelCagegories,
+        needsReview,
         ...image,
       }
     })
@@ -88,6 +113,14 @@ const ImagesTable = ({ images }) => {
       {
         Header: 'Date Created',
         accessor: 'dateCreated',
+      },
+      {
+        Header: 'Labels',
+        accessor: 'labelCagegories',
+      },
+      {
+        Header: 'Needs Review',
+        accessor: 'needsReview',
       },
       {
         Header: 'Camera',

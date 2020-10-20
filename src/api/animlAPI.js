@@ -10,6 +10,12 @@ export async function getImages(filters) {
         dateTimeOriginal
         cameraSn
         make
+        labels {
+          category
+          validation {
+            reviewed
+          }
+        }
       }
       pageInfo {
         previous

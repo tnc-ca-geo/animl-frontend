@@ -21,13 +21,13 @@ const ViewLabel = styled.span`
 
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   path {
-    fill: ${props => props.theme.primaryGray}
+    fill: ${props => props.theme.tokens.colors.$gray3}
   }
   pointer-events: auto;
   :hover {
     cursor: pointer;
     path {
-      fill: ${props => props.theme.primaryBlack}
+      fill: ${props => props.theme.tokens.colors.$gray4}
     }
   }
 `;
@@ -45,13 +45,13 @@ const ImagesListHeader = styled.div`
   justify-content: space-between;
   padding: 0px 20px;
   height: 50px;
-  background-color:  ${props => props.theme.white};
+  background-color:  ${props => props.theme.tokens.colors.$gray0};
   border-bottom: ${props => props.theme.border};
 `;
 
 const StyledImagesList = styled.div`
   width: 100%;
-  background-color: ${props => props.theme.lightestGray};
+  background-color: ${props => props.theme.tokens.colors.$gray1};
 `;
 
 const ImagesList = () => {
@@ -83,16 +83,6 @@ const ImagesList = () => {
       </ImagesListHeader>
       <ImagesListPanel>
         <ImagesTable images={images} />
-        {/*<ul>
-          {images.map((img) =>
-            <li key={img.hash} >
-              <img
-                src={IMAGE_BUCKET_URL + 'thumbnails/' + img.hash + '-small.jpg'}
-              /> 
-                {img.hash} - {img.cameraSn}
-            </li>
-          )}
-          </ul>*/}
       </ImagesListPanel>
     </StyledImagesList>
   );
