@@ -4,7 +4,9 @@ import moment from 'moment';
 import {
   DATE_FORMAT_EXIF as DFE,
   DATE_FORMAT_READABLE as DFR,
-  IMAGE_BUCKET_URL } from '../../config';
+  IMAGE_BUCKET_URL, 
+  IMAGE_QUERY_LIMITS,
+} from '../../config';
 
 const imagesInitialState = {
   filters: {
@@ -13,6 +15,15 @@ const imagesInitialState = {
       start: moment().subtract(3, 'months').format(DFE), 
       end: moment().format(DFE),
     },
+  },
+  pageInfo: {
+    limit: IMAGE_QUERY_LIMITS[0],
+    paginatedField: "dateTimeOriginal",
+    sortAscending: false,
+    previous: null,
+    hasPrevious: null,
+    next: null,
+    hasNext: null,
   },
   images: [],
   isLoading: false,
@@ -36,6 +47,13 @@ export const imagesSlice = createSlice({
     getImagesSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
+
+      const pageInfo = payload.images.pageInfo;
+      state.pageInfo.previous = pageInfo.previous;
+      state.pageInfo.hasPrevious = pageInfo.hasPrevious;
+      state.pageInfo.next = pageInfo.next;
+      state.pageInfo.hasNext = pageInfo.hasNext;
+
       const images = payload.images.images.map((img) => {
         const thumbUrl = IMAGE_BUCKET_URL + 'thumbnails/' + img.hash +
           '-small.jpg';
@@ -73,6 +91,14 @@ export const imagesSlice = createSlice({
       // const camera = state.filters.cameras[payload];
       // camera.selected = !camera.selected;
     },
+    pageInfoChanged: (state, { payload }) => {
+      console.log('Page Info changed : ', payload);
+      Object.keys(payload).forEach((key) => {
+        if (key in state.pageInfo) {
+          state.pageInfo[key] = payload[key];
+        }
+      });
+    },
   },
 });
 
@@ -85,17 +111,19 @@ export const {
   getCamerasFailure,
   cameraToggled,
   dateCreatedFilterChanged,
+  pageInfoChanged,
 } = imagesSlice.actions;
 
-export const fetchImages = filters => async dispatch => {
-  try {
-    dispatch(getImagesStart());
-    const images = await getImages(filters);  // add pagination params
-    dispatch(getImagesSuccess(images))
-  } catch (err) {
-    dispatch(getImagesFailure(err.toString()))
-  }
-};
+export const fetchImages = (filters, pageInfo, page = 'current') => 
+  async (dispatch) => {
+    try {
+      dispatch(getImagesStart());
+      const images = await getImages(filters, pageInfo, page);
+      dispatch(getImagesSuccess(images))
+    } catch (err) {
+      dispatch(getImagesFailure(err.toString()))
+    }
+  };
 
 export const fetchCameras = () => async dispatch => {
   try {
@@ -115,6 +143,8 @@ export const fetchCameras = () => async dispatch => {
 export const selectFilters = state => state.images.filters;
 export const selectCameraFilter = state => state.images.filters.cameras;
 export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
+export const selectPageInfo = state => state.images.pageInfo;
+export const selectLimit = state => state.images.pageInfo.limit;
 export const selectImages = state => state.images.images;
 
 export default imagesSlice.reducer;

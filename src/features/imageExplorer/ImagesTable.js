@@ -16,7 +16,7 @@ const Styles = styled.div`
   /* This will make the table scrollable when it gets too small */
   .tableWrap {
     display: block;
-    margin: 15px;
+    margin: ${props => props.theme.tokens.space.$3};;
     max-width: 100%;
     overflow-x: scroll;
     overflow-y: hidden;
@@ -48,7 +48,7 @@ const Styles = styled.div`
     td {
       margin: 0;
       padding: 0.5rem;
-
+      text-align: left;
       /* The secret sauce */
       /* Each cell should grow equally */
       width: 1%;
@@ -84,8 +84,6 @@ const ImagesTable = ({ images }) => {
             <LabelPill key={index}>{label.category}</LabelPill>
           ))}
         </div>;
-
-      console.log(labelCagegories)
 
       let needsReview = 'Yes'; 
       image.labels.forEach((label) => {

@@ -1,17 +1,70 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   fetchImages,
+  pageInfoChanged,
   selectFilters,
   selectImages,
+  selectPageInfo,
+  selectLimit,
 } from './imagesSlice';
+import Select from '../../components/Select';
 import ImagesTable from './ImagesTable';
+import { IMAGE_QUERY_LIMITS } from '../../config';
+
+const ChangePageButton = styled.button`
+  border: none;
+  background: none;
+  pointer-events: auto;
+  svg {
+    path {
+      fill: ${props => props.disabled 
+        ? props.theme.tokens.colors.$gray2 
+        : props.theme.tokens.colors.$gray3
+      };
+    }
+  }
+  :focus {
+    outline: none;
+  }
+  :hover {
+    cursor: ${props => props.disabled ? 'auto' : 'pointer'};
+    svg {
+      path {
+        fill: ${props => props.disabled 
+          ? props.theme.tokens.colors.$gray2 
+          : props.theme.tokens.colors.$gray4
+        };
+      }
+    }
+  }
+`;
+
+const LimitSelector = styled.div`
+  display: flex;
+  span {
+    margin-right: ${props => props.theme.tokens.space.$3};
+  }
+`;
+
+const ImagesListFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0px 20px;
+  height: ${props => props.theme.tokens.space.$7};
+  background-color:  ${props => props.theme.tokens.colors.$gray0};
+  border-top: ${props => props.theme.border};
+  border-bottom: ${props => props.theme.border};
+`;
 
 // Not a big fan of this CSS w/ hard coded heights for header and margin. Fix. 
 const ImagesListPanel = styled.div`
-  height: calc(100% - 50px - 15px);
+  height: calc(100% - ${props => 
+    props.theme.tokens.space.$7} - 
+    ${props => props.theme.tokens.space.$7} - 2px);
   overflow-y: scroll;
 `;
 
@@ -35,7 +88,7 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
 const Controls = styled.div`
   display: flex;
   svg {
-    margin-right: 15px;
+    margin-right: ${props => props.theme.tokens.space.$3};
   }
 `;
 
@@ -44,7 +97,7 @@ const ImagesListHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0px 20px;
-  height: 50px;
+  height: ${props => props.theme.tokens.space.$7};
   background-color:  ${props => props.theme.tokens.colors.$gray0};
   border-bottom: ${props => props.theme.border};
 `;
@@ -56,14 +109,25 @@ const StyledImagesList = styled.div`
 
 const ImagesList = () => {
   const filters = useSelector(selectFilters);
+  const pageInfo = useSelector(selectPageInfo);
+  const limit = useSelector(selectLimit);
   const images = useSelector(selectImages);
   const dispatch = useDispatch();
 
   useEffect(() => {
     console.log('fetching images');
-    dispatch(fetchImages(filters));
-  }, [filters, dispatch])
+    dispatch(fetchImages(filters, pageInfo));
+  }, [filters, limit, dispatch])
 
+  const handlePageChange = (page) => {
+    console.log('handle page change: ', page);
+    dispatch(fetchImages(filters, pageInfo, page));
+  };
+
+  const handleLimitSelectChange = (e) => {
+    const newLimit = Number(e.target.value);
+    dispatch(pageInfoChanged({ limit: newLimit }));
+  };
 
   return (
     <StyledImagesList>
@@ -84,6 +148,30 @@ const ImagesList = () => {
       <ImagesListPanel>
         <ImagesTable images={images} />
       </ImagesListPanel>
+      <ImagesListFooter>
+        <Controls>
+          <LimitSelector>
+            <span>Rows per page:</span>
+            <Select 
+              handleChange={handleLimitSelectChange}
+              defaultValue={limit}
+              options={IMAGE_QUERY_LIMITS}
+            />
+          </LimitSelector>
+          <ChangePageButton
+            onClick={() => handlePageChange('previous')}
+            disabled={pageInfo.hasPrevious ? null : true}
+          >
+            <FontAwesomeIcon icon={['fas', 'angle-left']} />
+          </ChangePageButton>
+          <ChangePageButton
+            onClick={() => handlePageChange('next')}
+            disabled={pageInfo.hasNext ? null : true}
+          >
+            <FontAwesomeIcon icon={['fas', 'angle-right']} />
+          </ChangePageButton>
+      </Controls>
+      </ImagesListFooter>
     </StyledImagesList>
   );
 };

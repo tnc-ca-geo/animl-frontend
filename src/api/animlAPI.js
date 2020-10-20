@@ -2,7 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 // import parseLink, { Links } from 'parse-link-header'
 import { API_URL } from '../config';
 
-export async function getImages(filters) {
+export async function getImages(filters, pageInfo, page) {
   const query = gql`query getImages($input: QueryImageInput!) {
     images(input: $input) {
       images {
@@ -32,16 +32,18 @@ export async function getImages(filters) {
 
   const variables = {
     input: {
-      paginatedField: 'dateTimeOriginal',
-      sortAscending: false,
-      limit: 20,
-      // next: 'cursorhash',
-      // previous: 'cursorhash',
+      paginatedField: pageInfo.pageInfo,
+      sortAscending: pageInfo.sortAscending,
+      limit: pageInfo.limit,
+      ...(page === 'next' && { next: pageInfo.next }),
+      ...(page === 'previous' && { previous: pageInfo.previous }),
       cameras: selectedCameras,
       createdStart: filters.dateCreated.start,
       createdEnd: filters.dateCreated.end,
     }
   };
+
+  console.log('variables: ', variables);
   
   try {
     const graphQLClient = new GraphQLClient(API_URL, {

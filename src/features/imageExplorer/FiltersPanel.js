@@ -13,7 +13,7 @@ const FiltersHeader = styled.div`
   display: flex;
   align-items: center;
   padding: 0px 20px;
-  height: 50px;
+  height: ${props => props.theme.tokens.space.$7};
   border-bottom: ${props => props.theme.border};
   font-weight: 700;
 `;
