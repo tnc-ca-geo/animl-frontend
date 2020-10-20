@@ -9,8 +9,10 @@ import {
 } from './imagesSlice';
 import ImagesTable from './ImagesTable';
 
+// Not a big fan of this CSS w/ hard coded heights for header and margin. Fix. 
 const ImagesListPanel = styled.div`
-  height: 100%;
+  height: calc(100% - 50px - 15px);
+  overflow-y: scroll;
 `;
 
 const ViewLabel = styled.span`

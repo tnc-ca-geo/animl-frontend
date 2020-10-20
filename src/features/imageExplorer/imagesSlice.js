@@ -36,7 +36,7 @@ export const imagesSlice = createSlice({
     getImagesSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      const images = payload.images.map((img) => {
+      const images = payload.images.images.map((img) => {
         const thumbUrl = IMAGE_BUCKET_URL + 'thumbnails/' + img.hash +
           '-small.jpg';
         const dateCreated = moment(img.dateTimeOriginal).format(DFR);
@@ -90,7 +90,7 @@ export const {
 export const fetchImages = filters => async dispatch => {
   try {
     dispatch(getImagesStart());
-    const images = await getImages(filters);
+    const images = await getImages(filters);  // add pagination params
     dispatch(getImagesSuccess(images))
   } catch (err) {
     dispatch(getImagesFailure(err.toString()))

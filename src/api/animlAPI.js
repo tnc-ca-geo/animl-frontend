@@ -3,24 +3,38 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { API_URL } from '../config';
 
 export async function getImages(filters) {
-  const query = gql`
-    query getImages($cameras: [String!], $createdStart: Date, $createdEnd: Date) {
-      images (cameras: $cameras, createdStart: $createdStart, createdEnd: $createdEnd) {
+  const query = gql`query getImages($input: QueryImageInput!) {
+    images(input: $input) {
+      images {
         hash
         dateTimeOriginal
         cameraSn
         make
       }
+      pageInfo {
+        previous
+        hasPrevious
+        next
+        hasNext
+      }
     }
-  `
+  }`
+
   const selectedCameras = Object.keys(filters.cameras).filter((sn) => (
     filters.cameras[sn].selected === true
   ));
 
   const variables = {
-    cameras: selectedCameras,
-    createdStart: filters.dateCreated.start,
-    createdEnd: filters.dateCreated.end,
+    input: {
+      paginatedField: 'dateTimeOriginal',
+      sortAscending: false,
+      limit: 20,
+      // next: 'cursorhash',
+      // previous: 'cursorhash',
+      cameras: selectedCameras,
+      createdStart: filters.dateCreated.start,
+      createdEnd: filters.dateCreated.end,
+    }
   };
   
   try {

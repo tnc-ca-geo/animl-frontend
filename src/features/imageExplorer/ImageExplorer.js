@@ -6,8 +6,8 @@ import ImagesList from './ImagesList';
 const ImageExplorerContainer = styled.div`
   display: flex;
   margin: 25px;
-  margin-top: 100px;
-  height: 700px;
+  margin-top: 80px;
+  height: calc(100vh - 55px - 100px);
   border: ${props => props.theme.border};
 `;
 
