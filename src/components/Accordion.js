@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ChevronUpIcon, ChevronDownIcon } from '../assets/Icons'
+// import { ChevronUpIcon, ChevronDownIcon } from '../assets/Icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AccordionBody = styled.div`

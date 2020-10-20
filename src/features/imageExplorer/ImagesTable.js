@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
-import styled from 'styled-components'
-import { useTable } from 'react-table'
+import React, { useMemo, useEffect } from 'react';
+import styled from 'styled-components';
+import { useTable, useSortBy } from 'react-table';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const LabelPill = styled.span`
   background-color: ${props => props.theme.tokens.colors.$gray2};
@@ -72,6 +73,22 @@ const Styles = styled.div`
   }
 `
 
+const TableHeader = styled.div`
+  color: ${props => (props.isSorted)
+    ? props.theme.tokens.colors.$gray4
+    : props.theme.tokens.colors.$gray3
+  };
+
+  svg {
+    margin-left: 8px;
+    path {
+      fill: ${props => (props.isSorted)
+        ? props.theme.tokens.colors.$gray4
+        : props.theme.tokens.colors.$gray3
+      };
+  }
+`;
+
 const ImagesTable = ({ images }) => {
 
   const makeRows = (images) => {
@@ -103,10 +120,11 @@ const ImagesTable = ({ images }) => {
 
   const data = makeRows(images);
 
-  const columns = React.useMemo(() => [
+  const columns = useMemo(() => [
       {
         Header: '',
-        accessor: 'thumbnail', // accessor is the "key" in the data
+        accessor: 'thumbnail', // accessor is the 'key' in the data
+        disableSortBy: true,
       },
       {
         Header: 'Date Created',
@@ -115,10 +133,12 @@ const ImagesTable = ({ images }) => {
       {
         Header: 'Labels',
         accessor: 'labelCagegories',
+        disableSortBy: true,
       },
       {
         Header: 'Needs Review',
         accessor: 'needsReview',
+        disableSortBy: true,
       },
       {
         Header: 'Camera',
@@ -127,6 +147,7 @@ const ImagesTable = ({ images }) => {
       {
         Header: 'Camera make',
         accessor: 'make',
+        disableSortBy: true,
       },
   ], []);
 
@@ -135,21 +156,41 @@ const ImagesTable = ({ images }) => {
     getTableBodyProps,
     headerGroups,
     rows,
-    prepareRow
+    prepareRow,
+    state: { sortBy },
   } = useTable({
     columns,
-    data
-  });
+    data,
+    manualSortBy: true,
+  }, useSortBy);
+
+  useEffect(() => {
+    console.log('sort by event detected: ', sortBy);
+  }, [sortBy]);
 
   return (
     <Styles>
-      <div className="tableWrap">
+      <div className='tableWrap'>
         <table {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                    <TableHeader
+                      canSort={column.canSort}
+                      isSorted={column.isSorted}
+                    >
+                      {column.render('Header')}
+                      {column.canSort && 
+                        <FontAwesomeIcon icon={ 
+                          column.isSortedDesc 
+                            ? ['fas', 'caret-down'] 
+                            : ['fas', 'caret-up']
+                        }/>
+                      }
+                    </TableHeader>
+                  </th>
                 ))}
               </tr>
             ))}
@@ -160,7 +201,7 @@ const ImagesTable = ({ images }) => {
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
-                    return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
                   })}
                 </tr>
               );
