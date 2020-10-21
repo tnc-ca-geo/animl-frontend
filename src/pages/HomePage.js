@@ -1,11 +1,14 @@
 import React from 'react';
+import { Page } from '../components/Page';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { ImageExplorer } from '../features/imageExplorer/ImageExplorer';
 
 const HomePage = () => {
   return (
-    <div>
+    <Page>
+      {/*<Breadcrumbs />*/}
       <ImageExplorer />
-    </div>
+    </Page>
   );
 }
 

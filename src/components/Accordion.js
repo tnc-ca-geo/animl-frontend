@@ -14,9 +14,9 @@ const AccordionHeader = styled.div({
   alignItems: 'center',
   justifyContent: 'space-between',
   fontWeight: '$5',
-  height: '$6',
+  height: '$7',
   borderBottom: '$1 solid $gray400',
-  padding: '$2 $3',
+  padding: '$0 $3',
   pointerEvents: 'auto',
   '&:hover': {
     cursor: 'pointer',

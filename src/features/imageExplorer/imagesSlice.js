@@ -27,7 +27,7 @@ const imagesInitialState = {
   },
   images: [],
   isLoading: false,
-  error: null
+  error: null,
 };
 
 function startLoading(state) {
@@ -57,10 +57,9 @@ export const imagesSlice = createSlice({
       const images = payload.images.images.map((img) => {
         const thumbUrl = IMAGE_BUCKET_URL + 'thumbnails/' + img.hash +
           '-small.jpg';
-        const dateCreated = moment(img.dateTimeOriginal).format(DFR);
+        img.dateTimeOriginal = moment(img.dateTimeOriginal).format(DFR);
         return {
           thumbUrl,
-          dateCreated,
           ...img
         }
       })
@@ -69,37 +68,29 @@ export const imagesSlice = createSlice({
     getImagesFailure: loadingFailed,
     getCamerasStart: startLoading,
     getCamerasSuccess: (state, { payload }) => {
-      console.log('Updating state with new available cameras: ', payload);
       state.isLoading = false;
       state.error = null;
       payload.cameras.forEach((camera) => {
         if (!(camera._id in state.filters.cameras)) {
-          state.filters.cameras[camera._id] = { selected: false };
+          state.filters.cameras[camera._id] = { selected: true };
         }
       });
     },
     getCamerasFailure: loadingFailed,
     cameraToggled: (state, { payload }) => {
-      console.log('Camera toggled: ', payload);
       const camera = state.filters.cameras[payload];
       camera.selected = !camera.selected;
     },
     dateCreatedFilterChanged: (state, { payload }) => {
-      console.log('Date Created Filter changed : ', payload);
       state.filters.dateCreated.start = payload.startDate;
       state.filters.dateCreated.end = payload.endDate;
-      // const camera = state.filters.cameras[payload];
-      // camera.selected = !camera.selected;
     },
     sortChanged: (state, { payload }) => {
-      console.log('Sort changed: ', payload);
       if (!payload.length) {
         return;
       }
       const sortAscending = !payload[0].desc;
-      const sortField = (payload[0].id === 'dateCreated')
-        ? 'dateTimeOriginal'
-        : payload[0].id;
+      const sortField = payload[0].id;
       
       if (state.pageInfo.paginatedField !== sortField) {
         state.pageInfo.paginatedField = sortField;
@@ -109,7 +100,6 @@ export const imagesSlice = createSlice({
       }
     },
     pageInfoChanged: (state, { payload }) => {
-      console.log('Page Info changed : ', payload);
       Object.keys(payload).forEach((key) => {
         if (key in state.pageInfo) {
           state.pageInfo[key] = payload[key];
@@ -132,10 +122,12 @@ export const {
   pageInfoChanged,
 } = imagesSlice.actions;
 
-export const fetchImages = (filters, pageInfo, page = 'current') => 
-  async (dispatch) => {
+// Thunks
+export const fetchImages = (filters, page = 'current') => 
+  async (dispatch, getState) => {
     try {
       dispatch(getImagesStart());
+      const pageInfo = getState().images.pageInfo;
       const images = await getImages(filters, pageInfo, page);
       dispatch(getImagesSuccess(images))
     } catch (err) {
@@ -161,10 +153,14 @@ export const fetchCameras = () => async dispatch => {
 export const selectFilters = state => state.images.filters;
 export const selectCameraFilter = state => state.images.filters.cameras;
 export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
+
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectLimit = state => state.images.pageInfo.limit;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
+export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
+export const selectHasNext = state => state.images.pageInfo.hasNext;
+
 export const selectImages = state => state.images.images;
 
 export default imagesSlice.reducer;

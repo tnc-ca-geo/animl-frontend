@@ -49,6 +49,7 @@ export const { styled, css } = createStyled({
       $2: '12px',
       $3: '14px',
       $4: '16px',
+      $5: '20px',
     },
     fonts: {
       $roboto: `Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, 
@@ -66,6 +67,8 @@ export const { styled, css } = createStyled({
     // letterSpacings: {},
     borderWidths: {
       $1: '1px',
+      $2: '4px',
+      $3: '8px',
     },
     // borderStyles: {},
     radii: {

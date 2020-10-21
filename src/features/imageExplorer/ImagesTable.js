@@ -1,100 +1,94 @@
 import React, { useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
+import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  selectPaginatedField,
+  selectSortAscending,
   sortChanged,
 } from './imagesSlice';
 
-const LabelPill = styled.span`
-  background-color: ${props => props.theme.tokens.colors.$gray2};
-  padding: 4px 8px;
-  border-radius: 4px;
-`
+const LabelPill = styled.span({
+  backgroundColor: '$gray300',
+  padding: '$1 $2',
+  borderRadius: '4px',
+});
 
-const Styles = styled.div`
-  /* This is required to make the table full-width */
-  display: block;
-  max-width: 100%;
+const Styles = styled.div({
+  display: 'block',
+  maxWidth: '100%',
 
-  /* This will make the table scrollable when it gets too small */
-  .tableWrap {
-    display: block;
-    margin: ${props => props.theme.tokens.space.$3};;
-    max-width: 100%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-  }
+  '.tableWrap': {
+    display: 'block',
+    margin: '$3',
+    maxWidth: '100%',
+    // overflowX: 'scroll',
+    overflowY: 'hidden',
+  },
 
-  table {
-    /* Make sure the inner table is always as wide as needed */
-    width: 100%;
-    border-spacing: 0;
-
-    tbody {
-      tr {
-        background-color: ${props => props.theme.tokens.colors.$gray0};
-      }
-    }
-
-    tr {
-      td {
-        font-family: ${props => props.theme.monoFont};
-      }
-      :last-child {
-        td {
-          border-bottom: 0;
+  'table': {
+    width: '100%',
+    borderSpacing: '0',
+    'tbody': {
+      'tr': {
+        backgroundColor: '$loContrast',
+      },
+    },
+    'tr': {
+      'td': {
+        fontFamily: '$mono',
+        ':last-child': {
+          borderRight: '0',
         }
       }
-    }
-
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      text-align: left;
-      /* The secret sauce */
-      /* Each cell should grow equally */
-      width: 1%;
-      /* But "collapsed" cells should be as small as possible */
-      &.collapse {
-        width: 0.0000000001%;
-      }
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-
-    td {
-      border-bottom: 10px solid ${props => props.theme.tokens.colors.$gray1};
+    },
+    'th, td': {
+      margin: '$0',
+      padding: '0.5rem',
+      textAlign: 'left',
+      // The secret sauce
+      // Each cell should grow equally
+      width: '1%',
+      // But "collapsed" cells should be as small as possible
+      '&.collapse': {
+        width: '0.0000000001%',
+      },
+      ':last-child': {
+        borderRight: '0',
+      },
+    },
+    'td': {
+      borderBottom: '$2 solid $gray200',
     }
   }
+});
 
-  .pagination {
-    padding: 0.5rem;
-  }
-`
-
-const TableHeader = styled.div`
-  color: ${props => (props.isSorted)
-    ? props.theme.tokens.colors.$gray4
-    : props.theme.tokens.colors.$gray3
-  };
-
-  svg {
-    margin-left: 8px;
-    path {
-      fill: ${props => (props.isSorted)
-        ? props.theme.tokens.colors.$gray4
-        : props.theme.tokens.colors.$gray3
-      };
-  }
-`;
+const TableHeader = styled.div({
+  'svg': {
+    marginLeft: '$3',
+    'path': {
+      fill: '$gray600',
+    }
+  },
+  variants: {
+    issorted: {
+      true: {
+        color: '$hiContrast',
+        'svg path': { fill: '$hiContrast' },
+      },
+      false: {
+        color: '$gray600',
+        'svg path': { fill: '$gray600' },
+      },
+    },
+  },
+});
 
 const ImagesTable = ({ images }) => {
   const dispatch = useDispatch();
+  const paginatedFiled = useSelector(selectPaginatedField);
+  const sortAscending = useSelector(selectSortAscending);
 
   const makeRows = (images) => {
     return images.map((image) => {
@@ -128,12 +122,12 @@ const ImagesTable = ({ images }) => {
   const columns = useMemo(() => [
       {
         Header: '',
-        accessor: 'thumbnail', // accessor is the 'key' in the data
+        accessor: 'thumbnail',
         disableSortBy: true,
       },
       {
         Header: 'Date Created',
-        accessor: 'dateCreated',
+        accessor: 'dateTimeOriginal',
       },
       {
         Header: 'Labels',
@@ -156,6 +150,15 @@ const ImagesTable = ({ images }) => {
       },
   ], []);
 
+  const initialState = {
+    sortBy: [
+      {
+        id: paginatedFiled,
+        desc: !sortAscending,
+      }
+    ],
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -167,10 +170,10 @@ const ImagesTable = ({ images }) => {
     columns,
     data,
     manualSortBy: true,
+    initialState,
   }, useSortBy);
 
   useEffect(() => {
-    console.log('sort by event detected: ', sortBy);
     dispatch(sortChanged(sortBy));
   }, [sortBy, dispatch]);
 
@@ -184,8 +187,8 @@ const ImagesTable = ({ images }) => {
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     <TableHeader
-                      canSort={column.canSort}
-                      isSorted={column.isSorted}
+                      issorted={column.isSorted.toString()}
+                      cansort={column.canSort.toString()}
                     >
                       {column.render('Header')}
                       {column.canSort && 
