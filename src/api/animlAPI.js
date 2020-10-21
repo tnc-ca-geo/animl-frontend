@@ -32,7 +32,7 @@ export async function getImages(filters, pageInfo, page) {
 
   const variables = {
     input: {
-      paginatedField: pageInfo.pageInfo,
+      paginatedField: pageInfo.paginatedField,
       sortAscending: pageInfo.sortAscending,
       limit: pageInfo.limit,
       ...(page === 'next' && { next: pageInfo.next }),

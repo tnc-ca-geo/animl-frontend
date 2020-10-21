@@ -91,6 +91,23 @@ export const imagesSlice = createSlice({
       // const camera = state.filters.cameras[payload];
       // camera.selected = !camera.selected;
     },
+    sortChanged: (state, { payload }) => {
+      console.log('Sort changed: ', payload);
+      if (!payload.length) {
+        return;
+      }
+      const sortAscending = !payload[0].desc;
+      const sortField = (payload[0].id === 'dateCreated')
+        ? 'dateTimeOriginal'
+        : payload[0].id;
+      
+      if (state.pageInfo.paginatedField !== sortField) {
+        state.pageInfo.paginatedField = sortField;
+      }
+      if (state.pageInfo.sortAscending !== sortAscending) {
+        state.pageInfo.sortAscending = sortAscending;
+      }
+    },
     pageInfoChanged: (state, { payload }) => {
       console.log('Page Info changed : ', payload);
       Object.keys(payload).forEach((key) => {
@@ -111,6 +128,7 @@ export const {
   getCamerasFailure,
   cameraToggled,
   dateCreatedFilterChanged,
+  sortChanged,
   pageInfoChanged,
 } = imagesSlice.actions;
 
@@ -145,6 +163,8 @@ export const selectCameraFilter = state => state.images.filters.cameras;
 export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectLimit = state => state.images.pageInfo.limit;
+export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
+export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectImages = state => state.images.images;
 
 export default imagesSlice.reducer;

@@ -9,6 +9,8 @@ import {
   selectImages,
   selectPageInfo,
   selectLimit,
+  selectPaginatedField,
+  selectSortAscending,
 } from './imagesSlice';
 import Select from '../../components/Select';
 import ImagesTable from './ImagesTable';
@@ -111,13 +113,15 @@ const ImagesList = () => {
   const filters = useSelector(selectFilters);
   const pageInfo = useSelector(selectPageInfo);
   const limit = useSelector(selectLimit);
+  const paginatedField = useSelector(selectPaginatedField);
+  const sortAscending = useSelector(selectSortAscending);
   const images = useSelector(selectImages);
   const dispatch = useDispatch();
 
   useEffect(() => {
     console.log('fetching images');
     dispatch(fetchImages(filters, pageInfo));
-  }, [filters, limit, dispatch])
+  }, [filters, limit, paginatedField, sortAscending, dispatch]);
 
   const handlePageChange = (page) => {
     console.log('handle page change: ', page);

@@ -1,7 +1,11 @@
 import React, { useMemo, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useTable, useSortBy } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  sortChanged,
+} from './imagesSlice';
 
 const LabelPill = styled.span`
   background-color: ${props => props.theme.tokens.colors.$gray2};
@@ -90,6 +94,7 @@ const TableHeader = styled.div`
 `;
 
 const ImagesTable = ({ images }) => {
+  const dispatch = useDispatch();
 
   const makeRows = (images) => {
     return images.map((image) => {
@@ -166,7 +171,8 @@ const ImagesTable = ({ images }) => {
 
   useEffect(() => {
     console.log('sort by event detected: ', sortBy);
-  }, [sortBy]);
+    dispatch(sortChanged(sortBy));
+  }, [sortBy, dispatch]);
 
   return (
     <Styles>
