@@ -1,47 +1,27 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-// import { ChevronUpIcon, ChevronDownIcon } from '../assets/Icons'
+import { styled } from '../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from './IconButton';
 
-const AccordionBody = styled.div`
-  margin-top: ${props => props.theme.tokens.space.$2};
-  padding: ${props => props.theme.tokens.space.$2} 
-    ${props => props.theme.tokens.space.$3};
-  border-bottom: ${props => props.theme.border};
-  background-color: ${props => props.theme.tokens.colors.$gray1};
-`;
+const AccordionBody = styled.div({
+  padding: '$2 $3',
+  borderBottom: '$1 solid $gray400',
+  backgroundColor: '$gray200',
+});
 
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  path {
-    fill: ${props => props.theme.tokens.colors.$gray3}
-  }
-  pointer-events: auto;
-  :hover {
-    cursor: pointer;
-    path {
-      fill: ${props => props.theme.tokens.colors.$gray4}
-    }
-  }
-`;
-
-const AccordionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 700;
-  height: ${props => props.theme.tokens.space.$7};
-  border-bottom: ${props => props.theme.border};
-  padding: ${props => props.theme.tokens.space.$2} 
-    ${props => props.theme.tokens.space.$3};
-  pointer-events: auto;
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-const StyledAccordion = styled.div`
-
-`;
+const AccordionHeader = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  fontWeight: '$5',
+  height: '$6',
+  borderBottom: '$1 solid $gray400',
+  padding: '$2 $3',
+  pointerEvents: 'auto',
+  '&:hover': {
+    cursor: 'pointer',
+  },
+});
 
 const Accordion = ({ children, expandedDefault, label }) => {
   const [expanded, setExpanded] = useState(expandedDefault)
@@ -51,19 +31,21 @@ const Accordion = ({ children, expandedDefault, label }) => {
   };  
 
   return (
-    <StyledAccordion>
+    <div>
       <AccordionHeader onClick={handleAccordionHeaderClick}>
         {label}
-        <StyledFontAwesomeIcon icon={ 
-          expanded ? ['fas', 'angle-down'] : ['fas', 'angle-right']
-        }/>
+        <IconButton variant='ghost'>
+          <FontAwesomeIcon icon={ 
+            expanded ? ['fas', 'angle-down'] : ['fas', 'angle-right']
+          }/>
+        </IconButton>
       </AccordionHeader>
       {expanded && (
         <AccordionBody expanded={expanded}>
           {children}
         </AccordionBody>
       )}
-    </StyledAccordion>
+    </div>
   );
 };
 

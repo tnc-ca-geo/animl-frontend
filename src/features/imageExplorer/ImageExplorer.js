@@ -1,21 +1,22 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled } from '../../theme/stitches.config.js';
 import FiltersPanel from './FiltersPanel';
 import ImagesList from './ImagesList';
 
-const ImageExplorerContainer = styled.div`
-  display: flex;
-  margin: 25px;
-  margin-top: 80px;
-  height: calc(100vh - 55px - 100px);
-  border: ${props => props.theme.border};
-`;
+const ImageExplorerWrapper = styled.div({
+  display: 'flex',
+  margin: '$4',
+  marginTop: '$10',
+  // stitches cannot parse token values in calc
+  height: 'calc(100vh - 48px - 72px - 24px)',
+  border: '$1 solid $gray400',
+});
 
 export function ImageExplorer() {
   return (
-    <ImageExplorerContainer>
+    <ImageExplorerWrapper>
       <FiltersPanel />
       <ImagesList />
-    </ImageExplorerContainer>
+    </ImageExplorerWrapper>
   );
 }

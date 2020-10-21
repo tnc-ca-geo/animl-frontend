@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { styled } from '../../theme/stitches.config.js';
 import { useSelector, useDispatch } from 'react-redux'
 import {
   fetchCameras,
@@ -8,11 +8,11 @@ import {
 } from './imagesSlice';
 import Checkbox from '../../components/Checkbox';
 
-const CheckboxLabel = styled.span`
-  margin-left: 8px;
-  font-family: ${props => props.theme.monoFont};
-  font-size: 14px;
-`;
+const CheckboxLabel = styled.span({
+  marginLeft: '$2',
+  fontFamily: '$mono',
+  fontSize: '$3',
+});
 
 const CameraFilter = () => {
   const cameras = useSelector(selectCameraFilter);

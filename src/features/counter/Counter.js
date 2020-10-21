@@ -8,7 +8,7 @@ import {
   selectCount,
 } from './counterSlice';
 import styles from './Counter.module.css';
-import { Grid, Row, Col } from '../../components/Grid';
+// import { Grid, Row, Col } from '../../components/Grid';
 
 export function Counter() {
   const count = useSelector(selectCount);
@@ -16,7 +16,7 @@ export function Counter() {
   const [incrementAmount, setIncrementAmount] = useState('2');
 
   return (
-    <Grid>
+    <div>
       <div className={styles.row}>
         <button
           className={styles.button}
@@ -56,6 +56,6 @@ export function Counter() {
           Add Async
         </button>
       </div>
-    </Grid>
+    </div>
   );
 }

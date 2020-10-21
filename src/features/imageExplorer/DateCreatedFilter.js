@@ -5,10 +5,8 @@ import {
   selectDateCreatedFilter,
   dateCreatedFilterChanged,
 } from './imagesSlice';
-import { Grid, Row, Col } from '../../components/Grid';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
 import { DATE_FORMAT_EXIF as DFE } from '../../config';
-
 
 const DateCreatedFilter = () => {
   const { start, end } = useSelector(selectDateCreatedFilter);
@@ -21,13 +19,11 @@ const DateCreatedFilter = () => {
   };
 
   return (
-    <Grid>
-      <DateRangePickerWrapper
-        sdate={moment(start, DFE)}
-        edate={moment(end, DFE)}
-        handleDatesChange={handleDatesChange}
-      />
-    </Grid>
+    <DateRangePickerWrapper
+      sdate={moment(start, DFE)}
+      edate={moment(end, DFE)}
+      handleDatesChange={handleDatesChange}
+    />
   );
 };
 

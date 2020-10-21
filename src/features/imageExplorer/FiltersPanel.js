@@ -1,27 +1,27 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
 import DateCreatedFilter from './DateCreatedFilter';
 
-const Label = styled.span`
-  margin-left: 15px;
-`;
+const Label = styled.span({
+  marginLeft: '$2',
+});
 
-const FiltersHeader = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0px 20px;
-  height: ${props => props.theme.tokens.space.$7};
-  border-bottom: ${props => props.theme.border};
-  font-weight: 700;
-`;
+const FiltersHeader = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  padding: '$0 $3',
+  height: '$7',
+  borderBottom: '$1 solid $gray400',
+  fontWeight: '$5',
+});
 
-const StyledFiltersPanel = styled.div`
-  width: 350px;
-  border-right: ${props => props.theme.border};
-`;
+const StyledFiltersPanel = styled.div({
+  width: '350px',
+  borderRight: '$1 solid $gray400'
+});
 
 const FiltersPanel = () => {
   return (

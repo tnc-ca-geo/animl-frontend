@@ -1,26 +1,26 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled } from '../theme/stitches.config.js';
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../assets/animl-logo.svg'
 
-const StyledNav = styled.nav`
-  width: 100%;
-  height: 55px;
-  display: flex;
-  align-items: center;
-  padding: 0px 25px;
-  background-color: #FFFFFF;
-  border-bottom: ${props => props.theme.border};
-`;
+const StyledNav = styled.nav({
+  width: '100%',
+  height: '$7',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '$0 $4',
+  backgroundColor: '$lowContrast',
+  borderBottom: '$1 solid $gray400',
+});
 
-const Logo = styled(Link)`
-  display: flex;
-  align-items: center;
-`
+const Logo = styled(Link, {
+  display: 'flex',
+  alignItems: 'center',
+});
 
-const NavLinks = styled.div`
-  display: flex;
-`;
+const NavLinks = styled.div({
+  display: 'flex',
+});
 
 const NavBar = () => {
   return (
