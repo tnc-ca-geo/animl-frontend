@@ -1,5 +1,8 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+  faTimes,
+  faToggleOn,
+  faToggleOff,
   faAngleRight,
   faAngleLeft,
   faAngleUp,
@@ -15,6 +18,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
+  faTimes,
+  faToggleOn,
+  faToggleOff,
   faAngleRight,
   faAngleLeft,
   faAngleUp,

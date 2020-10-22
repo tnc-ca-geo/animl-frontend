@@ -25,6 +25,10 @@ const imagesInitialState = {
     next: null,
     hasNext: null,
   },
+  detailsModal: {
+    open: false,
+    imageIndex: null,
+  },
   images: [],
   isLoading: false,
   error: null,
@@ -106,6 +110,15 @@ export const imagesSlice = createSlice({
         }
       });
     },
+    imageSelected: (state, { payload }) => {
+      state.detailsModal.open = true;
+      state.detailsModal.imageIndex = payload;
+    },
+    detailsModalClosed: (state) => {
+      console.log('details modal closed handler')
+      state.detailsModal.open = false;
+      state.detailsModal.imageIndex = null;
+    },
   },
 });
 
@@ -120,6 +133,8 @@ export const {
   dateCreatedFilterChanged,
   sortChanged,
   pageInfoChanged,
+  imageSelected,
+  detailsModalClosed,
 } = imagesSlice.actions;
 
 // Thunks
@@ -160,6 +175,9 @@ export const selectPaginatedField = state => state.images.pageInfo.paginatedFiel
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
+
+export const selectDetailsOpen = state => state.images.detailsModal.open;
+export const selectDetailsIndex = state => state.images.detailsModal.imageIndex;
 
 export const selectImages = state => state.images.images;
 

@@ -6,6 +6,14 @@ import 'react-dates/lib/css/_datepicker.css';
 import { styled } from '../theme/stitches.config';
 
 const StyledDateRangePicker = styled.div({
+  '.DateInput_input': {
+    color: '$hiContrast',
+    fontFamily: '$mono',
+    fontWeight: '$2',
+  },
+  '.DateInput__small': {
+    width: '109px',
+  },
   '.DateInput_input__focused': {
     borderBottomColor: '$blue600',
   },

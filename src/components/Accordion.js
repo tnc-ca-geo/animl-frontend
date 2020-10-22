@@ -41,7 +41,7 @@ const Accordion = ({ children, expandedDefault, label }) => {
         </IconButton>
       </AccordionHeader>
       {expanded && (
-        <AccordionBody expanded={expanded}>
+        <AccordionBody>
           {children}
         </AccordionBody>
       )}

@@ -19,7 +19,7 @@ const FiltersHeader = styled.div({
 });
 
 const StyledFiltersPanel = styled.div({
-  width: '350px',
+  width: '370px',
   borderRight: '$1 solid $gray400'
 });
 

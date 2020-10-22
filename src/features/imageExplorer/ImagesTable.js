@@ -4,6 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  imageSelected,
   selectPaginatedField,
   selectSortAscending,
   sortChanged,
@@ -33,6 +34,10 @@ const Styles = styled.div({
     'tbody': {
       'tr': {
         backgroundColor: '$loContrast',
+        ':hover': {
+          backgroundColor: '$gray300',
+          cursor: 'pointer',
+        },
       },
     },
     'tr': {
@@ -85,37 +90,37 @@ const TableHeader = styled.div({
   },
 });
 
+const makeRows = (images) => {
+  return images.map((image) => {
+    const thumbnail = <img src={image.thumbUrl} />;
+    
+    const labelCagegories = 
+      <div>
+        {image.labels.map((label, index) => (
+          <LabelPill key={index}>{label.category}</LabelPill>
+        ))}
+      </div>;
+
+    let needsReview = 'Yes'; 
+    image.labels.forEach((label) => {
+      if (label.validation.reviewed) {
+        needsReview = 'No';
+      }
+    });
+
+    return {
+      thumbnail,
+      labelCagegories,
+      needsReview,
+      ...image,
+    }
+  })
+};
+
 const ImagesTable = ({ images }) => {
   const dispatch = useDispatch();
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
-
-  const makeRows = (images) => {
-    return images.map((image) => {
-      const thumbnail = <img src={image.thumbUrl} />;
-      
-      const labelCagegories = 
-        <div>
-          {image.labels.map((label, index) => (
-            <LabelPill key={index}>{label.category}</LabelPill>
-          ))}
-        </div>;
-
-      let needsReview = 'Yes'; 
-      image.labels.forEach((label) => {
-        if (label.validation.reviewed) {
-          needsReview = 'No';
-        }
-      });
-
-      return {
-        thumbnail,
-        labelCagegories,
-        needsReview,
-        ...image,
-      }
-    })
-  };
 
   const data = makeRows(images);
 
@@ -177,6 +182,11 @@ const ImagesTable = ({ images }) => {
     dispatch(sortChanged(sortBy));
   }, [sortBy, dispatch]);
 
+  const handleTrClick = (id) => {
+    console.log('tr was clicked for row: ', id);
+    dispatch(imageSelected(id));
+  };
+
   return (
     <Styles>
       <div className='tableWrap'>
@@ -208,7 +218,10 @@ const ImagesTable = ({ images }) => {
             {rows.map((row, i) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr 
+                  {...row.getRowProps()}
+                  onClick={() => handleTrClick(row.id)}
+                >
                   {row.cells.map((cell) => {
                     return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
                   })}
