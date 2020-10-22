@@ -64,13 +64,13 @@ const ImagesPanel = () => {
     <StyledImagesPanel>
       <ImagesPanelHeader>
         <ControlGroup>
-          <IconButton variant='ghost'>
+          <IconButton variant='ghost' disabled>
             <FontAwesomeIcon icon={['fas', 'save']} />
           </IconButton>
-          <IconButton variant='ghost'>
+          <IconButton variant='ghost' disabled>
             <FontAwesomeIcon icon={['fas', 'cog']} />
           </IconButton>
-          <IconButton variant='ghost'>
+          <IconButton variant='ghost' disabled>
             <FontAwesomeIcon icon={['fas', 'redo']} />
           </IconButton>
         </ControlGroup>
@@ -78,10 +78,10 @@ const ImagesPanel = () => {
           Santa Cruz Island - Biosecurity Cameras
         </ViewLabel>
         <ControlGroup>
-          <IconButton variant='ghost'>
+          <IconButton variant='ghost' disabled>
             <FontAwesomeIcon icon={['fas', 'list-ul']} />
           </IconButton>
-          <IconButton variant='ghost'>
+          <IconButton variant='ghost' disabled>
             <FontAwesomeIcon icon={['fas', 'grip-horizontal']} />
           </IconButton>
         </ControlGroup>

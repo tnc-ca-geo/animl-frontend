@@ -1,8 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
-import GlobalStyle from '../theme/GlobalStyle';
+import globalStyle from '../theme/globalStyle';
 import theme from '../theme'; 
-import { styled } from '../theme/stitches.config.js';
+import { styled, css } from '../theme/stitches.config.js';
 import {
   Switch,
   Route
@@ -22,7 +22,6 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <AppContainer>
-        <GlobalStyle />
         <NavBar />
         <Switch>
           <Route path="/counter">

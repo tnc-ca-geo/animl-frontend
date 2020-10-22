@@ -9,6 +9,7 @@ import {
   selectSortAscending,
   sortChanged,
 } from './imagesSlice';
+import { Image } from '../../components/Image';
 
 const LabelPill = styled.span({
   backgroundColor: '$gray300',
@@ -92,7 +93,7 @@ const TableHeader = styled.div({
 
 const makeRows = (images) => {
   return images.map((image) => {
-    const thumbnail = <img src={image.thumbUrl} />;
+    const thumbnail = <Image src={image.thumbUrl} />;
     
     const labelCagegories = 
       <div>

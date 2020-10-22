@@ -12,8 +12,12 @@ export async function getImages(filters, pageInfo, page) {
         make
         labels {
           category
+          bbox
+          type
+          conf
           validation {
             reviewed
+            validated
           }
         }
       }

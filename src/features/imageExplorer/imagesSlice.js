@@ -4,7 +4,7 @@ import moment from 'moment';
 import {
   DATE_FORMAT_EXIF as DFE,
   DATE_FORMAT_READABLE as DFR,
-  IMAGE_BUCKET_URL, 
+  IMAGES_URL, 
   IMAGE_QUERY_LIMITS,
 } from '../../config';
 
@@ -59,11 +59,12 @@ export const imagesSlice = createSlice({
       state.pageInfo.hasNext = pageInfo.hasNext;
 
       const images = payload.images.images.map((img) => {
-        const thumbUrl = IMAGE_BUCKET_URL + 'thumbnails/' + img.hash +
-          '-small.jpg';
+        const url = IMAGES_URL + 'images/' + img.hash + '.jpg';
+        const thumbUrl = IMAGES_URL + 'thumbnails/' + img.hash + '-small.jpg';
         img.dateTimeOriginal = moment(img.dateTimeOriginal).format(DFR);
         return {
           thumbUrl,
+          url,
           ...img
         }
       })
@@ -112,13 +113,21 @@ export const imagesSlice = createSlice({
     },
     imageSelected: (state, { payload }) => {
       state.detailsModal.open = true;
-      state.detailsModal.imageIndex = payload;
+      state.detailsModal.imageIndex = Number(payload);
     },
     detailsModalClosed: (state) => {
-      console.log('details modal closed handler')
       state.detailsModal.open = false;
       state.detailsModal.imageIndex = null;
     },
+    incrementImageIndex: (state, { decrement }) => {
+      console.log('increment image index fired. Decrement? : ', decrement);
+      if (decrement && state.detailsModal.imageIndex > 0) {
+        state.detailsModal.imageIndex--
+      }
+      else {
+        state.detailsModal.imageIndex++
+      }
+    }
   },
 });
 
@@ -135,6 +144,7 @@ export const {
   pageInfoChanged,
   imageSelected,
   detailsModalClosed,
+  incrementImageIndex,
 } = imagesSlice.actions;
 
 // Thunks
