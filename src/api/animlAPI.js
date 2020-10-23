@@ -47,7 +47,7 @@ export async function getImages(filters, pageInfo, page) {
     }
   };
 
-  console.log('variables: ', variables);
+  // console.log('variables: ', variables);
   
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
@@ -56,8 +56,8 @@ export async function getImages(filters, pageInfo, page) {
       // },
     });
 
-    const imagesResponse = await graphQLClient.request(query, variables)
-    console.log(JSON.stringify(imagesResponse, undefined, 2))
+    const imagesResponse = await graphQLClient.request(query, variables);
+    // console.log(JSON.stringify(imagesResponse, undefined, 2))
     return imagesResponse;
   } catch (err) {
     throw err;

@@ -35,8 +35,9 @@ const testBBoxes = [
 ];
 
 const FullSizeImage = ({ image }) => {
-  const containerEl = useRef(null);
   const screenWidth = useSelector(selectScreenWidth);
+  const containerEl = useRef(null);
+  const [ imgLoaded, setImgLoaded ] = useState(false);
   const [width, setWidth] = useState();
   const [height, setHeight] = useState();
 
@@ -48,7 +49,9 @@ const FullSizeImage = ({ image }) => {
     if (height !== container.height) { 
       setHeight(container.height);
     }
-  }, [ screenWidth, width, height ]);
+  }, [ screenWidth, width, height, imgLoaded ]);
+
+  const handleImgLoaded = () => setImgLoaded(true);
 
   return (
     <ImageWrapper ref={containerEl}>
@@ -60,7 +63,7 @@ const FullSizeImage = ({ image }) => {
           initialBbox={label.bbox}
         />
       ))}
-      <FullImage src={image.url}/>
+      <FullImage src={image.url} onLoad={handleImgLoaded}/>
     </ImageWrapper>
   );
 };
