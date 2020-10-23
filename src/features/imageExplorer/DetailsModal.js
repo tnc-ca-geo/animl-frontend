@@ -10,9 +10,9 @@ import {
   selectImages,
 } from './imagesSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import FullSizeImage from './FullSizeImage';
 import LabelsTable from './LabelsTable';
 import IconButton from '../../components/IconButton';
-import { Image } from '../../components/Image';
 
 const ProgressBar = styled.div({
   height: '40px',
@@ -76,25 +76,16 @@ const InfoPaneHeader = ({ label }) => (
   <StyledInfoPaneHeader>
     <span>{label}</span>
   </StyledInfoPaneHeader>
-)
-
-const FullSizeImage = styled(Image, {
-  maxWidth: '100%',
-  height: 'auto',
-});
-
-const ImageWrapper = styled.div({
-  border: '2px solid tomato',
-});
+);
 
 const ImagePane = styled.div({
   background: 'aliceblue',
-})
+});
 
 const ImageDetails = styled.div({
   display: 'grid',
   gridTemplateColumns: '1.2fr 1fr',
-})
+});
 
 const ThumbnailsStrip = styled.div({
   width: '100%',
@@ -205,9 +196,7 @@ const DetailsModal = () => {
           </ThumbnailsStrip>
           <ImageDetails>
             <ImagePane>
-              <ImageWrapper>
-                <FullSizeImage src={image.url}/>
-              </ImageWrapper>
+              <FullSizeImage image={image} />
             </ImagePane>
             <div>
               <MetadataPane>

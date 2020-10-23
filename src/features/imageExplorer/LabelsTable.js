@@ -69,7 +69,6 @@ const TableHeader = styled.div({
 
 const makeRows = (labels) => {
   return labels.map((label) => {
-    console.log('label: ', label);
     return {
       validated: label.validation.validated,
       categoryPill: <LabelPill>{label.category}</LabelPill>,

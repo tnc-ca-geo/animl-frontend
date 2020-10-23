@@ -21,6 +21,7 @@
     "react-dates": "^21.8.0",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.1",
+    "react-resizable-rotatable-draggable": "^0.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
     "react-table": "^7.6.0",

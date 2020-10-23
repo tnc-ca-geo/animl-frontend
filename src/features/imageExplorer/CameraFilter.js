@@ -12,6 +12,9 @@ const CheckboxLabel = styled.span({
   marginLeft: '$2',
   fontFamily: '$mono',
   fontSize: '$3',
+  ':hover': {
+    cursor: 'pointer',
+  },
 });
 
 const CameraFilter = () => {
