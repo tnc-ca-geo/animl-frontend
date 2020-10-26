@@ -4,15 +4,16 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   fetchImages,
-  selectFilters,
   selectImages,
+  selectHasNext,
+  selectFilters,
+  selectIsLoading,
   selectLimit,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
 import IconButton from '../../components/IconButton';
 import ImagesTable from './ImagesTable';
-import ImagesPanelFooter from './ImagesPanelFooter';
 
 const ImagesPanelBody = styled.div({
   flexGrow: '1',
@@ -50,16 +51,27 @@ const StyledImagesPanel = styled.div({
 
 const ImagesPanel = () => {
   const filters = useSelector(selectFilters);
-  const limit = useSelector(selectLimit);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
+  const hasNext = useSelector(selectHasNext);
+  const isLoading = useSelector(selectIsLoading);
   const images = useSelector(selectImages);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('loading first page of images...')
     dispatch(fetchImages(filters));
-  }, [filters, limit, paginatedField, sortAscending, dispatch]);
+  }, [filters, paginatedField, sortAscending, dispatch]);
 
+  const loadNextPage = () => {
+    console.log('loading next page...')
+    // Pass an empty promise that immediately resolves to InfiniteLoader 
+    // in case it asks us to load more than once
+    return isLoading
+      ? new Promise((resolve) => resolve())
+      : dispatch(fetchImages(filters, 'next'));
+  };
+  
   return (
     <StyledImagesPanel>
       <ImagesPanelHeader>
@@ -87,9 +99,12 @@ const ImagesPanel = () => {
         </ControlGroup>
       </ImagesPanelHeader>
       <ImagesPanelBody>
-        <ImagesTable images={images} />
+        <ImagesTable
+          images={images}
+          hasNext={hasNext}
+          loadNextPage={loadNextPage}
+        />
       </ImagesPanelBody>
-      <ImagesPanelFooter />
     </StyledImagesPanel>
   );
 };

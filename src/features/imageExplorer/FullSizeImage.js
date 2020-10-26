@@ -11,7 +11,7 @@ const FullImage = styled(Image, {
 });
 
 const ImageWrapper = styled.div({
-  border: '2px solid tomato',
+  // border: '2px solid tomato',
   position: 'relative',
 });
 
@@ -37,7 +37,7 @@ const testBBoxes = [
 const FullSizeImage = ({ image }) => {
   const screenWidth = useSelector(selectScreenWidth);
   const containerEl = useRef(null);
-  const [ imgLoaded, setImgLoaded ] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [width, setWidth] = useState();
   const [height, setHeight] = useState();
 
@@ -55,7 +55,7 @@ const FullSizeImage = ({ image }) => {
 
   return (
     <ImageWrapper ref={containerEl}>
-      {testBBoxes.map((label, index) => (
+      {imgLoaded && testBBoxes.map((label, index) => (
         <BoundingBox
           key={index}
           imageWidth={width}

@@ -24,6 +24,11 @@ const App = () => {
   const dispatch = useDispatch();
 
   // Listen for resize events
+  // TODO: ditch all this and use 'beautiful-react-hooks' library to track
+  // window resize events in the FullSizeImage component
+  // https://blog.logrocket.com/building-resizable-react-component-using-custom-react-hooks/
+  // https://github.com/beautifulinteractions/beautiful-react-hooks
+  // or something like Autosizer or react-measure https://github.com/souporserious/react-measure
   useEffect(() => {    
     function throttleResize(event) {
       if (!resizeTimeout) {

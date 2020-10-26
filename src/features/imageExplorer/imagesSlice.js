@@ -35,18 +35,21 @@ const imagesInitialState = {
 };
 
 function startLoading(state) {
-  state.isLoading = true
+  state.isLoading = true;
 };
 
 function loadingFailed(state, action) {
-  state.isLoading = false
-  state.error = action.payload
+  state.isLoading = false;
+  state.error = action.payload;
 };
 
 export const imagesSlice = createSlice({
   name: 'images',
   initialState: imagesInitialState,
   reducers: {
+    clearImages: (state) => {
+      state.images = [];
+    },
     getImagesStart: startLoading,
     getImagesSuccess: (state, { payload }) => {
       state.isLoading = false;
@@ -68,7 +71,7 @@ export const imagesSlice = createSlice({
           ...img
         }
       })
-      state.images = images;
+      state.images = state.images.concat(images);
     },
     getImagesFailure: loadingFailed,
     getCamerasStart: startLoading,
@@ -96,20 +99,12 @@ export const imagesSlice = createSlice({
       }
       const sortAscending = !payload[0].desc;
       const sortField = payload[0].id;
-      
       if (state.pageInfo.paginatedField !== sortField) {
         state.pageInfo.paginatedField = sortField;
       }
       if (state.pageInfo.sortAscending !== sortAscending) {
         state.pageInfo.sortAscending = sortAscending;
       }
-    },
-    pageInfoChanged: (state, { payload }) => {
-      Object.keys(payload).forEach((key) => {
-        if (key in state.pageInfo) {
-          state.pageInfo[key] = payload[key];
-        }
-      });
     },
     imageSelected: (state, { payload }) => {
       state.detailsModal.open = true;
@@ -132,6 +127,7 @@ export const imagesSlice = createSlice({
 });
 
 export const {
+  clearImages,
   getImagesStart,
   getImagesSuccess,
   getImagesFailure,
@@ -141,7 +137,6 @@ export const {
   cameraToggled,
   dateCreatedFilterChanged,
   sortChanged,
-  pageInfoChanged,
   imageSelected,
   detailsModalClosed,
   incrementImageIndex,
@@ -152,6 +147,9 @@ export const fetchImages = (filters, page = 'current') =>
   async (dispatch, getState) => {
     try {
       dispatch(getImagesStart());
+      if (page !== 'next') {
+        dispatch(clearImages());
+      }
       const pageInfo = getState().images.pageInfo;
       const images = await getImages(filters, pageInfo, page);
       dispatch(getImagesSuccess(images))
@@ -180,7 +178,6 @@ export const selectCameraFilter = state => state.images.filters.cameras;
 export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
 
 export const selectPageInfo = state => state.images.pageInfo;
-export const selectLimit = state => state.images.pageInfo.limit;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
@@ -190,5 +187,7 @@ export const selectDetailsOpen = state => state.images.detailsModal.open;
 export const selectDetailsIndex = state => state.images.detailsModal.imageIndex;
 
 export const selectImages = state => state.images.images;
+export const selectIsLoading = state => state.images.isLoading;
+
 
 export default imagesSlice.reducer;

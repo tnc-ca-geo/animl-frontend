@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
+import { styled } from '../../theme/stitches.config';
 import ResizableRect from 'react-resizable-rotatable-draggable';
+
+// TODO: this doesn't work. Figure out how to style
+const StyledResizableRect = styled(ResizableRect, {
+  border: '$2 solid $blue400',
+});
 
 const absToNormalized = (rect, image) => {
   const { left, top, width, height } = rect;
@@ -52,7 +58,7 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox }) => {
   };
 
   return (
-    <ResizableRect
+    <StyledResizableRect
       left={left}
       top={top}
       width={width}
