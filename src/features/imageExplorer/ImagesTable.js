@@ -152,6 +152,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const hasMountedRef = useRef(false);
+  // TODO: replace with real count when we pull it form back end
   const imagesCount = hasNext ? images.length + 1 : images.length;
 
   const isImageLoaded = useCallback((index) => {

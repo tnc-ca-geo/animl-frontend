@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useGlobalEvent, useThrottledFn } from 'beautiful-react-hooks';
 import { styled } from '../../theme/stitches.config';
-import { selectScreenWidth } from '../ui/uiSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 
@@ -35,11 +34,17 @@ const testBBoxes = [
 ];
 
 const FullSizeImage = ({ image }) => {
-  const screenWidth = useSelector(selectScreenWidth);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const containerEl = useRef(null);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [width, setWidth] = useState();
   const [height, setHeight] = useState();
+  const onWindowResize = useGlobalEvent('resize');
+
+  const onWindowResizeHandler = useThrottledFn(() => {
+    setWindowWidth(window.innerWidth);
+  }, 100);
+  onWindowResize(onWindowResizeHandler);
 
   useEffect(() => {
     const container = containerEl.current.getBoundingClientRect();
@@ -49,7 +54,7 @@ const FullSizeImage = ({ image }) => {
     if (height !== container.height) { 
       setHeight(container.height);
     }
-  }, [ screenWidth, width, height, imgLoaded ]);
+  }, [ windowWidth, width, height, imgLoaded ]);
 
   const handleImgLoaded = () => setImgLoaded(true);
 
