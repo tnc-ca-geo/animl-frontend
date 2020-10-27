@@ -3,7 +3,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
-import DateCreatedFilter from './DateCreatedFilter';
+import DateFilter from './DateFilter';
 
 const Label = styled.span({
   marginLeft: '$2',
@@ -40,9 +40,15 @@ const FiltersPanel = () => {
       </Accordion>
       <Accordion
         label='Date Created'
-        expandedDefault={true}
+        expandedDefault={false}
       >
-        <DateCreatedFilter />
+        <DateFilter type='dateCreated'/>
+      </Accordion>
+      <Accordion
+        label='Date Added'
+        expandedDefault={false}
+      >
+        <DateFilter type='dateAdded'/>
       </Accordion>
     </StyledFiltersPanel>
   );

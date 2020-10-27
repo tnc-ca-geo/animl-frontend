@@ -17,13 +17,19 @@ const CheckboxLabel = styled.span({
   },
 });
 
+const CheckboxWrapper = styled.div({
+  marginBottom: '$1',
+});
+
 const CameraFilter = () => {
   const cameraFilter = useSelector(selectCameraFilter);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchCameras());
-  }, [dispatch])
+    if (!Object.keys(cameraFilter.cameras).length) {
+      dispatch(fetchCameras());
+    }
+  }, [cameraFilter, dispatch]);
 
   const handleCheckboxChange = (e) => {
     const sn = e.target.dataset.sn;
@@ -34,7 +40,7 @@ const CameraFilter = () => {
     <div>
       {Object.keys(cameraFilter.cameras).map((sn) => {
         return (
-          <div key={sn}>
+          <CheckboxWrapper key={sn}>
             <label>
               <Checkbox
                 checked={cameraFilter.cameras[sn].selected}
@@ -43,7 +49,7 @@ const CameraFilter = () => {
               />
               <CheckboxLabel>{sn}</CheckboxLabel>
             </label>
-          </div>
+          </CheckboxWrapper>
         )
       })}
     </div>

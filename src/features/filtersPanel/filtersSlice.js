@@ -16,6 +16,10 @@ const initialState = {
     start: moment().subtract(3, 'months').format(DFE), 
     end: moment().format(DFE),
   },
+  dateAdded: {
+    start: moment().subtract(3, 'months').format(DFE), 
+    end: moment().format(DFE),
+  },
 };
 
 export const filtersSlice = createSlice({
@@ -45,9 +49,9 @@ export const filtersSlice = createSlice({
       camera.selected = !camera.selected;
     },
 
-    dateCreatedFilterChanged: (state, { payload }) => {
-      state.dateCreated.start = payload.startDate;
-      state.dateCreated.end = payload.endDate;
+    dateFilterChanged: (state, { payload }) => {
+      state[payload.type].start = payload.startDate;
+      state[payload.type].end = payload.endDate;
     },
 
   },
@@ -58,7 +62,7 @@ export const {
   getCamerasSuccess,
   getCamerasFailure,
   cameraToggled,
-  dateCreatedFilterChanged,
+  dateFilterChanged,
 } = filtersSlice.actions;
 
 // fetchCameras thunk
@@ -76,5 +80,7 @@ export const fetchCameras = () => async dispatch => {
 export const selectFilters = state => state.filters;
 export const selectCameraFilter = state => state.filters.cameras;
 export const selectDateCreatedFilter = state => state.filters.dateCreated;
+export const selectDateAddedFilter = state => state.filters.dateAdded;
+
 
 export default filtersSlice.reducer;

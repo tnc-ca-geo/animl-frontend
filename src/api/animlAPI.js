@@ -46,6 +46,8 @@ export async function getImages(filters, pageInfo, page) {
       cameras: selectedCameras,
       createdStart: filters.dateCreated.start,
       createdEnd: filters.dateCreated.end,
+      addedStart: filters.dateAdded.start,
+      addedEnd: filters.dateAdded.end,
     }
   };
   
