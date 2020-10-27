@@ -7,7 +7,7 @@ import {
   detailsModalClosed,
   incrementImageIndex, 
   selectDetailsIndex,
-} from './DetailsModalSlice';
+} from './detailsModalSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FullSizeImage from './FullSizeImage';
 import LabelsTable from './LabelsTable';

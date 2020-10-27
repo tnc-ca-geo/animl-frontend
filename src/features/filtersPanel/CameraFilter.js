@@ -5,7 +5,7 @@ import {
   fetchCameras,
   selectCameraFilter,
   cameraToggled,
-} from './imagesSlice';
+} from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 
 const CheckboxLabel = styled.span({
@@ -18,7 +18,7 @@ const CheckboxLabel = styled.span({
 });
 
 const CameraFilter = () => {
-  const cameras = useSelector(selectCameraFilter);
+  const cameraFilter = useSelector(selectCameraFilter);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -32,12 +32,12 @@ const CameraFilter = () => {
 
   return (
     <div>
-      {Object.keys(cameras).map((sn) => {
+      {Object.keys(cameraFilter.cameras).map((sn) => {
         return (
           <div key={sn}>
             <label>
               <Checkbox
-                checked={cameras[sn].selected}
+                checked={cameraFilter.cameras[sn].selected}
                 data-sn={sn}
                 onChange={handleCheckboxChange}
               />

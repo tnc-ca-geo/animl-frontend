@@ -14,7 +14,7 @@ import {
 import {
   selectDetailsIndex,
   imageSelected,
-} from '../detailsModal/DetailsModalSlice';
+} from '../detailsModal/detailsModalSlice';
 import { Image } from '../../components/Image';
 
 const LabelPill = styled.span({

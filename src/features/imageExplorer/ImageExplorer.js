@@ -1,11 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import FiltersPanel from './FiltersPanel';
+import FiltersPanel from '../filtersPanel/FiltersPanel';
 import ImagesPanel from './ImagesPanel';
 import DetailsModal from '../detailsModal/DetailsModal';
-import { selectDetailsOpen } from '../detailsModal/DetailsModalSlice';
-
+import { selectDetailsOpen } from '../detailsModal/detailsModalSlice';
 
 const ImageExplorerWrapper = styled.div({
   display: 'flex',
@@ -18,7 +17,6 @@ const ImageExplorerWrapper = styled.div({
 
 export function ImageExplorer() {
   const detailsOpen = useSelector(selectDetailsOpen);
-  console.log('detailsOpen: ', detailsOpen);
 
   return (
     <ImageExplorerWrapper>

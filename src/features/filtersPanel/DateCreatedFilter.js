@@ -4,7 +4,7 @@ import moment from 'moment';
 import {
   selectDateCreatedFilter,
   dateCreatedFilterChanged,
-} from './imagesSlice';
+} from './filtersSlice';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
 import { DATE_FORMAT_EXIF as DFE } from '../../config';
 

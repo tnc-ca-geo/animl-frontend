@@ -2,13 +2,12 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { selectFilters } from '../filtersPanel/filtersSlice';
 import {
   fetchImages,
   selectImages,
   selectHasNext,
-  selectFilters,
   selectIsLoading,
-  selectLimit,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';

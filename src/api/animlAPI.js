@@ -31,8 +31,9 @@ export async function getImages(filters, pageInfo, page) {
     }
   }`
 
-  const selectedCameras = Object.keys(filters.cameras).filter((sn) => (
-    filters.cameras[sn].selected === true
+  const cameras = filters.cameras.cameras;
+  const selectedCameras = Object.keys(cameras).filter((sn) => (
+    cameras[sn].selected === true
   ));
 
   const variables = {

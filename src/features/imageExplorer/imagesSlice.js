@@ -1,21 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getImages, getCameras } from '../../api/animlAPI';
+import { getImages } from '../../api/animlAPI';
 import moment from 'moment';
 import {
-  DATE_FORMAT_EXIF as DFE,
   DATE_FORMAT_READABLE as DFR,
   IMAGES_URL, 
   IMAGE_QUERY_LIMITS,
 } from '../../config';
 
-const imagesInitialState = {
-  filters: {
-    cameras: {},
-    dateCreated: {
-      start: moment().subtract(3, 'months').format(DFE), 
-      end: moment().format(DFE),
-    },
-  },
+const initialState = {
+  images: [],
+  isLoading: false,
+  error: null,
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[0],
     paginatedField: 'dateTimeOriginal',
@@ -26,32 +21,22 @@ const imagesInitialState = {
     hasNext: null,
     count: null,
   },
-  detailsModal: {
-    open: false,
-    imageIndex: null,
-  },
-  images: [],
-  isLoading: false,
-  error: null,
-};
-
-function startLoading(state) {
-  state.isLoading = true;
-};
-
-function loadingFailed(state, action) {
-  state.isLoading = false;
-  state.error = action.payload;
 };
 
 export const imagesSlice = createSlice({
   name: 'images',
-  initialState: imagesInitialState,
+  initialState,
   reducers: {
-    clearImages: (state) => {
-      state.images = [];
+
+    clearImages: (state) => { state.images = []; },
+
+    getImagesStart: (state) => { state.isLoading = true; },
+
+    getImagesFailure: (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload;
     },
-    getImagesStart: startLoading,
+
     getImagesSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
@@ -70,31 +55,11 @@ export const imagesSlice = createSlice({
       });
       state.images = state.images.concat(images);
     },
-    getImagesFailure: loadingFailed,
-    getCamerasStart: startLoading,
-    getCamerasSuccess: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
-      payload.cameras.forEach((camera) => {
-        if (!(camera._id in state.filters.cameras)) {
-          state.filters.cameras[camera._id] = { selected: true };
-        }
-      });
-    },
-    getCamerasFailure: loadingFailed,
-    cameraToggled: (state, { payload }) => {
-      const camera = state.filters.cameras[payload];
-      camera.selected = !camera.selected;
-    },
-    dateCreatedFilterChanged: (state, { payload }) => {
-      state.filters.dateCreated.start = payload.startDate;
-      state.filters.dateCreated.end = payload.endDate;
-    },
+
     sortChanged: (state, { payload }) => {
       if (!payload.length) {
         return;
       }
-      console.log('sort changed')
       const sortAscending = !payload[0].desc;
       const sortField = payload[0].id;
       if (state.pageInfo.paginatedField !== sortField) {
@@ -104,23 +69,7 @@ export const imagesSlice = createSlice({
         state.pageInfo.sortAscending = sortAscending;
       }
     },
-    imageSelected: (state, { payload }) => {
-      state.detailsModal.open = true;
-      state.detailsModal.imageIndex = Number(payload);
-    },
-    detailsModalClosed: (state) => {
-      state.detailsModal.open = false;
-      state.detailsModal.imageIndex = null;
-    },
-    incrementImageIndex: (state, { payload }) => {
-      if (payload.delta === 'decrement' && 
-        state.detailsModal.imageIndex > 0) {
-          state.detailsModal.imageIndex--;
-      }
-      else if (payload.delta === 'increment') {
-        state.detailsModal.imageIndex++;
-      }
-    }
+
   },
 });
 
@@ -129,18 +78,10 @@ export const {
   getImagesStart,
   getImagesSuccess,
   getImagesFailure,
-  getCamerasStart,
-  getCamerasSuccess,
-  getCamerasFailure,
-  cameraToggled,
-  dateCreatedFilterChanged,
   sortChanged,
-  imageSelected,
-  detailsModalClosed,
-  incrementImageIndex,
 } = imagesSlice.actions;
 
-// Thunks
+// fetchImages thunk
 export const fetchImages = (filters, page = 'current') => 
   async (dispatch, getState) => {
     try {
@@ -156,31 +97,16 @@ export const fetchImages = (filters, page = 'current') =>
     }
   };
 
-export const fetchCameras = () => async dispatch => {
-  try {
-    dispatch(getCamerasStart());
-    const cameras = await getCameras();
-    dispatch(getCamerasSuccess(cameras))
-  } catch (err) {
-    dispatch(getCamerasFailure(err.toString()))
-  }
-};
-
-// The function below is called a selector and allows us to select a value from
+// The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
-export const selectFilters = state => state.images.filters;
-export const selectCameraFilter = state => state.images.filters.cameras;
-export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
-export const selectDetailsOpen = state => state.images.detailsModal.open;
-export const selectDetailsIndex = state => state.images.detailsModal.imageIndex;
 export const selectImages = state => state.images.images;
 export const selectIsLoading = state => state.images.isLoading;
 
