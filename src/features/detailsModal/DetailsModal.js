@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
+import { selectImages } from '../imageExplorer/imagesSlice';
 import {
   detailsModalClosed,
-  incrementImageIndex,
-  selectDetailsOpen, 
+  incrementImageIndex, 
   selectDetailsIndex,
-  selectImages,
-} from './imagesSlice';
+} from './DetailsModalSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FullSizeImage from './FullSizeImage';
 import LabelsTable from './LabelsTable';

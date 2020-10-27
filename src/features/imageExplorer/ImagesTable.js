@@ -9,10 +9,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   selectPaginatedField,
   selectSortAscending,
-  selectDetailsIndex,
-  imageSelected,
   sortChanged,
 } from './imagesSlice';
+import {
+  selectDetailsIndex,
+  imageSelected,
+} from '../detailsModal/DetailsModalSlice';
 import { Image } from '../../components/Image';
 
 const LabelPill = styled.span({
