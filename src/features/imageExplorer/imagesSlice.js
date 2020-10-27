@@ -115,13 +115,13 @@ export const imagesSlice = createSlice({
       state.detailsModal.open = false;
       state.detailsModal.imageIndex = null;
     },
-    incrementImageIndex: (state, { decrement }) => {
-      console.log('increment image index fired. Decrement? : ', decrement);
-      if (decrement && state.detailsModal.imageIndex > 0) {
-        state.detailsModal.imageIndex--
+    incrementImageIndex: (state, { payload }) => {
+      if (payload.delta === 'decrement' && 
+        state.detailsModal.imageIndex > 0) {
+          state.detailsModal.imageIndex--;
       }
-      else {
-        state.detailsModal.imageIndex++
+      else if (payload.delta === 'increment') {
+        state.detailsModal.imageIndex++;
       }
     }
   },
@@ -177,16 +177,13 @@ export const fetchCameras = () => async dispatch => {
 export const selectFilters = state => state.images.filters;
 export const selectCameraFilter = state => state.images.filters.cameras;
 export const selectDateCreatedFilter = state => state.images.filters.dateCreated;
-
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
-
 export const selectDetailsOpen = state => state.images.detailsModal.open;
 export const selectDetailsIndex = state => state.images.detailsModal.imageIndex;
-
 export const selectImages = state => state.images.images;
 export const selectIsLoading = state => state.images.isLoading;
 

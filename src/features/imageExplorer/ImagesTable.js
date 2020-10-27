@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   selectPaginatedField,
   selectSortAscending,
+  selectDetailsIndex,
   imageSelected,
   sortChanged,
 } from './imagesSlice';
@@ -146,13 +147,16 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
-  const infiniteLoaderRef = useRef(null);
-  const hasMountedRef = useRef(false);
+  const detailsIndex = useSelector(selectDetailsIndex);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);
+  const infiniteLoaderRef = useRef(null);
+  const listRef = useRef(null);
+  const hasMountedRef = useRef(false);
   const imagesCount = hasNext ? images.length + 1 : images.length;
-  const isImageLoaded = useCallback((index) => (
-    !hasNext || index < images.length
-  ), [ hasNext, images ]);
+
+  const isImageLoaded = useCallback((index) => {
+    return !hasNext || index < images.length;
+  }, [hasNext, images]);
 
   const data = makeRows(images);
 
@@ -229,13 +233,18 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   );
 
   useEffect(() => {
+    if (detailsIndex) {
+      listRef.current.scrollToItem(detailsIndex);
+    }
+  }, [detailsIndex]);
+
+  useEffect(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
     // to clear the infinite list's cache. This effect will run on mount too;
     // there's no need to reset in that case.
     if (hasMountedRef.current) {
       dispatch(sortChanged(sortBy));
       if (infiniteLoaderRef.current) {
-        console.log('clearing infinite list cache')
         infiniteLoaderRef.current.resetloadMoreItemsCache();
       }
     }
@@ -274,15 +283,53 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     [prepareRow, rows, handleRowClick, isImageLoaded]
   );
 
+  const InfiniteList = useCallback(
+    ({ height, width }) => (
+      <div {...getTableBodyProps()}>
+        <InfiniteLoader
+          ref={infiniteLoaderRef}
+          items={images}
+          isItemLoaded={isImageLoaded}
+          itemCount={imagesCount}
+          loadMoreItems={loadNextPage}
+        >
+          {({ onItemsRendered, ref }) => (
+            <List
+              height={height - 36}
+              itemCount={imagesCount}
+              itemSize={100}
+              onItemsRendered={onItemsRendered}
+              ref={list => {
+                // https://github.com/bvaughn/react-window/issues/324
+                ref(list);
+                listRef.current = list;
+              }}
+              width={width}
+            >
+              { RenderRow }
+            </List>
+          )}
+        </InfiniteLoader>
+      </div>
+    ),
+    [ RenderRow, getTableBodyProps, images, isImageLoaded, imagesCount,
+      loadNextPage ]
+  );
+
   return (
     <TableContainer>
       <Table {...getTableProps()} style={{ backgroundColor: 'lavender' }}>
-
-        <div style={{ height: '36px', width: `calc(100% - ${scrollBarSize}px)` }}>
+        <div
+          style={{ height: '36px', width: `calc(100% - ${scrollBarSize}px)` }}
+        >
           {headerGroups.map(headerGroup => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
+            <TableRow
+              {...headerGroup.getHeaderGroupProps()}
+            >
               {headerGroup.headers.map(column => (
-                <HeaderCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <HeaderCell 
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
+                >
                   <TableHeader
                     issorted={column.isSorted.toString()}
                     cansort={column.canSort.toString()}
@@ -300,34 +347,9 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
             </TableRow>
           ))}
         </div>
-
         <AutoSizer>
-          {({ height, width }) => (
-            <div {...getTableBodyProps()}>
-              <InfiniteLoader
-                ref={infiniteLoaderRef}
-                items={images}
-                isItemLoaded={isImageLoaded}
-                itemCount={imagesCount}
-                loadMoreItems={loadNextPage}
-              >
-                {({ onItemsRendered, ref }) => (
-                  <List
-                    height={height - 36}
-                    itemCount={imagesCount}
-                    itemSize={100}
-                    onItemsRendered={onItemsRendered}
-                    ref={ref}
-                    width={width}
-                  >
-                    { RenderRow }
-                  </List>
-                )}
-              </InfiniteLoader>
-            </div>
-          )}
+          { InfiniteList }
         </AutoSizer>
-
       </Table>
     </TableContainer>
   );  

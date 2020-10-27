@@ -130,7 +130,8 @@ const DetailsModalContainer = styled.div({
   flexDirection: 'column',
   backgroundColor: '$loContrast',
   border: '$1 solid $gray400',
-  boxShadow: 'rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, rgba(22, 23, 24, 0.2) 0px 10px 20px -15px',
+  boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
+   rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
 });
 
 const DetailsModalWrapper = styled.div({
@@ -156,11 +157,11 @@ const DetailsModal = () => {
   // Listen for left/right arrow keydowns
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.keyCode === 37 || e.keyCode === 39) {
-        const decrement = (e.keyCode === 37) ? true : false
-        dispatch(incrementImageIndex({decrement}));
-      }
-    }
+      const delta = (e.keyCode === 37) ? 'decrement'
+                  : (e.keyCode === 39) ? 'increment'
+                  : null;
+      dispatch(incrementImageIndex({ delta })); 
+    };
     window.addEventListener('keydown', handleKeyDown)
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [reviewMode, dispatch]);
