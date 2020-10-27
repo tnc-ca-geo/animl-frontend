@@ -24,6 +24,7 @@ const imagesInitialState = {
     hasPrevious: null,
     next: null,
     hasNext: null,
+    count: null,
   },
   detailsModal: {
     open: false,
@@ -55,22 +56,18 @@ export const imagesSlice = createSlice({
       state.isLoading = false;
       state.error = null;
 
-      const pageInfo = payload.images.pageInfo;
-      state.pageInfo.previous = pageInfo.previous;
-      state.pageInfo.hasPrevious = pageInfo.hasPrevious;
-      state.pageInfo.next = pageInfo.next;
-      state.pageInfo.hasNext = pageInfo.hasNext;
+      Object.keys(payload.images.pageInfo).forEach((key) => {
+        if (key in state.pageInfo) {
+          state.pageInfo[key] = payload.images.pageInfo[key];
+        }
+      });
 
       const images = payload.images.images.map((img) => {
         const url = IMAGES_URL + 'images/' + img.hash + '.jpg';
         const thumbUrl = IMAGES_URL + 'thumbnails/' + img.hash + '-small.jpg';
         img.dateTimeOriginal = moment(img.dateTimeOriginal).format(DFR);
-        return {
-          thumbUrl,
-          url,
-          ...img
-        }
-      })
+        return { thumbUrl, url, ...img };
+      });
       state.images = state.images.concat(images);
     },
     getImagesFailure: loadingFailed,

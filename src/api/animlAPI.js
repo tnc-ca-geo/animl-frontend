@@ -26,6 +26,7 @@ export async function getImages(filters, pageInfo, page) {
         hasPrevious
         next
         hasNext
+        count
       }
     }
   }`
@@ -46,7 +47,7 @@ export async function getImages(filters, pageInfo, page) {
       createdEnd: filters.dateCreated.end,
     }
   };
-
+  
   // console.log('variables: ', variables);
   
   try {
