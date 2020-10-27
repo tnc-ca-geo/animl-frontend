@@ -97,6 +97,7 @@ export const imagesSlice = createSlice({
       if (!payload.length) {
         return;
       }
+      console.log('sort changed')
       const sortAscending = !payload[0].desc;
       const sortField = payload[0].id;
       if (state.pageInfo.paginatedField !== sortField) {
