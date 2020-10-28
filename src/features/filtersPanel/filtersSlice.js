@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getCameras } from '../../api/animlAPI';
+import { getCameras, getLabels } from '../../api/animlAPI';
 import moment from 'moment';
 import {
   DATE_FORMAT_EXIF as DFE,
@@ -9,6 +9,11 @@ import {
 const initialState = {
   cameras: {
     cameras: {},
+    isLoading: false,
+    error: null,
+  },
+  labels: {
+    categories: {},
     isLoading: false,
     error: null,
   },
@@ -49,6 +54,29 @@ export const filtersSlice = createSlice({
       camera.selected = !camera.selected;
     },
 
+    getLabelsStart: (state) => { state.labels.isLoading = true; },
+
+    getLabelsFailure: (state, { payload }) => {
+      state.labels.isLoading = false;
+      state.labels.error = payload;
+    },
+
+    getLabelsSuccess: (state, { payload }) => {
+      state.labels.isLoading = false;
+      state.labels.error = null;
+      payload.labels.categories.forEach((category) => {
+        if (!(category in state.labels.categories)) {
+          state.labels.categories[category] = { selected: true };
+        }
+      });
+    },
+
+    labelToggled: (state, { payload }) => {
+      console.log('label toggled: ', payload);
+      const category = state.labels.categories[payload];
+      category.selected = !category.selected;
+    },
+
     dateFilterChanged: (state, { payload }) => {
       state[payload.type].start = payload.startDate;
       state[payload.type].end = payload.endDate;
@@ -62,6 +90,10 @@ export const {
   getCamerasSuccess,
   getCamerasFailure,
   cameraToggled,
+  getLabelsStart,
+  getLabelsSuccess,
+  getLabelsFailure,
+  labelToggled,
   dateFilterChanged,
 } = filtersSlice.actions;
 
@@ -76,11 +108,22 @@ export const fetchCameras = () => async dispatch => {
   }
 };
 
+// fetchLabels thunk
+export const fetchLabels = () => async dispatch => {
+  try {
+    dispatch(getLabelsStart());
+    const labels = await getLabels();
+    dispatch(getLabelsSuccess(labels))
+  } catch (err) {
+    dispatch(getLabelsFailure(err.toString()))
+  }
+};
+
 // Selectors
 export const selectFilters = state => state.filters;
 export const selectCameraFilter = state => state.filters.cameras;
 export const selectDateCreatedFilter = state => state.filters.dateCreated;
 export const selectDateAddedFilter = state => state.filters.dateAdded;
-
+export const selectLabelFilter = state => state.filters.labels;
 
 export default filtersSlice.reducer;

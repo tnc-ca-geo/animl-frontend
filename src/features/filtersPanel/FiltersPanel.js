@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
+import {
+  fetchCameras,
+  fetchLabels,
+  selectLabelFilter,
+  selectCameraFilter,
+ } from './filtersSlice';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
 import DateFilter from './DateFilter';
+import LabelFilter from './LabelFilter';
 
 const Label = styled.span({
   marginLeft: '$2',
@@ -24,6 +32,19 @@ const StyledFiltersPanel = styled.div({
 });
 
 const FiltersPanel = () => {
+  const labelFilter = useSelector(selectLabelFilter);
+  const cameraFilter = useSelector(selectCameraFilter);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!Object.keys(cameraFilter.cameras).length) {
+      dispatch(fetchCameras());
+    }
+    if (!Object.keys(labelFilter.categories).length) {
+      dispatch(fetchLabels());
+    }
+  }, [cameraFilter, labelFilter, dispatch]);
+
   return (
     <StyledFiltersPanel>
       <FiltersHeader>
@@ -36,7 +57,13 @@ const FiltersPanel = () => {
         label='Cameras'
         expandedDefault={true}
       >
-        <CameraFilter />
+        <CameraFilter cameras={cameraFilter.cameras} />
+      </Accordion>
+      <Accordion
+        label='Labels'
+        expandedDefault={true}
+      >
+        <LabelFilter categories={labelFilter.categories} />
       </Accordion>
       <Accordion
         label='Date Created'

@@ -67,7 +67,7 @@ const ImagesPanel = () => {
     // Pass an empty promise that immediately resolves to InfiniteLoader 
     // in case it asks us to load more than once
     return isLoading
-      ? new Promise((resolve) => resolve())
+      ? Promise.resolve()
       : dispatch(fetchImages(filters, 'next'));
   };
   

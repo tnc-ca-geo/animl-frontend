@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  fetchCameras,
-  selectCameraFilter,
-  cameraToggled,
-} from './filtersSlice';
+import { useDispatch } from 'react-redux'
+import { labelToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 
 const CheckboxLabel = styled.span({
@@ -21,26 +17,26 @@ const CheckboxWrapper = styled.div({
   marginBottom: '$1',
 });
 
-const CameraFilter = ({ cameras }) => {
+const LabelFilter = ({ categories }) => {
   const dispatch = useDispatch();
 
   const handleCheckboxChange = (e) => {
-    const sn = e.target.dataset.sn;
-    dispatch(cameraToggled(sn));
+    const category = e.target.dataset.category;
+    dispatch(labelToggled(category));
   };
 
   return (
     <div>
-      {Object.keys(cameras).map((sn) => {
+      {Object.keys(categories).map((category) => {
         return (
-          <CheckboxWrapper key={sn}>
+          <CheckboxWrapper key={category}>
             <label>
               <Checkbox
-                checked={cameras[sn].selected}
-                data-sn={sn}
+                checked={categories[category].selected}
+                data-category={category}
                 onChange={handleCheckboxChange}
               />
-              <CheckboxLabel>{sn}</CheckboxLabel>
+              <CheckboxLabel>{category}</CheckboxLabel>
             </label>
           </CheckboxWrapper>
         )
@@ -49,5 +45,5 @@ const CameraFilter = ({ cameras }) => {
   );
 };
 
-export default CameraFilter;
+export default LabelFilter;
 

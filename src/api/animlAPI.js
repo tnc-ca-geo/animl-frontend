@@ -3,6 +3,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { API_URL } from '../config';
 
 export async function getImages(filters, pageInfo, page) {
+
   const query = gql`query getImages($input: QueryImageInput!) {
     images(input: $input) {
       images {
@@ -37,23 +38,28 @@ export async function getImages(filters, pageInfo, page) {
     cameras[sn].selected === true
   ));
 
+  const categories = filters.labels.categories;
+  const selectedLabels = Object.keys(categories).filter((category) => (
+    categories[category].selected === true
+  ));
+
   const variables = {
     input: {
+      ...(page === 'next' && { next: pageInfo.next }),
+      ...(page === 'previous' && { previous: pageInfo.previous }),
       paginatedField: pageInfo.paginatedField,
       sortAscending: pageInfo.sortAscending,
       limit: pageInfo.limit,
-      ...(page === 'next' && { next: pageInfo.next }),
-      ...(page === 'previous' && { previous: pageInfo.previous }),
       cameras: selectedCameras,
+      labels: selectedLabels,
       createdStart: filters.dateCreated.start,
       createdEnd: filters.dateCreated.end,
       addedStart: filters.dateAdded.start,
       addedEnd: filters.dateAdded.end,
     }
   };
-  
   // console.log('variables: ', variables);
-  
+
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {
@@ -85,8 +91,30 @@ export async function getCameras() {
       // },
     });
     const camerasResponse = await graphQLClient.request(query)
-    console.log(JSON.stringify(camerasResponse, undefined, 2))
     return camerasResponse;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function getLabels() {
+  const query = gql`
+    {
+      labels {
+        categories
+      }
+    }
+  `
+  
+  try {
+    const graphQLClient = new GraphQLClient(API_URL, {
+      // headers: {
+      //   authorization: 'Bearer MY_TOKEN',
+      // },
+    });
+    const labelsResponse = await graphQLClient.request(query)
+    console.log(JSON.stringify(labelsResponse, undefined, 2))
+    return labelsResponse;
   } catch (err) {
     throw err;
   }
