@@ -42,7 +42,8 @@ export const imagesSlice = createSlice({
       state.error = null;
 
       Object.keys(payload.images.pageInfo).forEach((key) => {
-        if (key in state.pageInfo) {
+        if (key in state.pageInfo &&
+            state.pageInfo[key] !== payload.images.pageInfo[key]) {
           state.pageInfo[key] = payload.images.pageInfo[key];
         }
       });
@@ -51,6 +52,7 @@ export const imagesSlice = createSlice({
         const url = IMAGES_URL + 'images/' + img.hash + '.jpg';
         const thumbUrl = IMAGES_URL + 'thumbnails/' + img.hash + '-small.jpg';
         img.dateTimeOriginal = moment(img.dateTimeOriginal).format(DFR);
+        img.dateAdded = moment(img.dateAdded).format(DFR);
         return { thumbUrl, url, ...img };
       });
       state.images = state.images.concat(images);
@@ -108,6 +110,7 @@ export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
 export const selectImages = state => state.images.images;
+export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectIsLoading = state => state.images.isLoading;
 
 

@@ -52,7 +52,6 @@ const TableRow = styled.div({
     cursor: 'pointer',
   },
   ':last-child': {
-    fontFamily: '$mono',
     '.td': {
       borderBottom: '0',
     },
@@ -154,9 +153,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const hasMountedRef = useRef(false);
-  // TODO: replace with real count when we pull it form back end
   const imagesCount = hasNext ? images.length + 1 : images.length;
-
   const isImageLoaded = useCallback((index) => {
     return !hasNext || index < images.length;
   }, [hasNext, images]);
@@ -181,8 +178,12 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         disableResizing: true,
       },
       {
-        Header: 'Date Created',
+        Header: 'Date created',
         accessor: 'dateTimeOriginal',
+      },
+      {
+        Header: 'Date added',
+        accessor: 'dateAdded',
       },
       {
         Header: 'Labels',
@@ -190,7 +191,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         disableSortBy: true,
       },
       {
-        Header: 'Needs Review',
+        Header: 'Needs review',
         accessor: 'needsReview',
         disableSortBy: true,
       },
@@ -265,7 +266,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         prepareRow(row);
         return (
           <TableRow
-            {...row.getRowProps({ style,})}
+            {...row.getRowProps({ style })}
             onClick={() => handleRowClick(row.id)}
           >
             {row.cells.map(cell => {
@@ -279,8 +280,11 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         );
       }
       else {
-        console.log('trying to return loadinging row')
-        return <div>'Loading...'</div>
+        return(
+          <TableRow>
+            loading...
+          </TableRow>
+        )
       };
     },
     [prepareRow, rows, handleRowClick, isImageLoaded]

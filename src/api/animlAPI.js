@@ -8,6 +8,7 @@ export async function getImages(filters, pageInfo, page) {
       images {
         hash
         dateTimeOriginal
+        dateAdded
         cameraSn
         make
         labels {
