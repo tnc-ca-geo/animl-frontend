@@ -90,6 +90,8 @@ const DataCell = styled(TableCell, {
 });
 
 const TableHeader = styled.div({
+  paddingTop: '$2',
+  paddingBottom: '$2',
   'svg': {
     marginLeft: '$3',
     'path': {
@@ -302,7 +304,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              height={height - 36}
+              height={height - 51}
               itemCount={imagesCount}
               itemSize={100}
               onItemsRendered={onItemsRendered}
@@ -327,7 +329,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     <TableContainer>
       <Table {...getTableProps()} style={{ backgroundColor: 'lavender' }}>
         <div
-          style={{ height: '36px', width: `calc(100% - ${scrollBarSize}px)` }}
+          style={{ height: '51px', width: `calc(100% - ${scrollBarSize}px)` }}
         >
           {headerGroups.map(headerGroup => (
             <TableRow
