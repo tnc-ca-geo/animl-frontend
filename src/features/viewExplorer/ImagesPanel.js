@@ -15,7 +15,6 @@ import IconButton from '../../components/IconButton';
 import ImagesTable from './ImagesTable';
 
 const ImagesPanelBody = styled.div({
-  flexGrow: '1',
   backgroundColor: '$gray200',
 });
 
@@ -41,9 +40,9 @@ const ImagesPanelHeader = styled.div({
 });
 
 const StyledImagesPanel = styled.div({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr auto',
-  gridTemplateColumns: '100%',
+  // display: 'grid',
+  // gridTemplateRows: 'auto 1fr auto',
+  // gridTemplateColumns: '100%',
   width: '100%',
   backgroundColor: '$loContrast',
 });
@@ -73,37 +72,11 @@ const ImagesPanel = () => {
   
   return (
     <StyledImagesPanel>
-      <ImagesPanelHeader>
-        <ControlGroup>
-          <IconButton variant='ghost' disabled>
-            <FontAwesomeIcon icon={['fas', 'save']} />
-          </IconButton>
-          <IconButton variant='ghost' disabled>
-            <FontAwesomeIcon icon={['fas', 'cog']} />
-          </IconButton>
-          <IconButton variant='ghost' disabled>
-            <FontAwesomeIcon icon={['fas', 'redo']} />
-          </IconButton>
-        </ControlGroup>
-        <ViewLabel>
-          Santa Cruz Island - Biosecurity Cameras
-        </ViewLabel>
-        <ControlGroup>
-          <IconButton variant='ghost' disabled>
-            <FontAwesomeIcon icon={['fas', 'list-ul']} />
-          </IconButton>
-          <IconButton variant='ghost' disabled>
-            <FontAwesomeIcon icon={['fas', 'grip-horizontal']} />
-          </IconButton>
-        </ControlGroup>
-      </ImagesPanelHeader>
-      <ImagesPanelBody>
-        <ImagesTable
-          images={images}
-          hasNext={hasNext}
-          loadNextPage={loadNextPage}
-        />
-      </ImagesPanelBody>
+      <ImagesTable
+        images={images}
+        hasNext={hasNext}
+        loadNextPage={loadNextPage}
+      />
     </StyledImagesPanel>
   );
 };

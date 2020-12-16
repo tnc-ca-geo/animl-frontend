@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { connectRouter } from 'connected-react-router';
 import counterReducer from '../features/counter/counterSlice';
-import imagesReducer from '../features/imageExplorer/imagesSlice';
+import imagesReducer from '../features/viewExplorer/imagesSlice';
 import filtersReducer from '../features/filtersPanel/filtersSlice';
 import detailsModalReducer from '../features/detailsModal/detailsModalSlice';
 

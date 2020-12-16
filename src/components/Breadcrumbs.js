@@ -8,21 +8,18 @@ const Crumb = styled.span({
 const BreadcrumbContainer = styled.div({
   boxSizing: 'border-box',
   display: 'flex',
-  fontSize: '$5',
-  fontWeight: '$4',
+  fontSize: '$4',
+  fontWeight: '$5',
 });
 
 const Breadcrumbs = () => {
   return (
     <BreadcrumbContainer>
       <Crumb>
-        tnc-ca
+        Santa Cruz Island
       </Crumb>
       <Crumb>
-        sci
-      </Crumb>
-      <Crumb>
-        biosecurity cameras
+        Biosecurity network
       </Crumb>
     </BreadcrumbContainer>
   )

@@ -37,7 +37,7 @@ const Accordion = ({ children, expandedDefault, label }) => {
         {label}
         <IconButton variant='ghost'>
           <FontAwesomeIcon icon={ 
-            expanded ? ['fas', 'angle-down'] : ['fas', 'angle-right']
+            expanded ? ['fas', 'angle-up'] : ['fas', 'angle-down']
           }/>
         </IconButton>
       </AccordionHeader>
