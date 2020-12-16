@@ -50,6 +50,7 @@ const TableRow = styled.div({
   ':hover': {
     backgroundColor: '$gray300',
     cursor: 'pointer',
+    boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
   },
   ':last-child': {
     '.td': {
@@ -306,7 +307,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
             <List
               height={height - 51}
               itemCount={imagesCount}
-              itemSize={100}
+              itemSize={108}
               onItemsRendered={onItemsRendered}
               ref={list => {
                 // https://github.com/bvaughn/react-window/issues/324
