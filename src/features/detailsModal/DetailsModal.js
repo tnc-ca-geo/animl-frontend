@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
-import { selectImages } from '../viewExplorer/imagesSlice';
+import { selectImages } from '../imagesExplorer/imagesSlice';
 import {
   detailsModalClosed,
   incrementImageIndex, 

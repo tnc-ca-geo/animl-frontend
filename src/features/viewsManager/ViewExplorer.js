@@ -1,16 +1,19 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import ViewExplorerHeader from './ViewExplorerHeader';
+import {
+  selectSelectedView,
+  // fetchViews,
+ } from './viewsSlice';
+import SidebarNav from './SidebarNav';
 import FiltersPanel from '../filtersPanel/FiltersPanel';
-import ImagesPanel from './ImagesPanel';
+import ImagesPanel from '../imagesExplorer/ImagesPanel';
 import DetailsModal from '../detailsModal/DetailsModal';
 import { selectDetailsOpen } from '../detailsModal/detailsModalSlice';
 
 
 const ViewExplorerWrapper = styled.div({
   display: 'flex',
-  flexDirection: 'column',
 });
 
 const ViewExplorerBody = styled.div({
@@ -19,11 +22,19 @@ const ViewExplorerBody = styled.div({
 });
 
 export function ViewExplorer() {
+  const selectedView = useSelector(selectSelectedView);
   const detailsOpen = useSelector(selectDetailsOpen);
+  const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   if (!views.length) {
+  //     dispatch(fetchViews());
+  //   }
+  // }, [views, dispatch]);
 
   return (
     <ViewExplorerWrapper>
-      <ViewExplorerHeader />
+      <SidebarNav view={selectedView} />
       <ViewExplorerBody>
         <FiltersPanel />
         <ImagesPanel />
@@ -31,4 +42,4 @@ export function ViewExplorer() {
       </ViewExplorerBody>
     </ViewExplorerWrapper>
   );
-}
+};

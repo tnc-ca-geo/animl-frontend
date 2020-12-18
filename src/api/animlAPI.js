@@ -2,6 +2,39 @@ import { GraphQLClient, gql } from 'graphql-request';
 // import parseLink, { Links } from 'parse-link-header'
 import { API_URL } from '../config';
 
+
+export async function getViews() {
+  const query = gql`
+    {
+      views {
+        name
+        description
+        filters {
+          cameras
+          labels
+          createdStart
+          createdEnd
+          addedStart
+          addedEnd
+        }
+      }
+    }
+  `
+  
+  try {
+    const graphQLClient = new GraphQLClient(API_URL, {
+      // headers: {
+      //   authorization: 'Bearer MY_TOKEN',
+      // },
+    });
+    const viewsResponse = await graphQLClient.request(query)
+    console.log(JSON.stringify(viewsResponse, undefined, 2))
+    return viewsResponse;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export async function getImages(filters, pageInfo, page) {
 
   const query = gql`query getImages($input: QueryImageInput!) {

@@ -17,7 +17,7 @@ const AccordionHeader = styled.div({
   fontFamily: '$mono',
   height: '$7',
   borderBottom: '$1 solid $gray400',
-  padding: '$0 $3',
+  padding: '$0 $2 $0 $3',
   pointerEvents: 'auto',
   '&:hover': {
     cursor: 'pointer',

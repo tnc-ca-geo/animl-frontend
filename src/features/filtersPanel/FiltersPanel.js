@@ -7,20 +7,23 @@ import {
   selectLabelFilter,
   selectCameraFilter,
  } from './filtersSlice';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from '../../components/IconButton';
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 
+
 const Label = styled.span({
-  marginLeft: '$2',
+  // marginLeft: '$2',
 });
 
 const FiltersHeader = styled.div({
   display: 'flex',
   alignItems: 'center',
-  padding: '$0 $3',
+  justifyContent: 'space-between',
+  padding: '$0 $2 $0 $3',
   height: '$7',
   borderBottom: '$1 solid $gray400',
   fontWeight: '$5',
@@ -48,10 +51,12 @@ const FiltersPanel = () => {
   return (
     <StyledFiltersPanel>
       <FiltersHeader>
-        <FontAwesomeIcon icon={['fas', 'filter']} />
         <Label>
           Filters
         </Label>
+        <IconButton variant='ghost'>
+          <FontAwesomeIcon icon={['fas', 'times']}/>
+        </IconButton>
       </FiltersHeader>
       <Accordion
         label='Cameras'

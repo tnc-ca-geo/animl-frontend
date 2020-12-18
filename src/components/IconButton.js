@@ -84,9 +84,9 @@ const IconButton = styled.button({
     state: {
       active: {
         backgroundColor: '$gray300',
-        boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
+        color: '$blue500',
         ':hover': {
-          boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
+          // boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
         },
         ':active': {
           backgroundColor: '$gray300',
