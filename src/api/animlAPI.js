@@ -7,6 +7,7 @@ export async function getViews() {
   const query = gql`
     {
       views {
+        _id
         name
         description
         filters {
@@ -66,15 +67,15 @@ export async function getImages(filters, pageInfo, page) {
     }
   }`
 
-  const cameras = filters.cameras.cameras;
-  const selectedCameras = Object.keys(cameras).filter((sn) => (
-    cameras[sn].selected === true
-  ));
+  // const cameras = filters.cameras.cameras;
+  // const selectedCameras = Object.keys(cameras).filter((sn) => (
+  //   cameras[sn].selected === true
+  // ));
 
-  const categories = filters.labels.categories;
-  const selectedLabels = Object.keys(categories).filter((category) => (
-    categories[category].selected === true
-  ));
+  // const categories = filters.labels.categories;
+  // const selectedLabels = Object.keys(categories).filter((category) => (
+  //   categories[category].selected === true
+  // ));
 
   const variables = {
     input: {
@@ -83,15 +84,16 @@ export async function getImages(filters, pageInfo, page) {
       paginatedField: pageInfo.paginatedField,
       sortAscending: pageInfo.sortAscending,
       limit: pageInfo.limit,
-      cameras: selectedCameras,
-      labels: selectedLabels,
-      createdStart: filters.dateCreated.start,
-      createdEnd: filters.dateCreated.end,
-      addedStart: filters.dateAdded.start,
-      addedEnd: filters.dateAdded.end,
+      ...filters,
+      // cameras: filters.cameras,
+      // labels: filters.labels,
+      // createdStart: filters.createdStart,
+      // createdEnd: filters.createdEnd,
+      // addedStart: filters.addedStart,
+      // addedEnd: filters.addedEnd,
     }
   };
-  // console.log('variables: ', variables);
+  console.log('variables: ', variables);
 
   try {
     const graphQLClient = new GraphQLClient(API_URL, {

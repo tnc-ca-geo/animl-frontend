@@ -10,8 +10,8 @@ import DateRangePickerWrapper from '../../components/DateRangePicker';
 import { DATE_FORMAT_EXIF as DFE } from '../../config';
 
 const selectorMap = {
-  'dateCreated': selectDateCreatedFilter,
-  'dateAdded': selectDateAddedFilter,
+  'created': selectDateCreatedFilter,
+  'added': selectDateAddedFilter,
 };
 
 const DateFilter = ({ type }) => {

@@ -4,9 +4,9 @@ import { styled } from '../../theme/stitches.config.js';
 import {
   selectSelectedView,
   // fetchViews,
- } from './viewsSlice';
+ } from './filtersSlice';
 import SidebarNav from './SidebarNav';
-import FiltersPanel from '../filtersPanel/FiltersPanel';
+import FiltersPanel from './FiltersPanel';
 import ImagesPanel from '../imagesExplorer/ImagesPanel';
 import DetailsModal from '../detailsModal/DetailsModal';
 import { selectDetailsOpen } from '../detailsModal/detailsModalSlice';

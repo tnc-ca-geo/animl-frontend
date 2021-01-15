@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { useDispatch } from 'react-redux'
-import { labelToggled } from './filtersSlice';
+import { checkboxFilterToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 
 const CheckboxLabel = styled.span({
@@ -17,30 +17,33 @@ const CheckboxWrapper = styled.div({
   marginBottom: '$1',
 });
 
-const LabelFilter = ({ categories }) => {
+const LabelFilter = ({ availLabels, activeLabels }) => {
   const dispatch = useDispatch();
 
   const handleCheckboxChange = (e) => {
-    const category = e.target.dataset.category;
-    dispatch(labelToggled(category));
+    const payload = {
+      filter: 'labels',
+      key: 'categories',
+      val: e.target.dataset.category,
+    };
+    dispatch(checkboxFilterToggled(payload));
   };
 
   return (
     <div>
-      {Object.keys(categories).map((category) => {
-        return (
-          <CheckboxWrapper key={category}>
+      {availLabels.categories.map((cat) => (
+          <CheckboxWrapper key={cat}>
             <label>
               <Checkbox
-                checked={categories[category].selected}
-                data-category={category}
+                checked={activeLabels === null || activeLabels.includes(cat)}
+                data-category={cat}
                 onChange={handleCheckboxChange}
               />
-              <CheckboxLabel>{category}</CheckboxLabel>
+              <CheckboxLabel>{cat}</CheckboxLabel>
             </label>
           </CheckboxWrapper>
         )
-      })}
+      )}
     </div>
   );
 };

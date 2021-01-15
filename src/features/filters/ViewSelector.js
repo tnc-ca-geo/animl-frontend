@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
+  selectActiveFilters,
+  selectFiltersReady,
+} from './filtersSlice';
+import {
   selectViews,
+  selectSelectedView,
   fetchViews,
- } from './viewsSlice';
+  setSelectedView,
+ } from '../filters/filtersSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
@@ -47,7 +53,7 @@ const ViewNavigation = styled.div({
   alignItems: 'center',
 })
 
-const StyledViewNav = styled.div({
+const StyledViewSelector = styled.div({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -55,10 +61,14 @@ const StyledViewNav = styled.div({
   backgroundColor: '$loContrast',
 });
 
-const ViewNav = () => {
+const ViewSelector = () => {
   const views = useSelector(selectViews);
-  const dispatch = useDispatch();
+  const selectedView = useSelector(selectSelectedView);
+  const filters = useSelector(selectActiveFilters);
+  const filtersReady = useSelector(selectFiltersReady);
+  // const [filtersMatchView, setFiltersMatchView] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!views.length) {
@@ -66,12 +76,26 @@ const ViewNav = () => {
     }
   }, [views, dispatch]);
 
+  useEffect(() => {
+    if (filtersReady && selectedView) {
+      dispatch(setSelectedView(selectedView));
+      console.log('selectedView: ', selectedView)
+    }
+  }, [selectedView, filtersReady, dispatch]);
+
+  // useEffect(() => {
+  //   // TODO: On filters change, diff filters and selectedView.filters, 
+  //   // Maybe this should be in global state too?
+  //   // filtersMatchView = diffFilters(filters, selectedView.filters);
+
+  // }, [filters, selectedView]);
+
   const handleViewNavClick = () => {
     setExpanded(!expanded);
-  };  
+  };
 
   return (
-    <StyledViewNav>
+    <StyledViewSelector>
       {/*<ControlGroup>
         <IconButton variant='ghost' disabled>
           <FontAwesomeIcon icon={['fas', 'save']} />
@@ -90,7 +114,7 @@ const ViewNav = () => {
           </Crumb>
           /
           <Crumb>
-            Biosecurity network
+            {selectedView ? selectedView.name : 'Loading view...'}
           </Crumb>
         </Breadcrumbs>
         <IconButton variant='ghost'>
@@ -107,9 +131,9 @@ const ViewNav = () => {
           <FontAwesomeIcon icon={['fas', 'grip-horizontal']} />
         </IconButton>
       </ControlGroup>*/}
-    </StyledViewNav>
+    </StyledViewSelector>
   );
 }
 
-export default ViewNav;
+export default ViewSelector;
 

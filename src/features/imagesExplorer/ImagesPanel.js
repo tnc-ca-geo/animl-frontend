@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectFilters } from '../filtersPanel/filtersSlice';
+import { selectActiveFilters } from '../filters/filtersSlice';
 import {
   fetchImages,
   selectImages,
@@ -48,7 +48,7 @@ const StyledImagesPanel = styled.div({
 });
 
 const ImagesPanel = () => {
-  const filters = useSelector(selectFilters);
+  const filters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const hasNext = useSelector(selectHasNext);

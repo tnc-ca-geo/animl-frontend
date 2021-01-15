@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   fetchCameras,
   selectCameraFilter,
-  cameraToggled,
+  checkboxFilterToggled,
 } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 
@@ -21,26 +21,30 @@ const CheckboxWrapper = styled.div({
   marginBottom: '$1',
 });
 
-const CameraFilter = ({ cameras }) => {
+const CameraFilter = ({ availCams, activeCams }) => {
   const dispatch = useDispatch();
 
   const handleCheckboxChange = (e) => {
-    const sn = e.target.dataset.sn;
-    dispatch(cameraToggled(sn));
+    const payload = {
+      filter: 'cameras',
+      key: 'ids',
+      val: e.target.dataset.sn,
+    };
+    dispatch(checkboxFilterToggled(payload));
   };
 
   return (
     <div>
-      {Object.keys(cameras).map((sn) => {
+      {availCams.ids.map((id) => {
         return (
-          <CheckboxWrapper key={sn}>
+          <CheckboxWrapper key={id}>
             <label>
               <Checkbox
-                checked={cameras[sn].selected}
-                data-sn={sn}
+                checked={activeCams === null || activeCams.includes(id)}
+                data-sn={id}
                 onChange={handleCheckboxChange}
               />
-              <CheckboxLabel>{sn}</CheckboxLabel>
+              <CheckboxLabel>{id}</CheckboxLabel>
             </label>
           </CheckboxWrapper>
         )

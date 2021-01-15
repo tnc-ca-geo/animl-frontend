@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import globalStyle from '../theme/globalStyle';
 import { styled, css } from '../theme/stitches.config.js';
 import {

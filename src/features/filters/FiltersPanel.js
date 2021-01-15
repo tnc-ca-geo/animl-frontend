@@ -2,10 +2,16 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
+  selectSelectedView,
+} from '../filters/filtersSlice';
+import {
   fetchCameras,
   fetchLabels,
-  selectLabelFilter,
-  selectCameraFilter,
+  viewSelected,
+  selectFiltersReady,
+  selectActiveFilters,
+  selectAvailCameras,
+  selectAvailLabels,
  } from './filtersSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
@@ -35,18 +41,21 @@ const StyledFiltersPanel = styled.div({
 });
 
 const FiltersPanel = () => {
-  const labelFilter = useSelector(selectLabelFilter);
-  const cameraFilter = useSelector(selectCameraFilter);
+  const selectedView = useSelector(selectSelectedView);
+  const activeFilters = useSelector(selectActiveFilters);
+  const availCameras = useSelector(selectAvailCameras);
+  const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!Object.keys(cameraFilter.cameras).length) {
+    console.log('availLabels: ', !availLabels.categories.length)
+    if (!availCameras.ids.length) {
       dispatch(fetchCameras());
     }
-    if (!Object.keys(labelFilter.categories).length) {
+    if (!availLabels.categories.length) {
       dispatch(fetchLabels());
     }
-  }, [cameraFilter, labelFilter, dispatch]);
+  }, [availCameras, availLabels, dispatch]);
 
   return (
     <StyledFiltersPanel>
@@ -62,25 +71,31 @@ const FiltersPanel = () => {
         label='Cameras'
         expandedDefault={true}
       >
-        <CameraFilter cameras={cameraFilter.cameras} />
+        <CameraFilter
+          availCams={availCameras}
+          activeCams={activeFilters.cameras}
+        />
       </Accordion>
       <Accordion
         label='Labels'
         expandedDefault={true}
       >
-        <LabelFilter categories={labelFilter.categories} />
+        <LabelFilter
+          availLabels={availLabels}
+          activeLabels={activeFilters.labels}
+        />
       </Accordion>
       <Accordion
         label='Date Created'
         expandedDefault={false}
       >
-        <DateFilter type='dateCreated'/>
+        <DateFilter type='created'/>
       </Accordion>
       <Accordion
         label='Date Added'
         expandedDefault={false}
       >
-        <DateFilter type='dateAdded'/>
+        <DateFilter type='added'/>
       </Accordion>
     </StyledFiltersPanel>
   );
