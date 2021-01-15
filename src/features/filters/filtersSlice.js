@@ -10,6 +10,12 @@ import {
   DATE_FORMAT_READABLE as DFR,
 } from '../../config';
 
+// TODO: move this somewhere else
+const diffFilters = (state) => {
+  const viewFilters = state.views.views.filter((view) => view.selected)[0];
+  const activeFilters = state.activeFilters;
+};
+
 const initialState = {
   availFilters: {
     cameras: {
@@ -33,6 +39,7 @@ const initialState = {
   },
   views: {
     views: [],
+    viewMatchesFilters: false,
     isLoading: false,
     error: null,
   },
@@ -102,42 +109,50 @@ export const filtersSlice = createSlice({
     },
 
     checkboxFilterToggled: (state, { payload }) => {
-      const activeFilters = state.activeFilters[payload.filter];
-      const availFilters = state.availFilters[payload.filter][payload.key];
-      if (activeFilters === null) {
+      const activeFil = state.activeFilters[payload.filter];
+      const availFil = state.availFilters[payload.filter][payload.key];
+      if (activeFil === null) {
         // null = all filters are selected, so toggling one = unselecting it
-        state.activeFilters[payload.filter] = availFilters.filter((f) => {
-          return f !== payload.val;
-        });
-      }
-      else if (activeFilters.includes(payload.val)) {
-        state.activeFilters[payload.filter] = activeFilters.filter((f) => {
+        state.activeFilters[payload.filter] = availFil.filter((f) => {
           return f !== payload.val;
         });
       }
       else {
-        state.activeFilters[payload.filter].push(payload.val);
+        // add/remove item from active filters
+        state.activeFilters[payload.filter] = activeFil.includes(payload.val)
+          ? activeFil.filter((f) => f !== payload.val)
+          : activeFil.concat([payload.val])
+
+        // If all available filters are selected, set to null
+        const availCount = state.availFilters[payload.filter][payload.key].length;
+        const activeCount = state.activeFilters[payload.filter].length;
+        if (availCount === activeCount) {
+          state.activeFilters[payload.filter] = null;
+        }
       }
     },
 
     dateFilterChanged: (state, { payload }) => {
       state.activeFilters[payload.type + 'Start'] = payload.startDate;
       state.activeFilters[payload.type + 'End'] = payload.endDate;
+      // const viewFilters = state.views.views.filter((view) => view.selected)[0];
+      // state.viewMatchesFilters = diffFilters(state);
     },
 
     setSelectedView: (state, { payload }) => {
-      console.log('setSelectedView action caught by filtersSlice: ', payload);
-      // state.selectedViewMatchesFilters = true;
+      console.log('setSelectedView firing: ', payload);
       state.views.views.forEach((view) => {
-        console.log('view: ', view._id);
         view.selected = view._id === payload._id;
       });
       state.activeFilters = payload.filters;
+      // const viewFilters = state.views.views.filter((view) => view.selected)[0];
+      // state.viewMatchesFilters = diffFilters(state);
     },
 
   },
 });
 
+// export actions from slice
 export const {
   getCamerasStart,
   getCamerasSuccess,
@@ -158,7 +173,6 @@ export const fetchCameras = () => async dispatch => {
   try {
     dispatch(getCamerasStart());
     const cameras = await getCameras();
-    console.log(cameras)
     dispatch(getCamerasSuccess(cameras))
   } catch (err) {
     dispatch(getCamerasFailure(err.toString()))

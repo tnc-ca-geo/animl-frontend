@@ -29,7 +29,7 @@ export async function getViews() {
       // },
     });
     const viewsResponse = await graphQLClient.request(query)
-    console.log(JSON.stringify(viewsResponse, undefined, 2))
+    // console.log(JSON.stringify(viewsResponse, undefined, 2))
     return viewsResponse;
   } catch (err) {
     throw err;
@@ -93,7 +93,7 @@ export async function getImages(filters, pageInfo, page) {
       // addedEnd: filters.addedEnd,
     }
   };
-  console.log('variables: ', variables);
+  // console.log('variables: ', variables);
 
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
@@ -148,7 +148,7 @@ export async function getLabels() {
       // },
     });
     const labelsResponse = await graphQLClient.request(query)
-    console.log(JSON.stringify(labelsResponse, undefined, 2))
+    // console.log(JSON.stringify(labelsResponse, undefined, 2))
     return labelsResponse;
   } catch (err) {
     throw err;

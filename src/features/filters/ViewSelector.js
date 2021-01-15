@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import _ from 'lodash';
 import { styled } from '../../theme/stitches.config.js';
 import {
   selectActiveFilters,
@@ -39,6 +40,19 @@ const Crumb = styled.span({
     borderColor: '$gray700',
     cursor: 'pointer',
   },
+  
+  variants: {
+    edited: {
+      true: {
+        color: '$gray500',
+        ':after': {
+          // bug with stitches pseudo elements:
+          // https://github.com/modulz/stitches/issues/313
+          content: "' *'",
+        },
+      }
+    }
+  }
 });
 
 const Breadcrumbs = styled.div({
@@ -66,7 +80,7 @@ const ViewSelector = () => {
   const selectedView = useSelector(selectSelectedView);
   const filters = useSelector(selectActiveFilters);
   const filtersReady = useSelector(selectFiltersReady);
-  // const [filtersMatchView, setFiltersMatchView] = useState(true);
+  const [filtersMatchView, setFiltersMatchView] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
 
@@ -79,16 +93,17 @@ const ViewSelector = () => {
   useEffect(() => {
     if (filtersReady && selectedView) {
       dispatch(setSelectedView(selectedView));
-      console.log('selectedView: ', selectedView)
     }
   }, [selectedView, filtersReady, dispatch]);
 
-  // useEffect(() => {
-  //   // TODO: On filters change, diff filters and selectedView.filters, 
-  //   // Maybe this should be in global state too?
-  //   // filtersMatchView = diffFilters(filters, selectedView.filters);
-
-  // }, [filters, selectedView]);
+  // diff active filters and view filters
+  // TODO: move this to it's own hook
+  useEffect(() => {
+    if (filters && selectedView) {
+      const match = _.isEqual(filters, selectedView.filters);
+      setFiltersMatchView(match);
+    }
+  }, [filters, selectedView]);
 
   const handleViewNavClick = () => {
     setExpanded(!expanded);
@@ -113,7 +128,7 @@ const ViewSelector = () => {
             Santa Cruz Island
           </Crumb>
           /
-          <Crumb>
+          <Crumb edited={!filtersMatchView}>
             {selectedView ? selectedView.name : 'Loading view...'}
           </Crumb>
         </Breadcrumbs>
