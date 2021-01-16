@@ -5,6 +5,7 @@ export const { styled, css } = createStyled({
     colors: {
       $hiContrast: '#000000', // black
       $loContrast: '#FFFFFF', // white
+      $warning: '#E04040',
 
       $gray200: '#FAFAFA',
       $gray300: '#F0F0F0',
@@ -12,7 +13,7 @@ export const { styled, css } = createStyled({
       $gray500: '#B1B1B1',
       $gray600: '#7B7B7B',
 
-      $blue200: '#E7FCFF',
+      $blue200: '#E8EFFF',//'#E7FCFF',
       $blue300: '#86EAFA',
       $blue400: '#30ADED',
       $blue500: '#003BD7',

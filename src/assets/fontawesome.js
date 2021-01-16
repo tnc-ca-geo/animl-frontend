@@ -15,6 +15,8 @@ import {
   faRedo,
   faListUl,
   faGripHorizontal,
+  faEdit,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -33,4 +35,6 @@ library.add(
   faRedo,
   faListUl,
   faGripHorizontal,
+  faEdit,
+  faPlus,
 );

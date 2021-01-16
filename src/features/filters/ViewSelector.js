@@ -45,7 +45,7 @@ const Crumb = styled.span({
     edited: {
       true: {
         color: '$gray500',
-        ':after': {
+        '::after': {
           // bug with stitches pseudo elements:
           // https://github.com/modulz/stitches/issues/313
           content: "' *'",

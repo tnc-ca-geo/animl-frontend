@@ -30,7 +30,7 @@ const StyledNav = styled.nav({
   alignItems: 'center',
   padding: '$0 $3',
   borderBottom: '$1 solid $gray400',
-  backgroundColor: '$lowContrast',
+  backgroundColor: '$loContrast',
 });
 
 const NavBar = () => {

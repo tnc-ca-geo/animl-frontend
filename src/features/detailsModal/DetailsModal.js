@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import FullSizeImage from './FullSizeImage';
 import LabelsTable from './LabelsTable';
 import IconButton from '../../components/IconButton';
+import Modal from '../../components/Modal';
 
 const ProgressBar = styled.div({
   height: '40px',
@@ -117,32 +118,6 @@ const DetailsHeader = styled.div({
   fontWeight: '$5',
 });
 
-const DetailsModalContainer = styled.div({
-  zIndex: '$2',
-  position: 'fixed',    
-  width: '95%',
-  height: '95%',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%,-50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: '$loContrast',
-  border: '$1 solid $gray400',
-  boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
-   rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
-});
-
-const DetailsModalWrapper = styled.div({
-  position: 'fixed',
-  top: '$0',
-  left: '$0',
-  width: '100%',
-  height: '100%',
-  background: 'rgba(0, 0, 0, 0.6)',
-})
-
-
 const DetailsModal = () => {
   const imageIndex = useSelector(selectDetailsIndex);
   const images = useSelector(selectImages);
@@ -166,59 +141,57 @@ const DetailsModal = () => {
   }, [reviewMode, dispatch]);
 
   return (
-    <DetailsModalWrapper>
-      <DetailsModalContainer>
-        <DetailsHeader>
-          <ControlGroup>
-            Label review mode
-            <IconButton 
-              variant='ghost'
-              onClick={handleToggleReviewMode}
-            >
-              <FontAwesomeIcon icon={
-                reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']
-              }/>
-            </IconButton>
-            <IconButton variant='ghost'>
-              <FontAwesomeIcon icon={['fas', 'cog']} />
-            </IconButton>
-          </ControlGroup>
-          <IconButton
+    <Modal size='lg'>
+      <DetailsHeader>
+        <ControlGroup>
+          Label review mode
+          <IconButton 
             variant='ghost'
-            onClick={handleCloseButtonClick}
+            onClick={handleToggleReviewMode}
           >
-            <FontAwesomeIcon icon={['fas', 'times']} />
+            <FontAwesomeIcon icon={
+              reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off']
+            }/>
           </IconButton>
-        </DetailsHeader>
-        <DetailsBody>
-          <ThumbnailsStrip>
-            thumbnails
-          </ThumbnailsStrip>
-          <ImageDetails>
-            <ImagePane>
-              <FullSizeImage image={image} />
-            </ImagePane>
-            <div>
-              <MetadataPane>
-                <InfoPaneHeader label='Metadata' />
-                <MetadataList>
-                  <Item label='Date created' value={image.dateTimeOriginal}/>
-                  <Item label='Camera' value={image.cameraSn}/>
-                  <Item label='Camera make' value={image.make}/>
-                </MetadataList>
-              </MetadataPane>
-              <LabelsPane>
-                <InfoPaneHeader label='Labels' />
-                <LabelsTable labels={image.labels}/>
-              </LabelsPane>
-            </div>
-          </ImageDetails>
-          <ProgressBar>
-            progress bar
-          </ProgressBar>
-        </DetailsBody>
-      </DetailsModalContainer>
-    </DetailsModalWrapper>
+          <IconButton variant='ghost'>
+            <FontAwesomeIcon icon={['fas', 'cog']} />
+          </IconButton>
+        </ControlGroup>
+        <IconButton
+          variant='ghost'
+          onClick={handleCloseButtonClick}
+        >
+          <FontAwesomeIcon icon={['fas', 'times']} />
+        </IconButton>
+      </DetailsHeader>
+      <DetailsBody>
+        <ThumbnailsStrip>
+          thumbnails
+        </ThumbnailsStrip>
+        <ImageDetails>
+          <ImagePane>
+            <FullSizeImage image={image} />
+          </ImagePane>
+          <div>
+            <MetadataPane>
+              <InfoPaneHeader label='Metadata' />
+              <MetadataList>
+                <Item label='Date created' value={image.dateTimeOriginal}/>
+                <Item label='Camera' value={image.cameraSn}/>
+                <Item label='Camera make' value={image.make}/>
+              </MetadataList>
+            </MetadataPane>
+            <LabelsPane>
+              <InfoPaneHeader label='Labels' />
+              <LabelsTable labels={image.labels}/>
+            </LabelsPane>
+          </div>
+        </ImageDetails>
+        <ProgressBar>
+          progress bar
+        </ProgressBar>
+      </DetailsBody>
+    </Modal>
   );
 };
 
