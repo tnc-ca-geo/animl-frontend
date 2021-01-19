@@ -2,7 +2,9 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import {
   getCameras,
   getLabels,
-  getViews
+  getViews,
+  createView,
+  updateView,
 } from '../../api/animlAPI';
 import moment from 'moment';
 import {
@@ -39,7 +41,6 @@ const initialState = {
   },
   views: {
     views: [],
-    viewMatchesFilters: false,
     isLoading: false,
     error: null,
   },
@@ -89,11 +90,11 @@ export const filtersSlice = createSlice({
       });
     },
 
-    getViewsStart: (state) => { state.isLoading = true; },
+    getViewsStart: (state) => { state.views.isLoading = true; },
 
     getViewsFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
+      state.views.isLoading = false;
+      state.views.error = payload;
     },
 
     getViewsSuccess: (state, { payload }) => {
@@ -106,6 +107,22 @@ export const filtersSlice = createSlice({
           state.views.views.push(view);
         }
       });
+    },
+
+    createViewStart: (state) => { state.views.isLoading = true; },
+
+    createViewFailure: (state, { payload }) => {
+      state.views.isLoading = false;
+      state.views.error = payload;
+    },
+
+    createViewSuccess: (state, { payload }) => {
+      state.isLoading = false;
+      state.error = null;
+      const viewsInState = state.views.views.map((view) => view._id);
+      if (!viewsInState.includes(payload._id)) {
+        state.views.views.push(payload);
+      }
     },
 
     checkboxFilterToggled: (state, { payload }) => {
@@ -135,8 +152,6 @@ export const filtersSlice = createSlice({
     dateFilterChanged: (state, { payload }) => {
       state.activeFilters[payload.type + 'Start'] = payload.startDate;
       state.activeFilters[payload.type + 'End'] = payload.endDate;
-      // const viewFilters = state.views.views.filter((view) => view.selected)[0];
-      // state.viewMatchesFilters = diffFilters(state);
     },
 
     setSelectedView: (state, { payload }) => {
@@ -145,8 +160,6 @@ export const filtersSlice = createSlice({
         view.selected = view._id === payload._id;
       });
       state.activeFilters = payload.filters;
-      // const viewFilters = state.views.views.filter((view) => view.selected)[0];
-      // state.viewMatchesFilters = diffFilters(state);
     },
 
   },
@@ -163,6 +176,9 @@ export const {
   getViewsStart,
   getViewsSuccess,
   getViewsFailure,
+  createViewStart,
+  createViewSuccess,
+  createViewFailure,
   checkboxFilterToggled,
   dateFilterChanged,
   setSelectedView,
@@ -195,9 +211,25 @@ export const fetchViews = () => async dispatch => {
   try {
     dispatch(getViewsStart());
     const views = await getViews();
-    dispatch(getViewsSuccess(views))
+    dispatch(getViewsSuccess(views));
   } catch (err) {
     dispatch(getViewsFailure(err.toString()))
+  }
+};
+
+// saveView thunk
+export const saveView = ({ mode, payload }) => async dispatch => {
+  try {
+    dispatch(createViewStart());
+    console.log(`saving view with mode: ${mode} and values: ${payload}`)
+    const view = mode === 'create-new'
+      ? await createView(payload)
+      : await updateView(payload);
+    dispatch(createViewSuccess(view));
+    dispatch(setSelectedView(view));
+  } catch (err) {
+    console.log('error saving view: ', err.toString());
+    dispatch(createViewFailure(err.toString()));
   }
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -9,7 +9,9 @@ import IconButton from '../../components/IconButton';
 import Modal from '../../components/Modal';
 import {
   selectSelectedView,
-  selectActiveFilters
+  selectActiveFilters,
+  saveView,
+  updateView,
 } from '../filters/filtersSlice';
 
 const StyledErrorMessage = styled(ErrorMessage, {
@@ -136,6 +138,7 @@ const SaveViewModal = ({ handleClose }) => {
   const [isEditable, setIsEditable] = useState(true);
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // TODO: implement 'isEditable' feild for views 
@@ -146,6 +149,40 @@ const SaveViewModal = ({ handleClose }) => {
   const handleSaveModeSelection = (mode) => {
     setSaveMode(mode);
   };
+
+  // const handleUpdateViewSubmit = (_id, filters) => {
+  //   console.log('update-curr form with filters: ', filters);
+  //   const payload = {
+  //     _id: _id,
+  //     diffs: {
+  //       filters: filters,
+  //     }
+  //   };
+  //   dispatch(updateView(payload));
+  //   handleClose();
+  // }
+
+  // const handleCreateViewSubmit = (values) => {
+  //   console.log('create-new form values: ', values);
+  //   dispatch(saveView(values));
+  //   handleClose();  // TODO: show loading & wait for success to close
+  // };
+
+  const handleSaveViewSubmit = (mode, selectedView, formVals) => {
+    console.log('mode: ', mode)
+    const payload = (mode === 'update-curr')
+      ? {
+          _id: selectedView._id,
+          diffs: {
+            filters: formVals.filters,
+          }
+        }
+      : formVals;
+    console.log('payload: ', payload)
+
+    dispatch(saveView({ mode, payload }));
+    handleClose();  // TODO: show loading & wait for success to close
+  }
 
   return (
     <Modal size='sm'>
@@ -171,8 +208,8 @@ const SaveViewModal = ({ handleClose }) => {
           </SaveModeTab>
           <SaveModeTab
             size='large'
-            active={saveMode === 'save-new' ? 'true' : 'false'}
-            onClick={() => handleSaveModeSelection('save-new')}
+            active={saveMode === 'create-new' ? 'true' : 'false'}
+            onClick={() => handleSaveModeSelection('create-new')}
           >
             <FontAwesomeIcon icon={['fas', 'plus']} />
             Create new view
@@ -183,13 +220,13 @@ const SaveViewModal = ({ handleClose }) => {
             <StyledForm>
               <p>
                 Are you sure you'd like to overwrite 
-                the <ViewName>{selectedView.name}</ViewName> view?
+                the filters for the 
+                <ViewName>{selectedView.name}</ViewName> view?
               </p>
               <Formik
                 initialValues={{ filters: activeFilters }}
-                onSubmit={values => {
-                  // same shape as initial values
-                  console.log('upate-curr form values: ', values);
+                onSubmit={(values) => {
+                  handleSaveViewSubmit(saveMode, selectedView, values);
                 }}
               >
                 {({ errors, touched }) => (
@@ -206,7 +243,7 @@ const SaveViewModal = ({ handleClose }) => {
               </Formik>
             </StyledForm>
           }
-          {(saveMode === 'save-new') &&
+          {(saveMode === 'create-new') &&
             <StyledForm>
               <Formik
                 initialValues={{
@@ -215,11 +252,9 @@ const SaveViewModal = ({ handleClose }) => {
                   filters: activeFilters,
                 }}
                 validationSchema={newViewSchema}
-                onSubmit={values => {
-                  // same shape as initial values
-                  console.log('save-new form values: ', values);
-                }}
-              >
+                onSubmit={(values) => {
+                  handleSaveViewSubmit(saveMode, selectedView, values);
+                }}              >
                 {({ errors, touched, isValid, dirty }) => (
                   <Form>
                     <StyledField>

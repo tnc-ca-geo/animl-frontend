@@ -21,7 +21,6 @@ export async function getViews() {
       }
     }
   `
-  
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {
@@ -36,9 +35,81 @@ export async function getViews() {
   }
 };
 
-export async function getImages(filters, pageInfo, page) {
 
-  const query = gql`query getImages($input: QueryImageInput!) {
+export async function createView(values) {
+  // TODO: look into using gql "fragments" to make these more DRY
+  const mutation = gql`
+    mutation CreateView($input: CreateViewInput!) {
+      createView(input: $input) {
+        view {
+          _id
+          name
+          description
+          filters {
+            cameras
+            labels
+            createdStart
+            createdEnd
+            addedStart
+            addedEnd
+          }
+        }
+      }
+    }
+  `
+  const variables = { input: values };
+  try {
+    const graphQLClient = new GraphQLClient(API_URL, {
+      // headers: {
+      //   authorization: 'Bearer MY_TOKEN',
+      // },
+    });
+    const createViewResponse = await graphQLClient.request(mutation, variables);
+    console.log(JSON.stringify(createViewResponse, undefined, 2));
+    return createViewResponse.createView.view;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function updateView(input) {
+  const mutation = gql`
+    mutation UpdateView($input: UpdateViewInput!) {
+      updateView(input: $input) {
+        view {
+          _id
+          name
+          description
+          filters {
+            cameras
+            labels
+            createdStart
+            createdEnd
+            addedStart
+            addedEnd
+          }
+        }
+      }
+    }
+  `
+  const variables = { input: input };
+  try {
+    const graphQLClient = new GraphQLClient(API_URL, {
+      // headers: {
+      //   authorization: 'Bearer MY_TOKEN',
+      // },
+    });
+    console.log('updating view with variables: ', variables);
+    const createViewResponse = await graphQLClient.request(mutation, variables);
+    console.log(JSON.stringify(createViewResponse, undefined, 2));
+    return createViewResponse.createView.view;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function getImages(filters, pageInfo, page) {
+  const query = gql`query GetImages($input: QueryImageInput!) {
     images(input: $input) {
       images {
         hash
@@ -66,17 +137,6 @@ export async function getImages(filters, pageInfo, page) {
       }
     }
   }`
-
-  // const cameras = filters.cameras.cameras;
-  // const selectedCameras = Object.keys(cameras).filter((sn) => (
-  //   cameras[sn].selected === true
-  // ));
-
-  // const categories = filters.labels.categories;
-  // const selectedLabels = Object.keys(categories).filter((category) => (
-  //   categories[category].selected === true
-  // ));
-
   const variables = {
     input: {
       ...(page === 'next' && { next: pageInfo.next }),
@@ -85,23 +145,14 @@ export async function getImages(filters, pageInfo, page) {
       sortAscending: pageInfo.sortAscending,
       limit: pageInfo.limit,
       ...filters,
-      // cameras: filters.cameras,
-      // labels: filters.labels,
-      // createdStart: filters.createdStart,
-      // createdEnd: filters.createdEnd,
-      // addedStart: filters.addedStart,
-      // addedEnd: filters.addedEnd,
     }
   };
-  // console.log('variables: ', variables);
-
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {
       //   authorization: 'Bearer MY_TOKEN',
       // },
     });
-
     const imagesResponse = await graphQLClient.request(query, variables);
     // console.log(JSON.stringify(imagesResponse, undefined, 2))
     return imagesResponse;
@@ -118,7 +169,6 @@ export async function getCameras() {
       }
     }
   `
-  
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {
@@ -140,7 +190,6 @@ export async function getLabels() {
       }
     }
   `
-  
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
       // headers: {

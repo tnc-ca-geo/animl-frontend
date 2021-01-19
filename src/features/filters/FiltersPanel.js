@@ -48,7 +48,6 @@ const FiltersPanel = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('availLabels: ', !availLabels.categories.length)
     if (!availCameras.ids.length) {
       dispatch(fetchCameras());
     }
