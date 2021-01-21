@@ -114,7 +114,7 @@ const newViewSchema = Yup.object().shape({
     .max(500, 'Too Long!'),
 });
 
-const SaveViewModal = ({ handleClose }) => {
+const SaveViewForm = ({ handleClose }) => {
   const [saveMode, setSaveMode] = useState();
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
@@ -241,5 +241,5 @@ const SaveViewModal = ({ handleClose }) => {
   );
 };
 
-export default SaveViewModal;
+export default SaveViewForm;
 

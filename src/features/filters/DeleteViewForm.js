@@ -76,17 +76,9 @@ const deleteViewSchema = Yup.object().shape({
   _id: Yup.string().required('A name is required'),
 });
 
-const SaveViewModal = ({ handleClose }) => {
-  const [isEditable, setIsEditable] = useState(true);
+const DeleteViewForm = ({ handleClose }) => {
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // TODO: implement 'isEditable' feild for views 
-    // (and set 'All Images' to false)
-    setIsEditable(true)
-  }, [selectedView])
-
 
   const handleDeleteViewSubmit = (values) => {
     dispatch(editView({ operation: 'delete', payload: values}));
@@ -124,5 +116,5 @@ const SaveViewModal = ({ handleClose }) => {
   );
 };
 
-export default SaveViewModal;
+export default DeleteViewForm;
 

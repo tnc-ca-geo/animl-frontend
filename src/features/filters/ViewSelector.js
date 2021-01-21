@@ -124,8 +124,17 @@ const ViewSelector = () => {
     }
   }, [selectedView, filtersReady, dispatch]);
 
+  useEffect(() => {
+    const handleWindowClick = () => setExpanded(false)
+    if (expanded) {
+      window.addEventListener('click', handleWindowClick);
+    } else {
+      window.removeEventListener('click', handleWindowClick)
+    }
+    return () => window.removeEventListener('click', handleWindowClick);
+  }, [expanded, setExpanded]);
+
   const handleViewNavClick = () => {
-    // TODO: setExpanded to false if user clicks anywhere else on screen
     setExpanded(!expanded);
   };
 

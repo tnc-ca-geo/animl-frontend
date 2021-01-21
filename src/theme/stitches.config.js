@@ -3,7 +3,7 @@ import { createStyled } from '@stitches/react';
 export const { styled, css } = createStyled({
   tokens: {
     colors: {
-      $hiContrast: '#000000', // black
+      $hiContrast: '#031b4e', // black
       $loContrast: '#FFFFFF', // white
       $warning: '#E04040',
 
