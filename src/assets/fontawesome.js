@@ -17,6 +17,7 @@ import {
   faGripHorizontal,
   faEdit,
   faPlus,
+  faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -37,4 +38,5 @@ library.add(
   faGripHorizontal,
   faEdit,
   faPlus,
+  faTrashAlt,
 );

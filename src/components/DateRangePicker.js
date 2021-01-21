@@ -5,6 +5,7 @@ import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import { styled } from '../theme/stitches.config';
 
+// TODO: clean uop date range picker styling
 const StyledDateRangePicker = styled.div({
   '.DateInput_input': {
     color: '$hiContrast',
@@ -22,6 +23,12 @@ const StyledDateRangePicker = styled.div({
   },
   '.DateRangePickerInput_clearDates_default:hover': {
     backgroundColor: '$gray200',
+  },
+  '.CalendarDay__default': {
+    border: 'none',
+  },
+  '.CalendarDay__blocked_out_of_range': {
+    border: 'none',
   },
   '.CalendarDay__selected_span': {
     background: '$blue200',
@@ -41,6 +48,14 @@ const StyledDateRangePicker = styled.div({
     background: '$blue400',
     color: '$loContrast',
     border: '$1 solid $blue200',
+  },
+  '.CalendarDay__hovered_span': {
+    background: '$gray200',
+    color: '$hiContrast',
+    borderLeft: 'none',
+    borderRight: 'none',
+    borderTop: '$2 solid $loContrast',
+    borderBottom: '$2 solid $loContrast',
   },
 });
 

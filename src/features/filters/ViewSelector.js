@@ -5,6 +5,7 @@ import { styled } from '../../theme/stitches.config.js';
 import {
   selectActiveFilters,
   selectFiltersReady,
+  selectUnsavedViewChanges,
 } from './filtersSlice';
 import {
   selectViews,
@@ -15,16 +16,39 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
-
-const ControlGroup = styled.div({
-  display: 'flex',
-  'button': {
-    marginRight: '$1',
+const ViewMenuItem = styled('li', {
+  padding: '$2 $3',
+  fontWeight: '$2',
+  ':hover': {
+    color: '$blue500',
+    backgroundColor: '$blue200',
   },
+
+  variants: {
+    selected: {
+      true: {
+        color: '$blue500',
+        backgroundColor: '$blue200',
+      }
+    }
+  }
 });
 
-const Controls = styled.div({
-  display: 'flex',
+const ViewMenu = styled.div({
+  position: 'absolute',
+  zIndex: '$2',
+  width: '250px',
+  left: '$0',
+  top: '$5',
+  background: '$loContrast',
+  border: '$1 solid $gray400',
+  boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
+   rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
+  ul: {
+   listStyleType: 'none',
+   margin: '$0',
+   paddingLeft: '$0',
+  }
 });
 
 const Crumb = styled.span({
@@ -55,6 +79,10 @@ const Crumb = styled.span({
   }
 });
 
+const SelectedViewCrumb = styled(Crumb, {
+  position: 'relative',
+});
+
 const Breadcrumbs = styled.div({
   fontSize: '$4',
   fontWeight: '$5',
@@ -80,12 +108,13 @@ const ViewSelector = () => {
   const selectedView = useSelector(selectSelectedView);
   const filters = useSelector(selectActiveFilters);
   const filtersReady = useSelector(selectFiltersReady);
-  const [filtersMatchView, setFiltersMatchView] = useState(false);
+  // const [filtersMatchView, setFiltersMatchView] = useState(false);
+  const unsavedChanges = useSelector(selectUnsavedViewChanges);
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!views.length) {
+    if (!views.views.length) {
       dispatch(fetchViews());
     }
   }, [views, dispatch]);
@@ -97,40 +126,53 @@ const ViewSelector = () => {
   }, [selectedView, filtersReady, dispatch]);
 
   // diff active filters and view filters
-  // TODO: move this to it's own hook
-  useEffect(() => {
-    if (filters && selectedView) {
-      const match = _.isEqual(filters, selectedView.filters);
-      setFiltersMatchView(match);
-    }
-  }, [filters, selectedView]);
+  // TODO: move this to it's own middleware
+  // BUG: it also needs to fire after view has been updated in DB
+  // useEffect(() => {
+  //   if (filters && selectedView) {
+  //     console.log('checking for filter match')
+  //     const match = _.isEqual(filters, selectedView.filters);
+  //     setFiltersMatchView(match);
+  //   }
+  // }, [filters, selectedView]);
 
   const handleViewNavClick = () => {
     setExpanded(!expanded);
   };
 
+  const handleViewMenuItemClick = (e) => {
+    const _id = e.target.dataset.viewId;
+    const newSelectedView = views.views.filter((view) => view._id === _id)[0];
+    dispatch(setSelectedView(newSelectedView));
+  }
+
   return (
     <StyledViewSelector>
-      {/*<ControlGroup>
-        <IconButton variant='ghost' disabled>
-          <FontAwesomeIcon icon={['fas', 'save']} />
-        </IconButton>
-        <IconButton variant='ghost' disabled>
-          <FontAwesomeIcon icon={['fas', 'cog']} />
-        </IconButton>
-        <IconButton variant='ghost' disabled>
-          <FontAwesomeIcon icon={['fas', 'redo']} />
-      </IconButton>
-      </ControlGroup>*/}
       <ViewNavigation onClick={handleViewNavClick}>
         <Breadcrumbs>
           <Crumb>
             Santa Cruz Island
           </Crumb>
           /
-          <Crumb edited={!filtersMatchView}>
+          <SelectedViewCrumb edited={unsavedChanges}>
             {selectedView ? selectedView.name : 'Loading view...'}
-          </Crumb>
+            {expanded &&
+              <ViewMenu>
+                <ul>
+                  {views.views.map((view) => (
+                    <ViewMenuItem
+                      key={view._id}
+                      selected={view.selected}
+                      data-view-id={view._id}
+                      onClick={handleViewMenuItemClick}
+                    >
+                      {view.name}
+                    </ViewMenuItem>
+                  ))}
+                </ul>
+              </ViewMenu>
+            }
+          </SelectedViewCrumb>
         </Breadcrumbs>
         <IconButton variant='ghost'>
           <FontAwesomeIcon icon={ 
@@ -138,14 +180,6 @@ const ViewSelector = () => {
           }/>
         </IconButton>
       </ViewNavigation>
-      {/*<ControlGroup>
-        <IconButton variant='ghost' disabled>
-          <FontAwesomeIcon icon={['fas', 'list-ul']} />
-        </IconButton>
-        <IconButton variant='ghost' disabled>
-          <FontAwesomeIcon icon={['fas', 'grip-horizontal']} />
-        </IconButton>
-      </ControlGroup>*/}
     </StyledViewSelector>
   );
 }

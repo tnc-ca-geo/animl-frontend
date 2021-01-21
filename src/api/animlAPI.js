@@ -65,12 +65,13 @@ export async function createView(values) {
       // },
     });
     const createViewResponse = await graphQLClient.request(mutation, variables);
-    console.log(JSON.stringify(createViewResponse, undefined, 2));
+    // console.log(JSON.stringify(createViewResponse, undefined, 2));
     return createViewResponse.createView.view;
   } catch (err) {
     throw err;
   }
 };
+
 
 export async function updateView(input) {
   const mutation = gql`
@@ -99,14 +100,38 @@ export async function updateView(input) {
       //   authorization: 'Bearer MY_TOKEN',
       // },
     });
-    console.log('updating view with variables: ', variables);
-    const createViewResponse = await graphQLClient.request(mutation, variables);
-    console.log(JSON.stringify(createViewResponse, undefined, 2));
-    return createViewResponse.createView.view;
+    const updateViewResponse = await graphQLClient.request(mutation, variables);
+    // console.log(JSON.stringify(updateViewResponse, undefined, 2));
+    return updateViewResponse.updateView.view;
   } catch (err) {
     throw err;
   }
 };
+
+
+export async function deleteView(input) {
+  const mutation = gql`
+    mutation DeleteView($input: DeleteViewInput!) {
+      deleteView(input: $input) {
+        success
+      }
+    }
+  `
+  const variables = { input: input };
+  try {
+    const graphQLClient = new GraphQLClient(API_URL, {
+      // headers: {
+      //   authorization: 'Bearer MY_TOKEN',
+      // },
+    });
+    const deleteViewResponse = await graphQLClient.request(mutation, variables);
+    // console.log(JSON.stringify(deleteViewResponse, undefined, 2));
+    return { _id: input._id, ...deleteViewResponse.deleteView};
+  } catch (err) {
+    throw err;
+  }
+};
+
 
 export async function getImages(filters, pageInfo, page) {
   const query = gql`query GetImages($input: QueryImageInput!) {

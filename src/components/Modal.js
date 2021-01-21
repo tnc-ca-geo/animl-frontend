@@ -1,5 +1,21 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from './IconButton';
+
+const ModalBody = styled.div({
+  margin: '$3',
+});
+
+const ModalHeader = styled.div({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '$0 $3',
+  height: '$7',
+  borderBottom: '$1 solid $gray400',
+  fontWeight: '$5',
+});
 
 const ModalContainer = styled.div({
   zIndex: '$2',
@@ -42,10 +58,24 @@ const ModalWrapper = styled.div({
   background: 'rgba(0, 0, 0, 0.6)',
 });
 
-const Modal = ({ size, children }) => (
+const Modal = ({ size, header, handleClose, children }) => (
   <ModalWrapper>
     <ModalContainer size={size}>
-      {children}
+      <ModalHeader>
+        {header}
+        <IconButton
+          variant='ghost'
+          onClick={handleClose}
+        >
+          <FontAwesomeIcon icon={['fas', 'times']} />
+        </IconButton>
+      </ModalHeader>
+      <ModalBody>
+        {React.Children.map(
+          children,
+          (child) => React.cloneElement(child, { handleClose })
+        )}
+      </ModalBody>
     </ModalContainer>
   </ModalWrapper>
 )

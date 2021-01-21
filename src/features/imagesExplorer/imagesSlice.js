@@ -86,6 +86,7 @@ export const {
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current') => 
   async (dispatch, getState) => {
+    console.log('fetching images');
     try {
       dispatch(getImagesStart());
       if (page !== 'next') {
