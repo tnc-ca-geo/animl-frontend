@@ -108,7 +108,6 @@ const ViewSelector = () => {
   const selectedView = useSelector(selectSelectedView);
   const filters = useSelector(selectActiveFilters);
   const filtersReady = useSelector(selectFiltersReady);
-  // const [filtersMatchView, setFiltersMatchView] = useState(false);
   const unsavedChanges = useSelector(selectUnsavedViewChanges);
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
@@ -125,18 +124,8 @@ const ViewSelector = () => {
     }
   }, [selectedView, filtersReady, dispatch]);
 
-  // diff active filters and view filters
-  // TODO: move this to it's own middleware
-  // BUG: it also needs to fire after view has been updated in DB
-  // useEffect(() => {
-  //   if (filters && selectedView) {
-  //     console.log('checking for filter match')
-  //     const match = _.isEqual(filters, selectedView.filters);
-  //     setFiltersMatchView(match);
-  //   }
-  // }, [filters, selectedView]);
-
   const handleViewNavClick = () => {
+    // TODO: setExpanded to false if user clicks anywhere else on screen
     setExpanded(!expanded);
   };
 

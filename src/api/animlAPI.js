@@ -2,6 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 // import parseLink, { Links } from 'parse-link-header'
 import { API_URL } from '../config';
 
+// TODO: break this up into multiple files
 
 export async function getViews() {
   const query = gql`
@@ -10,6 +11,7 @@ export async function getViews() {
         _id
         name
         description
+        editable
         filters {
           cameras
           labels
@@ -45,6 +47,7 @@ export async function createView(values) {
           _id
           name
           description
+          editable
           filters {
             cameras
             labels
@@ -81,6 +84,7 @@ export async function updateView(input) {
           _id
           name
           description
+          editable
           filters {
             cameras
             labels

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { selectSelectedView } from './filtersSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
 import SaveViewForm from './SaveViewForm';
@@ -23,6 +25,7 @@ const StyledSidebarNav = styled('div', {
 const SidebarNav = ({ view }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState();
+  const selectedView = useSelector(selectSelectedView);
 
   const handleModalToggle = (content) => {
     setModalOpen(!modalOpen);
@@ -45,6 +48,7 @@ const SidebarNav = ({ view }) => {
       </MenuButton>
       <MenuButton
         variant='ghost'
+        disabled={selectedView && !selectedView.editable}
         onClick={() => handleModalToggle('delete-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'trash-alt']} />

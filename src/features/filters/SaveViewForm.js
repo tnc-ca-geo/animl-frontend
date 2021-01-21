@@ -116,16 +116,9 @@ const newViewSchema = Yup.object().shape({
 
 const SaveViewModal = ({ handleClose }) => {
   const [saveMode, setSaveMode] = useState();
-  const [isEditable, setIsEditable] = useState(true);
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // TODO: implement 'isEditable' feild for views 
-    // (and set 'All Images' to false)
-    setIsEditable(true)
-  }, [selectedView])
 
   const handleSaveModeSelection = (mode) => {
     setSaveMode(mode);
@@ -149,7 +142,7 @@ const SaveViewModal = ({ handleClose }) => {
       <SaveModeSelector>
         <SaveModeTab
           size='large'
-          disabled={!isEditable}
+          disabled={!selectedView.editable}
           active={saveMode === 'update' ? true : false}
           onClick={() => handleSaveModeSelection('update')}
         >
@@ -199,6 +192,7 @@ const SaveViewModal = ({ handleClose }) => {
                 name: '',
                 description: '',
                 filters: activeFilters,
+                editable: true,
               }}
               validationSchema={newViewSchema}
               onSubmit={(values) => {
@@ -225,6 +219,10 @@ const SaveViewModal = ({ handleClose }) => {
                   </StyledField>
                   <Field
                     name='filters'
+                    type='hidden'
+                  />
+                  <Field
+                    name='editable'
                     type='hidden'
                   />
                   <Button 
