@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getImages } from '../../api/animlAPI';
+import { call } from '../../api';
 import moment from 'moment';
 import {
   DATE_FORMAT_READABLE as DFR,
@@ -93,7 +93,7 @@ export const fetchImages = (filters, page = 'current') =>
         dispatch(clearImages());
       }
       const pageInfo = getState().images.pageInfo;
-      const images = await getImages(filters, pageInfo, page);
+      const images = await call('getImages', {filters, pageInfo, page});
       dispatch(getImagesSuccess(images))
     } catch (err) {
       dispatch(getImagesFailure(err.toString()))

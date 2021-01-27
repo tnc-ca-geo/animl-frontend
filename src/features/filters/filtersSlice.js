@@ -1,12 +1,5 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import {
-  getCameras,
-  getLabels,
-  getViews,
-  createView,
-  updateView,
-  deleteView,
-} from '../../api/animlAPI';
+import { call } from '../../api';
 import _ from 'lodash';
 import moment from 'moment';
 import { DATE_FORMAT_EXIF as DFE } from '../../config';
@@ -186,7 +179,7 @@ export const {
 export const fetchCameras = () => async dispatch => {
   try {
     dispatch(getCamerasStart());
-    const cameras = await getCameras();
+    const cameras = await call('getCameras');
     dispatch(getCamerasSuccess(cameras))
   } catch (err) {
     dispatch(getCamerasFailure(err.toString()))
@@ -197,7 +190,7 @@ export const fetchCameras = () => async dispatch => {
 export const fetchLabels = () => async dispatch => {
   try {
     dispatch(getLabelsStart());
-    const labels = await getLabels();
+    const labels = await call('getLabels');
     dispatch(getLabelsSuccess(labels))
   } catch (err) {
     dispatch(getLabelsFailure(err.toString()))
@@ -208,7 +201,8 @@ export const fetchLabels = () => async dispatch => {
 export const fetchViews = () => async dispatch => {
   try {
     dispatch(getViewsStart());
-    const views = await getViews();
+    // const views = await getViews();
+    const views = await call('getViews');
     dispatch(getViewsSuccess(views));
   } catch (err) {
     dispatch(getViewsFailure(err.toString()))
@@ -222,25 +216,30 @@ export const editView = ({ operation, payload }) =>
       dispatch(editViewStart());
       switch (operation) {
         case 'create': {
-          const view = await createView(payload);
+          // const res = await createView(payload);
+          const res = await call('createView', payload);
+          const view = res.createView.view;
           dispatch(saveViewSuccess(view));
           dispatch(setSelectedView(view));
           break;
         }
         case 'update': {
-          const view = await updateView(payload);
+          // const res = await updateView(payload);
+          const res = await call('updateView', payload);
+          const view = res.updateView.view;
           dispatch(saveViewSuccess(view));
           dispatch(setSelectedView(view));
           break;
         }
         case 'delete': {
-          const res = await deleteView(payload);
+          // const res = await deleteView(payload);
+          const res = await call('deleteView', payload);
           const views = getState().filters.views.views;
           const defaultView = views.filter((view) => {
             return view.name === 'All images';
           })[0];
           dispatch(setSelectedView(defaultView)); 
-          dispatch(deleteViewSuccess(res._id));
+          dispatch(deleteViewSuccess(res.viewId));
           break;
         }
         default: {
