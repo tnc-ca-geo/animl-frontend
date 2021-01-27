@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectSelectedView } from './filtersSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
+import AutomationRulesForm from './AutomationRulesForm';
 import SaveViewForm from './SaveViewForm';
 import DeleteViewForm from './DeleteViewForm';
 
@@ -42,6 +43,13 @@ const SidebarNav = ({ view }) => {
       </MenuButton>
       <MenuButton
         variant='ghost'
+        disabled={!selectedView || !selectedView.editable}
+        onClick={() => handleModalToggle('automation-rules-form')}
+      >
+        <FontAwesomeIcon icon={['fas', 'robot']} />
+      </MenuButton>
+      <MenuButton
+        variant='ghost'
         onClick={() => handleModalToggle('save-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'save']} />
@@ -56,6 +64,15 @@ const SidebarNav = ({ view }) => {
       <MenuButton variant='ghost'>
         <FontAwesomeIcon icon={['fas', 'redo']} />
       </MenuButton>
+      {(modalOpen && (modalContent === 'automation-rules-form')) &&
+        <Modal 
+          handleClose={handleModalToggle}
+          header='Automation Rules'
+          size='sm'
+        >
+          <AutomationRulesForm/>
+        </Modal>
+      }
       {(modalOpen && (modalContent === 'save-view-form')) &&
         <Modal 
           handleClose={handleModalToggle}

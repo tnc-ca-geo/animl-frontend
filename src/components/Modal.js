@@ -20,7 +20,7 @@ const ModalHeader = styled.div({
 const ModalContainer = styled.div({
   zIndex: '$2',
   position: 'fixed',    
-  top: '50%',
+  top: '150px',
   left: '50%',
   transform: 'translate(-50%, -100px)',
   display: 'flex',

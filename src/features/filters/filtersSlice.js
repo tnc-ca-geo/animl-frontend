@@ -38,13 +38,16 @@ export const filtersSlice = createSlice({
   name: 'filters',
   initialState,
   reducers: {
+
     getCamerasStart: (state) => {
       state.availFilters.cameras.isLoading = true;
     },
+
     getCamerasFailure: (state, { payload }) => {
       state.availFilters.cameras.isLoading = false;
       state.availFilters.cameras.error = payload;
     },
+
     getCamerasSuccess: (state, { payload }) => {
       state.availFilters.cameras.isLoading = false;
       state.availFilters.cameras.error = null;
@@ -55,11 +58,14 @@ export const filtersSlice = createSlice({
         }
       });
     },
+
     getLabelsStart: (state) => { state.availFilters.labels.isLoading = true; },
+
     getLabelsFailure: (state, { payload }) => {
       state.availFilters.labels.isLoading = false;
       state.availFilters.labels.error = payload;
     },
+
     getLabelsSuccess: (state, { payload }) => {
       // TODO: the getLabels and getCameras reducers (start, failure, success) 
       // could be generalized and consolodated
@@ -71,11 +77,14 @@ export const filtersSlice = createSlice({
         }
       });
     },
+
     getViewsStart: (state) => { state.views.isLoading = true; },
+
     getViewsFailure: (state, { payload }) => {
       state.views.isLoading = false;
       state.views.error = payload;
     },
+
     getViewsSuccess: (state, { payload }) => {
       state.views.isLoading = false;
       state.views.error = null;
@@ -87,11 +96,14 @@ export const filtersSlice = createSlice({
         }
       });
     },
+
     editViewStart: (state) => { state.views.isLoading = true; },
+
     editViewFailure: (state, { payload }) => {
       state.views.isLoading = false;
       state.views.error = payload;
     },
+
     saveViewSuccess: (state, { payload }) => {
       state.views.isLoading = false;
       state.views.error = null;
@@ -106,6 +118,7 @@ export const filtersSlice = createSlice({
         state.views.views.push(payload);
       }
     },
+
     deleteViewSuccess: (state, { payload }) => {
       state.views.isLoading = false;
       state.views.error = null;
@@ -113,9 +126,11 @@ export const filtersSlice = createSlice({
         return view._id !== payload;
       });
     },
+
     setUnsavedChanges: (state, { payload }) => {
       state.views.unsavedChanges = payload;
     },
+
     checkboxFilterToggled: (state, { payload }) => {
       const activeFil = state.activeFilters[payload.filter];
       const availFil = state.availFilters[payload.filter][payload.key];
@@ -138,16 +153,19 @@ export const filtersSlice = createSlice({
         }
       }
     },
+
     dateFilterChanged: (state, { payload }) => {
       state.activeFilters[payload.type + 'Start'] = payload.startDate;
       state.activeFilters[payload.type + 'End'] = payload.endDate;
     },
+
     setSelectedView: (state, { payload }) => {
       state.views.views.forEach((view) => {
         view.selected = view._id === payload._id;
       });
       state.activeFilters = payload.filters;
     },
+    
   },
 });
 

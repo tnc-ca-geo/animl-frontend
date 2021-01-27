@@ -10,7 +10,23 @@ const viewFields = `
     createdEnd
     addedStart
     addedEnd
-  }`
+  }
+  automationRules {
+    event {
+      type
+      label
+    }
+    action {
+      type
+      model {
+        _id
+        name
+        description
+        version
+      }
+    }
+  }
+  `
 
 const imageFields = `
   hash
