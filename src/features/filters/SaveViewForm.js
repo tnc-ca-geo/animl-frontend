@@ -133,7 +133,7 @@ const SaveViewForm = ({ handleClose }) => {
           }
         }
       : formVals;
-    dispatch(editView({ operation, payload }));
+    dispatch(editView(operation, payload));
     handleClose();  // TODO: show loading & wait for success to close
   };
 

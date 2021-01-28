@@ -7,6 +7,8 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import {
   selectSelectedView,
+  selectModels,
+  fetchModels,
   editView,
 } from './filtersSlice';
 
@@ -83,16 +85,26 @@ const emptyRule = {
 
 const AutomationRulesForm = ({ handleClose }) => {
   const selectedView = useSelector(selectSelectedView);
+  const models = useSelector(selectModels);
   const dispatch = useDispatch();
 
 
   useEffect(() => {
-    console.log('selected view changed')
-  }, [selectedView]);
+    console.log('models: ', models)
+    if (!models.length) {
+        dispatch(fetchModels());
+    }
+  }, [models, dispatch]);
 
   const handleSaveRulesSubmit = (values) => {
     console.log('save rules: ', values);
-    // dispatch(editView({ operation: 'delete', payload: values}));
+    const payload = {
+      _id: selectedView._id,
+      diffs: {
+        automationRules: values.rules,
+      }
+    };
+    dispatch(editView('update', payload))
     handleClose();  // TODO: show loading & wait for success to close
   };
 
@@ -104,7 +116,8 @@ const AutomationRulesForm = ({ handleClose }) => {
             initialValues={{
               rules: selectedView.automationRules
             }}
-            // validationSchema={deleteViewSchema}
+            // TODO: add validation
+            // validationSchema={deleteViewSchema} 
             onSubmit={handleSaveRulesSubmit}
           >
           {({values, handleChange}) => (
@@ -114,8 +127,6 @@ const AutomationRulesForm = ({ handleClose }) => {
                 <div>
                   {values.rules && values.rules.length > 0 && (
                     values.rules.map((rule, index) => {
-                      console.log('index: ', index);
-                      console.log('rule: ', rule);
                       return (
                         <div key={index}>
                           <label htmlFor='event-type'>Trigger</label>
@@ -135,6 +146,7 @@ const AutomationRulesForm = ({ handleClose }) => {
                               <Field
                                 id='event-label'
                                 name={`rules.${index}.event.label`}
+                                value={rule.event.label ? rule.event.label : '' }
                               />
                             </div>
                           )}
@@ -154,13 +166,18 @@ const AutomationRulesForm = ({ handleClose }) => {
                               <label htmlFor='action-model'>Model</label>
                               <Field
                                 as='select'
-                                name={`rules.${index}.action.model.name`}
+                                name={`rules.${index}.action.model._id`}
                                 id='action-model'
-                                value={rule.action.model ? rule.action.model.name : '' }
+                                value={rule.action.model ? rule.action.model._id : '' }
                               >
                                 <option value='' label='Select an model' />
-                                <option value='megadetector' label='Megadetector' />
-                                <option value='mira' label='Mira' />
+                                {models.map((model) => (
+                                  <option
+                                    key={model._id}
+                                    value={model._id}
+                                    label={model.name + ' ' + model.version}
+                                  />
+                                ))}
                               </Field>
                             </div>
                           )}
@@ -170,6 +187,7 @@ const AutomationRulesForm = ({ handleClose }) => {
                               <Field
                                 name={`rules.${index}.action.alertRecipient`}
                                 id='action-alert-recipient'
+                                value={rule.action.alertRecipient ? rule.action.alertRecipient : '' }
                               />
                             </div>
                           )}

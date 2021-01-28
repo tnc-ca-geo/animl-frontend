@@ -27,6 +27,7 @@ const initialState = {
   },
   views: {
     views: [],
+    models: [],
     unsavedChanges: false,
     isLoading: false,
     error: null,
@@ -76,6 +77,13 @@ export const filtersSlice = createSlice({
           state.availFilters.labels.categories.push(cat);
         }
       });
+    },
+
+    getModelsSuccess: (state, { payload }) => {
+      console.log('get models success: ', payload);
+      state.views.isLoading = false;
+      state.views.error = null;
+      state.views.models = payload.models;
     },
 
     getViewsStart: (state) => { state.views.isLoading = true; },
@@ -165,7 +173,7 @@ export const filtersSlice = createSlice({
       });
       state.activeFilters = payload.filters;
     },
-    
+
   },
 });
 
@@ -177,6 +185,7 @@ export const {
   getLabelsStart,
   getLabelsSuccess,
   getLabelsFailure,
+  getModelsSuccess,
   getViewsStart,
   getViewsSuccess,
   getViewsFailure,
@@ -215,11 +224,21 @@ export const fetchLabels = () => async dispatch => {
   }
 };
 
+// fetchModels thunk
+export const fetchModels = () => async dispatch => {
+  try {
+    dispatch(getViewsStart());
+    const models = await call('getModels');
+    dispatch(getModelsSuccess(models));
+  } catch (err) {
+    dispatch(getViewsFailure(err.toString()))
+  }
+};
+
 // fetchViews thunk
 export const fetchViews = () => async dispatch => {
   try {
     dispatch(getViewsStart());
-    // const views = await getViews();
     const views = await call('getViews');
     dispatch(getViewsSuccess(views));
   } catch (err) {
@@ -228,13 +247,12 @@ export const fetchViews = () => async dispatch => {
 };
 
 // editView thunk
-export const editView = ({ operation, payload }) =>
+export const editView = (operation, payload) =>
   async (dispatch, getState) => {
     try {
       dispatch(editViewStart());
       switch (operation) {
         case 'create': {
-          // const res = await createView(payload);
           const res = await call('createView', payload);
           const view = res.createView.view;
           dispatch(saveViewSuccess(view));
@@ -242,7 +260,6 @@ export const editView = ({ operation, payload }) =>
           break;
         }
         case 'update': {
-          // const res = await updateView(payload);
           const res = await call('updateView', payload);
           const view = res.updateView.view;
           dispatch(saveViewSuccess(view));
@@ -250,7 +267,6 @@ export const editView = ({ operation, payload }) =>
           break;
         }
         case 'delete': {
-          // const res = await deleteView(payload);
           const res = await call('deleteView', payload);
           const views = getState().filters.views.views;
           const defaultView = views.filter((view) => {
@@ -303,6 +319,11 @@ export const selectSelectedView = createSelector(
     views.views.filter((view) => view.selected)[0]
   )
 );
+export const selectModels = createSelector(
+  [selectViews],
+  (views) => views.models
+);
+
 export const selectUnsavedViewChanges = state => (
   state.filters.views.unsavedChanges
 );

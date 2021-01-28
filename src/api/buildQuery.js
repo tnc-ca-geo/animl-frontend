@@ -18,6 +18,7 @@ const viewFields = `
     }
     action {
       type
+      alertRecipient
       model {
         _id
         name
@@ -142,6 +143,19 @@ export default {
       {
         labels {
           categories
+        }
+      }
+    `,
+  }),
+
+  getModels: (input) => ({
+    template: `
+      {
+        models {
+          _id
+          name
+          description
+          version
         }
       }
     `,

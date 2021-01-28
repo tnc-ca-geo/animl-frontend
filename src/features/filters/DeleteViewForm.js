@@ -81,7 +81,7 @@ const DeleteViewForm = ({ handleClose }) => {
   const dispatch = useDispatch();
 
   const handleDeleteViewSubmit = (values) => {
-    dispatch(editView({ operation: 'delete', payload: values}));
+    dispatch(editView('delete', values));
     handleClose();  // TODO: show loading & wait for success to close
   };
 
