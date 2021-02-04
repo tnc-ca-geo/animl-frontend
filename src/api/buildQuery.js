@@ -19,12 +19,7 @@ const viewFields = `
     action {
       type
       alertRecipient
-      model {
-        _id
-        name
-        description
-        version
-      }
+      model
     }
   }
   `

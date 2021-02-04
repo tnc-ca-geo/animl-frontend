@@ -14,25 +14,6 @@ const ImageWrapper = styled.div({
   position: 'relative',
 });
 
-const testBBoxes = [
-  {
-    bbox: [
-      0.3177,
-      0.6124,
-      0.1737,
-      0.2574
-    ]
-  },
-  {
-    bbox: [
-      0.4584,
-      0.6838,
-      0.1612,
-      0.1831
-    ]
-  }
-];
-
 const FullSizeImage = ({ image }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const containerEl = useRef(null);
@@ -58,16 +39,27 @@ const FullSizeImage = ({ image }) => {
 
   const handleImgLoaded = () => setImgLoaded(true);
 
+  useEffect(() => {
+    console.log('labels: ', image.labels);
+    setImgLoaded(false);
+  }, [ image ]);
+
+  useEffect(() => {
+    console.log('imgLoaded: ', imgLoaded);
+  }, [ imgLoaded ]);
+
   return (
     <ImageWrapper ref={containerEl}>
-      {imgLoaded && testBBoxes.map((label, index) => (
-        <BoundingBox
-          key={index}
-          imageWidth={width}
-          imageHeight={height}
-          initialBbox={label.bbox}
-        />
-      ))}
+      {imgLoaded && image.labels.map((label, index) => {
+        return ( 
+          <BoundingBox
+            key={index}
+            imageWidth={width}
+            imageHeight={height}
+            initialBbox={label.bbox}
+          />
+        )
+      })}
       <FullImage src={image.url} onLoad={handleImgLoaded}/>
     </ImageWrapper>
   );

@@ -88,7 +88,6 @@ const AutomationRulesForm = ({ handleClose }) => {
   const models = useSelector(selectModels);
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     console.log('models: ', models)
     if (!models.length) {
@@ -166,9 +165,9 @@ const AutomationRulesForm = ({ handleClose }) => {
                               <label htmlFor='action-model'>Model</label>
                               <Field
                                 as='select'
-                                name={`rules.${index}.action.model._id`}
+                                name={`rules.${index}.action.model`}
                                 id='action-model'
-                                value={rule.action.model ? rule.action.model._id : '' }
+                                value={rule.action.model ? rule.action.model : '' }
                               >
                                 <option value='' label='Select an model' />
                                 {models.map((model) => (

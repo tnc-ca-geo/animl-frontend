@@ -18,9 +18,14 @@ import {
 import { Image } from '../../components/Image';
 
 const LabelPill = styled.span({
-  backgroundColor: '$gray300',
-  padding: '$1 $2',
-  borderRadius: '4px',
+  // backgroundColor: '$gray300',
+  border: '$1 solid $hiContrast',
+  fontSize: '$2',
+  fontFamily: '$mono',
+  padding: '$1 $3',
+  marginRight: '$2',
+  borderRadius: '$3',
+  // textTransform: 'uppercase',
 });
 
 // TODO: make table horizontally scrollable on smaller screens

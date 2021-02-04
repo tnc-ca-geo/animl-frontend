@@ -83,7 +83,11 @@ export const filtersSlice = createSlice({
       console.log('get models success: ', payload);
       state.views.isLoading = false;
       state.views.error = null;
-      state.views.models = payload.models;
+      let modelEntities = {};
+      payload.models.forEach((model) => {
+        modelEntities[model._id] = model;
+      });
+      state.views.models = modelEntities;
     },
 
     getViewsStart: (state) => { state.views.isLoading = true; },
@@ -321,7 +325,7 @@ export const selectSelectedView = createSelector(
 );
 export const selectModels = createSelector(
   [selectViews],
-  (views) => views.models
+  (views) => Object.values(views.models)
 );
 
 export const selectUnsavedViewChanges = state => (

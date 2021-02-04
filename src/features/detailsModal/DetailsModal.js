@@ -141,8 +141,12 @@ const DetailsModal = () => {
   }, [reviewMode, dispatch]);
 
   return (
-    <Modal size='lg'>
-      <DetailsHeader>
+    <Modal
+      handleClose={handleCloseButtonClick}
+      header='Image details'
+      size='lg'
+    >
+      {/*<DetailsHeader>
         <ControlGroup>
           Label review mode
           <IconButton 
@@ -163,7 +167,7 @@ const DetailsModal = () => {
         >
           <FontAwesomeIcon icon={['fas', 'times']} />
         </IconButton>
-      </DetailsHeader>
+          </DetailsHeader>*/}
       <DetailsBody>
         <ThumbnailsStrip>
           thumbnails

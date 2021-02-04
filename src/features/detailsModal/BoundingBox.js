@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '../../theme/stitches.config';
 import ResizableRect from 'react-resizable-rotatable-draggable';
 
@@ -7,41 +7,53 @@ const StyledResizableRect = styled(ResizableRect, {
   border: '$2 solid $blue400',
 });
 
-const absToNormalized = (rect, image) => {
+// convert [left, top, width, height] in absolute values to 
+// [ymin, xmin, ymax, xmax] in relative values
+const absToRel = (rect, image) => {
   const { left, top, width, height } = rect;
   const { imageWidth, imageHeight } = image;
-  return [
-    (Math.round(left) / imageWidth),
-    (Math.round(top) / imageHeight),
-    (Math.round(width) / imageWidth),
-    (Math.round(height) / imageHeight),
-  ];
+  const ymin = Math.round(top) / imageHeight;
+  const xmin = Math.round(left) / imageWidth;
+  const ymax = Math.round(top) + Math.round(height) / imageHeight;
+  const xmax = Math.round(left) + Math.round(width) / imageWidth;
+  return [ymin, xmin, ymax, xmax];
 };
 
-// where the bbox coordinates are [x, y, box_width, box_height]
+// convert [ymin, xmin, ymax, xmax] in relative values to 
+// [left, top, width, height] in absolute values
+const relToAbs = (bbox, imageWidth, imageHeight) => {
+  const left = bbox[1] * imageWidth;
+  const top = bbox[0] * imageHeight;
+  const width = (bbox[3] - bbox[1]) * imageWidth;
+  const height = (bbox[2] - bbox[0]) * imageHeight;
+  return { left, top, width, height };
+};
 
 const BoundingBox = ({ imageWidth, imageHeight, initialBbox }) => {
-  // console.log('bbox: ', initialBbox);
-  // console.log('image width: ', imageWidth);
-  // console.log('image height: ', imageHeight);
 
-  // TODO: store bbox in image entry in images slice
+  // megadetector returns bboxes as 
+  // [ymin, xmin, ymax, xmax] in relative values
+  // so we are using that format in state. 
   const [ bbox, setBbox ] = useState(initialBbox);
-  const left = bbox[0] * imageWidth;
-  const top = bbox[1] * imageHeight;
-  const width = bbox[2] * imageWidth;
-  const height = bbox[3] * imageHeight;
+  const { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight)
 
+  useEffect(() => {
+    console.log('creating new bbox: ', bbox);
+  }, []);
   // TODO: prevent bbox from moving off image
 
   const handleResize = (style, isShiftKey, type) => {
     const rect = style;
     const image = { imageWidth, imageHeight };
-    const newBbox = absToNormalized(rect, image);
+    const newBbox = absToRel(rect, image);
     setBbox(newBbox);
   };
 
   const handleDrag = (deltaX, deltaY) => {
+    console.log('dragging')
+    console.log('deltax: ', deltaX)
+    console.log('deltay: ', deltaY)
+
     const rect = {
       left: left + deltaX,
       top: top + deltaY,
@@ -49,7 +61,7 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox }) => {
       height,
     };
     const image = { imageWidth, imageHeight };
-    const newBbox = absToNormalized(rect, image);
+    const newBbox = absToRel(rect, image);
     setBbox(newBbox);
   };
 
