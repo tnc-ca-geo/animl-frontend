@@ -4,7 +4,6 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 
-
 const ResizeHandle = styled('div', {
   width: '$3',
   height: '$3',
@@ -48,10 +47,67 @@ const DragHandle = styled('div', {
   }
 });
 
+const BoundingBoxLabel = styled('div', {
+  backgroundColor: '#345EFF',
+  color: '$loContrast',
+  fontFamily: '$mono',
+  padding: '$1 $2',
+  position: 'absolute',
+  left: '-2px',
+  // top: '-29px',
+  variants: {
+    label: {
+      animal: {
+        backgroundColor: '#F3CA6C',
+      },
+      fox: {
+        backgroundColor: '#345EFF',
+      },
+      skunk: {
+        backgroundColor: '#E83797',
+      },
+      rodent: {
+        backgroundColor: '#E04040',
+      },
+      person: {
+        backgroundColor: '#00C797'
+      }
+    },
+    pos: {
+      top: {
+        top: '-29px',
+        // backgroundColor: 'papayawhip'
+      },
+      bottom: {
+        top: '-2px',
+      }
+    }
+  }
+});
+
 const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
   position: 'absolute !important;',
   border: '2px solid #345EFF',
+  variants: {
+    label: {
+      animal: {
+        borderColor: '#F3CA6C',
+      },
+      fox: {
+        borderColor: '#345EFF',
+      },
+      skunk: {
+        borderColor: '#E83797',
+      },
+      rodent: {
+        borderColor: '#E04040',
+      },
+      person: {
+        borderColor: '#00C797'
+      }
+    }
+  }
 });
 
 // convert [left, top, width, height] in absolute values to 
@@ -76,7 +132,7 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
   return { left, top, width, height };
 };
 
-const BoundingBox = ({ imageWidth, imageHeight, initialBbox }) => {
+const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
 
   // megadetector returns bboxes as 
   // [ymin, xmin, ymax, xmax] in relative values
@@ -169,7 +225,14 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox }) => {
         handle={(location) => <ResizeHandle location={location} />}
         onResize={onResize}
         onResizeStop={onResizeStop}
+        label={label}
       >
+        <BoundingBoxLabel
+          label={label}
+          pos={(top > 30) ? 'top' : 'bottom'}
+        >
+          {label}
+        </BoundingBoxLabel>
         <DragHandle className='drag-handle'/>
       </StyledResizableBox>
     </Draggable>

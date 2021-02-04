@@ -57,6 +57,7 @@ const FullSizeImage = ({ image }) => {
             imageWidth={width}
             imageHeight={height}
             initialBbox={label.bbox}
+            label={label.category}
           />
         )
       })}
