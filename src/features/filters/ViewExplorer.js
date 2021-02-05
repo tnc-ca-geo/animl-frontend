@@ -8,7 +8,8 @@ import {
 import SidebarNav from './SidebarNav';
 import FiltersPanel from './FiltersPanel';
 import ImagesPanel from '../imagesExplorer/ImagesPanel';
-import DetailsModal from '../detailsModal/DetailsModal';
+// import DetailsModal from '../detailsModal/DetailsModal';
+import DetailsPanel from '../detailsModal/DetailsPanel';
 import { selectDetailsOpen } from '../detailsModal/detailsModalSlice';
 
 
@@ -36,9 +37,9 @@ export function ViewExplorer() {
     <ViewExplorerWrapper>
       <SidebarNav view={selectedView} />
       <ViewExplorerBody>
-        <FiltersPanel />
+        <FiltersPanel expandedDefault={true} />
         <ImagesPanel />
-        {detailsOpen && <DetailsModal />}
+        <DetailsPanel expanded={detailsOpen}/>
       </ViewExplorerBody>
     </ViewExplorerWrapper>
   );

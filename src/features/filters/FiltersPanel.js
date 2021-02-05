@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
@@ -15,6 +15,7 @@ import {
  } from './filtersSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
+import PanelHeader from '../../components/PanelHeader';
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
 import DateFilter from './DateFilter';
@@ -36,15 +37,28 @@ const FiltersHeader = styled.div({
 });
 
 const StyledFiltersPanel = styled.div({
-  width: '370px',
-  borderRight: '$1 solid $gray400'
+  position: 'relative',
+  // width: '370px',
+  borderRight: '$1 solid $gray400',
+  transition: 'width 1s ease-out',
+  variants: {
+    expanded: {
+      true: {
+        width: '370px',
+      },
+      false: {
+        width: '0px',
+      },
+    },
+  }
 });
 
-const FiltersPanel = () => {
+const FiltersPanel = ({ expandedDefault }) => {
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
   const availCameras = useSelector(selectAvailCameras);
   const availLabels = useSelector(selectAvailLabels);
+  const [ expanded, setExpanded ] = useState(expandedDefault);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -56,16 +70,16 @@ const FiltersPanel = () => {
     }
   }, [availCameras, availLabels, dispatch]);
 
+  const handleFilterPanelClose = () => {
+    setExpanded(false);
+  }
+
   return (
-    <StyledFiltersPanel>
-      <FiltersHeader>
-        <Label>
-          Filters
-        </Label>
-        <IconButton variant='ghost'>
-          <FontAwesomeIcon icon={['fas', 'times']}/>
-        </IconButton>
-      </FiltersHeader>
+    <StyledFiltersPanel expanded={expanded}>
+      <PanelHeader 
+        title='Filters'
+        handlePanelClose={handleFilterPanelClose}
+      />
       <Accordion
         label='Cameras'
         expandedDefault={true}
