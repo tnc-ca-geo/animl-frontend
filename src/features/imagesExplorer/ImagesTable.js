@@ -17,17 +17,23 @@ import {
 } from '../detailsModal/detailsModalSlice';
 import { Image } from '../../components/Image';
 
-const LabelPill = styled.span({
+const LabelPill = styled('div', {
   // backgroundColor: '$gray300',
   border: '$1 solid $hiContrast',
   fontSize: '$2',
   fontFamily: '$mono',
   padding: '$1 $3',
   marginRight: '$2',
+  marginBottom: '$2',
   borderRadius: '$3',
   // textTransform: 'uppercase',
 });
 
+const LabelContainer = styled('div', {
+  width: '100%',
+  display: 'flex',
+  flexWrap: 'wrap',
+});
 // TODO: make table horizontally scrollable on smaller screens
 //   '.tableWrap': {
 //     display: 'block',
@@ -132,9 +138,9 @@ const scrollbarWidth = () => {
 const makeRows = (images) => {
   return images.map((image) => {
     const thumbnail = <Image src={image.thumbUrl} />;
-    const labelCagegories = <div>{image.labels.map((label, index) => (
+    const labelCagegories = <LabelContainer>{image.labels.map((label, index) => (
       <LabelPill key={index}>{label.category}</LabelPill>
-    ))}</div>;
+    ))}</LabelContainer>;
 
     let needsReview = 'Yes'; 
     image.labels.forEach((label) => {
@@ -186,17 +192,18 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         disableResizing: true,
       },
       {
+        Header: 'Labels',
+        accessor: 'labelCagegories',
+        disableSortBy: true,
+        width: '250',
+      },
+      {
         Header: 'Date created',
         accessor: 'dateTimeOriginal',
       },
       {
         Header: 'Date added',
         accessor: 'dateAdded',
-      },
-      {
-        Header: 'Labels',
-        accessor: 'labelCagegories',
-        disableSortBy: true,
       },
       {
         Header: 'Needs review',

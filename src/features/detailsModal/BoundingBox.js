@@ -47,6 +47,14 @@ const DragHandle = styled('div', {
   }
 });
 
+const labelColorMap = {
+  animal: '#F3CA6C',
+  fox: '#345EFF',
+  skunk: '#E83797',
+  rodent: '#E04040',
+  person: '#00C797',
+}
+
 const BoundingBoxLabel = styled('div', {
   backgroundColor: '#345EFF',
   color: '$loContrast',
@@ -56,23 +64,6 @@ const BoundingBoxLabel = styled('div', {
   left: '-2px',
   // top: '-29px',
   variants: {
-    label: {
-      animal: {
-        backgroundColor: '#F3CA6C',
-      },
-      fox: {
-        backgroundColor: '#345EFF',
-      },
-      skunk: {
-        backgroundColor: '#E83797',
-      },
-      rodent: {
-        backgroundColor: '#E04040',
-      },
-      person: {
-        backgroundColor: '#00C797'
-      }
-    },
     pos: {
       top: {
         top: '-29px',
@@ -89,25 +80,6 @@ const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
   position: 'absolute !important;',
   border: '2px solid #345EFF',
-  variants: {
-    label: {
-      animal: {
-        borderColor: '#F3CA6C',
-      },
-      fox: {
-        borderColor: '#345EFF',
-      },
-      skunk: {
-        borderColor: '#E83797',
-      },
-      rodent: {
-        borderColor: '#E04040',
-      },
-      person: {
-        borderColor: '#00C797'
-      }
-    }
-  }
 });
 
 // convert [left, top, width, height] in absolute values to 
@@ -141,6 +113,7 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
+  const labelColor = labelColorMap[label];
 
   const onDrag = (event, {deltaX, deltaY}) => {
     const rect = {
@@ -207,7 +180,6 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
-    console.log('setting max constraints to infinity')
   }
 
   return (
@@ -226,10 +198,15 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
         onResize={onResize}
         onResizeStop={onResizeStop}
         label={label}
+        css={{
+          borderColor: labelColor
+        }}
       >
         <BoundingBoxLabel
-          label={label}
           pos={(top > 30) ? 'top' : 'bottom'}
+          css={{
+            backgroundColor: labelColor
+          }}
         >
           {label}
         </BoundingBoxLabel>
