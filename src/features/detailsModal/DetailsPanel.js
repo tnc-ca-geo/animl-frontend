@@ -29,7 +29,7 @@ const LabelsPane = styled.div({
 });
 
 const ItemValue = styled.div({
-  fontSize: '$4',
+  fontSize: '$3',
   fontFamily: '$mono',
   color: '$hiContrast',
 });
@@ -42,6 +42,7 @@ const ItemLabel = styled.div({
 
 const StyledItem = styled.div({
   marginBottom: '$4',
+  marginRight: '$7',
 });
 
 const Item = ({label, value}) => (
@@ -53,7 +54,6 @@ const Item = ({label, value}) => (
 
 const MetadataList = styled.div({
   display: 'flex',
-  flexDirection: 'column',
 });
 
 const MetadataPane = styled.div({
@@ -157,9 +157,20 @@ const DetailsPanel = ({ expanded }) => {
         handlePanelClose={handleDetailsPanelClose}
       />
       <DetailsBody className={expanded ? 'expanded' : null}>
-        <ImagePane>
-          {image && <FullSizeImage image={image} />}
-        </ImagePane>
+        {image &&
+          <div>
+            <ImagePane>
+              <FullSizeImage image={image} />
+            </ImagePane>
+            <MetadataPane>
+              <MetadataList>
+                <Item label='Date created' value={image.dateTimeOriginal}/>
+                <Item label='Camera' value={image.cameraSn}/>
+                <Item label='Camera make' value={image.make}/>
+              </MetadataList>
+            </MetadataPane>
+          </div>
+        }
       </DetailsBody>
     </StyledDetailsPanel>
   );

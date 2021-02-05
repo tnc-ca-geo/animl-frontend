@@ -40,7 +40,7 @@ const StyledFiltersPanel = styled.div({
   position: 'relative',
   // width: '370px',
   borderRight: '$1 solid $gray400',
-  transition: 'width 1s ease-out',
+  // transition: 'width 1s ease-out',
   variants: {
     expanded: {
       true: {
