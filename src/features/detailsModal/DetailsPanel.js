@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
-import { selectImages } from '../imagesExplorer/imagesSlice';
+import {
+  selectImages,
+  selectImagesCount
+} from '../imagesExplorer/imagesSlice';
 import {
   detailsModalClosed,
   incrementImageIndex, 
@@ -16,13 +19,20 @@ import IconButton from '../../components/IconButton';
 import Modal from '../../components/Modal';
 
 const ProgressBar = styled.div({
-  height: '40px',
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'papayawhip',
+  height: '100%',
+  width: '2px',
+  backgroundColor: '$gray300',
+  // display: 'flex',
+  // alignItems: 'center',
+  // justifyContent: 'center',
 });
+
+const ProgressIndicator = styled.span({
+  backgroundColor: '$hiContrast',
+  width: '100%',
+  display: 'block',
+});
+
 
 const LabelsPane = styled.div({
   padding: '$3',
@@ -41,8 +51,8 @@ const ItemLabel = styled.div({
 });
 
 const StyledItem = styled.div({
-  marginBottom: '$4',
-  marginRight: '$7',
+  marginBottom: '$3',
+  marginRight: '$4',
 });
 
 const Item = ({label, value}) => (
@@ -54,10 +64,11 @@ const Item = ({label, value}) => (
 
 const MetadataList = styled.div({
   display: 'flex',
+  flexWrap: 'wrap',
 });
 
 const MetadataPane = styled.div({
-  padding: '$3',
+  padding: '$3 0',
   marginBottom: '$6',
 });
 
@@ -88,16 +99,11 @@ const ImageDetails = styled.div({
   gridTemplateColumns: '1.2fr 1fr',
 });
 
-const ThumbnailsStrip = styled.div({
-  width: '100%',
-  height: '112px',
-  backgroundColor: 'lavender',
-});
 
 const DetailsBody = styled.div({
   flexGrow: 1,
   display: 'grid',
-  gridTemplateRows: 'auto 1fr auto',
+  gridTemplateColumns: '24px 1fr',
   margin: '$3',
 });
 
@@ -116,7 +122,7 @@ const StyledDetailsPanel = styled.div({
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',
   marginLeft: '100%',
-  transition: 'margin-left 0.1s ease-out',
+  // transition: 'margin-left 0.2s ease-out',
 
   variants: {
     expanded: {
@@ -133,7 +139,11 @@ const DetailsPanel = ({ expanded }) => {
   const images = useSelector(selectImages);
   const image = images[imageIndex];
   const [ reviewMode, setReviewMode ] = useState(false);
+  const imageCount = useSelector(selectImagesCount);
+  const progress = (imageIndex / imageCount) * 100; 
   const dispatch = useDispatch();
+
+  console.log('progress: ', progress)
 
   const handleToggleReviewMode = () => setReviewMode(!reviewMode);
   const handleDetailsPanelClose = () => dispatch(detailsModalClosed());
@@ -157,16 +167,21 @@ const DetailsPanel = ({ expanded }) => {
         handlePanelClose={handleDetailsPanelClose}
       />
       <DetailsBody className={expanded ? 'expanded' : null}>
+        <ProgressBar>
+          <ProgressIndicator css={{height: progress + `%`}} />
+        </ProgressBar>
         {image &&
           <div>
             <ImagePane>
               <FullSizeImage image={image} />
             </ImagePane>
             <MetadataPane>
+              <InfoPaneHeader label='Metadata' />
               <MetadataList>
                 <Item label='Date created' value={image.dateTimeOriginal}/>
                 <Item label='Camera' value={image.cameraSn}/>
                 <Item label='Camera make' value={image.make}/>
+                <Item label='File name' value={image.originalFileName}/>
               </MetadataList>
             </MetadataPane>
           </div>

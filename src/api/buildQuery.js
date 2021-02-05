@@ -30,6 +30,7 @@ const imageFields = `
   dateAdded
   cameraSn
   make
+  originalFileName
   labels {
     category
     bbox
