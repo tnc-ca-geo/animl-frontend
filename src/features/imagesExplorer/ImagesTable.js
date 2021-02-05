@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { styled } from '../../theme/stitches.config.js';
+import { styled, labelColors } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -20,6 +20,7 @@ import { Image } from '../../components/Image';
 const LabelPill = styled('div', {
   // backgroundColor: '$gray300',
   border: '$1 solid $hiContrast',
+  color: '$hiContrast',
   fontSize: '$2',
   fontFamily: '$mono',
   padding: '$1 $3',
@@ -139,7 +140,12 @@ const makeRows = (images) => {
   return images.map((image) => {
     const thumbnail = <Image src={image.thumbUrl} />;
     const labelCagegories = <LabelContainer>{image.labels.map((label, index) => (
-      <LabelPill key={index}>{label.category}</LabelPill>
+      <LabelPill
+        key={index}
+        css={{ backgroundColor: labelColors[label.category]}}
+      >
+        {label.category}
+      </LabelPill>
     ))}</LabelContainer>;
 
     let needsReview = 'Yes'; 

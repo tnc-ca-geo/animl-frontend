@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { styled } from '../../theme/stitches.config';
+import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
@@ -46,14 +46,6 @@ const DragHandle = styled('div', {
     cursor: 'grabbing',
   }
 });
-
-const labelColorMap = {
-  animal: '#F3CA6C',
-  fox: '#345EFF',
-  skunk: '#E83797',
-  rodent: '#E04040',
-  person: '#00C797',
-}
 
 const BoundingBoxLabel = styled('div', {
   backgroundColor: '#345EFF',
@@ -113,7 +105,7 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
-  const labelColor = labelColorMap[label];
+  const labelColor = labelColors[label];
 
   const onDrag = (event, {deltaX, deltaY}) => {
     const rect = {
