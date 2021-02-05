@@ -129,26 +129,26 @@ const StyledDetailsPanel = styled.div({
 });
 
 const DetailsPanel = ({ expanded }) => {
-  // const imageIndex = useSelector(selectDetailsIndex);
-  // const images = useSelector(selectImages);
-  // const image = images[imageIndex];
-  // const [ reviewMode, setReviewMode ] = useState(false);
+  const imageIndex = useSelector(selectDetailsIndex);
+  const images = useSelector(selectImages);
+  const image = images[imageIndex];
+  const [ reviewMode, setReviewMode ] = useState(false);
   const dispatch = useDispatch();
 
-  // const handleToggleReviewMode = () => setReviewMode(!reviewMode);
+  const handleToggleReviewMode = () => setReviewMode(!reviewMode);
   const handleDetailsPanelClose = () => dispatch(detailsModalClosed());
 
-  // // Listen for left/right arrow keydowns
-  // useEffect(() => {
-  //   const handleKeyDown = (e) => {
-  //     const delta = (e.keyCode === 37) ? 'decrement'
-  //                 : (e.keyCode === 39) ? 'increment'
-  //                 : null;
-  //     dispatch(incrementImageIndex({ delta })); 
-  //   };
-  //   window.addEventListener('keydown', handleKeyDown)
-  //   return () => { window.removeEventListener('keydown', handleKeyDown) }
-  // }, [reviewMode, dispatch]);
+  // Listen for left/right arrow keydowns
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const delta = (e.keyCode === 37) ? 'decrement'
+                  : (e.keyCode === 39) ? 'increment'
+                  : null;
+      dispatch(incrementImageIndex({ delta })); 
+    };
+    window.addEventListener('keydown', handleKeyDown)
+    return () => { window.removeEventListener('keydown', handleKeyDown) }
+  }, [reviewMode, dispatch]);
 
   return (
     <StyledDetailsPanel expanded={expanded}>
@@ -156,33 +156,11 @@ const DetailsPanel = ({ expanded }) => {
         title='Image details'
         handlePanelClose={handleDetailsPanelClose}
       />
-      {/*<DetailsBody className={expanded ? 'expanded' : null}>
-        <ThumbnailsStrip>
-          thumbnails
-        </ThumbnailsStrip>
-        <ImageDetails>
-          <ImagePane>
-            <FullSizeImage image={image} />
-          </ImagePane>
-          <div>
-            <MetadataPane>
-              <InfoPaneHeader label='Metadata' />
-              <MetadataList>
-                <Item label='Date created' value={image.dateTimeOriginal}/>
-                <Item label='Camera' value={image.cameraSn}/>
-                <Item label='Camera make' value={image.make}/>
-              </MetadataList>
-            </MetadataPane>
-            <LabelsPane>
-              <InfoPaneHeader label='Labels' />
-              <LabelsTable labels={image.labels}/>
-            </LabelsPane>
-          </div>
-        </ImageDetails>
-        <ProgressBar>
-          progress bar
-        </ProgressBar>
-      </DetailsBody>*/}
+      <DetailsBody className={expanded ? 'expanded' : null}>
+        <ImagePane>
+          {image && <FullSizeImage image={image} />}
+        </ImagePane>
+      </DetailsBody>
     </StyledDetailsPanel>
   );
 };

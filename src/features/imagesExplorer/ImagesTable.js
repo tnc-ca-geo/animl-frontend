@@ -69,6 +69,15 @@ const TableRow = styled.div({
       borderBottom: '0',
     },
   },
+
+  variants: {
+    selected: {
+      true: {
+        // 'zIndex': '2',
+        // 'boxShadow': '0px 4px 14px 0px #0000003b',      
+      }
+    }
+  }
 });
 
 const TableCell = styled.div({
@@ -97,9 +106,17 @@ const HeaderCell = styled(TableCell, {
 
 const DataCell = styled(TableCell, {
   backgroundColor: '$loContrast',
-  margin: '2px $0',
+  margin: '0px',
+  marginBottom: '2px',
   display: 'flex',
   alignItems: 'center',
+  variants: {
+    selected: {
+      true: {
+        backgroundColor: '$gray300',
+      }
+    }
+  }
 });
 
 const TableHeader = styled.div({
@@ -166,6 +183,7 @@ const makeRows = (images) => {
 
 const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
+  const selectedImageIndex = useSelector(selectDetailsIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const detailsIndex = useSelector(selectDetailsIndex);
@@ -289,10 +307,14 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
           <TableRow
             {...row.getRowProps({ style })}
             onClick={() => handleRowClick(row.id)}
+            selected={selectedImageIndex === index}
           >
             {row.cells.map(cell => {
               return (
-                <DataCell {...cell.getCellProps()}>
+                <DataCell
+                  {...cell.getCellProps()}
+                  selected={selectedImageIndex === index}
+                >
                   {cell.render('Cell')}
                 </DataCell>
               )
