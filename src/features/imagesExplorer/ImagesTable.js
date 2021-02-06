@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
@@ -10,6 +10,7 @@ import {
   selectPaginatedField,
   selectSortAscending,
   sortChanged,
+  visibleRowsChanged,
 } from './imagesSlice';
 import {
   selectDetailsIndex,
@@ -188,6 +189,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const sortAscending = useSelector(selectSortAscending);
   const detailsIndex = useSelector(selectDetailsIndex);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);
+  const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const hasMountedRef = useRef(false);
@@ -276,6 +278,10 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   );
 
   useEffect(() => {
+    dispatch(visibleRowsChanged(visibleRows))
+  }, [dispatch, visibleRows]);
+
+  useEffect(() => {
     if (detailsIndex) {
       listRef.current.scrollToItem(detailsIndex);
     }
@@ -348,7 +354,20 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
               height={height - 51}
               itemCount={imagesCount}
               itemSize={108}
-              onItemsRendered={onItemsRendered}
+              onItemsRendered={({
+                overscanStartIndex,
+                overscanStopIndex,
+                visibleStartIndex,
+                visibleStopIndex
+              }) => {
+                setVisibleRows([visibleStartIndex, visibleStopIndex]);
+                onItemsRendered({
+                  overscanStartIndex,
+                  overscanStopIndex,
+                  visibleStartIndex,
+                  visibleStopIndex
+                });
+              }}              
               ref={list => {
                 // https://github.com/bvaughn/react-window/issues/324
                 ref(list);

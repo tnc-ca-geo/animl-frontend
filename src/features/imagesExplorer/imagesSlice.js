@@ -11,6 +11,7 @@ const initialState = {
   images: [],
   isLoading: false,
   error: null,
+  visibleRows: [],
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[0],
     paginatedField: 'dateTimeOriginal',
@@ -72,6 +73,10 @@ export const imagesSlice = createSlice({
       }
     },
 
+    visibleRowsChanged: (state, { payload }) => {
+      state.visibleRows = payload;
+    },
+
   },
 });
 
@@ -81,6 +86,7 @@ export const {
   getImagesSuccess,
   getImagesFailure,
   sortChanged,
+  visibleRowsChanged,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -113,6 +119,6 @@ export const selectHasNext = state => state.images.pageInfo.hasNext;
 export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectIsLoading = state => state.images.isLoading;
-
+export const selectVisibleRows = state => state.images.visibleRows;
 
 export default imagesSlice.reducer;

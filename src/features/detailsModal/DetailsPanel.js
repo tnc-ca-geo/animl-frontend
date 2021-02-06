@@ -4,7 +4,8 @@ import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import {
   selectImages,
-  selectImagesCount
+  selectImagesCount,
+  selectVisibleRows
 } from '../imagesExplorer/imagesSlice';
 import {
   detailsModalClosed,
@@ -22,6 +23,7 @@ const ProgressBar = styled.div({
   height: '100%',
   width: '2px',
   backgroundColor: '$gray300',
+  position: 'relative',
   // display: 'flex',
   // alignItems: 'center',
   // justifyContent: 'center',
@@ -29,7 +31,8 @@ const ProgressBar = styled.div({
 
 const ProgressIndicator = styled.span({
   backgroundColor: '$hiContrast',
-  width: '100%',
+  width: '2px',
+  position: 'absolute',
   display: 'block',
 });
 
@@ -138,12 +141,16 @@ const DetailsPanel = ({ expanded }) => {
   const imageIndex = useSelector(selectDetailsIndex);
   const images = useSelector(selectImages);
   const image = images[imageIndex];
-  const [ reviewMode, setReviewMode ] = useState(false);
   const imageCount = useSelector(selectImagesCount);
-  const progress = (imageIndex / imageCount) * 100; 
+  const visibleRows = useSelector(selectVisibleRows);
+  const progressStart = (visibleRows[0] / imageCount) * 100;
+  const progressEnd = ((visibleRows[1] - visibleRows[0]) / imageCount) * 100; 
+  const [ reviewMode, setReviewMode ] = useState(false);
   const dispatch = useDispatch();
 
-  console.log('progress: ', progress)
+  console.log('progressStart: ', progressStart);
+  console.log('progressEnd: ', progressEnd);
+
 
   const handleToggleReviewMode = () => setReviewMode(!reviewMode);
   const handleDetailsPanelClose = () => dispatch(detailsModalClosed());
@@ -168,7 +175,12 @@ const DetailsPanel = ({ expanded }) => {
       />
       <DetailsBody className={expanded ? 'expanded' : null}>
         <ProgressBar>
-          <ProgressIndicator css={{height: progress + `%`}} />
+          <ProgressIndicator
+            css={{
+              top: progressStart + '%',
+              height: progressEnd + '%',
+            }} 
+          />
         </ProgressBar>
         {image &&
           <div>
