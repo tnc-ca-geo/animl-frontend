@@ -160,7 +160,9 @@ const makeRows = (images) => {
     const labelCagegories = <LabelContainer>{image.labels.map((label, index) => (
       <LabelPill
         key={index}
-        css={{ backgroundColor: labelColors[label.category]}}
+        css={{
+          backgroundColor: labelColors[label.category].primary, 
+        }}
       >
         {label.category}
       </LabelPill>

@@ -120,7 +120,7 @@ const ControlGroup = styled.div({
 
 const StyledDetailsPanel = styled.div({
   width: 'calc(100% - 810px)',
-  height: '100%',
+  height: 'calc(100% - 56px)',
   position: 'absolute',
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',

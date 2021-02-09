@@ -55,9 +55,8 @@ const BoundingBoxLabel = styled('div', {
   padding: '$1 $2',
   position: 'absolute',
   width: 'max-content',
-  left: '-2px',
   variants: {
-    pos: {
+    verticalPos: {
       top: {
         top: '-25px',
         // backgroundColor: 'papayawhip'
@@ -65,6 +64,14 @@ const BoundingBoxLabel = styled('div', {
       bottom: {
         top: '-2px',
       }
+    },
+    horizontalPos: {
+      left: {
+        left: '-2px',
+      },
+      right: {
+        right: '-2px',
+      },
     }
   }
 });
@@ -192,11 +199,15 @@ const BoundingBox = ({ imageWidth, imageHeight, label }) => {
         handle={(location) => <ResizeHandle location={location} />}
         onResize={onResize}
         onResizeStop={onResizeStop}
-        css={{ borderColor: labelColor }}
+        css={{ borderColor: labelColor.primary }}
       >
         <BoundingBoxLabel
-          pos={(top > 30) ? 'top' : 'bottom'}
-          css={{ backgroundColor: labelColor }}
+          verticalPos={(top > 30) ? 'top' : 'bottom'}
+          horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
+          css={{
+            backgroundColor: labelColor.primary,
+            color: labelColor.text
+          }}
         >
          {category} {conf}%
         </BoundingBoxLabel>
