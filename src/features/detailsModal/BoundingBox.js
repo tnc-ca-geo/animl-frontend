@@ -51,14 +51,15 @@ const BoundingBoxLabel = styled('div', {
   backgroundColor: '#345EFF',
   color: '$loContrast',
   fontFamily: '$mono',
+  fontSize: '$2',
   padding: '$1 $2',
   position: 'absolute',
+  width: 'max-content',
   left: '-2px',
-  // top: '-29px',
   variants: {
     pos: {
       top: {
-        top: '-29px',
+        top: '-25px',
         // backgroundColor: 'papayawhip'
       },
       bottom: {
@@ -96,16 +97,18 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
   return { left, top, width, height };
 };
 
-const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
-
+const BoundingBox = ({ imageWidth, imageHeight, label }) => {
   // megadetector returns bboxes as 
   // [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state. 
-  const [ bbox, setBbox ] = useState(initialBbox);
+  const [ bbox, setBbox ] = useState(label.bbox);
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
-  const labelColor = labelColors[label];
+  const category = label.category;
+  const conf = Number.parseFloat(label.conf * 100).toFixed(1);
+  const labelColor = labelColors[category];
+
 
   const onDrag = (event, {deltaX, deltaY}) => {
     const rect = {
@@ -189,18 +192,13 @@ const BoundingBox = ({ imageWidth, imageHeight, initialBbox, label }) => {
         handle={(location) => <ResizeHandle location={location} />}
         onResize={onResize}
         onResizeStop={onResizeStop}
-        label={label}
-        css={{
-          borderColor: labelColor
-        }}
+        css={{ borderColor: labelColor }}
       >
         <BoundingBoxLabel
           pos={(top > 30) ? 'top' : 'bottom'}
-          css={{
-            backgroundColor: labelColor
-          }}
+          css={{ backgroundColor: labelColor }}
         >
-          {label}
+         {category} {conf}%
         </BoundingBoxLabel>
         <DragHandle className='drag-handle'/>
       </StyledResizableBox>

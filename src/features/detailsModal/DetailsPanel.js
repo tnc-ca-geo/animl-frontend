@@ -148,10 +148,6 @@ const DetailsPanel = ({ expanded }) => {
   const [ reviewMode, setReviewMode ] = useState(false);
   const dispatch = useDispatch();
 
-  console.log('progressStart: ', progressStart);
-  console.log('progressEnd: ', progressEnd);
-
-
   const handleToggleReviewMode = () => setReviewMode(!reviewMode);
   const handleDetailsPanelClose = () => dispatch(detailsModalClosed());
 
