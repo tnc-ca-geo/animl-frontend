@@ -19,9 +19,27 @@ import LabelsTable from './LabelsTable';
 import IconButton from '../../components/IconButton';
 import Modal from '../../components/Modal';
 
+const IndexDisplay = styled.div({
+  fontFamily: '$mono',
+  fontSize: '$3',
+  marginRight: '$3',
+  flexGrow: '0',
+  flexShrink: '0',
+  flexBasis: '160px',
+});
+
+const Index = styled('span', {
+  color: '$hiContrast',
+  marginRight: '$3',
+})
+
+const IndexUnit = styled('span', {
+  color: '$gray600',
+});
+
 const ProgressBar = styled.div({
-  height: '100%',
-  width: '2px',
+  height: '2px',
+  width: '100%',
   backgroundColor: '$gray300',
   position: 'relative',
   // display: 'flex',
@@ -31,10 +49,17 @@ const ProgressBar = styled.div({
 
 const ProgressIndicator = styled.span({
   backgroundColor: '$hiContrast',
-  width: '2px',
+  height: '2px',
   position: 'absolute',
   display: 'block',
 });
+
+const ProgressDisplay = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  paddingRight: '$2',
+})
 
 
 const LabelsPane = styled.div({
@@ -102,20 +127,11 @@ const ImageDetails = styled.div({
   gridTemplateColumns: '1.2fr 1fr',
 });
 
-
 const DetailsBody = styled.div({
   flexGrow: 1,
   display: 'grid',
-  gridTemplateColumns: '24px 1fr',
+  // gridTemplateColumns: '20px 1fr',
   margin: '$3',
-});
-
-const ControlGroup = styled.div({
-  display: 'flex',
-  alignItems: 'center',
-  'button': {
-    marginRight: '$1',
-  },
 });
 
 const StyledDetailsPanel = styled.div({
@@ -143,8 +159,9 @@ const DetailsPanel = ({ expanded }) => {
   const image = images[imageIndex];
   const imageCount = useSelector(selectImagesCount);
   const visibleRows = useSelector(selectVisibleRows);
-  const progressStart = (visibleRows[0] / imageCount) * 100;
-  const progressEnd = ((visibleRows[1] - visibleRows[0]) / imageCount) * 100; 
+  const progress = (imageIndex / imageCount) * 100;
+  // const progressStart = (visibleRows[0] / imageCount) * 100;
+  // const progressEnd = ((visibleRows[1] - visibleRows[0]) / imageCount) * 100; 
   const [ reviewMode, setReviewMode ] = useState(false);
   const dispatch = useDispatch();
 
@@ -166,18 +183,19 @@ const DetailsPanel = ({ expanded }) => {
   return (
     <StyledDetailsPanel expanded={expanded}>
       <PanelHeader 
-        title='Image details'
         handlePanelClose={handleDetailsPanelClose}
-      />
-      <DetailsBody className={expanded ? 'expanded' : null}>
+      >
+      <ProgressDisplay>
+        <IndexDisplay>
+          <Index>{imageIndex} / {imageCount}</Index> 
+          <IndexUnit>images</IndexUnit>
+        </IndexDisplay>
         <ProgressBar>
-          <ProgressIndicator
-            css={{
-              top: progressStart + '%',
-              height: progressEnd + '%',
-            }} 
-          />
+          <ProgressIndicator css={{ width: progress + `%` }} />
         </ProgressBar>
+      </ProgressDisplay>
+      </PanelHeader>
+      <DetailsBody className={expanded ? 'expanded' : null}>
         {image &&
           <div>
             <ImagePane>

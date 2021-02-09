@@ -17,13 +17,14 @@ const StyledHeader = styled.div({
   fontWeight: '$5',
 });
 
-const PanelHeader = ({ title, handlePanelClose, }) => (
+const PanelHeader = ({ children, title, handlePanelClose, }) => (
   <StyledHeader>
     {title &&
       <PanelTitle>
         {title}
       </PanelTitle>
     }
+    { children }
     <IconButton variant='ghost'>
       <FontAwesomeIcon 
         onClick={handlePanelClose}
