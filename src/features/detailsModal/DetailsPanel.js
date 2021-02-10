@@ -135,6 +135,7 @@ const DetailsBody = styled.div({
 });
 
 const StyledDetailsPanel = styled.div({
+  boxSizing: 'border-box',
   width: 'calc(100% - 810px)',
   height: 'calc(100% - 56px)',
   position: 'absolute',
@@ -182,18 +183,16 @@ const DetailsPanel = ({ expanded }) => {
 
   return (
     <StyledDetailsPanel expanded={expanded}>
-      <PanelHeader 
-        handlePanelClose={handleDetailsPanelClose}
-      >
-      <ProgressDisplay>
-        <IndexDisplay>
-          <Index>{imageIndex} / {imageCount}</Index> 
-          <IndexUnit>images</IndexUnit>
-        </IndexDisplay>
-        <ProgressBar>
-          <ProgressIndicator css={{ width: progress + `%` }} />
-        </ProgressBar>
-      </ProgressDisplay>
+      <PanelHeader handlePanelClose={handleDetailsPanelClose}>
+        <ProgressDisplay>
+          <IndexDisplay>
+            <Index>{imageIndex + 1} / {imageCount}</Index> 
+            <IndexUnit>images</IndexUnit>
+          </IndexDisplay>
+          <ProgressBar>
+            <ProgressIndicator css={{ width: progress + `%` }} />
+          </ProgressBar>
+        </ProgressDisplay>
       </PanelHeader>
       <DetailsBody className={expanded ? 'expanded' : null}>
         {image &&

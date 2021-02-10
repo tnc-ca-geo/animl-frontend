@@ -9,7 +9,6 @@ const Button = styled('button', {
   display: 'inline-flex',
   flexShrink: 0,
   fontFamily: 'inherit',
-  fontSize: '14px',
   justifyContent: 'center',
   lineHeight: '1',
   outline: 'none',
@@ -17,7 +16,6 @@ const Button = styled('button', {
   textDecoration: 'none',
   userSelect: 'none',
   WebkitTapHighlightColor: 'transparent',
-  color: '$hiContrast',
   '::before': {
     boxSizing: 'border-box',
   },
@@ -26,36 +24,38 @@ const Button = styled('button', {
   },
 
   // Custom
-  backgroundColor: '$loContrast',
-  border: '1px solid $hiContrast',
-  borderRadius: '$1',
+  color: '$loContrast',
+  backgroundColor: '$hiContrast',
+  border: '$1 solid $hiContrast',
+  borderRadius: '$2',
   height: '$5',
-  // width: '$5',
+  fontWeight: '$3',
+  textTransform: 'uppercase',
   transition: 'all 40ms linear',
-  // borderWidth: '0',
   ':hover': {
+    color: '$hiContrast',
     backgroundColor: '$gray300',
     cursor: 'pointer',
   },
-  // ':hover': {
-  //   borderColor: '$gray700',
-  //   cursor: 'pointer',
-  // },
-  // ':active': {
-  //   backgroundColor: '$gray100',
-  // },
   ':disabled': {
     pointerEvents: 'none',
     backgroundColor: 'transparent',
     color: '$gray500',
+    borderColor: '$gray500',
   },
 
-  // backgroundColor: '$gray400',
-  // color: '$gray700',
-  // fontSize: '$2',
-  // lineHeight: '1',
-  // fontWeight: 500,
-  // border: '0',
+    // display: 'inherit',
+    // width: '100%',
+    // height: '$6',
+    // marginTop: '$6',
+    // fontSize: '$2',
+    // border: '$1 $hiContrast solid',
+    // backgroundColor: '$hiContrast',
+    // color: '$loContrast',
+    // ':hover': {
+    //   backgroundColor: '$gray300',
+    //   color: '$hiContrast',
+    // }
 
   variants: {
     size: {
@@ -66,7 +66,7 @@ const Button = styled('button', {
         paddingRight: '$2',
       },
       large: {
-        fontSize: '$3',
+        fontSize: '$2',
         height: '$6',
         paddingLeft: '$4',
         paddingRight: '$4',

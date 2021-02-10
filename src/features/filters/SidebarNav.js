@@ -67,7 +67,7 @@ const SidebarNav = ({ view }) => {
       {(modalOpen && (modalContent === 'automation-rules-form')) &&
         <Modal 
           handleClose={handleModalToggle}
-          header='Automation Rules'
+          title='Automation Rules'
           size='sm'
         >
           <AutomationRulesForm/>
@@ -76,21 +76,21 @@ const SidebarNav = ({ view }) => {
       {(modalOpen && (modalContent === 'save-view-form')) &&
         <Modal 
           handleClose={handleModalToggle}
-          header='Save View'
+          title='Save View'
           size='sm'
         >
           <SaveViewForm/>
         </Modal>
       }
       {(modalOpen && (modalContent === 'delete-view-form')) &&
-      <Modal 
-        handleClose={handleModalToggle}
-        header='Delete View'
-        size='sm'
-      >
-        <DeleteViewForm/>
-      </Modal>
-    }
+        <Modal 
+          handleClose={handleModalToggle}
+          title='Delete View'
+          size='sm'
+        >
+          <DeleteViewForm/>
+        </Modal>
+      }
     </StyledSidebarNav>
   );
 };

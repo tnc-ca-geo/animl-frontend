@@ -27,6 +27,8 @@ export const { styled, css } = createStyled({
       $blue400: '#30ADED',
       $blue500: '#003BD7',
       $blue600: '#0002C7',
+      $blue700: '#161e2e', 
+
     },
     sizes: {
       $0: '0px',

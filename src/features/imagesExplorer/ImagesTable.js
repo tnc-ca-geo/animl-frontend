@@ -20,7 +20,7 @@ import { Image } from '../../components/Image';
 
 const LabelPill = styled('div', {
   // backgroundColor: '$gray300',
-  border: '$1 solid $hiContrast',
+  // border: '$1 solid $hiContrast',
   color: '$hiContrast',
   fontSize: '$2',
   fontFamily: '$mono',
@@ -161,7 +161,7 @@ const makeRows = (images) => {
       <LabelPill
         key={index}
         css={{
-          backgroundColor: labelColors[label.category].primary, 
+          backgroundColor: labelColors[label.category].primary + 'b3', 
         }}
       >
         {label.category}
@@ -285,7 +285,9 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
 
   useEffect(() => {
     if (detailsIndex) {
-      listRef.current.scrollToItem(detailsIndex);
+      // TODO: make auto scrolling smooth:
+      // https://github.com/bvaughn/react-window/issues/16
+      listRef.current.scrollToItem(detailsIndex, 'smart');
     }
   }, [detailsIndex]);
 

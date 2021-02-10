@@ -15,6 +15,7 @@ const StyledHeader = styled.div({
   height: '$7',
   borderBottom: '$1 solid $gray400',
   fontWeight: '$5',
+  color: '$hiContrast',
 });
 
 const PanelHeader = ({ children, title, handlePanelClose, }) => (

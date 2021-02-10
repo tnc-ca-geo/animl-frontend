@@ -5,65 +5,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
+import SubmitButton from '../../components/SubmitButton';
+import FormWrapper from '../../components/FormWrapper';
+import FormFieldWrapper from '../../components/FormFieldWrapper';
+import FormError from '../../components/FormError';
 import {
   selectSelectedView,
   selectActiveFilters,
   editView,
 } from './filtersSlice';
 
-const StyledErrorMessage = styled(ErrorMessage, {
-  color: '$warning',
-})
-
-const StyledField = styled.div({
-  marginBottom: '$3',
-});
-
-// TODO: move a lot of this into a generic from component
-const StyledForm = styled.div({
-  display: 'block',
-  width: '100%',
-  label: {
-    display: 'inherit',
-    width: '100%',
-    fontFamily: '$mono',
-    fontSize: '$3',
-    fontWeight: '$4',
-    color: '$gray600',
-  },
-  input: {
-    display: 'inherit',
-    width: '100%',
-    fontSize: '$4',
-    color: '$hiContrast',
-    padding: '$2',
-    boxSizing: 'border-box',
-  },
-  textarea: {
-    display: 'inherit',
-    width: '100%',
-    fontFamily: '$roboto',
-    fontSize: '$4',
-    color: '$hiContrast',
-    padding: '$2',
-    boxSizing: 'border-box',
-  },
-  button: {
-    display: 'inherit',
-    width: '100%',
-    height: '$6',
-    marginTop: '$3',
-    border: '$1 $blue500 solid',
-    backgroundColor: '$blue500',
-    color: '$loContrast',
-    ':hover': {
-      backgroundColor: '$loContrast',
-      color: '$blue500',
-    }
-  }
-});
-
 const SaveModeTab = styled(Button, {
+  color: '$hiContrast',
+  backgroundColor: '$loContrast',
   margin: '$0 $2',
   svg: {
     paddingRight: '$2'
@@ -87,21 +41,17 @@ const SaveModeTab = styled(Button, {
   }
 });
 
-const SaveModeSelector = styled.div({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  marginBottom: '$3',
-});
-
 const ViewName = styled.span({
   fontWeight: '$5',
-})
+});
 
 const Row = styled.div({
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
+  ':not(:last-child)': {
+    marginBottom: '$5',
+  }
 });
 
 const newViewSchema = Yup.object().shape({
@@ -139,7 +89,7 @@ const SaveViewForm = ({ handleClose }) => {
 
   return (
     <div>
-      <SaveModeSelector>
+      <Row>
         <SaveModeTab
           size='large'
           disabled={!selectedView.editable}
@@ -157,10 +107,10 @@ const SaveViewForm = ({ handleClose }) => {
           <FontAwesomeIcon icon={['fas', 'plus']} />
           Create new view
         </SaveModeTab>
-      </SaveModeSelector>
+      </Row>
       <Row>
         {(saveMode === 'update') &&
-          <StyledForm>
+          <FormWrapper>
             <p>
               Are you sure you'd like to overwrite the filters for 
               the <ViewName>{selectedView.name}</ViewName> view?
@@ -177,16 +127,16 @@ const SaveViewForm = ({ handleClose }) => {
                     name='filters'
                     type='hidden'
                   />
-                  <Button type='submit'>
+                  <SubmitButton size='large' type='submit'>
                     Save view
-                  </Button>
+                  </SubmitButton>
                 </Form>
               )}
             </Formik>
-          </StyledForm>
+          </FormWrapper>
         }
         {(saveMode === 'create') &&
-          <StyledForm>
+          <FormWrapper>
             <Formik
               initialValues={{
                 name: '',
@@ -200,23 +150,26 @@ const SaveViewForm = ({ handleClose }) => {
               }}              >
               {({ errors, touched, isValid, dirty }) => (
                 <Form>
-                  <StyledField>
+                  <FormFieldWrapper>
                     <label htmlFor='name'>Name</label>
                     <Field
                       name='name'
                       id='name'
                     />
-                    <StyledErrorMessage name='name' />
-                  </StyledField>
-                  <StyledField>
+                    <ErrorMessage component={FormError} name='name' />
+                  </FormFieldWrapper>
+                  <FormFieldWrapper>
                     <label htmlFor='description'>Description</label>
                     <Field
                       name='description'
                       id='description'
                       component='textarea'
                     />
-                    <StyledErrorMessage name='description' />
-                  </StyledField>
+                    <ErrorMessage
+                      component={FormError}
+                      name='description'
+                    />
+                  </FormFieldWrapper>
                   <Field
                     name='filters'
                     type='hidden'
@@ -225,16 +178,17 @@ const SaveViewForm = ({ handleClose }) => {
                     name='editable'
                     type='hidden'
                   />
-                  <Button 
+                  <SubmitButton 
                     type='submit'
+                    size='large'
                     disabled={!isValid || !dirty}
                   >
                     Save view
-                  </Button>
+                  </SubmitButton>
                 </Form>
               )}
             </Formik>
-          </StyledForm>
+          </FormWrapper>
         }
       </Row>
     </div>

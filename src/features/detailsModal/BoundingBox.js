@@ -116,6 +116,10 @@ const BoundingBox = ({ imageWidth, imageHeight, label }) => {
   const conf = Number.parseFloat(label.conf * 100).toFixed(1);
   const labelColor = labelColors[category];
 
+  useEffect(() => {
+    console.log('New label: ', label);
+    setBbox(label.bbox);
+  }, [ label ]);
 
   const onDrag = (event, {deltaX, deltaY}) => {
     const rect = {
@@ -208,6 +212,7 @@ const BoundingBox = ({ imageWidth, imageHeight, label }) => {
             backgroundColor: labelColor.primary,
             color: labelColor.text
           }}
+          className='drag-handle'
         >
          {category} {conf}%
         </BoundingBoxLabel>

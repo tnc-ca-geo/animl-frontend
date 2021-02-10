@@ -1,21 +1,21 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconButton from './IconButton';
+import PanelHeader from './PanelHeader';
 
 const ModalBody = styled.div({
   margin: '$3',
 });
 
-const ModalHeader = styled.div({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '$0 $3',
-  height: '$7',
-  borderBottom: '$1 solid $gray400',
-  fontWeight: '$5',
-});
+// const ModalHeader = styled.div({
+//   display: 'flex',
+//   justifyContent: 'space-between',
+//   alignItems: 'center',
+//   padding: '$0 $3',
+//   height: '$7',
+//   borderBottom: '$1 solid $gray400',
+//   fontWeight: '$5',
+// });
 
 const ModalContainer = styled.div({
   zIndex: '$2',
@@ -25,6 +25,7 @@ const ModalContainer = styled.div({
   transform: 'translate(-50%, -100px)',
   display: 'flex',
   flexDirection: 'column',
+  borderRadius: '$2',
   backgroundColor: '$loContrast',
   border: '$1 solid $gray400',
   boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
@@ -55,21 +56,13 @@ const ModalWrapper = styled.div({
   left: '$0',
   width: '100%',
   height: '100%',
-  background: 'rgba(0, 0, 0, 0.6)',
+  background: 'rgba(0, 0, 0, 0.1)',
 });
 
-const Modal = ({ size, header, handleClose, children }) => (
+const Modal = ({ size, title, handleClose, children }) => (
   <ModalWrapper>
     <ModalContainer size={size}>
-      <ModalHeader>
-        {header}
-        <IconButton
-          variant='ghost'
-          onClick={handleClose}
-        >
-          <FontAwesomeIcon icon={['fas', 'times']} />
-        </IconButton>
-      </ModalHeader>
+      <PanelHeader title={title} handlePanelClose={handleClose} />
       <ModalBody>
         {React.Children.map(
           children,

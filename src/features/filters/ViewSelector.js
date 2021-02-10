@@ -53,12 +53,12 @@ const ViewMenu = styled.div({
 
 const Crumb = styled.span({
   color: '$hiContrast',
-  paddingRight: '$3',
+  paddingRight: '$2',
   ':last-child': {
     paddingRight: '$1',
   },
   ':not(:first-child)': {
-    paddingLeft: '$3',
+    paddingLeft: '$2',
   },
   ':hover': {
     borderColor: '$gray700',
@@ -81,11 +81,12 @@ const Crumb = styled.span({
 
 const SelectedViewCrumb = styled(Crumb, {
   position: 'relative',
+  fontWeight: '$4',
 });
 
 const Breadcrumbs = styled.div({
   fontSize: '$4',
-  fontWeight: '$5',
+  fontWeight: '$2',
   color: '$gray600',
 });
 

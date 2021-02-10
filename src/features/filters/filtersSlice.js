@@ -80,7 +80,6 @@ export const filtersSlice = createSlice({
     },
 
     getModelsSuccess: (state, { payload }) => {
-      console.log('get models success: ', payload);
       state.views.isLoading = false;
       state.views.error = null;
       let modelEntities = {};
@@ -272,12 +271,13 @@ export const editView = (operation, payload) =>
         }
         case 'delete': {
           const res = await call('deleteView', payload);
+          const deletedViewId = res.deleteView.viewId;
           const views = getState().filters.views.views;
           const defaultView = views.filter((view) => {
             return view.name === 'All images';
           })[0];
           dispatch(setSelectedView(defaultView)); 
-          dispatch(deleteViewSuccess(res.viewId));
+          dispatch(deleteViewSuccess(deletedViewId));
           break;
         }
         default: {

@@ -15,11 +15,11 @@ const ImageWrapper = styled.div({
 });
 
 const FullSizeImage = ({ image }) => {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
   const containerEl = useRef(null);
-  const [imgLoaded, setImgLoaded] = useState(false);
-  const [width, setWidth] = useState();
-  const [height, setHeight] = useState();
+  const [ imgLoaded, setImgLoaded ] = useState(false);
+  const [ width, setWidth ] = useState();
+  const [ height, setHeight ] = useState();
   const onWindowResize = useGlobalEvent('resize');
 
   const onWindowResizeHandler = useThrottledFn(() => {
@@ -40,7 +40,7 @@ const FullSizeImage = ({ image }) => {
   const handleImgLoaded = () => setImgLoaded(true);
 
   useEffect(() => {
-    console.log('labels: ', image.labels);
+    console.log('New image: ', image);
     setImgLoaded(false);
   }, [ image ]);
 
@@ -50,16 +50,14 @@ const FullSizeImage = ({ image }) => {
 
   return (
     <ImageWrapper ref={containerEl}>
-      {imgLoaded && image.labels.map((label, index) => {
-        return ( 
-          <BoundingBox
-            key={index}
-            imageWidth={width}
-            imageHeight={height}
-            label={label}
-          />
-        )
-      })}
+      {image.labels.map((label, index) => ( 
+        <BoundingBox
+          key={index}
+          imageWidth={width}
+          imageHeight={height}
+          label={label}
+        />
+      ))}
       <FullImage src={image.url} onLoad={handleImgLoaded}/>
     </ImageWrapper>
   );
