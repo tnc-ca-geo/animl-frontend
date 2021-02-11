@@ -88,14 +88,14 @@ const AddAutomationRuleForm = ({ view, models, returnToRulesList }) => {
         ...(action.alertRecipient && { alertRecipient: action.alertRecipient }),
       },
     };
-    const rules = view.automationRules.concat(newRule)
+    const rules = view.automationRules.concat(newRule);
     const payload = {
       _id: view._id,
       diffs: {
         automationRules: rules,
       }
     };
-    dispatch(editView('update', payload))
+    dispatch(editView('update', payload));
     returnToRulesList();  // TODO: show loading & wait for success to close
   };
 

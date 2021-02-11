@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { editView } from './filtersSlice';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
@@ -25,6 +26,9 @@ const ButtonRow = styled(FieldRow, {
 const Rule = styled('li', {
   display: 'flex',
   justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '$3 0',
+  borderBottom: '$1 solid $gray300',
 });
 
 const RuleTitle = styled.div({
@@ -41,6 +45,7 @@ const StyledRuleDescription = styled.div({
   fontSize: '$3',
   p: {
     color: '$gray600',
+    margin: '0',
     marginTop: '$1',
   }
 })
@@ -69,8 +74,20 @@ const RuleDescription = ({ rule, models }) => {
 
 
 const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
+  const dispatch = useDispatch();
+
   const handleRuleDeleteClick = (e) => {
-    console.log('rule to delete: ', e.target.dataset.rule);
+    const ruleToRemove = e.currentTarget.dataset.rule;
+    const rules = view.automationRules.filter((rule) => (
+      rule._id.toString() !== ruleToRemove
+    ));
+    const payload = {
+      _id: view._id,
+      diffs: {
+        automationRules: rules,
+      }
+    };
+    dispatch(editView('update', payload));
   };
 
   return (
@@ -78,12 +95,12 @@ const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
       <RulesList>
         {view.automationRules.map((rule) => {
           return (
-            <Rule>
+            <Rule key={rule._id}>
               <RuleDescription rule={rule} models={models} />
               <IconButton
                 variant='ghost'
                 disabled={view && !view.editable}
-                data-rule={rule}
+                data-rule={rule._id}
                 onClick={handleRuleDeleteClick}
               >
                 <FontAwesomeIcon icon={['fas', 'trash-alt']} />
