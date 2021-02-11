@@ -12,6 +12,7 @@ const viewFields = `
     addedEnd
   }
   automationRules {
+    name
     event {
       type
       label

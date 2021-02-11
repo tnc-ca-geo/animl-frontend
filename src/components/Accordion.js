@@ -7,6 +7,7 @@ const AccordionBody = styled.div({
   padding: '$2 $3',
   borderBottom: '$1 solid $gray400',
   backgroundColor: '$gray200',
+  fontFamily: '$mono',
 });
 
 const AccordionHeader = styled.div({
@@ -14,7 +15,7 @@ const AccordionHeader = styled.div({
   alignItems: 'center',
   justifyContent: 'space-between',
   fontWeight: '$2',
-  fontFamily: '$mono',
+  fontFamily: '$roboto',
   height: '$7',
   borderBottom: '$1 solid $gray400',
   padding: '$0 $2 $0 $3',

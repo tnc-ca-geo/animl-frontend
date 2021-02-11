@@ -36,8 +36,23 @@ const StyledFormWrapper = styled.div({
     resize: 'none',
     ...textInput,
   },
+  select: {
+    ...textInput
+    // backgroundColor: 'transparent',
+    // border: 'none',
+    // fontFamily: 'inherit',
+    // height: '$5',
+    // fontSize: '$3',
+    // paddingLeft: '$1',
+    // borderRadius: '$2',
+    // color: '$hiContrast',
+    // ':hover': {
+    //   cursor: 'pointer',
+    // },
+  },
   p: {
-    color: '$blue700',
+    color: '$gray600',
+    fontSize: '$3',
   }
 });
 

@@ -38,31 +38,19 @@ const SidebarNav = ({ view }) => {
       <MenuButton variant='ghost' state='active'>
         <FontAwesomeIcon icon={['fas', 'filter']} />
       </MenuButton>
+
+      {/*
       <MenuButton variant='ghost'>
         <FontAwesomeIcon icon={['fas', 'cog']} />
       </MenuButton>
+      */}
+
       <MenuButton
         variant='ghost'
-        disabled={!selectedView || !selectedView.editable}
+        disabled={!selectedView}
         onClick={() => handleModalToggle('automation-rules-form')}
       >
         <FontAwesomeIcon icon={['fas', 'robot']} />
-      </MenuButton>
-      <MenuButton
-        variant='ghost'
-        onClick={() => handleModalToggle('save-view-form')}
-      >
-        <FontAwesomeIcon icon={['fas', 'save']} />
-      </MenuButton>
-      <MenuButton
-        variant='ghost'
-        disabled={selectedView && !selectedView.editable}
-        onClick={() => handleModalToggle('delete-view-form')}
-      >
-        <FontAwesomeIcon icon={['fas', 'trash-alt']} />
-      </MenuButton>
-      <MenuButton variant='ghost'>
-        <FontAwesomeIcon icon={['fas', 'redo']} />
       </MenuButton>
       {(modalOpen && (modalContent === 'automation-rules-form')) &&
         <Modal 
@@ -73,6 +61,13 @@ const SidebarNav = ({ view }) => {
           <AutomationRulesForm/>
         </Modal>
       }
+
+      <MenuButton
+        variant='ghost'
+        onClick={() => handleModalToggle('save-view-form')}
+      >
+        <FontAwesomeIcon icon={['fas', 'save']} />
+      </MenuButton>
       {(modalOpen && (modalContent === 'save-view-form')) &&
         <Modal 
           handleClose={handleModalToggle}
@@ -82,6 +77,14 @@ const SidebarNav = ({ view }) => {
           <SaveViewForm/>
         </Modal>
       }
+      
+      <MenuButton
+        variant='ghost'
+        disabled={selectedView && !selectedView.editable}
+        onClick={() => handleModalToggle('delete-view-form')}
+      >
+        <FontAwesomeIcon icon={['fas', 'trash-alt']} />
+      </MenuButton>
       {(modalOpen && (modalContent === 'delete-view-form')) &&
         <Modal 
           handleClose={handleModalToggle}
@@ -91,6 +94,14 @@ const SidebarNav = ({ view }) => {
           <DeleteViewForm/>
         </Modal>
       }
+
+      {/*
+      <MenuButton variant='ghost'>
+          <FontAwesomeIcon icon={['fas', 'redo']} />
+      </MenuButton>
+      */}
+      
+
     </StyledSidebarNav>
   );
 };

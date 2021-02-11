@@ -15,6 +15,16 @@ import {
   editView,
 } from './filtersSlice';
 
+const FieldRow = styled.div({
+  paddingBottom: '$3',
+  display: 'flex',
+});
+
+const ButtonRow = styled(FieldRow, {
+  justifyContent: 'flex-end',
+});
+
+
 const SaveModeTab = styled(Button, {
   color: '$hiContrast',
   backgroundColor: '$loContrast',
@@ -127,9 +137,11 @@ const SaveViewForm = ({ handleClose }) => {
                     name='filters'
                     type='hidden'
                   />
-                  <SubmitButton size='large' type='submit'>
-                    Save view
-                  </SubmitButton>
+                  <ButtonRow>
+                    <SubmitButton size='large' type='submit'>
+                      Save view
+                    </SubmitButton>
+                  </ButtonRow>
                 </Form>
               )}
             </Formik>
@@ -150,26 +162,30 @@ const SaveViewForm = ({ handleClose }) => {
               }}              >
               {({ errors, touched, isValid, dirty }) => (
                 <Form>
-                  <FormFieldWrapper>
-                    <label htmlFor='name'>Name</label>
-                    <Field
-                      name='name'
-                      id='name'
-                    />
-                    <ErrorMessage component={FormError} name='name' />
-                  </FormFieldWrapper>
-                  <FormFieldWrapper>
-                    <label htmlFor='description'>Description</label>
-                    <Field
-                      name='description'
-                      id='description'
-                      component='textarea'
-                    />
-                    <ErrorMessage
-                      component={FormError}
-                      name='description'
-                    />
-                  </FormFieldWrapper>
+                  <FieldRow>
+                    <FormFieldWrapper>
+                      <label htmlFor='name'>Name</label>
+                      <Field
+                        name='name'
+                        id='name'
+                      />
+                      <ErrorMessage component={FormError} name='name' />
+                    </FormFieldWrapper>
+                  </FieldRow>
+                  <FieldRow>
+                    <FormFieldWrapper>
+                      <label htmlFor='description'>Description</label>
+                      <Field
+                        name='description'
+                        id='description'
+                        component='textarea'
+                      />
+                      <ErrorMessage
+                        component={FormError}
+                        name='description'
+                      />
+                    </FormFieldWrapper>
+                  </FieldRow>
                   <Field
                     name='filters'
                     type='hidden'
@@ -178,13 +194,15 @@ const SaveViewForm = ({ handleClose }) => {
                     name='editable'
                     type='hidden'
                   />
-                  <SubmitButton 
-                    type='submit'
-                    size='large'
-                    disabled={!isValid || !dirty}
-                  >
-                    Save view
-                  </SubmitButton>
+                  <ButtonRow>
+                    <SubmitButton 
+                      type='submit'
+                      size='large'
+                      disabled={!isValid || !dirty}
+                    >
+                      Save view
+                    </SubmitButton>
+                  </ButtonRow>
                 </Form>
               )}
             </Formik>
