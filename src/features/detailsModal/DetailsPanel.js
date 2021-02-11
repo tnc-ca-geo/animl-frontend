@@ -12,12 +12,8 @@ import {
   incrementImageIndex, 
   selectDetailsIndex,
 } from './detailsModalSlice';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PanelHeader from '../../components/PanelHeader';
 import FullSizeImage from './FullSizeImage';
-import LabelsTable from './LabelsTable';
-import IconButton from '../../components/IconButton';
-import Modal from '../../components/Modal';
 
 const IndexDisplay = styled.div({
   fontFamily: '$mono',

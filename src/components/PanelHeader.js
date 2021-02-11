@@ -26,9 +26,10 @@ const PanelHeader = ({ children, title, handlePanelClose, }) => (
       </PanelTitle>
     }
     { children }
-    <IconButton variant='ghost'>
+    <IconButton
+      variant='ghost'
+      onClick={handlePanelClose}>
       <FontAwesomeIcon 
-        onClick={handlePanelClose}
         icon={['fas', 'times']}
       />
     </IconButton>

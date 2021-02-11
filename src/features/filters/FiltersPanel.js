@@ -13,8 +13,6 @@ import {
   selectAvailCameras,
   selectAvailLabels,
  } from './filtersSlice';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconButton from '../../components/IconButton';
 import PanelHeader from '../../components/PanelHeader';
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';

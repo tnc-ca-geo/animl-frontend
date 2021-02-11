@@ -106,4 +106,4 @@ const IconButton = styled.button({
   },
 });
 
-export default IconButton
+export default IconButton;

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectActiveFilters } from '../filters/filtersSlice';
 import {
   fetchImages,
@@ -11,33 +10,7 @@ import {
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
-import IconButton from '../../components/IconButton';
 import ImagesTable from './ImagesTable';
-
-const ImagesPanelBody = styled.div({
-  backgroundColor: '$gray200',
-});
-
-const ViewLabel = styled.span({
-  fontWeight: '$5', 
-});
-
-const ControlGroup = styled.div({
-  display: 'flex',
-  'button': {
-    marginRight: '$1',
-  },
-});
-
-const ImagesPanelHeader = styled.div({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '$0 $4',
-  height: '$7',
-  backgroundColor: '$loContrast',
-  borderBottom: '$1 solid $gray400',
-});
 
 const StyledImagesPanel = styled.div({
   // display: 'grid',
