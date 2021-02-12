@@ -336,9 +336,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
       }
       else {
         return (
-          <TableRow>
-            <PulseSpinner />
-          </TableRow>
+          <TableRow />
         )
       };
     },

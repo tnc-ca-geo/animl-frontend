@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useGlobalEvent, useThrottledFn } from 'beautiful-react-hooks';
 import { styled } from '../../theme/stitches.config';
+
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
+import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const FullImage = styled(Image, {
   maxWidth: '100%',
@@ -58,6 +60,11 @@ const FullSizeImage = ({ image }) => {
           label={label}
         />
       ))}
+      {/*{!imgLoaded &&
+        <SpinnerOverlay css={{ background: 'none'}}>
+          <CircleSpinner />
+        </SpinnerOverlay>
+      }*/}
       <FullImage src={image.url} onLoad={handleImgLoaded}/>
     </ImageWrapper>
   );

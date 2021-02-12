@@ -6,7 +6,9 @@ const CheckboxContainer = styled.div({
   verticalAlign: 'middle',
 });
 
-const Icon = styled.svg({
+const SVGIcon = styled.svg({
+  position: 'absolute',
+  top: '1px',
   fill: 'none',
   stroke: 'white',
   strokeWidth: '3px',
@@ -28,6 +30,7 @@ const HiddenCheckbox = styled.input({
 });
 
 const StyledCheckbox = styled.div({
+  position: 'relative',
   display: 'inline-block',
   width: '14px',
   height: '14px',
@@ -50,14 +53,14 @@ const StyledCheckbox = styled.div({
       true: {
         background: '$hiContrast',
         borderColor: '$hiContrast',
-        [`& ${Icon}`]: {
+        [`& ${SVGIcon}`]: {
           visibility: 'visible',
         },
       },
       false: {
         background: '$gray200',
         borderColor: '$gray400',
-        [`& ${Icon}`]: {
+        [`& ${SVGIcon}`]: {
           visibility: 'hidden',
         },
       },
@@ -72,9 +75,9 @@ const Checkbox = ({ className, checked, ...props }) => (
   <CheckboxContainer className={className}>
     <HiddenCheckbox type='checkbox' checked={checked} {...props} />
     <StyledCheckbox checked={checked}>
-      <Icon viewBox="0 0 24 24">
+      <SVGIcon viewBox="0 0 24 24">
         <polyline points="20 4 9 15 4 10" />
-      </Icon>
+      </SVGIcon>
     </StyledCheckbox>
   </CheckboxContainer>
 );

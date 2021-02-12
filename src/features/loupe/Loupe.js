@@ -17,6 +17,7 @@ import FullSizeImage from './FullSizeImage';
 const IndexDisplay = styled.div({
   fontFamily: '$mono',
   fontSize: '$3',
+  fontWeight: '$1',
   marginRight: '$3',
   flexGrow: '0',
   flexShrink: '0',
@@ -33,17 +34,19 @@ const IndexUnit = styled('span', {
 });
 
 const ProgressBar = styled.div({
-  height: '2px',
+  height: '$1',
   width: '100%',
   backgroundColor: '$gray300',
   position: 'relative',
+  borderRadius: '$2',
 });
 
 const ProgressIndicator = styled.span({
-  backgroundColor: '$hiContrast',
-  height: '2px',
+  backgroundColor: '$blue600',
+  height: '$1',
   position: 'absolute',
   display: 'block',
+  borderRadius: '$2',
 });
 
 const ProgressDisplay = styled.div({
