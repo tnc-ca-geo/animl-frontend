@@ -5,16 +5,25 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import SubmitButton from '../../components/SubmitButton';
 import FormWrapper from '../../components/FormWrapper';
-import { selectSelectedView, editView } from '../views/viewsSlice';
+import { selectSelectedView, editView } from './viewsSlice';
+
+const FieldRow = styled.div({
+  paddingBottom: '$3',
+  display: 'flex',
+});
+
+const ButtonRow = styled(FieldRow, {
+  justifyContent: 'flex-end',
+  button: {
+    marginRight: '$3',
+    ':last-child': {
+      marginRight: '0',
+    },
+  }
+});
 
 const ViewName = styled.span({
   fontWeight: '$5',
-})
-
-const Row = styled.div({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
 });
 
 const deleteViewSchema = Yup.object().shape({
@@ -47,9 +56,11 @@ const DeleteViewForm = ({ handleClose }) => {
               name='_id'
               type='hidden'
             />
-            <SubmitButton type='submit' size='large'>
-              Delete view
-            </SubmitButton>
+            <ButtonRow>
+              <SubmitButton type='submit' size='large'>
+                Delete view
+              </SubmitButton>
+            </ButtonRow>
           </Form>
         )}
       </Formik>

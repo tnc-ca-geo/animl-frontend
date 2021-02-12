@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page } from '../components/Page';
-import { ViewExplorer } from '../features/filters/ViewExplorer';
+import { ViewExplorer } from '../features/views/ViewExplorer';
 
 const HomePage = () => {
   return (

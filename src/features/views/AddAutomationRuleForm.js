@@ -4,12 +4,12 @@ import _ from 'lodash';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { editView } from './viewsSlice';
 import SelectField from '../../components/SelectField';
 import FormFieldWrapper from '../../components/FormFieldWrapper';
 import FormError from '../../components/FormError';
 import FormWrapper from '../../components/FormWrapper';
 import SubmitButton from '../../components/SubmitButton';
-import { editView } from '../views/viewsSlice';
 
 // TODO: pull these out into their own components
 const FieldRow = styled.div({

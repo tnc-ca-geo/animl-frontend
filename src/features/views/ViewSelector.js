@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectActiveFilters, selectFiltersReady } from './filtersSlice';
+import {
+  selectActiveFilters,
+  selectFiltersReady
+} from '../filters/filtersSlice';
 import {
   selectViews,
   fetchViews,
   setSelectedView,
   selectSelectedView,
   selectUnsavedViewChanges,
- } from '../views/viewsSlice';
+ } from './viewsSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 

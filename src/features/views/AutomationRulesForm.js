@@ -6,7 +6,7 @@ import {
   fetchModels,
   selectModels,
   selectSelectedView,
-} from '../views/viewsSlice';
+} from './viewsSlice';
 
 const AutomationRulesForm = ({ handleClose }) => {
   const selectedView = useSelector(selectSelectedView);

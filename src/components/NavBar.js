@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { Link, NavLink } from 'react-router-dom';
-import ViewSelector from '../features/filters/ViewSelector';
+import ViewSelector from '../features/views/ViewSelector';
 import logo from '../assets/animl-logo.svg';
 
 

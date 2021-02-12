@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectSelectedView } from '../views/viewsSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
-import AutomationRulesForm from './AutomationRulesForm';
-import SaveViewForm from './SaveViewForm';
-import DeleteViewForm from './DeleteViewForm';
+import AutomationRulesForm from '../views/AutomationRulesForm';
+import SaveViewForm from '../views/SaveViewForm';
+import DeleteViewForm from '../views/DeleteViewForm';
 
 const MenuButton = styled(IconButton, {
   fontSize: '$4',

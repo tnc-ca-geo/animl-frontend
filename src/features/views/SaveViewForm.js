@@ -4,17 +4,17 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { selectActiveFilters } from '../filters/filtersSlice';
+import {
+  selectSelectedView,
+  selectUnsavedViewChanges,
+  editView,
+} from './viewsSlice';
 import Button from '../../components/Button';
 import SubmitButton from '../../components/SubmitButton';
 import FormWrapper from '../../components/FormWrapper';
 import FormFieldWrapper from '../../components/FormFieldWrapper';
 import FormError from '../../components/FormError';
-import { selectActiveFilters } from './filtersSlice';
-import {
-  selectSelectedView,
-  selectUnsavedViewChanges,
-  editView,
-} from '../views/viewsSlice';
 
 const FieldRow = styled.div({
   paddingBottom: '$3',
