@@ -1,12 +1,12 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { editView } from './viewsSlice';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import { editView, selectViewsLoading } from './viewsSlice';
 import IconButton from '../../components/IconButton';
 import SubmitButton from '../../components/SubmitButton';
-
-
+import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const FieldRow = styled.div({
   paddingBottom: '$3',
@@ -48,7 +48,7 @@ const StyledRuleDescription = styled.div({
     margin: '0',
     marginTop: '$1',
   }
-})
+});
 
 const RuleDescription = ({ rule, models }) => {
   const model = models.find((model) => model._id === rule.action.model);
@@ -72,8 +72,8 @@ const RuleDescription = ({ rule, models }) => {
   );
 };
 
-
 const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
+  const viewsLoading = useSelector(selectViewsLoading);
   const dispatch = useDispatch();
 
   const handleRuleDeleteClick = (e) => {
@@ -90,34 +90,45 @@ const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
     dispatch(editView('update', payload));
   };
 
+  useEffect(() => {
+    console.log('views loading: ', viewsLoading)
+  }, [viewsLoading])
+
   return (
     <div>
-      <RulesList>
-        {view.automationRules.map((rule) => {
-          return (
-            <Rule key={rule._id}>
-              <RuleDescription rule={rule} models={models} />
-              <IconButton
-                variant='ghost'
-                disabled={view && !view.editable}
-                data-rule={rule._id}
-                onClick={handleRuleDeleteClick}
-              >
-                <FontAwesomeIcon icon={['fas', 'trash-alt']} />
-              </IconButton>
-            </Rule>
-          )
-        })}
-      </RulesList>
-      <ButtonRow>
-        <SubmitButton
-          size='large'
-          disabled={!view.editable}
-          onClick={onAddRuleClick}
-        >
-          New rule
-        </SubmitButton>
-      </ButtonRow>
+      {viewsLoading &&
+        <SpinnerOverlay>
+          <PulseSpinner />
+        </SpinnerOverlay>
+      }
+      <div>
+        <RulesList>
+          {view.automationRules.map((rule) => {
+            return (
+              <Rule key={rule._id}>
+                <RuleDescription rule={rule} models={models} />
+                <IconButton
+                  variant='ghost'
+                  disabled={view && !view.editable}
+                  data-rule={rule._id}
+                  onClick={handleRuleDeleteClick}
+                >
+                  <FontAwesomeIcon icon={['fas', 'trash-alt']} />
+                </IconButton>
+              </Rule>
+            )
+          })}
+        </RulesList>
+        <ButtonRow>
+          <SubmitButton
+            size='large'
+            disabled={!view.editable}
+            onClick={onAddRuleClick}
+          >
+            New rule
+          </SubmitButton>
+        </ButtonRow>
+      </div>
     </div>
   );
 };

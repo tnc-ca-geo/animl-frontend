@@ -177,6 +177,7 @@ export const fetchModels = () => async dispatch => {
 };
 
 // Selectors
+export const selectViewsLoading = state => state.views.isLoading;
 export const selectViews = state => state.views;
 export const selectSelectedView = createSelector(
   [selectViews],

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectSelectedView } from '../views/viewsSlice';
+
+import { selectSelectedView } from './viewsSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
-import AutomationRulesForm from '../views/AutomationRulesForm';
-import SaveViewForm from '../views/SaveViewForm';
-import DeleteViewForm from '../views/DeleteViewForm';
+import AutomationRulesForm from './AutomationRulesForm';
+import SaveViewForm from './SaveViewForm';
+import DeleteViewForm from './DeleteViewForm';
 
 const MenuButton = styled(IconButton, {
   fontSize: '$4',

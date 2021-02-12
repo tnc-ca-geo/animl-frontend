@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import AddAutomationRuleForm from './AddAutomationRuleForm';
-import AutomationRulesList from './AutomationRulesList';
+import { styled } from '../../theme/stitches.config.js';
+
 import { 
   fetchModels,
   selectModels,
   selectSelectedView,
 } from './viewsSlice';
+import AddAutomationRuleForm from './AddAutomationRuleForm';
+import AutomationRulesList from './AutomationRulesList';
+import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const AutomationRulesForm = ({ handleClose }) => {
   const selectedView = useSelector(selectSelectedView);
@@ -16,7 +19,7 @@ const AutomationRulesForm = ({ handleClose }) => {
 
   useEffect(() => {
     if (!models.length) {
-        dispatch(fetchModels());
+      dispatch(fetchModels());
     }
   }, [models, dispatch]);
 
@@ -42,7 +45,9 @@ const AutomationRulesForm = ({ handleClose }) => {
               models={models}
               onAddRuleClick={handleAddRuleClick}
             />
-        : <div>loading...</div>
+        : <SpinnerOverlay>
+            <PulseSpinner />
+          </SpinnerOverlay>
       }
     </div>
   );
