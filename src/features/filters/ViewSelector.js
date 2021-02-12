@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
 import { styled } from '../../theme/stitches.config.js';
-import {
-  selectActiveFilters,
-  selectFiltersReady,
-  selectUnsavedViewChanges,
-} from './filtersSlice';
+import { selectActiveFilters, selectFiltersReady } from './filtersSlice';
 import {
   selectViews,
-  selectSelectedView,
   fetchViews,
   setSelectedView,
- } from '../filters/filtersSlice';
+  selectSelectedView,
+  selectUnsavedViewChanges,
+ } from '../views/viewsSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
@@ -121,7 +117,7 @@ const ViewSelector = () => {
 
   useEffect(() => {
     if (filtersReady && selectedView) {
-      dispatch(setSelectedView(selectedView));
+      dispatch(setSelectedView({view: selectedView}));
     }
   }, [selectedView, filtersReady, dispatch]);
 
@@ -142,7 +138,7 @@ const ViewSelector = () => {
   const handleViewMenuItemClick = (e) => {
     const _id = e.target.dataset.viewId;
     const newSelectedView = views.views.filter((view) => view._id === _id)[0];
-    dispatch(setSelectedView(newSelectedView));
+    dispatch(setSelectedView({view: newSelectedView}));
   }
 
   return (

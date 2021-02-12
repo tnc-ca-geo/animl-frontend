@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
+  viewSelected,
   selectSelectedView,
-} from '../filters/filtersSlice';
+} from '../views/viewsSlice';
 import {
   fetchCameras,
   fetchLabels,
-  viewSelected,
   selectFiltersReady,
   selectActiveFilters,
   selectAvailCameras,

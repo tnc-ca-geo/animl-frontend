@@ -4,7 +4,8 @@ import createRootReducer from './rootReducer';
 import { 
   diffFiltersMiddleware,
   normalizeDatesMiddleware,
-} from '../features/filters/filtersSlice';
+  setSelectedViewMiddleware,
+} from '../features/views/viewsMiddlewares';
 
 export const history = createBrowserHistory();
 
@@ -14,6 +15,7 @@ const store = configureStore({
     getDefaultMiddleware()
       .concat(diffFiltersMiddleware)
       .concat(normalizeDatesMiddleware)
+      .concat(setSelectedViewMiddleware)
   ),
 });
 

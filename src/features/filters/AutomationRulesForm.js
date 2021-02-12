@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
-import {
-  selectSelectedView,
-  selectModels,
+import { 
   fetchModels,
-} from './filtersSlice';
+  selectModels,
+  selectSelectedView,
+} from '../views/viewsSlice';
 
 const AutomationRulesForm = ({ handleClose }) => {
   const selectedView = useSelector(selectSelectedView);

@@ -3,8 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
   selectSelectedView,
-  // fetchViews,
- } from './filtersSlice';
+ } from '../views/viewsSlice';
 import SidebarNav from './SidebarNav';
 import FiltersPanel from './FiltersPanel';
 import ImagesPanel from '../imagesExplorer/ImagesPanel';

@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import Button from '../../components/Button';
 import SubmitButton from '../../components/SubmitButton';
 import FormWrapper from '../../components/FormWrapper';
-import FormFieldWrapper from '../../components/FormFieldWrapper';
-import FormError from '../../components/FormError';
-import {
-  selectSelectedView,
-  editView,
-} from './filtersSlice';
+import { selectSelectedView, editView } from '../views/viewsSlice';
 
 const ViewName = styled.span({
   fontWeight: '$5',

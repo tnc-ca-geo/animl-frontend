@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import SelectField from '../../components/SelectField';
 import FormFieldWrapper from '../../components/FormFieldWrapper';
 import FormError from '../../components/FormError';
-import Button from '../../components/Button';
 import FormWrapper from '../../components/FormWrapper';
 import SubmitButton from '../../components/SubmitButton';
-import { editView } from './filtersSlice';
+import { editView } from '../views/viewsSlice';
 
 // TODO: pull these out into their own components
 const FieldRow = styled.div({
