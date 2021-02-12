@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectActiveFilters } from '../filters/filtersSlice';
+
 import {
   fetchImages,
   selectImages,
@@ -10,6 +10,7 @@ import {
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
+import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
 
 const StyledImagesPanel = styled.div({

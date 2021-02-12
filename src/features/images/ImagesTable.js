@@ -17,6 +17,8 @@ import {
   imageSelected,
 } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
+import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+
 
 const LabelPill = styled('div', {
   // backgroundColor: '$gray300',
@@ -49,6 +51,7 @@ const TableContainer = styled.div({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
+  position: 'relative',
 });
 
 const Table = styled.div({
@@ -332,9 +335,9 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         );
       }
       else {
-        return(
+        return (
           <TableRow>
-            loading...
+            <PulseSpinner />
           </TableRow>
         )
       };
@@ -390,7 +393,12 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
 
   return (
     <TableContainer>
-      <Table {...getTableProps()} style={{ backgroundColor: 'lavender' }}>
+      {images.length === 0 &&
+        <SpinnerOverlay>
+          <PulseSpinner />
+        </SpinnerOverlay>
+      }
+      <Table {...getTableProps()}>
         <div
           style={{ height: '51px', width: `calc(100% - ${scrollBarSize}px)` }}
         >

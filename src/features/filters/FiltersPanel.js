@@ -60,7 +60,8 @@ const FiltersPanel = ({ expandedDefault }) => {
       <PanelHeader 
         title='Filters'
         handlePanelClose={handleFilterPanelClose}
-      />
+      >
+      </PanelHeader>
       <Accordion
         label='Cameras'
         expandedDefault={true}
