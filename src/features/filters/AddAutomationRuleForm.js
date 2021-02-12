@@ -13,6 +13,7 @@ import FormWrapper from '../../components/FormWrapper';
 import SubmitButton from '../../components/SubmitButton';
 import { editView } from './filtersSlice';
 
+// TODO: pull these out into their own components
 const FieldRow = styled.div({
   paddingBottom: '$3',
   display: 'flex',
@@ -208,7 +209,7 @@ const AddAutomationRuleForm = ({ view, models, returnToRulesList }) => {
                   <Field
                     name='action.alertRecipient'
                     id='action-alert-recipient'
-                    value={values.action.alertRecipient}
+                    value={values.action.alertRecipient ? values.action.alertRecipient : ''}
                   />
                   <ErrorMessage
                     component={FormError}

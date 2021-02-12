@@ -64,6 +64,14 @@ const SidebarNav = ({ view }) => {
 
       <MenuButton
         variant='ghost'
+        css={{ 
+          '@keyframes rotate': {
+            'to': {
+              transform: 'rotate(360deg)'
+            }
+          },
+          animation: 'rotate 1s infinite linear',
+         }}
         onClick={() => handleModalToggle('save-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'save']} />

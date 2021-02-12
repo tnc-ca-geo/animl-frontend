@@ -9,7 +9,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@reduxjs/toolkit": "^1.4.0",
-    "@stitches/react": "0.0.2",
+    "@stitches/react": "^0.0.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",

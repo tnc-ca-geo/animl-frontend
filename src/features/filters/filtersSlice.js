@@ -26,8 +26,8 @@ const initialState = {
     addedEnd: null
   },
   views: {
-    views: [],
-    models: [],
+    views: [],  // TODO: make object w/ _ids as keys?
+    models: [], // TODO: make object w/ _ids as keys?
     unsavedChanges: false,
     isLoading: false,
     error: null,
@@ -122,7 +122,10 @@ export const filtersSlice = createSlice({
       state.views.views.forEach((view, i) => {
         if (view._id === payload._id) {
           viewInState = true;
-          state.views.views[i] = payload;
+          state.views.views[i] = {
+            ...state.views.views[i],
+            ...payload
+          };
         }
       });
       if (!viewInState) {
@@ -171,10 +174,13 @@ export const filtersSlice = createSlice({
     },
 
     setSelectedView: (state, { payload }) => {
-      state.views.views.forEach((view) => {
-        view.selected = view._id === payload._id;
-      });
-      state.activeFilters = payload.filters;
+      const selectedView = state.views.views.filter((view) => view.selected)[0];
+      if (selectedView._id !== payload._id) {
+        state.views.views.forEach((view) => {
+          view.selected = view._id === payload._id;
+        });
+        state.activeFilters = payload.filters;
+      }
     },
 
   },

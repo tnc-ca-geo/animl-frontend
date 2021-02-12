@@ -99,3 +99,14 @@ export const { styled, css } = createStyled({
     // transitions: {},
   },
 });
+
+// export const rotateAnimation = css.keyframe({
+//   '0%': {
+//     // styles
+//   },
+//   '100%': {
+//     // styles
+//     transform: 'rotate(360deg)',
+//   }
+// });
+

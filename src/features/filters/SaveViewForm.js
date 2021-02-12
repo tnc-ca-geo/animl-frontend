@@ -12,6 +12,7 @@ import FormError from '../../components/FormError';
 import {
   selectSelectedView,
   selectActiveFilters,
+  selectUnsavedViewChanges,
   editView,
 } from './filtersSlice';
 
@@ -78,6 +79,7 @@ const SaveViewForm = ({ handleClose }) => {
   const [saveMode, setSaveMode] = useState();
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
+  const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
   const dispatch = useDispatch();
 
   const handleSaveModeSelection = (mode) => {
@@ -102,7 +104,7 @@ const SaveViewForm = ({ handleClose }) => {
       <Row>
         <SaveModeTab
           size='large'
-          disabled={!selectedView.editable}
+          disabled={!selectedView.editable || !unsavedViewChanges}
           active={saveMode === 'update' ? true : false}
           onClick={() => handleSaveModeSelection('update')}
         >
