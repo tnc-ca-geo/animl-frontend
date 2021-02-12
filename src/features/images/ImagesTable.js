@@ -13,9 +13,9 @@ import {
   visibleRowsChanged,
 } from './imagesSlice';
 import {
-  selectDetailsIndex,
+  selectImageIndex,
   imageSelected,
-} from '../detailsModal/detailsModalSlice';
+} from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 
 const LabelPill = styled('div', {
@@ -186,10 +186,9 @@ const makeRows = (images) => {
 
 const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
-  const selectedImageIndex = useSelector(selectDetailsIndex);
+  const selectedImageIndex = useSelector(selectImageIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
-  const detailsIndex = useSelector(selectDetailsIndex);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);
   const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
@@ -284,12 +283,12 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   }, [dispatch, visibleRows]);
 
   useEffect(() => {
-    if (detailsIndex) {
+    if (selectedImageIndex) {
       // TODO: make auto scrolling smooth:
       // https://github.com/bvaughn/react-window/issues/16
-      listRef.current.scrollToItem(detailsIndex, 'smart');
+      listRef.current.scrollToItem(selectedImageIndex, 'smart');
     }
-  }, [detailsIndex]);
+  }, [selectedImageIndex]);
 
   useEffect(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
@@ -340,7 +339,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         )
       };
     },
-    [prepareRow, rows, handleRowClick, isImageLoaded]
+    [prepareRow, rows, handleRowClick, isImageLoaded, selectedImageIndex]
   );
 
   const InfiniteList = useCallback(

@@ -2,13 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
-  viewSelected,
-  selectSelectedView,
-} from '../views/viewsSlice';
-import {
   fetchCameras,
   fetchLabels,
-  selectFiltersReady,
   selectActiveFilters,
   selectAvailCameras,
   selectAvailLabels,
@@ -19,20 +14,9 @@ import CameraFilter from './CameraFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 
-
-const Label = styled.span({
-  // marginLeft: '$2',
-});
-
-const FiltersHeader = styled.div({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '$0 $2 $0 $3',
-  height: '$7',
-  borderBottom: '$1 solid $gray400',
-  fontWeight: '$5',
-});
+// const Label = styled.span({
+//   // marginLeft: '$2',
+// });
 
 const StyledFiltersPanel = styled.div({
   position: 'relative',
@@ -52,7 +36,6 @@ const StyledFiltersPanel = styled.div({
 });
 
 const FiltersPanel = ({ expandedDefault }) => {
-  const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
   const availCameras = useSelector(selectAvailCameras);
   const availLabels = useSelector(selectAvailLabels);

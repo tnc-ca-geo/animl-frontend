@@ -5,13 +5,12 @@ import { useSelector } from 'react-redux';
 import {
   selectImages,
   selectImagesCount,
-  selectVisibleRows
-} from '../imagesExplorer/imagesSlice';
+} from '../images/imagesSlice';
 import {
-  detailsModalClosed,
+  loupeClosed,
   incrementImageIndex, 
-  selectDetailsIndex,
-} from './detailsModalSlice';
+  selectImageIndex,
+} from './loupeSlice';
 import PanelHeader from '../../components/PanelHeader';
 import FullSizeImage from './FullSizeImage';
 
@@ -38,9 +37,6 @@ const ProgressBar = styled.div({
   width: '100%',
   backgroundColor: '$gray300',
   position: 'relative',
-  // display: 'flex',
-  // alignItems: 'center',
-  // justifyContent: 'center',
 });
 
 const ProgressIndicator = styled.span({
@@ -57,10 +53,9 @@ const ProgressDisplay = styled.div({
   paddingRight: '$2',
 })
 
-
-const LabelsPane = styled.div({
-  padding: '$3',
-});
+// const LabelsPane = styled.div({
+//   padding: '$3',
+// });
 
 const ItemValue = styled.div({
   fontSize: '$3',
@@ -118,19 +113,13 @@ const ImagePane = styled.div({
   background: 'aliceblue',
 });
 
-const ImageDetails = styled.div({
-  display: 'grid',
-  gridTemplateColumns: '1.2fr 1fr',
-});
-
-const DetailsBody = styled.div({
+const LoupeBody = styled.div({
   flexGrow: 1,
   display: 'grid',
-  // gridTemplateColumns: '20px 1fr',
   margin: '$3',
 });
 
-const StyledDetailsPanel = styled.div({
+const StyledLoupe = styled.div({
   boxSizing: 'border-box',
   width: 'calc(100% - 810px)',
   height: 'calc(100% - 56px)',
@@ -138,7 +127,7 @@ const StyledDetailsPanel = styled.div({
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',
   marginLeft: '100%',
-  // transition: 'margin-left 0.2s ease-out',
+  // transition: 'margin-left 0.3s ease-out',
 
   variants: {
     expanded: {
@@ -150,20 +139,14 @@ const StyledDetailsPanel = styled.div({
 
 });
 
-const DetailsPanel = ({ expanded }) => {
-  const imageIndex = useSelector(selectDetailsIndex);
-  const images = useSelector(selectImages);
-  const image = images[imageIndex];
+const Loupe = ({ expanded }) => {
   const imageCount = useSelector(selectImagesCount);
-  const visibleRows = useSelector(selectVisibleRows);
+  const imageIndex = useSelector(selectImageIndex);
+  const images = useSelector(selectImages);
+  const [ image, setImage ] = useState(images[imageIndex]);
   const progress = (imageIndex / imageCount) * 100;
-  // const progressStart = (visibleRows[0] / imageCount) * 100;
-  // const progressEnd = ((visibleRows[1] - visibleRows[0]) / imageCount) * 100; 
   const [ reviewMode, setReviewMode ] = useState(false);
   const dispatch = useDispatch();
-
-  const handleToggleReviewMode = () => setReviewMode(!reviewMode);
-  const handleDetailsPanelClose = () => dispatch(detailsModalClosed());
 
   // Listen for left/right arrow keydowns
   useEffect(() => {
@@ -177,9 +160,17 @@ const DetailsPanel = ({ expanded }) => {
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [reviewMode, dispatch]);
 
+  useEffect(() => {
+    setImage(images[imageIndex]);
+  }, [images, imageIndex])
+
+  const handleToggleReviewMode = () => setReviewMode(!reviewMode);
+
+  const handleLoupeClose = () => dispatch(loupeClosed());
+
   return (
-    <StyledDetailsPanel expanded={expanded}>
-      <PanelHeader handlePanelClose={handleDetailsPanelClose}>
+    <StyledLoupe expanded={expanded}>
+      <PanelHeader handlePanelClose={handleLoupeClose}>
         <ProgressDisplay>
           <IndexDisplay>
             <Index>{imageIndex + 1} / {imageCount}</Index> 
@@ -190,7 +181,7 @@ const DetailsPanel = ({ expanded }) => {
           </ProgressBar>
         </ProgressDisplay>
       </PanelHeader>
-      <DetailsBody className={expanded ? 'expanded' : null}>
+      <LoupeBody className={expanded ? 'expanded' : null}>
         {image &&
           <div>
             <ImagePane>
@@ -207,9 +198,9 @@ const DetailsPanel = ({ expanded }) => {
             </MetadataPane>
           </div>
         }
-      </DetailsBody>
-    </StyledDetailsPanel>
+      </LoupeBody>
+    </StyledLoupe>
   );
 };
 
-export default DetailsPanel;
+export default Loupe;

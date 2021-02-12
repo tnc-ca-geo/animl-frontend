@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,7 +24,6 @@ const FieldRow = styled.div({
 const ButtonRow = styled(FieldRow, {
   justifyContent: 'flex-end',
 });
-
 
 const SaveModeTab = styled(Button, {
   color: '$hiContrast',

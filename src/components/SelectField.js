@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { styled } from '../theme/stitches.config';
 import Select from 'react-select';
-import { ErrorMessage } from 'formik';
 import FormError from './FormError';
 
 const StyledSelect = styled(Select, {

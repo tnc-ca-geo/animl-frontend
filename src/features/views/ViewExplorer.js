@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectSelectedView } from './viewsSlice';
-import { selectDetailsOpen } from '../detailsModal/detailsModalSlice';
+import { selectLoupeOpen } from '../loupe/loupeSlice';
 import SidebarNav from '../filters/SidebarNav';
 import FiltersPanel from '../filters/FiltersPanel';
-import ImagesPanel from '../imagesExplorer/ImagesPanel';
-import DetailsPanel from '../detailsModal/DetailsPanel';
+import ImagesPanel from '../images/ImagesPanel';
+import Loupe from '../loupe/Loupe';
 
 const ViewExplorerWrapper = styled.div({
   display: 'flex',
@@ -19,7 +19,7 @@ const ViewExplorerBody = styled.div({
 
 export function ViewExplorer() {
   const selectedView = useSelector(selectSelectedView);
-  const detailsOpen = useSelector(selectDetailsOpen);
+  const loupeOpen = useSelector(selectLoupeOpen);
 
   return (
     <ViewExplorerWrapper>
@@ -27,7 +27,7 @@ export function ViewExplorer() {
       <ViewExplorerBody>
         <FiltersPanel expandedDefault={true} />
         <ImagesPanel />
-        <DetailsPanel expanded={detailsOpen}/>
+        <Loupe expanded={loupeOpen} />
       </ViewExplorerBody>
     </ViewExplorerWrapper>
   );

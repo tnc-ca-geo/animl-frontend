@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  fetchCameras,
-  selectCameraFilter,
-  checkboxFilterToggled,
-} from './filtersSlice';
+import { useDispatch } from 'react-redux'
+import { checkboxFilterToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 
 const CheckboxLabel = styled.span({

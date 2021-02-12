@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import {
-  selectActiveFilters,
-  selectFiltersReady
-} from '../filters/filtersSlice';
+import { selectFiltersReady } from '../filters/filtersSlice';
 import {
   selectViews,
   fetchViews,
@@ -106,7 +103,6 @@ const StyledViewSelector = styled.div({
 const ViewSelector = () => {
   const views = useSelector(selectViews);
   const selectedView = useSelector(selectSelectedView);
-  const filters = useSelector(selectActiveFilters);
   const filtersReady = useSelector(selectFiltersReady);
   const unsavedChanges = useSelector(selectUnsavedViewChanges);
   const [expanded, setExpanded] = useState(false);

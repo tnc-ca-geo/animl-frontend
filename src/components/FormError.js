@@ -1,4 +1,3 @@
-import React from 'react';
 import { styled } from '../theme/stitches.config.js';
 
 const FormError = styled.div({

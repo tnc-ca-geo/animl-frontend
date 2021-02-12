@@ -1,21 +1,10 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PanelHeader from './PanelHeader';
 
 const ModalBody = styled.div({
   margin: '$3',
 });
-
-// const ModalHeader = styled.div({
-//   display: 'flex',
-//   justifyContent: 'space-between',
-//   alignItems: 'center',
-//   padding: '$0 $3',
-//   height: '$7',
-//   borderBottom: '$1 solid $gray400',
-//   fontWeight: '$5',
-// });
 
 const ModalContainer = styled.div({
   zIndex: '$2',

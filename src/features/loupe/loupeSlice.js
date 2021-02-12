@@ -5,8 +5,8 @@ const initialState = {
   imageIndex: null,
 };
 
-export const detailsModalSlice = createSlice({
-  name: 'detailsModal',
+export const loupeSlice = createSlice({
+  name: 'loupe',
   initialState,
   reducers: {
 
@@ -15,7 +15,7 @@ export const detailsModalSlice = createSlice({
       state.imageIndex = Number(payload);
     },
 
-    detailsModalClosed: (state) => {
+    loupeClosed: (state) => {
       state.open = false;
       state.imageIndex = null;
     },
@@ -35,16 +35,16 @@ export const detailsModalSlice = createSlice({
 
 export const {
   imageSelected,
-  detailsModalClosed,
+  loupeClosed,
   incrementImageIndex,
-} = detailsModalSlice.actions;
+} = loupeSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
-export const selectDetailsOpen = state => state.detailsModal.open;
-export const selectDetailsIndex = state => state.detailsModal.imageIndex;
+export const selectLoupeOpen = state => state.loupe.open;
+export const selectImageIndex = state => state.loupe.imageIndex;
 
-export default detailsModalSlice.reducer;
+export default loupeSlice.reducer;
