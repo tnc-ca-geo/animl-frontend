@@ -24,7 +24,6 @@ const initialState = {
   },
 };
 
-// TODO: figure out how to break this slice up
 export const filtersSlice = createSlice({
   name: 'filters',
   initialState,

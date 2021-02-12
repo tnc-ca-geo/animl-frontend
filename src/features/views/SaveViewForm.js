@@ -13,20 +13,16 @@ import {
 } from './viewsSlice';
 import { selectActiveFilters } from '../filters/filtersSlice';
 import Button from '../../components/Button';
-import SubmitButton from '../../components/SubmitButton';
-import FormWrapper from '../../components/FormWrapper';
-import FormFieldWrapper from '../../components/FormFieldWrapper';
-import FormError from '../../components/FormError';
+import {
+  FormWrapper,
+  FieldRow,
+  ButtonRow,
+  FormFieldWrapper,
+  FormError,
+  HelperText,
+} from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
-const FieldRow = styled.div({
-  paddingBottom: '$3',
-  display: 'flex',
-});
-
-const ButtonRow = styled(FieldRow, {
-  justifyContent: 'flex-end',
-});
 
 const SaveModeTab = styled(Button, {
   color: '$hiContrast',
@@ -56,11 +52,6 @@ const SaveModeTab = styled(Button, {
 
 const ViewName = styled.span({
   fontWeight: '$5',
-});
-
-// TODO: extract
-const HelperText = styled.div({
-  padding: '$2 $3 $3 $3',
 });
 
 const Row = styled.div({
@@ -161,9 +152,9 @@ const SaveViewForm = ({ handleClose }) => {
                       type='hidden'
                     />
                     <ButtonRow>
-                      <SubmitButton size='large' type='submit'>
+                      <Button size='large' type='submit'>
                         Save view
-                      </SubmitButton>
+                      </Button>
                     </ButtonRow>
                   </Form>
                 )}
@@ -218,13 +209,13 @@ const SaveViewForm = ({ handleClose }) => {
                       type='hidden'
                     />
                     <ButtonRow>
-                      <SubmitButton 
+                      <Button 
                         type='submit'
                         size='large'
                         disabled={!isValid || !dirty}
                       >
                         Save view
-                      </SubmitButton>
+                      </Button>
                     </ButtonRow>
                   </Form>
                 )}

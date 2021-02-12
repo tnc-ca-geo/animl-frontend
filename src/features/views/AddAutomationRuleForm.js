@@ -1,31 +1,20 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import _ from 'lodash';
-import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+
 import { editView } from './viewsSlice';
 import SelectField from '../../components/SelectField';
-import FormFieldWrapper from '../../components/FormFieldWrapper';
-import FormError from '../../components/FormError';
-import FormWrapper from '../../components/FormWrapper';
-import SubmitButton from '../../components/SubmitButton';
+import Button from '../../components/Button';
+import {
+  FormWrapper,
+  FieldRow,
+  ButtonRow,
+  FormFieldWrapper,
+  FormError
+} from '../../components/Form';
 
-// TODO: pull these out into their own components
-const FieldRow = styled.div({
-  paddingBottom: '$3',
-  display: 'flex',
-});
-
-const ButtonRow = styled(FieldRow, {
-  justifyContent: 'flex-end',
-  button: {
-    marginRight: '$3',
-    ':last-child': {
-      marginRight: '0',
-    },
-  }
-});
 
 const emptyRule = {
   name: '',
@@ -71,7 +60,7 @@ const addRuleSchema = Yup.object().shape({
   }),
 });
 
-const AddAutomationRuleForm = ({ view, models, returnToRulesList }) => {
+const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
   const dispatch = useDispatch();
 
   const handleSaveRulesSubmit = ({name, event, action}) => {
@@ -95,9 +84,10 @@ const AddAutomationRuleForm = ({ view, models, returnToRulesList }) => {
       }
     };
     dispatch(editView('update', payload));
-    returnToRulesList();  // TODO: show loading & wait for success to close
+    hideAddRuleForm();
   };
 
+  const handleDiscardRuleClick = () => hideAddRuleForm();
 
   return (
     <FormWrapper>
@@ -105,7 +95,6 @@ const AddAutomationRuleForm = ({ view, models, returnToRulesList }) => {
         initialValues={{
           ...emptyRule
         }}
-        // TODO: add validation
         validationSchema={addRuleSchema} 
         onSubmit={handleSaveRulesSubmit}
       >
@@ -217,20 +206,20 @@ const AddAutomationRuleForm = ({ view, models, returnToRulesList }) => {
               )}
             </FieldRow>
             <ButtonRow>
-              <SubmitButton
+              <Button
                 type='button'
                 size='large'
-                onClick={returnToRulesList}
+                onClick={handleDiscardRuleClick}
               >
                 Discard
-              </SubmitButton>
-              <SubmitButton
+              </Button>
+              <Button
                 type='submit'
                 size='large'
                 disabled={!isValid || !dirty}
               >
                 Save
-              </SubmitButton>
+              </Button>
             </ButtonRow>
           </Form>
         )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '../theme/stitches.config.js';
+import { styled } from '../theme/stitches.config';
 
 const textInput = {
   display: 'inherit',
@@ -38,17 +38,6 @@ const StyledFormWrapper = styled.div({
   },
   select: {
     ...textInput
-    // backgroundColor: 'transparent',
-    // border: 'none',
-    // fontFamily: 'inherit',
-    // height: '$5',
-    // fontSize: '$3',
-    // paddingLeft: '$1',
-    // borderRadius: '$2',
-    // color: '$hiContrast',
-    // ':hover': {
-    //   cursor: 'pointer',
-    // },
   },
   p: {
     color: '$gray600',
@@ -56,10 +45,42 @@ const StyledFormWrapper = styled.div({
   }
 });
 
-const FormWrapper = ({ children }) => (
+export const FormWrapper = ({ children }) => (
   <StyledFormWrapper>
     { children }
   </StyledFormWrapper>
 );
 
-export default FormWrapper;
+export const FieldRow = styled.div({
+  paddingBottom: '$3',
+  display: 'flex',
+});
+
+export const ButtonRow = styled(FieldRow, {
+  justifyContent: 'flex-end',
+  button: {
+    marginRight: '$3',
+    ':last-child': {
+      marginRight: '0',
+    },
+  }
+});
+
+export const FormFieldWrapper = styled.div({
+  flexGrow: '1',
+  marginBottom: '$3',
+  marginLeft: '$3',
+  ':first-child': {
+    marginLeft: '0',
+  }
+});
+
+export const FormError = styled.div({
+  color: '$warning',
+  fontSize: '$3',
+  marginTop: '$2',
+});
+
+export const HelperText = styled.div({
+  padding: '$2 $3 $3 $3',
+});

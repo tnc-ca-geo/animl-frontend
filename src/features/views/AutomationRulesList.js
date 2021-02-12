@@ -5,23 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { editView, selectViewsLoading } from './viewsSlice';
 import IconButton from '../../components/IconButton';
-import SubmitButton from '../../components/SubmitButton';
+import Button from '../../components/Button';
+import { ButtonRow } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
-
-const FieldRow = styled.div({
-  paddingBottom: '$3',
-  display: 'flex',
-});
-
-const ButtonRow = styled(FieldRow, {
-  justifyContent: 'flex-end',
-  button: {
-    marginRight: '$3',
-    ':last-child': {
-      marginRight: '0',
-    },
-  }
-});
 
 const Rule = styled('li', {
   display: 'flex',
@@ -120,13 +106,13 @@ const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
           })}
         </RulesList>
         <ButtonRow>
-          <SubmitButton
+          <Button
             size='large'
             disabled={!view.editable}
             onClick={onAddRuleClick}
           >
             New rule
-          </SubmitButton>
+          </Button>
         </ButtonRow>
       </div>
     </div>

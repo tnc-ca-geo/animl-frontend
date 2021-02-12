@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { styled } from '../theme/stitches.config';
 import Select from 'react-select';
-import FormError from './FormError';
+import { FormError } from './Form';
 
 const StyledSelect = styled(Select, {
   '.react-select__control': {

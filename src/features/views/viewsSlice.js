@@ -9,8 +9,7 @@ const initialState = {
   error: null,
 };
 
-// TODO: figure out how to break this slice up
-export const filtersSlice = createSlice({
+export const viewsSlice = createSlice({
   name: 'views',
   initialState,
   reducers: {
@@ -106,7 +105,7 @@ export const {
   setSelectedView,
   setUnsavedChanges,
   getModelsSuccess
-} = filtersSlice.actions;
+} = viewsSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 
 // https://redux-toolkit.js.org/api/createAsyncThunk
@@ -191,4 +190,4 @@ export const selectModels = createSelector(
   (views) => Object.values(views.models)
 );
 
-export default filtersSlice.reducer;
+export default viewsSlice.reducer;

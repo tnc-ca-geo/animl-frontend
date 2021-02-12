@@ -8,32 +8,13 @@ import {
   selectViewsLoading,
   selectSelectedView,
   editView } from './viewsSlice';
-import SubmitButton from '../../components/SubmitButton';
-import FormWrapper from '../../components/FormWrapper';
+import Button from '../../components/Button';
+import { FormWrapper, ButtonRow, HelperText } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
-const FieldRow = styled.div({
-  paddingBottom: '$3',
-  display: 'flex',
-});
-
-const ButtonRow = styled(FieldRow, {
-  justifyContent: 'flex-end',
-  button: {
-    marginRight: '$3',
-    ':last-child': {
-      marginRight: '0',
-    },
-  }
-});
 
 const ViewName = styled.span({
   fontWeight: '$5',
-});
-
-// TODO: extract
-const HelperText = styled.div({
-  padding: '$2 $3 $3 $3',
 });
 
 const deleteViewSchema = Yup.object().shape({
@@ -83,9 +64,9 @@ const DeleteViewForm = ({ handleClose }) => {
                 type='hidden'
               />
               <ButtonRow>
-                <SubmitButton type='submit' size='large'>
+                <Button type='submit' size='large'>
                   Delete view
-                </SubmitButton>
+                </Button>
               </ButtonRow>
             </Form>
           )}

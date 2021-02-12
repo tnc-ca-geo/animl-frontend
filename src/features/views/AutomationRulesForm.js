@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { styled } from '../../theme/stitches.config.js';
 
 import { 
   fetchModels,
@@ -10,6 +9,7 @@ import {
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+
 
 const AutomationRulesForm = ({ handleClose }) => {
   const selectedView = useSelector(selectSelectedView);
@@ -27,7 +27,7 @@ const AutomationRulesForm = ({ handleClose }) => {
     setShowAddRuleForm(true);
   }
 
-  const handleDiscardRuleClick = () => {
+  const hideAddRuleForm = () => {
     setShowAddRuleForm(false);
   }
 
@@ -38,7 +38,7 @@ const AutomationRulesForm = ({ handleClose }) => {
           ? <AddAutomationRuleForm
               view={selectedView}
               models={models}
-              returnToRulesList={handleDiscardRuleClick} // TODO: ugly
+              hideAddRuleForm={hideAddRuleForm}
             />
           : <AutomationRulesList
               view={selectedView}
