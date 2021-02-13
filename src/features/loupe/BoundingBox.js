@@ -80,6 +80,13 @@ const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
   position: 'absolute !important;',
   border: '2px solid #345EFF',
+  variants: {
+    selected: {
+      true: {
+        zIndex: '100',
+      }
+    }
+  }
 });
 
 // convert [left, top, width, height] in absolute values to 
@@ -104,7 +111,7 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
   return { left, top, width, height };
 };
 
-const BoundingBox = ({ imageWidth, imageHeight, label }) => {
+const BoundingBox = ({ imageWidth, imageHeight, label, selected }) => {
   // megadetector returns bboxes as 
   // [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state. 
@@ -203,6 +210,7 @@ const BoundingBox = ({ imageWidth, imageHeight, label }) => {
         handle={(location) => <ResizeHandle location={location} />}
         onResize={onResize}
         onResizeStop={onResizeStop}
+        selected={selected}
         css={{ borderColor: labelColor.primary }}
       >
         <BoundingBoxLabel

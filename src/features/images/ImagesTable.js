@@ -13,7 +13,7 @@ import {
   visibleRowsChanged,
 } from './imagesSlice';
 import {
-  selectImageIndex,
+  selectIndex,
   imageSelected,
 } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
@@ -30,7 +30,18 @@ const LabelPill = styled('div', {
   marginRight: '$2',
   marginBottom: '$2',
   borderRadius: '$3',
+  border: '1px solid rgba(0,0,0,0)',
   // textTransform: 'uppercase',
+  transition: 'all 0.2s ease',
+  variants: {
+    selected: {
+      true: {
+        outline: 'none',
+        boxShadow: '0 0 0 3px $blue200',
+        borderColor: '$blue500',  
+      }
+    }
+  }
 });
 
 const LabelContainer = styled('div', {
@@ -117,7 +128,7 @@ const DataCell = styled(TableCell, {
   variants: {
     selected: {
       true: {
-        backgroundColor: '$gray300',
+        // backgroundColor: '$gray300',
       }
     }
   }
@@ -157,19 +168,25 @@ const scrollbarWidth = () => {
   return scrollbarWidth;
 };
 
-const makeRows = (images) => {
-  return images.map((image) => {
-    const thumbnail = <Image src={image.thumbUrl} />;
-    const labelCagegories = <LabelContainer>{image.labels.map((label, index) => (
-      <LabelPill
-        key={index}
-        css={{
-          backgroundColor: labelColors[label.category].primary + 'b3', 
-        }}
-      >
-        {label.category}
-      </LabelPill>
-    ))}</LabelContainer>;
+const makeRows = (images, loupeIndex) => {
+  return images.map((image, imageIndex) => {
+    const imageSelected = imageIndex === loupeIndex.images;
+    const thumbnail = <Image selected={imageSelected} src={image.thumbUrl} />;
+    const labelCagegories = <LabelContainer>
+      {image.labels.map((label, labelIndex) => {
+        return (
+          <LabelPill
+            key={labelIndex}
+            selected={imageSelected && labelIndex === loupeIndex.labels}
+            css={{
+              backgroundColor: labelColors[label.category].primary + 'b3', 
+            }}
+          >
+            {label.category}
+          </LabelPill>
+        );
+      })}
+    </LabelContainer>;
 
     let needsReview = 'Yes'; 
     image.labels.forEach((label) => {
@@ -189,7 +206,7 @@ const makeRows = (images) => {
 
 const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
-  const selectedImageIndex = useSelector(selectImageIndex);
+  const loupeIndex = useSelector(selectIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);
@@ -202,7 +219,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     return !hasNext || index < images.length;
   }, [hasNext, images]);
 
-  const data = makeRows(images);
+  const data = makeRows(images, loupeIndex);
 
   const defaultColumn = useMemo(
     () => ({
@@ -281,17 +298,17 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     useSortBy,
   );
 
-  useEffect(() => {
-    dispatch(visibleRowsChanged(visibleRows))
-  }, [dispatch, visibleRows]);
+  // useEffect(() => {
+  //   dispatch(visibleRowsChanged(visibleRows))
+  // }, [dispatch, visibleRows]);
 
   useEffect(() => {
-    if (selectedImageIndex) {
+    if (loupeIndex.images) {
       // TODO: make auto scrolling smooth:
       // https://github.com/bvaughn/react-window/issues/16
-      listRef.current.scrollToItem(selectedImageIndex, 'smart');
+      listRef.current.scrollToItem(loupeIndex.images, 'smart');
     }
-  }, [selectedImageIndex]);
+  }, [loupeIndex.images]);
 
   useEffect(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
@@ -319,13 +336,14 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
           <TableRow
             {...row.getRowProps({ style })}
             onClick={() => handleRowClick(row.id)}
-            selected={selectedImageIndex === index}
+            selected={loupeIndex.images === index}
           >
             {row.cells.map(cell => {
               return (
                 <DataCell
                   {...cell.getCellProps()}
-                  selected={selectedImageIndex === index}
+                  selected={loupeIndex.images === index}
+                  labelIndex={loupeIndex.labels}
                 >
                   {cell.render('Cell')}
                 </DataCell>
@@ -340,7 +358,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         )
       };
     },
-    [prepareRow, rows, handleRowClick, isImageLoaded, selectedImageIndex]
+    [prepareRow, rows, handleRowClick, isImageLoaded, loupeIndex.images]
   );
 
   const InfiniteList = useCallback(

@@ -16,7 +16,7 @@ const ImageWrapper = styled.div({
   position: 'relative',
 });
 
-const FullSizeImage = ({ image }) => {
+const FullSizeImage = ({ image, loupeIndex }) => {
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
   const containerEl = useRef(null);
   const [ imgLoaded, setImgLoaded ] = useState(false);
@@ -58,6 +58,7 @@ const FullSizeImage = ({ image }) => {
           imageWidth={width}
           imageHeight={height}
           label={label}
+          selected={index === loupeIndex.labels}
         />
       ))}
       {/*{!imgLoaded &&
