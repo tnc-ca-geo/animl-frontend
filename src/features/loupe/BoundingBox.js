@@ -83,7 +83,7 @@ const StyledResizableBox = styled(ResizableBox, {
   variants: {
     selected: {
       true: {
-        zIndex: '100',
+        zIndex: '$3',
       }
     }
   }
