@@ -38,22 +38,6 @@ export const loupeSlice = createSlice({
       state.index = Object.assign(state.index, payload);
     },
 
-    labelValidated: (state, { payload }) => {
-      const i = state.index;
-      const object = state.images[i.images].objects[i.objects];
-      const label = object.labels[i.labels];
-      if (payload === true) {
-        // validate
-        label.validation = { validated: true };
-        // lock
-        object.locked = true;
-      }
-      else {
-        // invalidate
-        label.validation = { validated: false };;
-      }
-    },
-
   },
 });
 
@@ -63,7 +47,6 @@ export const {
   reviewModeToggled,
   iterationUnitChanged,
   setIndices,
-  labelValidated,
 } = loupeSlice.actions;
 
 // Actions only used in middlewares:

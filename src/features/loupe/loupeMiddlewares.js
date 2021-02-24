@@ -19,6 +19,7 @@ const isLabelInvalidated = (images, i) => {
 };
 
 const findNextLabel = (images, index) => {
+  console.log('index on findNextLabel(): ', index);
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use 0 as initial index
@@ -31,6 +32,10 @@ const findNextLabel = (images, index) => {
     const initialObjectIndex = imageLoopExecuted ? 0 : index.objects;
     for (let o = initialObjectIndex; o < image.objects.length; o++) {
       const object = image.objects[o];
+      // TODO: bug here. If you start on an image with no labels, 
+      // switch on review mode, iterate to next label
+      // you start on labels[1] b/c the objectLoop has not yet executed
+      // might be fixed by including empty images in label iteration?
       const initialLabelIndex = objectLoopExecuted ? 0 : index.labels + 1;
       if (!object.locked) {
         for (let l = initialLabelIndex; l < object.labels.length; l++) {
@@ -109,7 +114,7 @@ export const incrementLoupeIndexMiddleware = store => next => action => {
     }
 
     // TODO: also stop at empty images (or have this be a setting?)
-    
+
     // TODO: figure out if the image record has been altered 
     // (e.g. labels validated) and save it
 

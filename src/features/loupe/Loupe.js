@@ -6,13 +6,16 @@ import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
-import { selectImages, selectImagesCount } from '../images/imagesSlice';
+import {
+  selectImages,
+  selectImagesCount,
+  labelValidated,
+} from '../images/imagesSlice';
 import {
   loupeClosed,
   incrementIndex, 
   reviewModeToggled,
   iterationUnitChanged,
-  labelValidated,
   selectReviewMode,
   selectIndex,
   selectIterationUnit,
@@ -207,49 +210,35 @@ const Loupe = ({ expanded }) => {
   const index = useSelector(selectIndex);
   const images = useSelector(selectImages);
   const [ image, setImage ] = useState(images[index.images]);
-
   const progress = (index.images / imageCount) * 100;
-  // const iterationUnit = useSelector(selectIterationUnit);
-  // const labels = useSelector(selectLabelsIndex);
-
   const dispatch = useDispatch();
-  // const iterationOptions = [
-  //   { value: 'images', label: 'images' },
-  //   { value: 'labels', label: 'labels' },
-  // ];
 
   // Listen for arrow keydowns
   useEffect(() => {
     const handleKeyDown = (e) => {
-      
-      const delta =
-        e.keyCode === key.up
-          ? "decrement"
-          : e.keyCode === key.down
-          ? "increment"
+      const delta = (e.keyCode === key.up)
+        ? 'decrement'
+        : (e.keyCode === key.down)
+          ? 'increment'
           : null;
-
       if (delta) {
         dispatch(incrementIndex(delta)); 
       }
 
       if (reviewMode) {
         if (e.keyCode === key.right) {
-          // validate label
-          dispatch(labelValidated(true));
+          dispatch(labelValidated({ index: index, validated: true}));
           dispatch(incrementIndex('increment'));
         }
         if (e.keyCode === key.left) {
-          // invalidate label
-          dispatch(labelValidated(false)); 
+          dispatch(labelValidated({ index: index, validated: false })); 
           dispatch(incrementIndex('increment'));
         }
       }
-
     };
     window.addEventListener('keydown', handleKeyDown)
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ reviewMode, dispatch ]);
+  }, [ reviewMode, index, dispatch ]);
 
   useEffect(() => {
     setImage(images[index.images]);
@@ -258,10 +247,6 @@ const Loupe = ({ expanded }) => {
   const handleToggleReviewMode = () => dispatch(reviewModeToggled());
 
   const handleLoupeClose = () => dispatch(loupeClosed());
-
-  // const handleIterationUnitChange = (value) => {
-  //   dispatch(iterationUnitChanged(value.value));
-  // };
 
   return (
     <StyledLoupe expanded={expanded}>

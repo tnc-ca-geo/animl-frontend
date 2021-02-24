@@ -87,6 +87,7 @@ export const { styled, css } = createStyled({
       $1: '3px',
       $2: '5px',
       $3: '15px',
+      $4: '25px',
       $round: '50%',
       $pill: '9999px',
     },

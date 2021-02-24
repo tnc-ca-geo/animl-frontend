@@ -77,6 +77,23 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    labelValidated: (state, { payload }) => {
+      console.log('vaildating label with payload: ', payload)
+      const i = payload.index;
+      const object = state.images[i.images].objects[i.objects];
+      const label = object.labels[i.labels];
+      if (payload.validated === true) {
+        // validate
+        label.validation = { validated: true };
+        // lock
+        object.locked = true;
+      }
+      else {
+        // invalidate
+        label.validation = { validated: false };;
+      }
+    },
+
   },
 });
 
@@ -87,6 +104,7 @@ export const {
   getImagesFailure,
   sortChanged,
   visibleRowsChanged,
+  labelValidated,
 } = imagesSlice.actions;
 
 // fetchImages thunk

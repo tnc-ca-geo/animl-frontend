@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { styled, labelColors } from '../../theme/stitches.config.js';
+import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -17,44 +17,10 @@ import {
   imageSelected,
 } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
+import LabelPills from './LabelPills';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
-const LabelPill = styled('div', {
-  // backgroundColor: '$gray300',
-  // border: '$1 solid $hiContrast',
-  color: '$hiContrast',
-  fontSize: '$2',
-  fontFamily: '$mono',
-  padding: '$1 $3',
-  marginRight: '$2',
-  marginBottom: '$2',
-  borderRadius: '$3',
-  border: '1px solid rgba(0,0,0,0)',
-  // textTransform: 'uppercase',
-  transition: 'all 0.2s ease',
-  variants: {
-    selected: {
-      true: {
-        outline: 'none',
-        boxShadow: '0 0 0 3px $blue200',
-        borderColor: '$blue500',  
-      }
-    }
-  }
-});
-
-const ObjectPill = styled('div', {
-  display: 'flex',
-  backgroundColor: '$gray300',
-  marginRight: '$2'
-})
-
-const LabelContainer = styled('div', {
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap',
-});
 // TODO: make table horizontally scrollable on smaller screens
 //   '.tableWrap': {
 //     display: 'block',
@@ -178,45 +144,11 @@ const makeRows = (images, loupeIndex) => {
   return images.map((image, imageIndex) => {
     const imageSelected = imageIndex === loupeIndex.images;
     const thumbnail = <Image selected={imageSelected} src={image.thumbUrl} />;
-    // TODO: refactor
-    const labelCagegories = <LabelContainer>
-      {image.objects.map((object, objIndex) => (
-        <ObjectPill key={objIndex}>
-          {
-            object.labels.map((label, lblIndex) => (
-              <LabelPill
-                key={lblIndex}
-                selected={imageSelected && lblIndex === loupeIndex.labels}
-                css={{
-                  backgroundColor: labelColors[label.category].primary + 'b3', 
-                }}
-              >
-                {label.category}
-              </LabelPill>
-            ))
-          }
-        </ObjectPill>
-      ))}
-
-      {/*{image.objects.map((object, labelIndex) => {
-        const topLabel = object.labels.find((label) => (
-          label.validated !== false
-        ));
-        return (
-          <LabelPill
-            key={labelIndex}
-            selected={imageSelected && labelIndex === loupeIndex.labels}
-            css={{
-              backgroundColor: labelColors[topLabel.category].primary + 'b3', 
-            }}
-          >
-            {topLabel.category}
-          </LabelPill>
-        );
-
-      })}*/}
-    </LabelContainer>;
-
+    const labelCagegories = <LabelPills
+      image={image}
+      imageIndex={imageIndex}
+      loupeIndex={loupeIndex}
+    />
     let needsReview = 'Yes'; 
     // TODO: revisit this
     // image.labels.forEach((label) => {

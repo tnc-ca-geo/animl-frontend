@@ -4,7 +4,7 @@ import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectIndex } from './loupeSlice';
+import { selectIndex, selectReviewMode } from './loupeSlice';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -113,7 +113,6 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
   return { left, top, width, height };
 };
 
-// TODO: refactor to represent OBJECTS w/ multiple labels not just single labels
 const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
   // megadetector returns bboxes as 
   // [ymin, xmin, ymax, xmax] in relative values
@@ -123,21 +122,36 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
 
+  const reviewMode = useSelector(selectReviewMode);
   const index = useSelector(selectIndex);
-  const [ label, setLabel ] = useState(null);
+  const initialLabel = object.labels.find((label) => (
+    label.validation === null || label.validation.validated
+  ));
+  console.log('initialLabel: ', initialLabel)
+  const [ label, setLabel ] = useState(initialLabel);
   useEffect(() => {
-    setLabel(object[index.labels]);
-  }, [index]);
+    // if object is selected & we're in reviewMode,
+    // show currently selected label,
+    // else show top label (first non-invalidated in stack)
+    const newLabel = selected && reviewMode
+      ? object.labels[index.labels]
+      : object.labels.find((label) => (
+          label.validation === null || label.validation.validated 
+        ));
+    setLabel(newLabel);
+  }, [ object, index, selected, reviewMode ]);
+
+  const defaultColor = { primary: '$gray300', text: '$hiContrast' };
+  const [ labelColor, setLabelColor ] = useState(defaultColor);
+  const [ conf, setConf ] = useState(100);
+  useEffect(() => {
+    const color = selected
+      ? labelColors[label.category]
+      : defaultColor;
+    setLabelColor(color); 
+    setConf(Number.parseFloat(label.conf * 100).toFixed(1));
+  }, [ label, selected ]);
   
-  // const label = object.labels.find((label) => (
-  //   // return first label that is either validated or null
-  //   // TODO: should this be a selector? 
-  //   label.validated !== false
-  // ));
-
-  const conf = Number.parseFloat(label.conf * 100).toFixed(1);
-  const labelColor = labelColors[label.category];
-
   useEffect(() => {
     setBbox(object.bbox);
   }, [ object ]);

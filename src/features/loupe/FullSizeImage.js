@@ -52,8 +52,7 @@ const FullSizeImage = ({ image, loupeIndex }) => {
 
   return (
     <ImageWrapper ref={containerEl}>
-      {/*
-      {image.objects.map((object, index) => ( 
+      {image.objects.map((object, index) => (
         <BoundingBox
           key={index}
           imageWidth={width}
@@ -62,7 +61,6 @@ const FullSizeImage = ({ image, loupeIndex }) => {
           selected={index === loupeIndex.objects}
         />
       ))}
-      */}
       {/*{!imgLoaded &&
         <SpinnerOverlay css={{ background: 'none'}}>
           <CircleSpinner />
