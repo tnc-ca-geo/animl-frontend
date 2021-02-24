@@ -3,12 +3,17 @@ import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from '../../components/IconButton';
 
 import { selectImages, selectImagesCount } from '../images/imagesSlice';
 import {
   loupeClosed,
   incrementIndex, 
+  reviewModeToggled,
   iterationUnitChanged,
+  labelValidated,
+  selectReviewMode,
   selectIndex,
   selectIterationUnit,
   selectLabelsIndex,
@@ -197,65 +202,72 @@ const key = {
 };
 
 const Loupe = ({ expanded }) => {
+  const reviewMode = useSelector(selectReviewMode);
   const imageCount = useSelector(selectImagesCount);
   const index = useSelector(selectIndex);
   const images = useSelector(selectImages);
   const [ image, setImage ] = useState(images[index.images]);
 
   const progress = (index.images / imageCount) * 100;
-  const iterationUnit = useSelector(selectIterationUnit);
+  // const iterationUnit = useSelector(selectIterationUnit);
   // const labels = useSelector(selectLabelsIndex);
 
-  const [ reviewMode, setReviewMode ] = useState(false);
   const dispatch = useDispatch();
-  const iterationOptions = [
-    { value: 'images', label: 'images' },
-    { value: 'labels', label: 'labels' },
-  ];
+  // const iterationOptions = [
+  //   { value: 'images', label: 'images' },
+  //   { value: 'labels', label: 'labels' },
+  // ];
 
   // Listen for arrow keydowns
   useEffect(() => {
     const handleKeyDown = (e) => {
-
-      const delta = (e.keyCode === key.up) ? 'decrement'
-                  : (e.keyCode === key.down) ? 'increment'
-                  : null;
+      
+      const delta =
+        e.keyCode === key.up
+          ? "decrement"
+          : e.keyCode === key.down
+          ? "increment"
+          : null;
 
       if (delta) {
-        dispatch(incrementIndex({ unit: iterationUnit, delta })); 
+        dispatch(incrementIndex(delta)); 
       }
 
-      if (iterationUnit === 'labels') {
+      if (reviewMode) {
         if (e.keyCode === key.right) {
-          // TODO: validate label
-          // dispatch(labelValidated({ delta })); 
+          // validate label
+          dispatch(labelValidated(true));
+          dispatch(incrementIndex('increment'));
         }
         if (e.keyCode === key.left) {
-          // TODO: invalidate label
-          // dispatch(labelValidated({ delta })); 
+          // invalidate label
+          dispatch(labelValidated(false)); 
+          dispatch(incrementIndex('increment'));
         }
       }
+
     };
     window.addEventListener('keydown', handleKeyDown)
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ iterationUnit, reviewMode, dispatch ]);
+  }, [ reviewMode, dispatch ]);
 
   useEffect(() => {
     setImage(images[index.images]);
   }, [images, index.images])
 
-  const handleToggleReviewMode = () => setReviewMode(!reviewMode);
+  const handleToggleReviewMode = () => dispatch(reviewModeToggled());
 
   const handleLoupeClose = () => dispatch(loupeClosed());
 
-  const handleIterationUnitChange = (value) => {
-    dispatch(iterationUnitChanged(value.value));
-  };
+  // const handleIterationUnitChange = (value) => {
+  //   dispatch(iterationUnitChanged(value.value));
+  // };
 
   return (
     <StyledLoupe expanded={expanded}>
       <PanelHeader handlePanelClose={handleLoupeClose}>
         <ProgressDisplay>
+          {/*
           <IterationUnitSelector
             value={{ value: iterationUnit, label: iterationUnit }}
             options={iterationOptions}
@@ -263,6 +275,15 @@ const Loupe = ({ expanded }) => {
             className='react-select'
             classNamePrefix='react-select'
           />
+          */}
+          <IconButton
+            variant='ghost'
+            onClick={handleToggleReviewMode}
+          >
+            <FontAwesomeIcon
+              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
+            />
+          </IconButton>
           <IndexDisplay>
             <Index>{index.images + 1} / {imageCount}</Index>
             <IndexUnit>images</IndexUnit>

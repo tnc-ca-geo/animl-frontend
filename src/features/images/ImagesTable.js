@@ -44,6 +44,12 @@ const LabelPill = styled('div', {
   }
 });
 
+const ObjectPill = styled('div', {
+  display: 'flex',
+  backgroundColor: '$gray300',
+  marginRight: '$2'
+})
+
 const LabelContainer = styled('div', {
   width: '100%',
   display: 'flex',
@@ -172,28 +178,52 @@ const makeRows = (images, loupeIndex) => {
   return images.map((image, imageIndex) => {
     const imageSelected = imageIndex === loupeIndex.images;
     const thumbnail = <Image selected={imageSelected} src={image.thumbUrl} />;
+    // TODO: refactor
     const labelCagegories = <LabelContainer>
-      {image.labels.map((label, labelIndex) => {
+      {image.objects.map((object, objIndex) => (
+        <ObjectPill key={objIndex}>
+          {
+            object.labels.map((label, lblIndex) => (
+              <LabelPill
+                key={lblIndex}
+                selected={imageSelected && lblIndex === loupeIndex.labels}
+                css={{
+                  backgroundColor: labelColors[label.category].primary + 'b3', 
+                }}
+              >
+                {label.category}
+              </LabelPill>
+            ))
+          }
+        </ObjectPill>
+      ))}
+
+      {/*{image.objects.map((object, labelIndex) => {
+        const topLabel = object.labels.find((label) => (
+          label.validated !== false
+        ));
         return (
           <LabelPill
             key={labelIndex}
             selected={imageSelected && labelIndex === loupeIndex.labels}
             css={{
-              backgroundColor: labelColors[label.category].primary + 'b3', 
+              backgroundColor: labelColors[topLabel.category].primary + 'b3', 
             }}
           >
-            {label.category}
+            {topLabel.category}
           </LabelPill>
         );
-      })}
+
+      })}*/}
     </LabelContainer>;
 
     let needsReview = 'Yes'; 
-    image.labels.forEach((label) => {
-      if (label.validation.reviewed) {
-        needsReview = 'No';
-      }
-    });
+    // TODO: revisit this
+    // image.labels.forEach((label) => {
+    //   if (label.validation.reviewed) {
+    //     needsReview = 'No';
+    //   }
+    // });
 
     return {
       thumbnail,

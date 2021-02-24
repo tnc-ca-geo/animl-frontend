@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from '../../components/IconButton';
+
 import { selectFiltersReady } from '../filters/filtersSlice';
 import {
   selectViews,
@@ -9,8 +12,6 @@ import {
   selectSelectedView,
   selectUnsavedViewChanges,
  } from './viewsSlice';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconButton from '../../components/IconButton';
 
 const ViewMenuItem = styled('li', {
   padding: '$2 $3',

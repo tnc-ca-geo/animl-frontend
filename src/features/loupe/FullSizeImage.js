@@ -42,25 +42,27 @@ const FullSizeImage = ({ image, loupeIndex }) => {
   const handleImgLoaded = () => setImgLoaded(true);
 
   useEffect(() => {
-    console.log('New image: ', image);
     setImgLoaded(false);
   }, [ image ]);
 
+  // Testing
   useEffect(() => {
-    console.log('imgLoaded: ', imgLoaded);
-  }, [ imgLoaded ]);
+    console.log('new index: ', loupeIndex);
+  }, [loupeIndex])
 
   return (
     <ImageWrapper ref={containerEl}>
-      {image.labels.map((label, index) => ( 
+      {/*
+      {image.objects.map((object, index) => ( 
         <BoundingBox
           key={index}
           imageWidth={width}
           imageHeight={height}
-          label={label}
-          selected={index === loupeIndex.labels}
+          object={object}
+          selected={index === loupeIndex.objects}
         />
       ))}
+      */}
       {/*{!imgLoaded &&
         <SpinnerOverlay css={{ background: 'none'}}>
           <CircleSpinner />

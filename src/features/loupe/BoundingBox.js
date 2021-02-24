@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
+import { selectIndex } from './loupeSlice';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -111,22 +113,34 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
   return { left, top, width, height };
 };
 
-const BoundingBox = ({ imageWidth, imageHeight, label, selected }) => {
+// TODO: refactor to represent OBJECTS w/ multiple labels not just single labels
+const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
   // megadetector returns bboxes as 
   // [ymin, xmin, ymax, xmax] in relative values
-  // so we are using that format in state. 
-  const [ bbox, setBbox ] = useState(label.bbox);
+  // so we are using that format in state.
+  const [ bbox, setBbox ] = useState(object.bbox); // TODO: bump bbox state up to redux
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
-  const category = label.category;
+
+  const index = useSelector(selectIndex);
+  const [ label, setLabel ] = useState(null);
+  useEffect(() => {
+    setLabel(object[index.labels]);
+  }, [index]);
+  
+  // const label = object.labels.find((label) => (
+  //   // return first label that is either validated or null
+  //   // TODO: should this be a selector? 
+  //   label.validated !== false
+  // ));
+
   const conf = Number.parseFloat(label.conf * 100).toFixed(1);
-  const labelColor = labelColors[category];
+  const labelColor = labelColors[label.category];
 
   useEffect(() => {
-    console.log('New label: ', label);
-    setBbox(label.bbox);
-  }, [ label ]);
+    setBbox(object.bbox);
+  }, [ object ]);
 
   const onDrag = (event, {deltaX, deltaY}) => {
     const rect = {
@@ -222,7 +236,7 @@ const BoundingBox = ({ imageWidth, imageHeight, label, selected }) => {
           }}
           className='drag-handle'
         >
-         {category} {conf}%
+         {label.category} {conf}%
         </BoundingBoxLabel>
         <DragHandle className='drag-handle'/>
       </StyledResizableBox>

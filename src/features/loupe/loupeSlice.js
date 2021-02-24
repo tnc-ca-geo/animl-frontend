@@ -2,10 +2,12 @@ import { createSlice, createAction } from '@reduxjs/toolkit';
 
 const initialState = {
   open: false,
+  reviewMode: false,
   iterationUnit: 'images',
   index: {
     images: null, 
-    labels: 0.
+    objects: 0,
+    labels: 0,
   },
 };
 
@@ -24,26 +26,31 @@ export const loupeSlice = createSlice({
       state.index.images = null;
     },
 
+    reviewModeToggled: (state) => {
+      state.reviewMode = !state.reviewMode;
+    },
+
     iterationUnitChanged: (state, { payload }) => {
       state.iterationUnit = payload;
     },
 
-    incrementImagesIndex: (state, { payload }) => {
-      state.index.labels = 0;
-      if (payload.delta === 'decrement' && state.index.images > 0) {
-        state.index.images--;
-      }
-      else if (payload.delta === 'increment') {
-        state.index.images++;
-      }
+    setIndices: (state, { payload }) => {
+      state.index = Object.assign(state.index, payload);
     },
 
-    incrementLabelsIndex: (state, { payload }) => {
-      if (payload.delta === 'decrement' && state.index.labels > 0) {
-        state.index.labels--;
+    labelValidated: (state, { payload }) => {
+      const i = state.index;
+      const object = state.images[i.images].objects[i.objects];
+      const label = object.labels[i.labels];
+      if (payload === true) {
+        // validate
+        label.validation = { validated: true };
+        // lock
+        object.locked = true;
       }
-      else if (payload.delta === 'increment') {
-        state.index.labels++;
+      else {
+        // invalidate
+        label.validation = { validated: false };;
       }
     },
 
@@ -53,20 +60,18 @@ export const loupeSlice = createSlice({
 export const {
   imageSelected,
   loupeClosed,
+  reviewModeToggled,
   iterationUnitChanged,
-  incrementImagesIndex,
-  incrementLabelsIndex,
+  setIndices,
+  labelValidated,
 } = loupeSlice.actions;
 
+// Actions only used in middlewares:
 export const incrementIndex = createAction('loupe/incrementIndex');
 
-
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state) => state.counter.value)`
-// You can also use Reselect's createSelector to create memoized selector funcs:
-// https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
+// Selectors
 export const selectLoupeOpen = state => state.loupe.open;
+export const selectReviewMode = state => state.loupe.reviewMode;
 export const selectIndex = state => state.loupe.index;
 export const selectIterationUnit = state => state.loupe.iterationUnit;
 

@@ -33,14 +33,17 @@ const imageFields = `
   cameraSn
   make
   originalFileName
-  labels {
-    category
+  objects {
     bbox
-    type
-    conf
-    validation {
-      reviewed
-      validated
+    locked
+    labels {
+      category
+      bbox
+      type
+      conf
+      validation {
+        validated
+      }
     }
   }`;
 
