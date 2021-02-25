@@ -121,7 +121,7 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
       ? setLabelColor(labelColors(label.category))
       : setLabelColor(defaultColor);
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
-  }, [ label, selected ]);  // weird behavior here if you add defaultColor to dependency array
+  }, [ label, selected ]);  // weird behavior here if defaultColor is in dependency array
   
   useEffect(() => {
     setBbox(object.bbox);
@@ -219,6 +219,7 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
           label={label}
           labelColor={labelColor}
           conf={conf}
+          selected={selected}
           // className='drag-handle'
         >
          {label.category} {conf}%

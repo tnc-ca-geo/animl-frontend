@@ -9,6 +9,7 @@ import {
 import {
   incrementLoupeIndexMiddleware
 } from '../features/loupe/loupeMiddlewares';
+import { labelAddedMiddleware } from '../features/images/imagesMiddlewares';
 
 export const history = createBrowserHistory();
 
@@ -20,6 +21,7 @@ const store = configureStore({
       .concat(normalizeDatesMiddleware)
       .concat(setSelectedViewMiddleware)
       .concat(incrementLoupeIndexMiddleware)
+      .concat(labelAddedMiddleware)
   ),
 });
 

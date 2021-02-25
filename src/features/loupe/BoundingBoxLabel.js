@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
 import { selectAvailLabels } from '../filters/filtersSlice';
+import { incrementIndex } from '../loupe/loupeSlice';
 import { labelAdded } from '../images/imagesSlice';
 
 const StyledBoundingBoxLabel = styled('div', {
@@ -97,7 +98,7 @@ const CategorySelector = styled(CreatableSelect, {
 //  - Add buttons for validate, invalidate, unlock
 
 const BoundingBoxLabel = (props) => {
-  const { index, label, labelColor, conf } = props;
+  const { index, label, labelColor, conf, selected } = props;
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
@@ -125,18 +126,20 @@ const BoundingBoxLabel = (props) => {
     setCatSelectorOpen(false);
   }, [ label ])
 
-    // Listen for arrow keydowns
-    useEffect(() => {
-      const handleKeyDown = (e) => {
-        let charCode = String.fromCharCode(e.which).toLowerCase();
-        if((e.ctrlKey || e.metaKey) && charCode === 'e') {
-          setCatSelectorOpen(true);
-        }
+  // Listen for arrow keydowns
+  // TODO: should be able to use react synthetic onKeyDown events,
+  // but couldn't get it working 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      let charCode = String.fromCharCode(e.which).toLowerCase();
+      if (selected && (e.ctrlKey || e.metaKey) && charCode === 'e') {
+        setCatSelectorOpen(true);
       }
-      window.addEventListener('keydown', handleKeyDown)
-      return () => { window.removeEventListener('keydown', handleKeyDown) }
-    });
-  
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => { window.removeEventListener('keydown', handleKeyDown) }
+  }, [ selected ]);
+
 
   const handleCategoryClick = (e) => {
     e.stopPropagation();
@@ -146,12 +149,14 @@ const BoundingBoxLabel = (props) => {
   const handleCategoryChange = (newValue) => {
     if (newValue) {
       dispatch(labelAdded({category: newValue.value, index}));
+      dispatch(incrementIndex('increment'));
     }
   };
 
   const handleCategoryCreate = (inputValue) => {
     if (inputValue) {
       dispatch(labelAdded({ category: inputValue, index }));
+      dispatch(incrementIndex('increment'));
     }
   };
 

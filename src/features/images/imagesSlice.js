@@ -78,10 +78,8 @@ export const imagesSlice = createSlice({
     },
 
     labelAdded: (state, { payload }) => {
-      console.log('label added reducer firing: ', payload);
       const i = payload.index;
       const object = state.images[i.images].objects[i.objects];
-      console.log('adding label to object ', object);
       const newLabel = {
         category: payload.category,
         bbox: object.bbox,
@@ -91,10 +89,6 @@ export const imagesSlice = createSlice({
       };
       object.labels.unshift(newLabel);
       object.locked = true;
-
-      // TODO: send request to backend to save new label to object
-      // TODO: add label category to label filters list? 
-
     },
 
     labelValidated: (state, { payload }) => {

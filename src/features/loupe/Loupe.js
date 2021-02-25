@@ -15,11 +15,8 @@ import {
   loupeClosed,
   incrementIndex, 
   reviewModeToggled,
-  iterationUnitChanged,
   selectReviewMode,
   selectIndex,
-  selectIterationUnit,
-  selectLabelsIndex,
 } from './loupeSlice';
 import PanelHeader from '../../components/PanelHeader';
 import FullSizeImage from './FullSizeImage';
@@ -44,48 +41,6 @@ const Index = styled('span', {
 
 const IndexUnit = styled('span', {
   color: '$gray600',
-});
-
-// TODO: a lot of these styling overrides are redundant 
-const IterationUnitSelector = styled(Select, {
-  width: '155px',
-  fontFamily: '$mono',
-  fontSize: '$3',
-  fontWeight: '$1',
-  marginRight: '$4',
-  '.react-select__control': {
-    boxSizing: 'border-box',
-    border: '$1 solid',
-    borderColor: '$gray400',
-    borderRadius: '$1',
-    cursor: 'pointer',
-  },
-  '.react-select__indicator-separator': {
-    display: 'none',
-  },
-  '.react-select__control--is-focused': {
-    transition: 'all 0.2s ease',
-    boxShadow: '0 0 0 3px $blue200',
-    borderColor: '$blue500',
-    ':hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
-    },
-  },
-  '.react-select__menu': {
-    color: '$hiContrast',
-    fontSize: '$3',
-    '.react-select__option': {
-      cursor: 'pointer',
-    },
-    '.react-select__option--is-selected': {
-      color: '$blue500',
-      backgroundColor: '$blue200',
-    },
-    '.react-select__option--is-focused': {
-      backgroundColor: '$gray300',
-    },
-  }
 });
 
 const ProgressBar = styled.div({
@@ -214,18 +169,26 @@ const Loupe = ({ expanded }) => {
   const dispatch = useDispatch();
 
   // Listen for arrow keydowns
+  // TODO: should be able to use react synthetic onKeyDown events instead
   useEffect(() => {
     const handleKeyDown = (e) => {
+      
+      if (!image) {
+        return;
+      }
+
       const delta = (e.keyCode === key.up)
         ? 'decrement'
         : (e.keyCode === key.down)
           ? 'increment'
           : null;
+  
       if (delta) {
         dispatch(incrementIndex(delta)); 
       }
 
-      if (reviewMode) {
+      const object = image.objects[index.objects];
+      if (reviewMode && object && !object.locked) {
         if (e.keyCode === key.right) {
           dispatch(labelValidated({ index: index, validated: true}));
           dispatch(incrementIndex('increment'));
@@ -236,9 +199,10 @@ const Loupe = ({ expanded }) => {
         }
       }
     };
+
     window.addEventListener('keydown', handleKeyDown)
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ reviewMode, index, dispatch ]);
+  }, [ reviewMode, index, image, dispatch ]);
 
   useEffect(() => {
     setImage(images[index.images]);
@@ -252,15 +216,6 @@ const Loupe = ({ expanded }) => {
     <StyledLoupe expanded={expanded}>
       <PanelHeader handlePanelClose={handleLoupeClose}>
         <ProgressDisplay>
-          {/*
-          <IterationUnitSelector
-            value={{ value: iterationUnit, label: iterationUnit }}
-            options={iterationOptions}
-            onChange={handleIterationUnitChange}
-            className='react-select'
-            classNamePrefix='react-select'
-          />
-          */}
           <IconButton
             variant='ghost'
             onClick={handleToggleReviewMode}
