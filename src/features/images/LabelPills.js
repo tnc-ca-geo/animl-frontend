@@ -67,7 +67,7 @@ const LabelPills = ({ image, imageIndex, loupeIndex }) => {
               label.validation === null || label.validation.validated
             ));
         return (
-          <div>
+          <div key={objIndex}>
           {labels.length > 0 &&
             <ObjectPill
               key={objIndex}
@@ -82,7 +82,7 @@ const LabelPills = ({ image, imageIndex, loupeIndex }) => {
                     lblIndex === loupeIndex.labels
                   }
                   css={{
-                    backgroundColor: labelColors[label.category].primary + 'b3', 
+                    backgroundColor: labelColors(label.category).primary + 'b3', 
                   }}
                 >
                   {label.category}

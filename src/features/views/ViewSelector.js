@@ -122,10 +122,16 @@ const ViewSelector = () => {
   }, [selectedView, filtersReady, dispatch]);
 
   useEffect(() => {
-    const handleWindowClick = () => setExpanded(false)
+    const handleWindowClick = () => {
+      console.log('window click handler view selector firing')
+      setExpanded(false);
+    }
     if (expanded) {
+      console.log('adding view selector window click handler')
       window.addEventListener('click', handleWindowClick);
     } else {
+      console.log('removing view selector window click handler')
+
       window.removeEventListener('click', handleWindowClick)
     }
     return () => window.removeEventListener('click', handleWindowClick);

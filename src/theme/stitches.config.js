@@ -1,13 +1,18 @@
 import { createStyled } from '@stitches/react';
 
 // Mapping label categories to colors
-export const labelColors = {
+const labelColorMap = {
   animal: { primary: '#F3CA6C', text: '$hiContrast' },
   fox:    { primary: '#345EFF', text: '$loContrast' },
   skunk:  { primary: '#E83797', text: '$loContrast' },
   rodent: { primary: '#E04040', text: '$loContrast' },
   person: { primary: '#00C797', text: '$hiContrast' },
+  default: { primary: '#00C797', text: '$hiContrast' },
 };
+
+export const labelColors = (label) => (
+  labelColorMap[label] || labelColorMap.default
+);
 
 export const { styled, css } = createStyled({
   tokens: {

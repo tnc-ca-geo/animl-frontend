@@ -305,7 +305,6 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
                 <DataCell
                   {...cell.getCellProps()}
                   selected={loupeIndex.images === index}
-                  labelIndex={loupeIndex.labels}
                 >
                   {cell.render('Cell')}
                 </DataCell>

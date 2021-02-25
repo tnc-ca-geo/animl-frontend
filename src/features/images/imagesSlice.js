@@ -77,6 +77,26 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    labelAdded: (state, { payload }) => {
+      console.log('label added reducer firing: ', payload);
+      const i = payload.index;
+      const object = state.images[i.images].objects[i.objects];
+      console.log('adding label to object ', object);
+      const newLabel = {
+        category: payload.category,
+        bbox: object.bbox,
+        validation: { validated: true },
+        type: 'manual',
+        conf: 1,
+      };
+      object.labels.unshift(newLabel);
+      object.locked = true;
+
+      // TODO: send request to backend to save new label to object
+      // TODO: add label category to label filters list? 
+
+    },
+
     labelValidated: (state, { payload }) => {
       console.log('vaildating label with payload: ', payload)
       const i = payload.index;
@@ -104,6 +124,7 @@ export const {
   getImagesFailure,
   sortChanged,
   visibleRowsChanged,
+  labelAdded,
   labelValidated,
 } = imagesSlice.actions;
 

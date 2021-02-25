@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { selectIndex, selectReviewMode } from './loupeSlice';
+import BoundingBoxLabel from './BoundingBoxLabel';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -49,34 +50,6 @@ const DragHandle = styled('div', {
   }
 });
 
-const BoundingBoxLabel = styled('div', {
-  backgroundColor: '#345EFF',
-  color: '$loContrast',
-  fontFamily: '$mono',
-  fontSize: '$2',
-  padding: '$1 $2',
-  position: 'absolute',
-  width: 'max-content',
-  variants: {
-    verticalPos: {
-      top: {
-        top: '-25px',
-        // backgroundColor: 'papayawhip'
-      },
-      bottom: {
-        top: '-2px',
-      }
-    },
-    horizontalPos: {
-      left: {
-        left: '-2px',
-      },
-      right: {
-        right: '-2px',
-      },
-    }
-  }
-});
 
 const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
@@ -127,7 +100,6 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
   const initialLabel = object.labels.find((label) => (
     label.validation === null || label.validation.validated
   ));
-  console.log('initialLabel: ', initialLabel)
   const [ label, setLabel ] = useState(initialLabel);
   useEffect(() => {
     // if object is selected & we're in reviewMode,
@@ -145,12 +117,11 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
-    const color = selected
-      ? labelColors[label.category]
-      : defaultColor;
-    setLabelColor(color); 
+    selected
+      ? setLabelColor(labelColors(label.category))
+      : setLabelColor(defaultColor);
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
-  }, [ label, selected ]);
+  }, [ label, selected ]);  // weird behavior here if you add defaultColor to dependency array
   
   useEffect(() => {
     setBbox(object.bbox);
@@ -244,11 +215,11 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
         <BoundingBoxLabel
           verticalPos={(top > 30) ? 'top' : 'bottom'}
           horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
-          css={{
-            backgroundColor: labelColor.primary,
-            color: labelColor.text
-          }}
-          className='drag-handle'
+          index={index}
+          label={label}
+          labelColor={labelColor}
+          conf={conf}
+          // className='drag-handle'
         >
          {label.category} {conf}%
         </BoundingBoxLabel>
