@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { ActionCreators as UndoActionCreators } from 'redux-undo';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -152,13 +153,6 @@ const StyledLoupe = styled.div({
 
 });
 
-const key = {
-  left: 37,
-  right: 39,
-  up: 38,
-  down: 40,
-};
-
 const Loupe = ({ expanded }) => {
   const reviewMode = useSelector(selectReviewMode);
   const imageCount = useSelector(selectImagesCount);
@@ -177,9 +171,10 @@ const Loupe = ({ expanded }) => {
         return;
       }
 
-      const delta = (e.keyCode === key.up)
+      // handle up/down arrows (increment/decrement)
+      const delta = (e.code === 'ArrowUp')
         ? 'decrement'
-        : (e.keyCode === key.down)
+        : (e.code === 'ArrowDown')
           ? 'increment'
           : null;
   
@@ -187,20 +182,36 @@ const Loupe = ({ expanded }) => {
         dispatch(incrementIndex(delta)); 
       }
 
+      // handle return, left/right arrows (invalidate/validate)
       const object = image.objects[index.objects];
       if (reviewMode && object && !object.locked) {
-        if (e.keyCode === key.right) {
+        if (e.code === 'Enter') { console.log('enter') }
+        if (e.code === 'ArrowRight' || e.code === 'Enter') {
+          console.log('arrow right / enter handler firing')
           dispatch(labelValidated({ index: index, validated: true}));
           dispatch(incrementIndex('increment'));
         }
-        if (e.keyCode === key.left) {
+        if (e.code === 'ArrowLeft') {
           dispatch(labelValidated({ index: index, validated: false })); 
           dispatch(incrementIndex('increment'));
         }
       }
+
+      // handle ctrl-z/shift-ctrl-z (undo/redo)
+      if (reviewMode) {
+        let charCode = String.fromCharCode(e.which).toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
+          console.log('redo');
+          dispatch(UndoActionCreators.redo());
+        }
+        else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
+          console.log('undo');
+          dispatch(UndoActionCreators.undo());
+        }
+      }
     };
 
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ reviewMode, index, image, dispatch ]);
 
@@ -208,7 +219,10 @@ const Loupe = ({ expanded }) => {
     setImage(images[index.images]);
   }, [images, index.images])
 
-  const handleToggleReviewMode = () => dispatch(reviewModeToggled());
+  const handleToggleReviewMode = (e) => {
+    dispatch(reviewModeToggled());
+    e.currentTarget.blur();
+  }
 
   const handleLoupeClose = () => dispatch(loupeClosed());
 
@@ -219,6 +233,7 @@ const Loupe = ({ expanded }) => {
           <IconButton
             variant='ghost'
             onClick={handleToggleReviewMode}
+            css={{':focus': { color: 'red'}}}
           >
             <FontAwesomeIcon
               icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }

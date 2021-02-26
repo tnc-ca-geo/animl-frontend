@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import undoable from 'redux-undo';
 import { call } from '../../api';
 import moment from 'moment';
 import {
@@ -31,7 +32,7 @@ export const imagesSlice = createSlice({
 
     clearImages: (state) => { state.images = []; },
 
-    getImagesStart: (state) => { state.isLoading = true; },
+    getImagesStart: (state) => { state.pisLoading = true; },
 
     getImagesFailure: (state, { payload }) => {
       state.isLoading = false;
@@ -131,7 +132,7 @@ export const fetchImages = (filters, page = 'current') =>
       if (page !== 'next') {
         dispatch(clearImages());
       }
-      const pageInfo = getState().images.pageInfo;
+      const pageInfo = getState().images.present.pageInfo;
       const images = await call('getImages', {filters, pageInfo, page});
       dispatch(getImagesSuccess(images))
     } catch (err) {
@@ -144,14 +145,14 @@ export const fetchImages = (filters, page = 'current') =>
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
-export const selectPageInfo = state => state.images.pageInfo;
-export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
-export const selectSortAscending = state => state.images.pageInfo.sortAscending;
-export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
-export const selectHasNext = state => state.images.pageInfo.hasNext;
-export const selectImages = state => state.images.images;
-export const selectImagesCount = state => state.images.pageInfo.count;
-export const selectIsLoading = state => state.images.isLoading;
-export const selectVisibleRows = state => state.images.visibleRows;
+export const selectPageInfo = state => state.images.present.pageInfo;
+export const selectPaginatedField = state => state.images.present.pageInfo.paginatedField;
+export const selectSortAscending = state => state.images.present.pageInfo.sortAscending;
+export const selectHasPrevious = state => state.images.present.pageInfo.hasPrevious;
+export const selectHasNext = state => state.images.present.pageInfo.hasNext;
+export const selectImages = state => state.images.present.images;
+export const selectImagesCount = state => state.images.present.pageInfo.count;
+export const selectIsLoading = state => state.images.present.isLoading;
+export const selectVisibleRows = state => state.images.present.visibleRows;
 
-export default imagesSlice.reducer;
+export default undoable(imagesSlice.reducer);

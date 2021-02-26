@@ -1,4 +1,5 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
+import undoable from 'redux-undo';
 
 const initialState = {
   open: false,
@@ -53,9 +54,9 @@ export const {
 export const incrementIndex = createAction('loupe/incrementIndex');
 
 // Selectors
-export const selectLoupeOpen = state => state.loupe.open;
-export const selectReviewMode = state => state.loupe.reviewMode;
-export const selectIndex = state => state.loupe.index;
-export const selectIterationUnit = state => state.loupe.iterationUnit;
+export const selectLoupeOpen = state => state.loupe.present.open;
+export const selectReviewMode = state => state.loupe.present.reviewMode;
+export const selectIndex = state => state.loupe.present.index;
+export const selectIterationUnit = state => state.loupe.present.iterationUnit;
 
-export default loupeSlice.reducer;
+export default undoable(loupeSlice.reducer);

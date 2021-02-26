@@ -126,10 +126,10 @@ const BoundingBoxLabel = (props) => {
     setCatSelectorOpen(false);
   }, [ label ])
 
-  // Listen for arrow keydowns
-  // TODO: should be able to use react synthetic onKeyDown events,
-  // but couldn't get it working 
+  // listen for ctrl-e keydown (open cat selector to edit)
   useEffect(() => {
+    // TODO: should be able to use react synthetic onKeyDown events,
+    // but couldn't get it working 
     const handleKeyDown = (e) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
       if (selected && (e.ctrlKey || e.metaKey) && charCode === 'e') {
