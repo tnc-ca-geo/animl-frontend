@@ -233,7 +233,6 @@ const Loupe = ({ expanded }) => {
           <IconButton
             variant='ghost'
             onClick={handleToggleReviewMode}
-            css={{':focus': { color: 'red'}}}
           >
             <FontAwesomeIcon
               icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
