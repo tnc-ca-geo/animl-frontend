@@ -62,7 +62,9 @@ const LabelPills = ({ image, imageIndex, loupeIndex }) => {
       {image.objects.map((object, objIndex) => {
         // TODO: must be a better way to do this
         const labels = object.locked 
-          ? [object.labels.find((label) => label.validation.validated )]
+          ? [object.labels.find((label) => (
+              label.validation && label.validation.validated
+            ))]
           : object.labels.filter((label) => (
               label.validation === null || label.validation.validated
             ));
