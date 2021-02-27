@@ -24,19 +24,24 @@ const findNextLabel = (images, index, options) => {
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use 0 as initial index
-  let imageLoopExecuted = false,
-    objectLoopExecuted = false;
+  let imageLoopExecuted = false;
+  let objectLoopExecuted = false;
 
   for (let i = index.images; i < images.length; i++) {
     const image = images[i];
+
+    // don't skip empty images
+    if (imageLoopExecuted && 
+      (!options.skipEmptyImages && image.objects.length === 0)) {
+      return { images: i, objects: null, labels: null };
+    }
+    
     const initialObjectIndex = imageLoopExecuted ? 0 : index.objects;
     for (let o = initialObjectIndex; o < image.objects.length; o++) {
       const object = image.objects[o];
-      // TODO: bug here. If you start on an image with no labels, 
-      // switch on review mode, iterate to next label
-      // you start on labels[1] b/c the objectLoop has not yet executed
-      // might be fixed by including empty images in label iteration?
-      const initialLabelIndex = objectLoopExecuted ? 0 : index.labels + 1;
+      const initialLabelIndex = objectLoopExecuted || imageLoopExecuted
+         ? 0 
+         : index.labels + 1;
       if (!(options.skipLockedObjects && object.locked)) {
         for (let l = initialLabelIndex; l < object.labels.length; l++) {
           const currIndices = { images: i, objects: o, labels: l };
@@ -55,11 +60,18 @@ const findPreviousLabel = (images, index, options) => {
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use last item as initial index
-  let imageLoopExecuted = false,
-    objectLoopExecuted = false;
+  let imageLoopExecuted = false;
+  let objectLoopExecuted = false;
 
   for (let i = index.images; i >= 0; i--) {
     const image = images[i];
+
+    // don't skip empty images
+    if (imageLoopExecuted && 
+      (!options.skipEmptyImages && image.objects.length === 0)) {
+      return { images: i, objects: null, labels: null };
+    }
+        
     const initialObjectIndex = imageLoopExecuted
       ? image.objects.length - 1
       : index.objects;
