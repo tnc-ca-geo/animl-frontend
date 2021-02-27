@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { selectIndex, selectReviewMode } from './loupeSlice';
+import { bboxUpdated } from '../images/imagesSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
 const ResizeHandle = styled('div', {
@@ -86,14 +87,16 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
   return { left, top, width, height };
 };
 
-const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
+const BoundingBox = (props) => {
+  const { imageWidth, imageHeight, object, loupeIndex, selected } = props;
   // megadetector returns bboxes as 
   // [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state.
-  const [ bbox, setBbox ] = useState(object.bbox); // TODO: bump bbox state up to redux
+  const [ bbox, setBbox ] = useState(object.bbox);
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
+  const dispatch = useDispatch();
 
   const reviewMode = useSelector(selectReviewMode);
   const index = useSelector(selectIndex);
@@ -138,6 +141,10 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
     const newBbox = absToRel(rect, image);
     setBbox(newBbox);
   };
+
+  const onDragEnd = () => {
+    dispatch(bboxUpdated({ bbox, loupeIndex }));
+  }
 
   const onResize = (event, { size, handle }) => {
       // drags from left or top handles need require repositioning the box.
@@ -192,6 +199,7 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
+    dispatch(bboxUpdated({ bbox, loupeIndex }));
   }
 
   return (
@@ -200,6 +208,7 @@ const BoundingBox = ({ imageWidth, imageHeight, object, selected }) => {
       handle='.drag-handle'
       position={{x: left, y: top}}
       onDrag={onDrag}
+      onStop={onDragEnd}
     >
       <StyledResizableBox
         width={width}

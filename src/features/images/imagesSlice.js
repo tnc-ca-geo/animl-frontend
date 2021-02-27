@@ -78,6 +78,12 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    bboxUpdated: (state, { payload }) => {
+      const i = payload.loupeIndex;
+      const object = state.images[i.images].objects[i.objects];
+      object.bbox = payload.bbox;
+    },
+
     labelAdded: (state, { payload }) => {
       const i = payload.index;
       const object = state.images[i.images].objects[i.objects];
@@ -119,6 +125,7 @@ export const {
   getImagesFailure,
   sortChanged,
   visibleRowsChanged,
+  bboxUpdated,
   labelAdded,
   labelValidated,
 } = imagesSlice.actions;

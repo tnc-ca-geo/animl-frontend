@@ -58,6 +58,7 @@ const FullSizeImage = ({ image, loupeIndex }) => {
           imageWidth={width}
           imageHeight={height}
           object={object}
+          loupeIndex={loupeIndex}
           selected={index === loupeIndex.objects}
         />
       ))}
