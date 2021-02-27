@@ -4,7 +4,11 @@ import undoable from 'redux-undo';
 const initialState = {
   open: false,
   reviewMode: false,
-  iterationUnit: 'images',
+  iterationOptions: {
+    skipEmptyImages: false,
+    skipLockedObjects: false,
+    // skipInvalidatedLabels: false,    
+  },
   index: {
     images: null, 
     objects: 0,
@@ -31,8 +35,8 @@ export const loupeSlice = createSlice({
       state.reviewMode = !state.reviewMode;
     },
 
-    iterationUnitChanged: (state, { payload }) => {
-      state.iterationUnit = payload;
+    iterationOptionsChanged: (state, { payload }) => {
+      state.iterationOptions = payload;
     },
 
     setIndices: (state, { payload }) => {
@@ -46,7 +50,7 @@ export const {
   imageSelected,
   loupeClosed,
   reviewModeToggled,
-  iterationUnitChanged,
+  iterationOptionsChanged,
   setIndices,
 } = loupeSlice.actions;
 
@@ -57,6 +61,6 @@ export const incrementIndex = createAction('loupe/incrementIndex');
 export const selectLoupeOpen = state => state.loupe.present.open;
 export const selectReviewMode = state => state.loupe.present.reviewMode;
 export const selectIndex = state => state.loupe.present.index;
-export const selectIterationUnit = state => state.loupe.present.iterationUnit;
+export const selectIterationOptions = state => state.loupe.present.iterationOptions;
 
 export default undoable(loupeSlice.reducer);

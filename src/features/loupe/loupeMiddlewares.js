@@ -4,6 +4,7 @@ import {
   setIndices,
   labelValidated,
   selectReviewMode,
+  selectIterationOptions,
   selectIndex
 } from './loupeSlice';
 import { selectImages } from '../images/imagesSlice';
@@ -18,7 +19,7 @@ const isLabelInvalidated = (images, i) => {
   return false;
 };
 
-const findNextLabel = (images, index) => {
+const findNextLabel = (images, index, options) => {
   console.log('index on findNextLabel(): ', index);
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
@@ -26,7 +27,6 @@ const findNextLabel = (images, index) => {
   let imageLoopExecuted = false,
     objectLoopExecuted = false;
 
-  label_loop: 
   for (let i = index.images; i < images.length; i++) {
     const image = images[i];
     const initialObjectIndex = imageLoopExecuted ? 0 : index.objects;
@@ -37,12 +37,11 @@ const findNextLabel = (images, index) => {
       // you start on labels[1] b/c the objectLoop has not yet executed
       // might be fixed by including empty images in label iteration?
       const initialLabelIndex = objectLoopExecuted ? 0 : index.labels + 1;
-      if (!object.locked) {
+      if (!(options.skipLockedObjects && object.locked)) {
         for (let l = initialLabelIndex; l < object.labels.length; l++) {
           const currIndices = { images: i, objects: o, labels: l };
           if (!isLabelInvalidated(images, currIndices)) {
             return currIndices;
-            // break label_loop;
           }
         }
       }
@@ -52,14 +51,13 @@ const findNextLabel = (images, index) => {
   }
 };
 
-const findPreviousLabel = (images, index) => {
+const findPreviousLabel = (images, index, options) => {
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use last item as initial index
   let imageLoopExecuted = false,
     objectLoopExecuted = false;
 
-  label_loop:
   for (let i = index.images; i >= 0; i--) {
     const image = images[i];
     const initialObjectIndex = imageLoopExecuted
@@ -72,15 +70,15 @@ const findPreviousLabel = (images, index) => {
         ? object.labels.length - 1
         : index.labels - 1;
 
-      if (!object.locked) {
+      if (!(options.skipLockedObjects && object.locked)) {
         for (let l = initialLabelIndex; l >= 0; l--) {
           const currIndices = { images: i, objects: o, labels: l };
           if (!isLabelInvalidated(images, currIndices)) {
             return currIndices;
-            // break label_loop;
           }
         }
       }
+
       objectLoopExecuted = true;
     }
     imageLoopExecuted = true;
@@ -107,9 +105,10 @@ export const incrementLoupeIndexMiddleware = store => next => action => {
     }
     // Else, it's in review mode, and we need to inc/decrement the label
     else {
+      const options = selectIterationOptions(store.getState())
       const newIndices = (delta === 'increment')
-        ? findNextLabel(images, index)
-        : findPreviousLabel(images, index);
+        ? findNextLabel(images, index, options)
+        : findPreviousLabel(images, index, options);
         store.dispatch(setIndices(newIndices));
     }
 
