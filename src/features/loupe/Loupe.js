@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { ActionCreators as UndoActionCreators } from 'redux-undo';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
-import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
@@ -16,6 +15,7 @@ import {
   loupeClosed,
   incrementIndex, 
   reviewModeToggled,
+  isAddingObject,
   selectReviewMode,
   selectIndex,
 } from './loupeSlice';
@@ -201,12 +201,18 @@ const Loupe = ({ expanded }) => {
       if (reviewMode) {
         let charCode = String.fromCharCode(e.which).toLowerCase();
         if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
-          console.log('redo');
           dispatch(UndoActionCreators.redo());
         }
         else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
-          console.log('undo');
           dispatch(UndoActionCreators.undo());
+        }
+      }
+
+      // handle ctrl-a (add object)
+      if (reviewMode) {
+        let charCode = String.fromCharCode(e.which).toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
+          dispatch(isAddingObject(true));
         }
       }
     };

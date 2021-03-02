@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import ReactTestUtils from 'react-dom/test-utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectIndex, selectReviewMode } from './loupeSlice';
+import {
+  isResizingObject,
+  selectIndex,
+  selectIsResizingObject,
+  selectReviewMode
+} from './loupeSlice';
 import { bboxUpdated } from '../images/imagesSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
@@ -67,7 +73,7 @@ const StyledResizableBox = styled(ResizableBox, {
 
 // convert [left, top, width, height] in absolute values to 
 // [ymin, xmin, ymax, xmax] in relative values
-const absToRel = (rect, image) => {
+export const absToRel = (rect, image) => {
   const { left, top, width, height } = rect;
   const { imageWidth, imageHeight } = image;
   const ymin = Math.round(top) / imageHeight;
@@ -89,14 +95,24 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
 
 const BoundingBox = (props) => {
   const { imageWidth, imageHeight, object, loupeIndex, selected } = props;
-  // megadetector returns bboxes as 
-  // [ymin, xmin, ymax, xmax] in relative values
+  // megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state.
   const [ bbox, setBbox ] = useState(object.bbox);
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
   const dispatch = useDispatch();
+  const handleRef = useRef(null);
+
+  // if we're in addObjectMode, and this bbox is the one that's selected, 
+  // simulate a mousedown on it
+  const resizingObject = useSelector(selectIsResizingObject);
+  useEffect(() => {
+    if (resizingObject && selected) {
+      ReactTestUtils.Simulate.mouseDown(handleRef.current);
+      dispatch(isResizingObject(false));
+    }
+  }, [ resizingObject, selected, dispatch ])
 
   const reviewMode = useSelector(selectReviewMode);
   const index = useSelector(selectIndex);
@@ -164,26 +180,22 @@ const BoundingBox = (props) => {
     if (handle.indexOf('e') > -1) {
       const right = imageWidth - size.width - left;  
       if (right <= 0) {
-        console.log('right out of bounds')
         setConstraintX(width);
       }
     }
     if (handle.indexOf('w') > -1) {
       if (left <= 0) {
-        console.log('left out of bounds')
         setConstraintX(width);
       }
     }
     if (handle.indexOf('n') > -1) {
       if (top <= 0) {
-        console.log('top out of bounds');
         setConstraintY(height);
       }
     }
     if (handle.indexOf('s') > -1) {
       const bottom = imageHeight - size.height - top;  
       if (bottom <= 0) {
-        console.log('bottom out of bounds');
         setConstraintY(height);
       }
     }
@@ -213,9 +225,14 @@ const BoundingBox = (props) => {
       <StyledResizableBox
         width={width}
         height={height}
+        minConstraints={[0, 0]}
         maxConstraints={[constraintX, constraintY]}
         resizeHandles={['sw', 'se', 'nw', 'ne']}
-        handle={(location) => <ResizeHandle location={location} />}
+        handle={(location) => (
+          <ResizeHandle location={location} ref={(el) => {
+            if (location === 'se') { handleRef.current = el }
+          }}/>
+        )}
         onResize={onResize}
         onResizeStop={onResizeStop}
         selected={selected}

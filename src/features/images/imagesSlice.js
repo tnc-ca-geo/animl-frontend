@@ -84,6 +84,22 @@ export const imagesSlice = createSlice({
       object.bbox = payload.bbox;
     },
 
+    objectAdded: (state, { payload }) => {
+      console.log('object added: ', payload);
+      const i = payload.loupeIndex;
+      const newObject = {
+        bbox: payload.bbox,
+        locked: false,
+        labels: [{
+          category: "tbd",
+          type: "manual",
+          conf: 100,
+          validation: null,
+        }],
+      };
+      state.images[i.images].objects.unshift(newObject);
+    },
+
     labelAdded: (state, { payload }) => {
       const i = payload.index;
       const object = state.images[i.images].objects[i.objects];
@@ -126,6 +142,7 @@ export const {
   sortChanged,
   visibleRowsChanged,
   bboxUpdated,
+  objectAdded,
   labelAdded,
   labelValidated,
 } = imagesSlice.actions;
