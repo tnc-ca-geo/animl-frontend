@@ -1,32 +1,13 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useGlobalEvent, useThrottledFn } from 'beautiful-react-hooks';
 import { styled } from '../../theme/stitches.config';
 
 import { Image } from '../../components/Image';
-import BoundingBox, { absToRel } from './BoundingBox';
-import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { isAddingObject, isResizingObject, selectIsAddingObject } from './loupeSlice';
-import { objectAdded } from '../images/imagesSlice';
-
-
-const CrossHairHorizontal = styled('div', {
-  position: 'absolute',
-  top: '0',
-  left: '0',
-  width: '100%',
-  height: '1px',
-  borderTop: '1px dashed $loContrast',
-});
-
-const CrossHairVertical = styled('div', {
-  position: 'absolute',
-  top: '0',
-  left: '0',
-  height: '100%',
-  width: '1px',
-  borderLeft: '1px dashed $loContrast',
-});
+import BoundingBox from './BoundingBox';
+import AddObjectOverlay from './AddObjectOverlay';
+// import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { selectIsAddingObject } from './loupeSlice';
 
 const FullImage = styled(Image, {
   maxWidth: '100%',
@@ -39,7 +20,7 @@ const ImageWrapper = styled.div({
 });
 
 const FullSizeImage = ({ image, loupeIndex }) => {
-  const addingObject = useSelector(selectIsAddingObject);
+  const isAddingObject = useSelector(selectIsAddingObject);
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
   const [ imgLoaded, setImgLoaded ] = useState(false);
   const containerEl = useRef(null);
@@ -47,9 +28,7 @@ const FullSizeImage = ({ image, loupeIndex }) => {
   const [ height, setHeight ] = useState();
   const [ top, setTop ] = useState();
   const [ left, setLeft ] = useState();
-  const [ mousePos, setMousePos ] = useState({x: 0, y: 0});
   const onWindowResize = useGlobalEvent('resize');
-  const dispatch = useDispatch();
 
   const onWindowResizeHandler = useThrottledFn(() => {
     setWindowWidth(window.innerWidth);
@@ -77,47 +56,14 @@ const FullSizeImage = ({ image, loupeIndex }) => {
   useEffect(() => {
     setImgLoaded(false);
   }, [ image ]);
-  
-  const handlePointerMove = useCallback((event) => {
-    if (addingObject) {
-      const containerX = ('clientX' in event ? event.clientX : 0) - left;
-      const containerY = ('clientY' in event ? event.clientY : 0) - top;
-      // TODO: figure out why the crosshair rendering is so laggy
-      setMousePos({ x: containerX, y: containerY });
-    }
-  }, [ addingObject, top, left, setMousePos ]);
-
-  const handleImageMouseDown = () => {
-    console.log('handling mouse down on image. addingObject: ', addingObject)
-    if (addingObject) {
-      // TODO: move this all to middleware?
-      const rect = { left: mousePos.x, top: mousePos.y, width: 5, height: 5 };
-      const image = { imageWidth: width, imageHeight: height }; // TODO: double check that width & height are same as actual image width/height
-      const payload = {
-        loupeIndex: loupeIndex,
-        bbox: absToRel(rect, image),
-      }
-      dispatch(objectAdded(payload));
-      dispatch(isAddingObject(false));
-      dispatch(isResizingObject(true));
-    }
-  }
 
   return (
-    <ImageWrapper
-      ref={containerEl}
-      onPointerMove={handlePointerMove}
-      onMouseDown={handleImageMouseDown}
-    >
-      {addingObject &&
-        <>
-          <CrossHairHorizontal
-            css={{ transform: `translateY(${mousePos.y}px)` }}
-          />
-          <CrossHairVertical
-            css={{ transform: `translateX(${mousePos.x}px)` }}
-          />
-        </>
+    <ImageWrapper ref={containerEl}>
+      {isAddingObject &&
+        <AddObjectOverlay 
+          dimensions={{ top, left, width, height }}
+          loupeIndex={loupeIndex}
+        />
       }
       {image.objects.map((object, index) => (
         <BoundingBox

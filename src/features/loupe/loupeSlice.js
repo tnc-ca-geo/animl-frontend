@@ -5,7 +5,6 @@ const initialState = {
   open: false,
   reviewMode: false,
   isAddingObject: false,
-  isResizingObject: false,
   iterationOptions: {
     skipEmptyImages: false,
     skipLockedObjects: false,
@@ -40,14 +39,14 @@ export const loupeSlice = createSlice({
       state.reviewMode = !state.reviewMode;
     },
 
-    isAddingObject: (state, { payload }) => {
-      state.isAddingObject = payload;
-      console.log('isAddingObject: ', state.isAddingObject)
+    addObjectStart: (state) => {
+      state.isAddingObject = true;
     },
 
-    isResizingObject: (state, { payload }) => {
-      state.isResizingObject = payload;
-      console.log('isResizingObject: ', state.isResizingObject)
+    addObjectEnd: (state) => {
+      if (state.isAddingObject) {
+        state.isAddingObject = false;
+      }
     },
 
     iterationOptionsChanged: (state, { payload }) => {
@@ -65,8 +64,8 @@ export const {
   imageSelected,
   loupeClosed,
   reviewModeToggled,
-  isAddingObject,
-  isResizingObject,
+  addObjectStart,
+  addObjectEnd,
   iterationOptionsChanged,
   setIndices,
 } = loupeSlice.actions;
@@ -78,7 +77,6 @@ export const incrementIndex = createAction('loupe/incrementIndex');
 export const selectLoupeOpen = state => state.loupe.present.open;
 export const selectReviewMode = state => state.loupe.present.reviewMode;
 export const selectIsAddingObject = state => state.loupe.present.isAddingObject;
-export const selectIsResizingObject = state => state.loupe.present.isResizingObject;
 export const selectIndex = state => state.loupe.present.index;
 export const selectIterationOptions = state => state.loupe.present.iterationOptions;
 

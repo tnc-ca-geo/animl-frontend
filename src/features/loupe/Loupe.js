@@ -15,7 +15,7 @@ import {
   loupeClosed,
   incrementIndex, 
   reviewModeToggled,
-  isAddingObject,
+  addObjectStart,
   selectReviewMode,
   selectIndex,
 } from './loupeSlice';
@@ -212,7 +212,7 @@ const Loupe = ({ expanded }) => {
       if (reviewMode) {
         let charCode = String.fromCharCode(e.which).toLowerCase();
         if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
-          dispatch(isAddingObject(true));
+          dispatch(addObjectStart());
         }
       }
     };

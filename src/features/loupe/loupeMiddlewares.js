@@ -12,7 +12,6 @@ import { object } from 'yup';
 
 const isLabelInvalidated = (images, i) => {
   const label = images[i.images].objects[i.objects].labels[i.labels];
-  console.log('checking label: ', label)
   if (label.validation && label.validation.validated === false) {
     return true;
   }
@@ -20,7 +19,6 @@ const isLabelInvalidated = (images, i) => {
 };
 
 const findNextLabel = (images, index, options) => {
-  console.log('index on findNextLabel(): ', index);
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use 0 as initial index

@@ -85,17 +85,11 @@ export const imagesSlice = createSlice({
     },
 
     objectAdded: (state, { payload }) => {
-      console.log('object added: ', payload);
       const i = payload.loupeIndex;
       const newObject = {
         bbox: payload.bbox,
         locked: false,
-        labels: [{
-          category: "tbd",
-          type: "manual",
-          conf: 100,
-          validation: null,
-        }],
+        labels: [],
       };
       state.images[i.images].objects.unshift(newObject);
     },
@@ -115,7 +109,6 @@ export const imagesSlice = createSlice({
     },
 
     labelValidated: (state, { payload }) => {
-      console.log('vaildating label with payload: ', payload)
       const i = payload.index;
       const object = state.images[i.images].objects[i.objects];
       const label = object.labels[i.labels];

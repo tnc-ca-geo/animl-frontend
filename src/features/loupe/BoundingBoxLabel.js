@@ -98,7 +98,7 @@ const CategorySelector = styled(CreatableSelect, {
 //  - Add buttons for validate, invalidate, unlock
 
 const BoundingBoxLabel = (props) => {
-  const { index, label, labelColor, conf, selected } = props;
+  const { index, object, label, labelColor, conf, selected } = props;
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
@@ -108,12 +108,19 @@ const BoundingBoxLabel = (props) => {
     value: category.toLowerCase().replace(/\W/g, ''),
   });
 
+  // update options when new labels become available
   useEffect(() => {
     const newOptions = availLabels.categories.map((cat) => createOption(cat));
     setOptions(newOptions);
   }, [ availLabels ]);
 
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
+  // open category selector if it doesn't have a label yet
+  // i.e. - user just added an object
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState();
+  useEffect(() => {
+    setCatSelectorOpen(object.labels.length === 0 && selected);
+  }, [ object, label, selected ]);
+
   useEffect(() => {
     const handleWindowClick = (e) => setCatSelectorOpen(false);
     catSelectorOpen
@@ -121,10 +128,6 @@ const BoundingBoxLabel = (props) => {
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
   }, [ catSelectorOpen, setCatSelectorOpen ]);
-
-  useEffect(() => {
-    setCatSelectorOpen(false);
-  }, [ label ])
 
   // listen for ctrl-e keydown (open cat selector to edit)
   useEffect(() => {

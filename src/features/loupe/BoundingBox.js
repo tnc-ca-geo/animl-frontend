@@ -6,9 +6,7 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import {
-  isResizingObject,
   selectIndex,
-  selectIsResizingObject,
   selectReviewMode
 } from './loupeSlice';
 import { bboxUpdated } from '../images/imagesSlice';
@@ -101,37 +99,31 @@ const BoundingBox = (props) => {
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
-  const dispatch = useDispatch();
   const handleRef = useRef(null);
+  const dispatch = useDispatch();
 
-  // if we're in addObjectMode, and this bbox is the one that's selected, 
-  // simulate a mousedown on it
-  const resizingObject = useSelector(selectIsResizingObject);
-  useEffect(() => {
-    if (resizingObject && selected) {
-      ReactTestUtils.Simulate.mouseDown(handleRef.current);
-      dispatch(isResizingObject(false));
-    }
-  }, [ resizingObject, selected, dispatch ])
-
+  // if object is selected & we're in reviewMode,
+  // show currently selected label,
+  // else show top label (first non-invalidated in stack)
   const reviewMode = useSelector(selectReviewMode);
   const index = useSelector(selectIndex);
+  const tempLabel = { category: '', conf: 0, };
   const initialLabel = object.labels.find((label) => (
     label.validation === null || label.validation.validated
-  ));
+  )) || tempLabel;
   const [ label, setLabel ] = useState(initialLabel);
   useEffect(() => {
-    // if object is selected & we're in reviewMode,
-    // show currently selected label,
-    // else show top label (first non-invalidated in stack)
-    const newLabel = selected && reviewMode
+    let newLabel = selected && reviewMode
       ? object.labels[index.labels]
       : object.labels.find((label) => (
           label.validation === null || label.validation.validated 
         ));
+    // if there object doesn't have any labels yet, use temp
+    newLabel = newLabel ? newLabel : tempLabel;
     setLabel(newLabel);
   }, [ object, index, selected, reviewMode ]);
 
+  // set label color
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
@@ -142,6 +134,7 @@ const BoundingBox = (props) => {
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
   }, [ label, selected ]);  // weird behavior here if defaultColor is in dependency array
   
+  // update bbox when object changes
   useEffect(() => {
     setBbox(object.bbox);
   }, [ object ]);
@@ -242,6 +235,7 @@ const BoundingBox = (props) => {
           verticalPos={(top > 30) ? 'top' : 'bottom'}
           horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
           index={index}
+          object={object}
           label={label}
           labelColor={labelColor}
           conf={conf}
