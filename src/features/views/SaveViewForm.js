@@ -28,9 +28,6 @@ const SaveModeTab = styled(Button, {
   color: '$hiContrast',
   backgroundColor: '$loContrast',
   margin: '$0 $2',
-  svg: {
-    paddingRight: '$2'
-  },
   ':hover': {
     backgroundColor: '$gray300',
     cursor: 'pointer',

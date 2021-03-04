@@ -43,6 +43,9 @@ const Button = styled('button', {
     color: '$gray500',
     borderColor: '$gray500',
   },
+  svg: {
+    paddingRight: '$2'
+  },
 
     // display: 'inherit',
     // width: '100%',

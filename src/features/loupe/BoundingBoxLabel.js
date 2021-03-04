@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectAvailLabels } from '../filters/filtersSlice';
 import { incrementIndex } from '../loupe/loupeSlice';
-import { labelAdded } from '../images/imagesSlice';
+import {
+  labelAdded,
+  labelValidated,
+  objectLocked
+} from '../images/imagesSlice';
 
 const StyledBoundingBoxLabel = styled('div', {
   backgroundColor: '#345EFF',
@@ -49,8 +54,32 @@ const StyledBoundingBoxLabel = styled('div', {
   }
 });
 
-const Category = styled('div', {
+const Category = styled('span', {
+  paddingRight: '$2',
+});
 
+const LabelDisplay = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const LabelButton = styled('button', {
+  padding: '0',
+  width: '26px',
+  height: '24px',
+  borderRadius: '0px',
+  border: '2px solid',
+  borderBottom: '1px solid',
+  borderLeft: 'none',
+  ':hover': {
+    cursor: 'pointer',
+  },
+});
+
+const LabelButtons = styled('div', {
+  position: 'absolute',
+  right: '0',
+  top: '0',
 });
 
 const CategorySelector = styled(CreatableSelect, {
@@ -171,6 +200,18 @@ const BoundingBoxLabel = (props) => {
     }
   };
 
+  const handleLockButtonClick = () => {
+    dispatch(objectLocked({ index: index, locked: false }));
+  };
+
+  const [ showValidationButtons, setShowValidationButtons ] = useState();
+  const handleLabelMouseEnter = () => setShowValidationButtons(true);
+  const handleLabelMouseLeave = () => setShowValidationButtons(false);
+
+  const handleValidationButtonClick = (validated) => {
+    dispatch(labelValidated({ index: index, validated }));
+  };
+
   return (
     <StyledBoundingBoxLabel
       verticalPos={props.verticalPos}
@@ -182,9 +223,7 @@ const BoundingBoxLabel = (props) => {
         color: labelColor.text
       }}
     >
-      <Category
-        onClick={handleCategoryClick}
-      >
+      <div onClick={handleCategoryClick}>
         {catSelectorOpen
           ? <CategorySelector
               autoFocus
@@ -199,9 +238,63 @@ const BoundingBoxLabel = (props) => {
               className='react-select'
               classNamePrefix='react-select'
             />
-          : <div>{label.category} {conf} %</div>
+          : <LabelDisplay
+              onMouseEnter={handleLabelMouseEnter}
+              onMouseLeave={handleLabelMouseLeave}
+            >
+              <Category>{label.category}</Category>
+              <span>{conf}%</span>
+              {/*{object.locked
+                ? <LabelButton
+                    onClick={handleLockButtonClick}
+                    css={{
+                      color: '$loContrast',
+                      backgroundColor: labelColor.primary,
+                      borderColor: labelColor.primary,
+                      ':hover': {
+                        backgroundColor: '$loContrast',
+                        color: '$hiContrast',
+                      }
+                  }}>
+                    <FontAwesomeIcon icon={['fas', 'lock']}/>
+                  </LabelButton>
+                : <span>{conf} %</span>
+              }*/}
+              {(showValidationButtons) &&
+                <LabelButtons>
+                  <LabelButton
+                    onClick={() => handleValidationButtonClick(false)}
+                    css={{
+                      color: '$loContrast',
+                      backgroundColor: labelColor.primary,
+                      borderColor: labelColor.primary,
+                      ':hover': {
+                        backgroundColor: '$loContrast',
+                        color: '$hiContrast',
+                      }
+                    }}
+                  >
+                    <FontAwesomeIcon icon={['fas', 'times']} />
+                  </LabelButton>
+                  <LabelButton
+                    onClick={() => handleValidationButtonClick(true)}
+                    css={{
+                      color: '$loContrast',
+                      backgroundColor: labelColor.primary,
+                      borderColor: labelColor.primary,
+                      ':hover': {
+                        backgroundColor: '$loContrast',
+                        color: '$hiContrast',
+                      }
+                    }}
+                  >
+                    <FontAwesomeIcon icon={['fas', 'check']} />
+                  </LabelButton>
+                </LabelButtons>
+              }
+            </LabelDisplay>
         }
-      </Category>
+      </div>
     </StyledBoundingBoxLabel>
   );
 };

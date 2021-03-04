@@ -268,8 +268,9 @@ const Loupe = ({ expanded }) => {
             </ImagePane>
             <Button
               onClick={handleAddObjectButtonClick}
-              size='large'
+              size='small'
             >
+              <FontAwesomeIcon icon={['fas', 'plus']} />
               Add object
             </Button>
             <MetadataPane>

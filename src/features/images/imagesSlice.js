@@ -124,6 +124,12 @@ export const imagesSlice = createSlice({
       }
     },
 
+    objectLocked: (state, { payload }) => {
+      const i = payload.index;
+      const object = state.images[i.images].objects[i.objects];
+      object.locked = payload.locked;
+    },
+
   },
 });
 
@@ -138,6 +144,7 @@ export const {
   objectAdded,
   labelAdded,
   labelValidated,
+  objectLocked,
 } = imagesSlice.actions;
 
 // fetchImages thunk

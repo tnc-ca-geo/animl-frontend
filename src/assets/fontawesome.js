@@ -19,6 +19,9 @@ import {
   faPlus,
   faTrashAlt,
   faRobot,
+  faLock,
+  faUnlock,
+  faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -41,4 +44,7 @@ library.add(
   faPlus,
   faTrashAlt,
   faRobot,
+  faLock,
+  faUnlock,
+  faCheck,
 );
