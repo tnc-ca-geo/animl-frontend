@@ -21,6 +21,7 @@ import {
 } from './loupeSlice';
 import PanelHeader from '../../components/PanelHeader';
 import FullSizeImage from './FullSizeImage';
+import Button from '../../components/Button';
 
 const IndexDisplay = styled.div({
   fontFamily: '$mono',
@@ -208,13 +209,14 @@ const Loupe = ({ expanded }) => {
         }
       }
 
-      // handle ctrl-a (add object)
-      if (reviewMode) {
-        let charCode = String.fromCharCode(e.which).toLowerCase();
-        if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
-          dispatch(addObjectStart());
-        }
-      }
+      // // handle ctrl-a (add object)
+      // if (reviewMode) {
+      //   let charCode = String.fromCharCode(e.which).toLowerCase();
+      //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
+      //     e.stopPropagation();
+      //     dispatch(addObjectStart());
+      //   }
+      // }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -222,6 +224,7 @@ const Loupe = ({ expanded }) => {
   }, [ reviewMode, index, image, dispatch ]);
 
   useEffect(() => {
+    console.log('new index: ', index)
     setImage(images[index.images]);
   }, [images, index.images])
 
@@ -231,6 +234,10 @@ const Loupe = ({ expanded }) => {
   }
 
   const handleLoupeClose = () => dispatch(loupeClosed());
+
+  const handleAddObjectButtonClick = () => {
+    dispatch(addObjectStart());
+  }
 
   return (
     <StyledLoupe expanded={expanded}>
@@ -259,6 +266,12 @@ const Loupe = ({ expanded }) => {
             <ImagePane>
               <FullSizeImage image={image} loupeIndex={index} />
             </ImagePane>
+            <Button
+              onClick={handleAddObjectButtonClick}
+              size='large'
+            >
+              Add object
+            </Button>
             <MetadataPane>
               <InfoPaneHeader label='Metadata' />
               <MetadataList>

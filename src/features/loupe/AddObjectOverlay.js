@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 
 import { absToRel } from './BoundingBox';
 import { objectAdded } from '../images/imagesSlice';
+import { addObjectEnd } from './loupeSlice';
 
 
 const CrossHairHorizontal = styled('div', {
@@ -27,7 +28,7 @@ const CrossHairVertical = styled('div', {
 const TempBoundingBox = styled('div', {
   position: 'absolute',
   boxSizing: 'border-box',
-  border: '3px solid papayawhip'
+  border: '2px solid #00C797'
 });
 
 const Overlay = styled.div({
@@ -62,8 +63,8 @@ const AddObjectOverlay = ({ dimensions, loupeIndex }) => {
   };
 
   const handleMouseDown = (e) => {
-    const newTop = mousePos.y - 3;
-    const newLeft = mousePos.x - 3;
+    const newTop = mousePos.y - 2;  // subtracting 2px for border
+    const newLeft = mousePos.x - 2;
     setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
     setDrawingBBox(true);
   }
@@ -81,6 +82,7 @@ const AddObjectOverlay = ({ dimensions, loupeIndex }) => {
     dispatch(objectAdded(payload));
     setDrawingBBox(false);
     setTempBBox(defaultBBox);
+    dispatch(addObjectEnd());
   }
 
   return (

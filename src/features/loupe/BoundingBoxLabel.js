@@ -37,6 +37,14 @@ const StyledBoundingBoxLabel = styled('div', {
         top: '-32px',
         padding: '0',
       }
+    },
+    selected: {
+      true: {
+        opacity: '1',
+      },
+      false: {
+        opacity: '0.5',
+      }
     }
   }
 });
@@ -152,14 +160,14 @@ const BoundingBoxLabel = (props) => {
   const handleCategoryChange = (newValue) => {
     if (newValue) {
       dispatch(labelAdded({category: newValue.value, index}));
-      dispatch(incrementIndex('increment'));
+      // dispatch(incrementIndex('increment'));
     }
   };
 
   const handleCategoryCreate = (inputValue) => {
     if (inputValue) {
       dispatch(labelAdded({ category: inputValue, index }));
-      dispatch(incrementIndex('increment'));
+      // dispatch(incrementIndex('increment'));
     }
   };
 
@@ -168,6 +176,7 @@ const BoundingBoxLabel = (props) => {
       verticalPos={props.verticalPos}
       horizontalPos={props.horizontalPos}
       catSelectorOpen={catSelectorOpen}
+      selected={selected}
       css={{
         backgroundColor: labelColor.primary,
         color: labelColor.text

@@ -64,7 +64,11 @@ const StyledResizableBox = styled(ResizableBox, {
     selected: {
       true: {
         zIndex: '$3',
-      }
+        opacity: '1',
+      },  
+      false: {
+        opacity: '0.5',
+      },
     }
   }
 });
@@ -92,7 +96,7 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
 };
 
 const BoundingBox = (props) => {
-  const { imageWidth, imageHeight, object, loupeIndex, selected } = props;
+  const { imageWidth, imageHeight, object, loupeIndex, objectSelected } = props;
   // megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state.
   const [ bbox, setBbox ] = useState(object.bbox);
@@ -113,7 +117,7 @@ const BoundingBox = (props) => {
   )) || tempLabel;
   const [ label, setLabel ] = useState(initialLabel);
   useEffect(() => {
-    let newLabel = selected && reviewMode
+    let newLabel = objectSelected && reviewMode
       ? object.labels[index.labels]
       : object.labels.find((label) => (
           label.validation === null || label.validation.validated 
@@ -121,18 +125,16 @@ const BoundingBox = (props) => {
     // if there object doesn't have any labels yet, use temp
     newLabel = newLabel ? newLabel : tempLabel;
     setLabel(newLabel);
-  }, [ object, index, selected, reviewMode ]);
+  }, [ object, index, objectSelected, reviewMode ]);
 
-  // set label color
+  // set label color and confidence
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
-    selected
-      ? setLabelColor(labelColors(label.category))
-      : setLabelColor(defaultColor);
+    setLabelColor(labelColors(label.category))
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
-  }, [ label, selected ]);  // weird behavior here if defaultColor is in dependency array
+  }, [ label, objectSelected ]);  // weird behavior here if defaultColor is in dependency array
   
   // update bbox when object changes
   useEffect(() => {
@@ -228,7 +230,7 @@ const BoundingBox = (props) => {
         )}
         onResize={onResize}
         onResizeStop={onResizeStop}
-        selected={selected}
+        selected={objectSelected}
         css={{ borderColor: labelColor.primary }}
       >
         <BoundingBoxLabel
@@ -239,7 +241,7 @@ const BoundingBox = (props) => {
           label={label}
           labelColor={labelColor}
           conf={conf}
-          selected={selected}
+          selected={objectSelected}
           // className='drag-handle'
         >
          {label.category} {conf}%
