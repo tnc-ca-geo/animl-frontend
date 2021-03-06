@@ -51,6 +51,20 @@ const FullSizeImage = ({ image, loupeIndex }) => {
     }
   }, [ windowWidth, width, height, top, left, imgLoaded ]);
 
+  const [ filteredObjects, setFilteredObjects ] = useState(image.objects);
+  useEffect(() => {
+    const objectsToRender = image.objects.reduce((acc, object, i) => {
+      const hasNonInvalidatedLabels = object.labels.some((label) => {
+        return label.validation === null || label.validation.validated;
+      });
+      if (hasNonInvalidatedLabels || object.isBeingAdded) {
+        acc.push(object);
+      }
+      return acc;
+    }, []);
+    setFilteredObjects(objectsToRender);
+  }, [ image ]);
+
   const handleImgLoaded = () => setImgLoaded(true);
 
   useEffect(() => {
@@ -60,21 +74,23 @@ const FullSizeImage = ({ image, loupeIndex }) => {
   return (
     <ImageWrapper ref={containerEl}>
       {isAddingObject &&
-        <AddObjectOverlay 
+        <AddObjectOverlay
           dimensions={{ top, left, width, height }}
           loupeIndex={loupeIndex}
         />
       }
-      {image.objects.map((object, index) => (
+      {filteredObjects.map((object, i) => (
         <BoundingBox
-          key={index}
+          key={i}
           imageWidth={width}
           imageHeight={height}
           object={object}
+          objectIndex={image.objects.indexOf(object)}
           loupeIndex={loupeIndex}
-          objectSelected={index === loupeIndex.objects}
+          objectSelected={i === loupeIndex.objects}
         />
-      ))}
+      ))
+      }
       {/*{!imgLoaded &&
         <SpinnerOverlay css={{ background: 'none'}}>
           <CircleSpinner />

@@ -13,7 +13,7 @@ import {
   visibleRowsChanged,
 } from './imagesSlice';
 import {
-  selectIndex,
+  selectLoupeIndex,
   imageSelected,
 } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
@@ -168,7 +168,7 @@ const makeRows = (images, loupeIndex) => {
 
 const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
-  const loupeIndex = useSelector(selectIndex);
+  const loupeIndex = useSelector(selectLoupeIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);

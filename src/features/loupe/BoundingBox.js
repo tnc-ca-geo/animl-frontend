@@ -5,10 +5,7 @@ import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import {
-  selectIndex,
-  selectReviewMode
-} from './loupeSlice';
+import { selectReviewMode } from './loupeSlice';
 import { bboxUpdated } from '../images/imagesSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
@@ -96,7 +93,7 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
 };
 
 const BoundingBox = (props) => {
-  const { imageWidth, imageHeight, object, loupeIndex, objectSelected } = props;
+  const {imageWidth, imageHeight, object, objectIndex, loupeIndex, objectSelected } = props;
   // megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state.
   const [ bbox, setBbox ] = useState(object.bbox);
@@ -106,33 +103,36 @@ const BoundingBox = (props) => {
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
-  // if object is selected & we're in reviewMode,
-  // show currently selected label,
-  // else show top label (first non-invalidated in stack)
+  // TODO: clean up loupeIndex & selection logic...
+  // if object is selected, show currently selected label,
+  // else show first non-invalidated in array
   const reviewMode = useSelector(selectReviewMode);
-  const index = useSelector(selectIndex);
-  const tempLabel = { category: '', conf: 0, };
   const initialLabel = object.labels.find((label) => (
     label.validation === null || label.validation.validated
-  )) || tempLabel;
+  ));
   const [ label, setLabel ] = useState(initialLabel);
   useEffect(() => {
-    let newLabel = objectSelected && reviewMode
-      ? object.labels[index.labels]
-      : object.labels.find((label) => (
-          label.validation === null || label.validation.validated 
-        ));
-    // if there object doesn't have any labels yet, use temp
-    newLabel = newLabel ? newLabel : tempLabel;
+    let newLabel;
+    if (object.isBeingAdded) {
+      newLabel = { category: '', conf: 0, index: 0 }; // temporary label
+    }
+    else if (objectSelected) {
+      newLabel = object.labels[loupeIndex.labels];
+    } 
+    else {
+      newLabel = object.labels.find((label) => (
+        label.validation === null || label.validation.validated 
+      ));
+    }
     setLabel(newLabel);
-  }, [ object, index, objectSelected, reviewMode ]);
+  }, [ object, loupeIndex, objectSelected, reviewMode ]);
 
   // set label color and confidence
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
-    setLabelColor(labelColors(label.category))
+    setLabelColor(labelColors(label.category));
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
   }, [ label, objectSelected ]);  // weird behavior here if defaultColor is in dependency array
   
@@ -170,7 +170,6 @@ const BoundingBox = (props) => {
         left -= deltaWidth;
       }
     }
-
     // Prevent box from going out of bounds
     if (handle.indexOf('e') > -1) {
       const right = imageWidth - size.width - left;  
@@ -236,7 +235,9 @@ const BoundingBox = (props) => {
         <BoundingBoxLabel
           verticalPos={(top > 30) ? 'top' : 'bottom'}
           horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
-          index={index}
+          loupeIndex={loupeIndex}
+          objectIndex={objectIndex}
+          labelIndex={object.labels.indexOf(label)}
           object={object}
           label={label}
           labelColor={labelColor}

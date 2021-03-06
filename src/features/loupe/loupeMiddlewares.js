@@ -1,11 +1,12 @@
 
 import {
   incrementIndex,
+  incrementImage,
   setIndices,
   labelValidated,
   selectReviewMode,
   selectIterationOptions,
-  selectIndex
+  selectLoupeIndex,
 } from './loupeSlice';
 import { selectImages } from '../images/imagesSlice';
 import { object } from 'yup';
@@ -102,33 +103,45 @@ export const incrementLoupeIndexMiddleware = store => next => action => {
     const delta = action.payload;
     const reviewMode = selectReviewMode(store.getState());
     const images = selectImages(store.getState());
-    const index = selectIndex(store.getState());
+    const index = selectLoupeIndex(store.getState());
 
-    // If not review mode, just inc/decrement image
-    if (!reviewMode) {
-      if (delta === 'decrement' && index.images > 0) {
-        store.dispatch(setIndices({ images: index.images - 1 }));
-      }
-      else if (delta === 'increment' && index.images <= images.length) {
-        store.dispatch(setIndices({ images: index.images + 1 }));
-      }
-    }
-    // Else, it's in review mode, and we need to inc/decrement the label
-    else {
+    // // If not review mode, just inc/decrement image
+    // if (!reviewMode) {
+    //   if (delta === 'decrement' && index.images > 0) {
+    //     store.dispatch(setIndices({ images: index.images - 1 }));
+    //   }
+    //   else if (delta === 'increment' && index.images <= images.length) {
+    //     store.dispatch(setIndices({ images: index.images + 1 }));
+    //   }
+    // }
+    // // Else, it's in review mode, and we need to inc/decrement the label
+    // else {
       const options = selectIterationOptions(store.getState())
       const newIndices = (delta === 'increment')
         ? findNextLabel(images, index, options)
         : findPreviousLabel(images, index, options);
         store.dispatch(setIndices(newIndices));
-    }
+    // }
 
     // TODO: also stop at empty images (or have this be a setting?)
 
     // TODO: figure out if the image record has been altered 
     // (e.g. labels validated) and save it
 
+  }
 
-
+  if (incrementImage.match(action)) {
+    const delta = action.payload;
+    const images = selectImages(store.getState());
+    const index = selectLoupeIndex(store.getState());
+    if (delta === 'decrement' && index.images > 0) {
+      store.dispatch(setIndices({ images: index.images - 1 }));
+    }
+    else if (delta === 'increment' && index.images <= images.length) {
+      store.dispatch(setIndices({ images: index.images + 1 }));
+    }
+    // TODO: figure out if the image record has been altered 
+    // (e.g. labels validated) and save it
   }
 
   next(action);

@@ -13,11 +13,12 @@ import {
 } from '../images/imagesSlice';
 import {
   loupeClosed,
-  incrementIndex, 
+  incrementIndex,
+  incrementImage,
   reviewModeToggled,
   addObjectStart,
   selectReviewMode,
-  selectIndex,
+  selectLoupeIndex,
 } from './loupeSlice';
 import PanelHeader from '../../components/PanelHeader';
 import FullSizeImage from './FullSizeImage';
@@ -157,10 +158,10 @@ const StyledLoupe = styled.div({
 const Loupe = ({ expanded }) => {
   const reviewMode = useSelector(selectReviewMode);
   const imageCount = useSelector(selectImagesCount);
-  const index = useSelector(selectIndex);
+  const loupeIndex = useSelector(selectLoupeIndex);
   const images = useSelector(selectImages);
-  const [ image, setImage ] = useState(images[index.images]);
-  const progress = (index.images / imageCount) * 100;
+  const [ image, setImage ] = useState(images[loupeIndex.images]);
+  const progress = (loupeIndex.images / imageCount) * 100;
   const dispatch = useDispatch();
 
   // Listen for arrow keydowns
@@ -180,20 +181,22 @@ const Loupe = ({ expanded }) => {
           : null;
   
       if (delta) {
-        dispatch(incrementIndex(delta)); 
+        reviewMode
+          ? dispatch(incrementIndex(delta))
+          : dispatch(incrementImage(delta));
       }
 
       // handle return, left/right arrows (invalidate/validate)
-      const object = image.objects[index.objects];
+      const object = image.objects[loupeIndex.objects];
       if (reviewMode && object && !object.locked) {
         if (e.code === 'Enter') { console.log('enter') }
         if (e.code === 'ArrowRight' || e.code === 'Enter') {
           console.log('arrow right / enter handler firing')
-          dispatch(labelValidated({ index: index, validated: true}));
+          dispatch(labelValidated({ index: loupeIndex, validated: true}));
           dispatch(incrementIndex('increment'));
         }
         if (e.code === 'ArrowLeft') {
-          dispatch(labelValidated({ index: index, validated: false })); 
+          dispatch(labelValidated({ index: loupeIndex, validated: false })); 
           dispatch(incrementIndex('increment'));
         }
       }
@@ -221,12 +224,12 @@ const Loupe = ({ expanded }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ reviewMode, index, image, dispatch ]);
+  }, [ reviewMode, loupeIndex, image, dispatch ]);
 
   useEffect(() => {
-    console.log('new index: ', index)
-    setImage(images[index.images]);
-  }, [images, index.images])
+    console.log('new loupeIndex: ', loupeIndex)
+    setImage(images[loupeIndex.images]);
+  }, [images, loupeIndex])
 
   const handleToggleReviewMode = (e) => {
     dispatch(reviewModeToggled());
@@ -252,7 +255,7 @@ const Loupe = ({ expanded }) => {
             />
           </IconButton>
           <IndexDisplay>
-            <Index>{index.images + 1} / {imageCount}</Index>
+            <Index>{loupeIndex.images + 1} / {imageCount}</Index>
             <IndexUnit>images</IndexUnit>
           </IndexDisplay>
           <ProgressBar>
@@ -264,11 +267,16 @@ const Loupe = ({ expanded }) => {
         {image &&
           <div>
             <ImagePane>
-              <FullSizeImage image={image} loupeIndex={index} />
+              <FullSizeImage image={image} loupeIndex={loupeIndex} />
             </ImagePane>
             <Button
               onClick={handleAddObjectButtonClick}
               size='small'
+              css={{
+                position: 'absolute',
+                right: '16px',
+                marginTop: '8px',
+              }}
             >
               <FontAwesomeIcon icon={['fas', 'plus']} />
               Add object

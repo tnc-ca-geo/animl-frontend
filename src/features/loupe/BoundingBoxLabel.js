@@ -16,14 +16,15 @@ const StyledBoundingBoxLabel = styled('div', {
   color: '$loContrast',
   fontFamily: '$mono',
   fontSize: '$2',
-  padding: '$1 $2',
   position: 'absolute',
+  display: 'flex',
+  alignItems: 'center',
   width: 'max-content',
+  zIndex: '$4',
   variants: {
     verticalPos: {
       top: {
-        top: '-25px',
-        // backgroundColor: 'papayawhip'
+        top: '-24px',
       },
       bottom: {
         top: '-2px',
@@ -55,12 +56,18 @@ const StyledBoundingBoxLabel = styled('div', {
 });
 
 const Category = styled('span', {
-  paddingRight: '$2',
+  // paddingRight: '$2',
+});
+
+const Confidence = styled('span', {
+  paddingLeft: '$2',
 });
 
 const LabelDisplay = styled('div', {
   display: 'flex',
   alignItems: 'center',
+  padding: '$1 $2',
+
 });
 
 const LabelButton = styled('button', {
@@ -69,17 +76,17 @@ const LabelButton = styled('button', {
   height: '24px',
   borderRadius: '0px',
   border: '2px solid',
-  borderBottom: '1px solid',
-  borderLeft: 'none',
+  // borderBottom: '1px solid',
+  borderLeft: '1px solid',
   ':hover': {
     cursor: 'pointer',
   },
 });
 
 const LabelButtons = styled('div', {
-  position: 'absolute',
-  right: '0',
-  top: '0',
+  position: 'relative',
+  // right: '0',
+  // top: '0',
 });
 
 const CategorySelector = styled(CreatableSelect, {
@@ -135,10 +142,15 @@ const CategorySelector = styled(CreatableSelect, {
 //  - Add buttons for validate, invalidate, unlock
 
 const BoundingBoxLabel = (props) => {
-  const { index, object, label, labelColor, conf, selected } = props;
+  const { loupeIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected } = props;
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
+  const index = {
+    images: loupeIndex.images,
+    objects: objectIndex,
+    labels: labelIndex
+  };
 
   const createOption = (category) => ({
     label: category,
@@ -183,12 +195,14 @@ const BoundingBoxLabel = (props) => {
 
   const handleCategoryClick = (e) => {
     e.stopPropagation();
-    setCatSelectorOpen(true);
+    if (!object.locked) {
+      setCatSelectorOpen(true);
+    }
   };
 
   const handleCategoryChange = (newValue) => {
     if (newValue) {
-      dispatch(labelAdded({category: newValue.value, index}));
+      dispatch(labelAdded({ category: newValue.value, index }));
       // dispatch(incrementIndex('increment'));
     }
   };
@@ -201,15 +215,19 @@ const BoundingBoxLabel = (props) => {
   };
 
   const handleLockButtonClick = () => {
-    dispatch(objectLocked({ index: index, locked: false }));
+    dispatch(objectLocked({ index, locked: false }));
   };
 
-  const [ showValidationButtons, setShowValidationButtons ] = useState();
-  const handleLabelMouseEnter = () => setShowValidationButtons(true);
-  const handleLabelMouseLeave = () => setShowValidationButtons(false);
+  const [ showLabelButtons, setShowLabelButtons ] = useState();
+  const handleLabelMouseEnter = () => setShowLabelButtons(true);
+  const handleLabelMouseLeave = () => setShowLabelButtons(false);
 
   const handleValidationButtonClick = (validated) => {
-    dispatch(labelValidated({ index: index, validated }));
+    dispatch(labelValidated({ index, validated }));
+    if (!validated) {
+      dispatch(incrementIndex('increment'));
+    }
+    setShowLabelButtons(false);
   };
 
   return (
@@ -222,6 +240,7 @@ const BoundingBoxLabel = (props) => {
         backgroundColor: labelColor.primary,
         color: labelColor.text
       }}
+      onMouseLeave={handleLabelMouseLeave}
     >
       <div onClick={handleCategoryClick}>
         {catSelectorOpen
@@ -240,61 +259,63 @@ const BoundingBoxLabel = (props) => {
             />
           : <LabelDisplay
               onMouseEnter={handleLabelMouseEnter}
-              onMouseLeave={handleLabelMouseLeave}
             >
               <Category>{label.category}</Category>
-              <span>{conf}%</span>
-              {/*{object.locked
-                ? <LabelButton
-                    onClick={handleLockButtonClick}
-                    css={{
-                      color: '$loContrast',
-                      backgroundColor: labelColor.primary,
-                      borderColor: labelColor.primary,
-                      ':hover': {
-                        backgroundColor: '$loContrast',
-                        color: '$hiContrast',
-                      }
-                  }}>
-                    <FontAwesomeIcon icon={['fas', 'lock']}/>
-                  </LabelButton>
-                : <span>{conf} %</span>
-              }*/}
-              {(showValidationButtons) &&
-                <LabelButtons>
-                  <LabelButton
-                    onClick={() => handleValidationButtonClick(false)}
-                    css={{
-                      color: '$loContrast',
-                      backgroundColor: labelColor.primary,
-                      borderColor: labelColor.primary,
-                      ':hover': {
-                        backgroundColor: '$loContrast',
-                        color: '$hiContrast',
-                      }
-                    }}
-                  >
-                    <FontAwesomeIcon icon={['fas', 'times']} />
-                  </LabelButton>
-                  <LabelButton
-                    onClick={() => handleValidationButtonClick(true)}
-                    css={{
-                      color: '$loContrast',
-                      backgroundColor: labelColor.primary,
-                      borderColor: labelColor.primary,
-                      ':hover': {
-                        backgroundColor: '$loContrast',
-                        color: '$hiContrast',
-                      }
-                    }}
-                  >
-                    <FontAwesomeIcon icon={['fas', 'check']} />
-                  </LabelButton>
-                </LabelButtons>
-              }
+              {!object.locked && <Confidence>{conf}%</Confidence>}
             </LabelDisplay>
         }
       </div>
+      {(showLabelButtons && !catSelectorOpen) &&
+        <LabelButtons>
+          {object.locked
+            ? <LabelButton
+                onClick={handleLockButtonClick}
+                css={{
+                  color: '$loContrast',
+                  backgroundColor: labelColor.primary,
+                  borderColor: labelColor.primary,
+                  ':hover': {
+                    backgroundColor: '$loContrast',
+                    color: '$hiContrast',
+                  }
+              }}>
+                <FontAwesomeIcon icon={['fas', 'unlock']}/>
+              </LabelButton>              
+            : <>
+                <LabelButton
+                  onClick={() => handleValidationButtonClick(false)}
+                  css={{
+                    backgroundColor: '#E04040',
+                    color: '$loContrast',
+                    borderColor: labelColor.primary,
+                    ':hover': {
+                      color: '#E04040',
+                      backgroundColor: '$loContrast',
+                      borderColor: labelColor.primary,
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon icon={['fas', 'times']} />
+                </LabelButton>
+                <LabelButton
+                  onClick={() => handleValidationButtonClick(true)}
+                  css={{
+                    backgroundColor: '#00C797',
+                    color: '$loContrast',
+                    borderColor: labelColor.primary,
+                    ':hover': {
+                      color: '#00C797',
+                      backgroundColor: '$loContrast',
+                      borderColor: labelColor.primary,
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon icon={['fas', 'check']} />
+                </LabelButton>
+              </>
+            }
+        </LabelButtons>
+      }
     </StyledBoundingBoxLabel>
   );
 };

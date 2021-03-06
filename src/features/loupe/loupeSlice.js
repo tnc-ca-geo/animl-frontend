@@ -72,12 +72,14 @@ export const {
 
 // Actions only used in middlewares:
 export const incrementIndex = createAction('loupe/incrementIndex');
+export const incrementImage = createAction('loupe/incrementImage');
+
 
 // Selectors
 export const selectLoupeOpen = state => state.loupe.present.open;
 export const selectReviewMode = state => state.loupe.present.reviewMode;
 export const selectIsAddingObject = state => state.loupe.present.isAddingObject;
-export const selectIndex = state => state.loupe.present.index;
+export const selectLoupeIndex = state => state.loupe.present.index;
 export const selectIterationOptions = state => state.loupe.present.iterationOptions;
 
 export default undoable(loupeSlice.reducer);

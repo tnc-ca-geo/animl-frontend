@@ -89,6 +89,7 @@ export const imagesSlice = createSlice({
       const newObject = {
         bbox: payload.bbox,
         locked: false,
+        isBeingAdded: true,
         labels: [],
       };
       state.images[i.images].objects.unshift(newObject);
@@ -106,6 +107,7 @@ export const imagesSlice = createSlice({
       };
       object.labels.unshift(newLabel);
       object.locked = true;
+      object.isBeingAdded = false;
     },
 
     labelValidated: (state, { payload }) => {
@@ -113,14 +115,15 @@ export const imagesSlice = createSlice({
       const object = state.images[i.images].objects[i.objects];
       const label = object.labels[i.labels];
       if (payload.validated === true) {
-        // validate
         label.validation = { validated: true };
-        // lock
         object.locked = true;
+        console.log('label validated: ', label.validation)
+
       }
       else {
-        // invalidate
-        label.validation = { validated: false };;
+        label.validation = { validated: false };
+        console.log('label invalidated: ', label.validation)
+        console.log('index: ', i);
       }
     },
 
