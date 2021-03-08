@@ -138,10 +138,8 @@ const CategorySelector = styled(CreatableSelect, {
   }
 });
 
-// TODO: 
-//  - Add buttons for validate, invalidate, unlock
-
 const BoundingBoxLabel = (props) => {
+  // TODO: tidy up props
   const { focusIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected } = props;
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
@@ -167,9 +165,10 @@ const BoundingBoxLabel = (props) => {
   // i.e. - user just added an object
   const [ catSelectorOpen, setCatSelectorOpen ] = useState();
   useEffect(() => {
-    setCatSelectorOpen(object.labels.length === 0 && selected);
+    setCatSelectorOpen(object.isBeingAdded && object.labels.length === 0);
   }, [ object, label, selected ]);
 
+  // close category selector if user clicks outside of it
   useEffect(() => {
     const handleWindowClick = (e) => setCatSelectorOpen(false);
     catSelectorOpen
@@ -203,14 +202,12 @@ const BoundingBoxLabel = (props) => {
   const handleCategoryChange = (newValue) => {
     if (newValue) {
       dispatch(labelAdded({ category: newValue.value, index }));
-      // dispatch(incrementIndex('increment'));
     }
   };
 
   const handleCategoryCreate = (inputValue) => {
     if (inputValue) {
       dispatch(labelAdded({ category: inputValue, index }));
-      // dispatch(incrementIndex('increment'));
     }
   };
 

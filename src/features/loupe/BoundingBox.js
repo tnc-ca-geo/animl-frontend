@@ -103,14 +103,10 @@ const BoundingBox = (props) => {
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
-  // TODO: clean up focusIndex & selection logic...
   // if object is selected, show currently selected label,
   // else show first non-invalidated in array
   const reviewMode = useSelector(selectReviewMode);
-  const initialLabel = object.labels.find((label) => (
-    label.validation === null || label.validation.validated
-  ));
-  const [ label, setLabel ] = useState(initialLabel);
+  const [ label, setLabel ] = useState({ category: '', conf: 0, index: 0 });
   useEffect(() => {
     let newLabel;
     if (object.isBeingAdded) {
