@@ -6,7 +6,7 @@ import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { selectReviewMode } from './loupeSlice';
-import { bboxUpdated } from '../images/imagesSlice';
+import { bboxUpdated, setFocus } from '../images/imagesSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
 const ResizeHandle = styled('div', {
@@ -125,12 +125,14 @@ const BoundingBox = (props) => {
 
   // set label color and confidence
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
+  const [ labelIndex, setLabelIndex ] = useState(0);
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
+    setLabelIndex(object.labels.indexOf(label))
     setLabelColor(labelColors(label.category));
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
-  }, [ label, objectSelected ]);  // weird behavior here if defaultColor is in dependency array
+  }, [ label, object, objectSelected ]);  // weird behavior here if defaultColor is in dependency array
   
   // update bbox when object changes
   useEffect(() => {
@@ -210,6 +212,14 @@ const BoundingBox = (props) => {
       objectIndex,
       bbox,
     }));
+  };
+
+  const handleBBoxClick = () => {
+    dispatch(setFocus({
+      image: focusIndex.image,
+      object: objectIndex,
+      label: labelIndex,
+    }))
   }
 
   return (
@@ -233,6 +243,7 @@ const BoundingBox = (props) => {
         )}
         onResize={onResize}
         onResizeStop={onResizeStop}
+        onClick={handleBBoxClick}
         selected={objectSelected}
         css={{ borderColor: labelColor.primary }}
       >
@@ -241,7 +252,7 @@ const BoundingBox = (props) => {
           horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
           focusIndex={focusIndex}
           objectIndex={objectIndex}
-          labelIndex={object.labels.indexOf(label)}
+          labelIndex={labelIndex}
           object={object}
           label={label}
           labelColor={labelColor}
