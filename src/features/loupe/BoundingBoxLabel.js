@@ -216,7 +216,8 @@ const BoundingBoxLabel = (props) => {
     }
   };
 
-  const handleLockButtonClick = () => {
+  const handleLockButtonClick = (e) => {
+    e.stopPropagation();
     dispatch(objectLocked({ index, locked: false }));
   };
 
@@ -224,7 +225,8 @@ const BoundingBoxLabel = (props) => {
   const handleLabelMouseEnter = () => setShowLabelButtons(true);
   const handleLabelMouseLeave = () => setShowLabelButtons(false);
 
-  const handleValidationButtonClick = (validated) => {
+  const handleValidationButtonClick = (e, validated) => {
+    e.stopPropagation();
     dispatch(labelValidated({ index, validated }));
     setShowLabelButtons(false);
   };
@@ -282,7 +284,7 @@ const BoundingBoxLabel = (props) => {
               </LabelButton>              
             : <>
                 <LabelButton
-                  onClick={() => handleValidationButtonClick(false)}
+                  onClick={(e) => handleValidationButtonClick(e, false)}
                   css={{
                     backgroundColor: '#E04040',
                     color: '$loContrast',
@@ -297,7 +299,7 @@ const BoundingBoxLabel = (props) => {
                   <FontAwesomeIcon icon={['fas', 'times']} />
                 </LabelButton>
                 <LabelButton
-                  onClick={() => handleValidationButtonClick(true)}
+                  onClick={(e) => handleValidationButtonClick(e, true)}
                   css={{
                     backgroundColor: '#00C797',
                     color: '$loContrast',

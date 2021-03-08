@@ -219,7 +219,7 @@ const BoundingBox = (props) => {
       image: focusIndex.image,
       object: objectIndex,
       label: labelIndex,
-    }))
+    }));
   }
 
   return (
