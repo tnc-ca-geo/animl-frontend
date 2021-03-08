@@ -165,9 +165,7 @@ const BoundingBoxLabel = (props) => {
   // i.e. - user just added an object
   const [ catSelectorOpen, setCatSelectorOpen ] = useState();
   useEffect(() => {
-    if (object.isBeingAdded && object.labels.length === 0) {
-      setCatSelectorOpen(true);
-    }
+    setCatSelectorOpen(object.isBeingAdded && object.labels.length === 0);
   }, [ object, label, selected ]);
 
   // close category selector if user clicks outside of it
@@ -182,12 +180,13 @@ const BoundingBoxLabel = (props) => {
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
-  }, [ catSelectorOpen, setCatSelectorOpen ]);
+  }, [ catSelectorOpen, setCatSelectorOpen, object, focusIndex, objectIndex, 
+    dispatch ]);
 
   // listen for ctrl-e keydown (open cat selector to edit)
   useEffect(() => {
     // TODO: should be able to use react synthetic onKeyDown events,
-    // but couldn't get it working 
+    // but couldn't get it working
     const handleKeyDown = (e) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
       if (selected && (e.ctrlKey || e.metaKey) && charCode === 'e') {
@@ -197,7 +196,6 @@ const BoundingBoxLabel = (props) => {
     window.addEventListener('keydown', handleKeyDown)
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ selected ]);
-
 
   const handleCategoryClick = (e) => {
     e.stopPropagation();
