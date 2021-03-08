@@ -104,6 +104,11 @@ export const imagesSlice = createSlice({
       focusedImage.objects.unshift(newObject);
     },
 
+    objectRemoved: (state, { payload }) => {
+      const focusedImage = state.images[payload.imageIndex];
+      focusedImage.objects.splice(payload.objectIndex, 1);
+    },
+
     labelAdded: (state, { payload }) => {
       const i = payload.index;
       const object = state.images[i.images].objects[i.objects];
@@ -151,6 +156,7 @@ export const {
   setFocus,
   bboxUpdated,
   objectAdded,
+  objectRemoved,
   labelAdded,
   labelValidated,
   objectLocked,
@@ -163,7 +169,6 @@ export const incrementImage = createAction('loupe/incrementImage');
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current') => 
   async (dispatch, getState) => {
-    console.log('fetching images');
     try {
       dispatch(getImagesStart());
       if (page !== 'next') {

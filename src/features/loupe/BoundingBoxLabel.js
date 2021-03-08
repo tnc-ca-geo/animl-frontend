@@ -7,7 +7,7 @@ import { selectAvailLabels } from '../filters/filtersSlice';
 import {
   labelAdded,
   labelValidated,
-  incrementFocusIndex,
+  objectRemoved,
   objectLocked
 } from '../images/imagesSlice';
 
@@ -145,7 +145,7 @@ const BoundingBoxLabel = (props) => {
   const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
   const index = {
-    images: focusIndex.image,
+    images: focusIndex.image, // TODO: i think this should be 'image' not 'images'. make sure not a bug
     objects: objectIndex,
     labels: labelIndex
   };
@@ -165,12 +165,19 @@ const BoundingBoxLabel = (props) => {
   // i.e. - user just added an object
   const [ catSelectorOpen, setCatSelectorOpen ] = useState();
   useEffect(() => {
-    setCatSelectorOpen(object.isBeingAdded && object.labels.length === 0);
+    if (object.isBeingAdded && object.labels.length === 0) {
+      setCatSelectorOpen(true);
+    }
   }, [ object, label, selected ]);
 
   // close category selector if user clicks outside of it
   useEffect(() => {
-    const handleWindowClick = (e) => setCatSelectorOpen(false);
+    const handleWindowClick = (e) => {
+      if (object.isBeingAdded) {
+        dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }))
+      }
+      setCatSelectorOpen(false);
+    }
     catSelectorOpen
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);

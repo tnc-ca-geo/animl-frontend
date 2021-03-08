@@ -75,7 +75,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
     <ImageWrapper ref={containerEl}>
       {isAddingObject &&
         <AddObjectOverlay
-          dimensions={{ top, left, width, height }}
+          imageDimensions={{ top, left, width, height }}
           focusIndex={focusIndex}
         />
       }

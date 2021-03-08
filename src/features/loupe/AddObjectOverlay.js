@@ -38,24 +38,30 @@ const Overlay = styled.div({
   zIndex: '$4',
 });
 
-const AddObjectOverlay = ({ dimensions, focusIndex }) => {
-  const { top, left, width, height } = dimensions;
+const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
+  const { top, left, width, height } = imageDimensions;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
   const defaultBBox = { top: 0, left: 0, width: 0, height: 0 };
   const [ tempBBox, setTempBBox ] = useState(defaultBBox);
   const dispatch = useDispatch();
 
-  const handlePointerMove = (event) => {
-    const containerX = ('clientX' in event ? event.clientX : 0) - left;
-    const containerY = ('clientY' in event ? event.clientY : 0) - top;
+  const handlePointerMove = (e) => {
+
+    let containerX = e.clientX - left;
+    containerX = (e.clientX >= (left + width)) ? width : containerX;
+    containerX = (e.clientX <= left) ? left : containerX;
+
+    let containerY = e.clientY - top;
+    containerY = (e.clientY >= (top + height)) ? height : containerY;
+    containerY = (e.clientY <= top) ? top : containerY;
+
     setMousePos({ x: containerX, y: containerY });
     if (drawingBBox) {
       // update tempBoxWidth and tempBoxHeight
       const newWidth = containerX - tempBBox.left;
       const newHeight = containerY - tempBBox.top;
       setTempBBox({...tempBBox, ...{ width: newWidth, height: newHeight }})
-      // TODO: constrain bbox to image
       // TODO: if width/height are negative, 
       // use absolute values, and update the top/left accordingly 
       // (so you can click and drag to the south west and it will still work)
