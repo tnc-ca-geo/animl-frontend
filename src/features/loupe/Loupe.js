@@ -19,6 +19,7 @@ import {
   reviewModeToggled,
   addObjectStart,
   selectReviewMode,
+  selectIsAddingLabel,
 } from './loupeSlice';
 import PanelHeader from '../../components/PanelHeader';
 import FullSizeImage from './FullSizeImage';
@@ -162,21 +163,23 @@ const Loupe = ({ expanded }) => {
   const images = useSelector(selectImages);
   const [ image, setImage ] = useState(images[focusIndex.image]);
   const progress = (focusIndex.image / imageCount) * 100;
+  const isAddingLabel = useSelector(selectIsAddingLabel);
   const dispatch = useDispatch();
 
   // Listen for arrow keydowns
   // TODO: should be able to use react synthetic onKeyDown events instead
   useEffect(() => {
     const handleKeyDown = (e) => {
-      
-      if (!image) {
+      if (!image || isAddingLabel) {
         return;
       }
 
+      let charCode = String.fromCharCode(e.which).toLowerCase();
+
       // handle up/down arrows (increment/decrement)
-      const delta = (e.code === 'ArrowUp')
+      const delta = (e.code === 'ArrowUp' || charCode === 'w')
         ? 'decrement'
-        : (e.code === 'ArrowDown')
+        : (e.code === 'ArrowDown' || charCode === 's')
           ? 'increment'
           : null;
   
@@ -202,14 +205,12 @@ const Loupe = ({ expanded }) => {
       }
 
       // handle ctrl-z/shift-ctrl-z (undo/redo)
-      let charCode = String.fromCharCode(e.which).toLowerCase();
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
         dispatch(UndoActionCreators.redo());
       }
       else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
         dispatch(UndoActionCreators.undo());
       }
-      
 
       // // handle ctrl-a (add object)
       // if (reviewMode) {
@@ -223,7 +224,7 @@ const Loupe = ({ expanded }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ reviewMode, focusIndex, image, dispatch ]);
+  }, [ isAddingLabel, reviewMode, focusIndex, image, dispatch ]);
 
   useEffect(() => {
     console.log('new focusIndex: ', focusIndex)
@@ -237,9 +238,7 @@ const Loupe = ({ expanded }) => {
 
   const handleLoupeClose = () => dispatch(loupeOpened(false));
 
-  const handleAddObjectButtonClick = () => {
-    dispatch(addObjectStart());
-  }
+  const handleAddObjectButtonClick = () => dispatch(addObjectStart());
 
   return (
     <StyledLoupe expanded={expanded}>
@@ -266,7 +265,10 @@ const Loupe = ({ expanded }) => {
         {image &&
           <div>
             <ImagePane>
-              <FullSizeImage image={image} focusIndex={focusIndex} />
+              <FullSizeImage
+                image={image}
+                focusIndex={focusIndex}
+              />
             </ImagePane>
             <Button
               onClick={handleAddObjectButtonClick}

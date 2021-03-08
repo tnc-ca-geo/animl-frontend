@@ -4,6 +4,7 @@ const initialState = {
   open: false,
   reviewMode: false,
   isAddingObject: false,
+  isAddingLabel: false,
   iterationOptions: {
     skipEmptyImages: false,
     skipLockedObjects: false,
@@ -34,6 +35,16 @@ export const loupeSlice = createSlice({
       }
     },
 
+    addLabelStart: (state) => {
+      state.isAddingLabel = true;
+    },
+
+    addLabelEnd: (state) => {
+      if (state.isAddingLabel) {
+        state.isAddingLabel = false;
+      }
+    },
+
     iterationOptionsChanged: (state, { payload }) => {
       state.iterationOptions = payload;
     },
@@ -46,6 +57,8 @@ export const {
   reviewModeToggled,
   addObjectStart,
   addObjectEnd,
+  addLabelStart,
+  addLabelEnd,
   iterationOptionsChanged,
 } = loupeSlice.actions;
 
@@ -53,6 +66,7 @@ export const {
 export const selectLoupeOpen = state => state.loupe.open;
 export const selectReviewMode = state => state.loupe.reviewMode;
 export const selectIsAddingObject = state => state.loupe.isAddingObject;
+export const selectIsAddingLabel = state => state.loupe.isAddingLabel;
 export const selectIterationOptions = state => state.loupe.iterationOptions;
 
 export default loupeSlice.reducer;

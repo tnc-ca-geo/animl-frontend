@@ -10,6 +10,7 @@ import {
   objectRemoved,
   objectLocked
 } from '../images/imagesSlice';
+import { addLabelStart, addLabelEnd } from './loupeSlice';
 
 const StyledBoundingBoxLabel = styled('div', {
   backgroundColor: '#345EFF',
@@ -165,8 +166,14 @@ const BoundingBoxLabel = (props) => {
   // i.e. - user just added an object
   const [ catSelectorOpen, setCatSelectorOpen ] = useState();
   useEffect(() => {
-    setCatSelectorOpen(object.isBeingAdded && object.labels.length === 0);
-  }, [ object, label, selected ]);
+    if (object.isBeingAdded && object.labels.length === 0) {
+      dispatch(addLabelStart());
+      setCatSelectorOpen(true);
+    } else {
+      dispatch(addLabelEnd());
+      setCatSelectorOpen(false);
+    }
+  }, [ object, label, selected, dispatch ]);
 
   // close category selector if user clicks outside of it
   useEffect(() => {
@@ -174,6 +181,7 @@ const BoundingBoxLabel = (props) => {
       if (object.isBeingAdded) {
         dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }))
       }
+      dispatch(addLabelEnd());
       setCatSelectorOpen(false);
     }
     catSelectorOpen
@@ -190,16 +198,18 @@ const BoundingBoxLabel = (props) => {
     const handleKeyDown = (e) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
       if (selected && (e.ctrlKey || e.metaKey) && charCode === 'e') {
+        dispatch(addLabelStart());
         setCatSelectorOpen(true);
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ selected ]);
+  }, [ selected, dispatch ]);
 
   const handleCategoryClick = (e) => {
     e.stopPropagation();
     if (!object.locked) {
+      dispatch(addLabelStart());
       setCatSelectorOpen(true);
     }
   };
