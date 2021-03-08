@@ -38,7 +38,7 @@ const Overlay = styled.div({
   zIndex: '$4',
 });
 
-const AddObjectOverlay = ({ dimensions, loupeIndex }) => {
+const AddObjectOverlay = ({ dimensions, focusIndex }) => {
   const { top, left, width, height } = dimensions;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
@@ -75,11 +75,8 @@ const AddObjectOverlay = ({ dimensions, loupeIndex }) => {
     // TODO: double check that width & height are same as actual image width/height
     const image = { imageWidth: width, imageHeight: height };
     const bbox = absToRel(tempBBox, image);
-    const payload = {
-      loupeIndex: loupeIndex,
-      bbox: bbox,
-    }
-    dispatch(objectAdded(payload));
+    const imageIndex = focusIndex.image;
+    dispatch(objectAdded({ bbox, imageIndex }));
     setDrawingBBox(false);
     setTempBBox(defaultBBox);
     dispatch(addObjectEnd());

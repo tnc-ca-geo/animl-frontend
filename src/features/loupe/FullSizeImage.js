@@ -19,7 +19,7 @@ const ImageWrapper = styled.div({
   position: 'relative',
 });
 
-const FullSizeImage = ({ image, loupeIndex }) => {
+const FullSizeImage = ({ image, focusIndex }) => {
   const isAddingObject = useSelector(selectIsAddingObject);
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
   const [ imgLoaded, setImgLoaded ] = useState(false);
@@ -76,7 +76,7 @@ const FullSizeImage = ({ image, loupeIndex }) => {
       {isAddingObject &&
         <AddObjectOverlay
           dimensions={{ top, left, width, height }}
-          loupeIndex={loupeIndex}
+          focusIndex={focusIndex}
         />
       }
       {filteredObjects.map((object, i) => (
@@ -86,8 +86,8 @@ const FullSizeImage = ({ image, loupeIndex }) => {
           imageHeight={height}
           object={object}
           objectIndex={image.objects.indexOf(object)}
-          loupeIndex={loupeIndex}
-          objectSelected={i === loupeIndex.objects}
+          focusIndex={focusIndex}
+          objectSelected={i === focusIndex.object}
         />
       ))
       }

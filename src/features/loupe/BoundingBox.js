@@ -93,7 +93,7 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
 };
 
 const BoundingBox = (props) => {
-  const {imageWidth, imageHeight, object, objectIndex, loupeIndex, objectSelected } = props;
+  const {imageWidth, imageHeight, object, objectIndex, focusIndex, objectSelected } = props;
   // megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state.
   const [ bbox, setBbox ] = useState(object.bbox);
@@ -103,7 +103,7 @@ const BoundingBox = (props) => {
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
-  // TODO: clean up loupeIndex & selection logic...
+  // TODO: clean up focusIndex & selection logic...
   // if object is selected, show currently selected label,
   // else show first non-invalidated in array
   const reviewMode = useSelector(selectReviewMode);
@@ -117,15 +117,15 @@ const BoundingBox = (props) => {
       newLabel = { category: '', conf: 0, index: 0 }; // temporary label
     }
     else if (objectSelected) {
-      newLabel = object.labels[loupeIndex.labels];
-    } 
+      newLabel = object.labels[focusIndex.label];
+    }
     else {
       newLabel = object.labels.find((label) => (
         label.validation === null || label.validation.validated 
       ));
     }
     setLabel(newLabel);
-  }, [ object, loupeIndex, objectSelected, reviewMode ]);
+  }, [ object, focusIndex, objectSelected, reviewMode ]);
 
   // set label color and confidence
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
@@ -154,7 +154,11 @@ const BoundingBox = (props) => {
   };
 
   const onDragEnd = () => {
-    dispatch(bboxUpdated({ bbox, loupeIndex }));
+    dispatch(bboxUpdated({
+      imageIndex: focusIndex.image,
+      objectIndex,
+      bbox,
+    }));
   }
 
   const onResize = (event, { size, handle }) => {
@@ -205,7 +209,11 @@ const BoundingBox = (props) => {
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
-    dispatch(bboxUpdated({ bbox, loupeIndex }));
+    dispatch(bboxUpdated({
+      imageIndex: focusIndex.image,
+      objectIndex,
+      bbox,
+    }));
   }
 
   return (
@@ -235,7 +243,7 @@ const BoundingBox = (props) => {
         <BoundingBoxLabel
           verticalPos={(top > 30) ? 'top' : 'bottom'}
           horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
-          loupeIndex={loupeIndex}
+          focusIndex={focusIndex}
           objectIndex={objectIndex}
           labelIndex={object.labels.indexOf(label)}
           object={object}

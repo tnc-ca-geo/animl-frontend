@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAction } from '@reduxjs/toolkit';
 import undoable from 'redux-undo';
 import { call } from '../../api';
 import moment from 'moment';
@@ -22,6 +22,11 @@ const initialState = {
     next: null,
     hasNext: null,
     count: null,
+  },
+  focusIndex: {
+    image: null, 
+    object: null,
+    label: null,
   },
 };
 
@@ -78,21 +83,25 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    setFocus: (state, { payload }) => {
+      state.focusIndex = { ...state.focusIndex, ...payload };
+    },
+
     bboxUpdated: (state, { payload }) => {
-      const i = payload.loupeIndex;
-      const object = state.images[i.images].objects[i.objects];
+      const { imageIndex, objectIndex } = payload;
+      const object = state.images[imageIndex].objects[objectIndex];
       object.bbox = payload.bbox;
     },
 
     objectAdded: (state, { payload }) => {
-      const i = payload.loupeIndex;
+      const focusedImage = state.images[payload.imageIndex];
       const newObject = {
         bbox: payload.bbox,
         locked: false,
         isBeingAdded: true,
         labels: [],
       };
-      state.images[i.images].objects.unshift(newObject);
+      focusedImage.objects.unshift(newObject);
     },
 
     labelAdded: (state, { payload }) => {
@@ -117,13 +126,9 @@ export const imagesSlice = createSlice({
       if (payload.validated === true) {
         label.validation = { validated: true };
         object.locked = true;
-        console.log('label validated: ', label.validation)
-
       }
       else {
         label.validation = { validated: false };
-        console.log('label invalidated: ', label.validation)
-        console.log('index: ', i);
       }
     },
 
@@ -143,12 +148,18 @@ export const {
   getImagesFailure,
   sortChanged,
   visibleRowsChanged,
+  setFocus,
   bboxUpdated,
   objectAdded,
   labelAdded,
   labelValidated,
   objectLocked,
 } = imagesSlice.actions;
+
+// Actions only used in middlewares:
+export const imageFocused = createAction('images/imageFocused');
+export const incrementFocusIndex = createAction('loupe/incrementFocusIndex');
+export const incrementImage = createAction('loupe/incrementImage');
 
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current') => 
@@ -166,7 +177,7 @@ export const fetchImages = (filters, page = 'current') =>
       dispatch(getImagesFailure(err.toString()))
     }
   };
-
+  
 // The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
@@ -181,5 +192,6 @@ export const selectImages = state => state.images.present.images;
 export const selectImagesCount = state => state.images.present.pageInfo.count;
 export const selectIsLoading = state => state.images.present.isLoading;
 export const selectVisibleRows = state => state.images.present.visibleRows;
+export const selectFocusIndex = state => state.images.present.focusIndex;
 
 export default undoable(imagesSlice.reducer);

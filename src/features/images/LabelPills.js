@@ -16,7 +16,7 @@ const LabelPill = styled('div', {
   // textTransform: 'uppercase',
   transition: 'all 0.2s ease',
   variants: {
-    selected: {
+    focused: {
       true: {
         outline: 'none',
         boxShadow: '0 0 0 3px $blue200',
@@ -33,7 +33,7 @@ const ObjectPill = styled('div', {
   borderRadius: '$4',
   margin: '$1',
   variants: {
-    selected: {
+    focused: {
       true: {
         outline: 'none',
         boxShadow: '0 0 0 3px $blue200',
@@ -54,8 +54,8 @@ const LabelContainer = styled('div', {
   flexWrap: 'wrap',
 });
 
-const LabelPills = ({ image, imageIndex, loupeIndex }) => {
-  const imageSelected = imageIndex === loupeIndex.images;
+const LabelPills = ({ image, imageIndex, focusIndex }) => {
+  const isImageFocused = imageIndex === focusIndex.image;
 
   return (
     <LabelContainer>
@@ -73,15 +73,15 @@ const LabelPills = ({ image, imageIndex, loupeIndex }) => {
           {labels.length > 0 &&
             <ObjectPill
               key={objIndex}
-              selected={imageSelected && objIndex === loupeIndex.objects}
+              focused={isImageFocused && objIndex === focusIndex.object}
               locked={object.locked}
             >
               {labels.map((label, lblIndex) => (
                 <LabelPill
                   key={lblIndex}
-                  selected={imageSelected &&
-                    objIndex === loupeIndex.objects &&
-                    lblIndex === loupeIndex.labels
+                  focused={isImageFocused &&
+                    objIndex === focusIndex.object &&
+                    lblIndex === focusIndex.label
                   }
                   css={{
                     backgroundColor: labelColors(label.category).primary + 'b3', 

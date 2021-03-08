@@ -6,10 +6,7 @@ import {
   normalizeDatesMiddleware,
   setSelectedViewMiddleware,
 } from '../features/views/viewsMiddlewares';
-import {
-  incrementLoupeIndexMiddleware
-} from '../features/loupe/loupeMiddlewares';
-import { labelAddedMiddleware } from '../features/images/imagesMiddlewares';
+import { imagesMiddleware } from '../features/images/imagesMiddlewares';;
 
 export const history = createBrowserHistory();
 
@@ -20,8 +17,7 @@ const store = configureStore({
       .concat(diffFiltersMiddleware)
       .concat(normalizeDatesMiddleware)
       .concat(setSelectedViewMiddleware)
-      .concat(incrementLoupeIndexMiddleware)
-      .concat(labelAddedMiddleware)
+      .concat(imagesMiddleware)
   ),
 });
 

@@ -4,10 +4,10 @@ import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectAvailLabels } from '../filters/filtersSlice';
-import { incrementIndex } from '../loupe/loupeSlice';
 import {
   labelAdded,
   labelValidated,
+  incrementFocusIndex,
   objectLocked
 } from '../images/imagesSlice';
 
@@ -142,12 +142,12 @@ const CategorySelector = styled(CreatableSelect, {
 //  - Add buttons for validate, invalidate, unlock
 
 const BoundingBoxLabel = (props) => {
-  const { loupeIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected } = props;
+  const { focusIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected } = props;
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
   const index = {
-    images: loupeIndex.images,
+    images: focusIndex.image,
     objects: objectIndex,
     labels: labelIndex
   };
@@ -224,9 +224,6 @@ const BoundingBoxLabel = (props) => {
 
   const handleValidationButtonClick = (validated) => {
     dispatch(labelValidated({ index, validated }));
-    if (!validated) {
-      dispatch(incrementIndex('increment'));
-    }
     setShowLabelButtons(false);
   };
 

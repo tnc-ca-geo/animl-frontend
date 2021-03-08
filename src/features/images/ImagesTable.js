@@ -7,15 +7,13 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  selectPaginatedField,
-  selectSortAscending,
   sortChanged,
   visibleRowsChanged,
+  imageFocused,
+  selectFocusIndex,
+  selectPaginatedField,
+  selectSortAscending,
 } from './imagesSlice';
-import {
-  selectLoupeIndex,
-  imageSelected,
-} from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -140,14 +138,14 @@ const scrollbarWidth = () => {
   return scrollbarWidth;
 };
 
-const makeRows = (images, loupeIndex) => {
+const makeRows = (images, focusIndex) => {
   return images.map((image, imageIndex) => {
-    const imageSelected = imageIndex === loupeIndex.images;
-    const thumbnail = <Image selected={imageSelected} src={image.thumbUrl} />;
+    const isImageFocused = imageIndex === focusIndex.image;
+    const thumbnail = <Image selected={isImageFocused} src={image.thumbUrl} />;
     const labelCagegories = <LabelPills
       image={image}
       imageIndex={imageIndex}
-      loupeIndex={loupeIndex}
+      focusIndex={focusIndex}
     />
     let needsReview = 'Yes'; 
     // TODO: revisit this
@@ -168,7 +166,7 @@ const makeRows = (images, loupeIndex) => {
 
 const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
-  const loupeIndex = useSelector(selectLoupeIndex);
+  const focusIndex = useSelector(selectFocusIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);
@@ -181,7 +179,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     return !hasNext || index < images.length;
   }, [hasNext, images]);
 
-  const data = makeRows(images, loupeIndex);
+  const data = makeRows(images, focusIndex);
 
   const defaultColumn = useMemo(
     () => ({
@@ -265,12 +263,12 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   // }, [dispatch, visibleRows]);
 
   useEffect(() => {
-    if (loupeIndex.images) {
+    if (focusIndex.image) {
       // TODO: make auto scrolling smooth:
       // https://github.com/bvaughn/react-window/issues/16
-      listRef.current.scrollToItem(loupeIndex.images, 'smart');
+      listRef.current.scrollToItem(focusIndex.image, 'smart');
     }
-  }, [loupeIndex.images]);
+  }, [focusIndex.image]);
 
   useEffect(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
@@ -286,7 +284,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   }, [sortBy, dispatch]);
 
   const handleRowClick = useCallback((id) => {
-    dispatch(imageSelected(id));
+    dispatch(imageFocused(id));
   }, [dispatch]);
 
   const RenderRow = useCallback(
@@ -298,13 +296,13 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
           <TableRow
             {...row.getRowProps({ style })}
             onClick={() => handleRowClick(row.id)}
-            selected={loupeIndex.images === index}
+            selected={focusIndex.image === index}
           >
             {row.cells.map(cell => {
               return (
                 <DataCell
                   {...cell.getCellProps()}
-                  selected={loupeIndex.images === index}
+                  selected={focusIndex.image === index}
                 >
                   {cell.render('Cell')}
                 </DataCell>
@@ -319,7 +317,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         )
       };
     },
-    [prepareRow, rows, handleRowClick, isImageLoaded, loupeIndex.images]
+    [prepareRow, rows, handleRowClick, isImageLoaded, focusIndex]
   );
 
   const InfiniteList = useCallback(
