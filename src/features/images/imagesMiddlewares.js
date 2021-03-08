@@ -1,7 +1,6 @@
 
 import {
   setFocus,
-  imageFocused,
   labelAdded,
   incrementFocusIndex,
   incrementImage,
@@ -23,7 +22,6 @@ const isLabelInvalidated = (images, i) => {
 };
 
 const findNextLabel = (images, focusIndex, options) => {
-  console.log('focusIndex from findNextLabel: ', findNextLabel)
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use 0 as initial index
@@ -101,17 +99,7 @@ const findPreviousLabel = (images, focusIndex, options) => {
 
 export const imagesMiddleware = store => next => action => {
 
-  if (imageFocused.match(action)) {
-    next(action);
-    store.dispatch(setFocus({
-      image: Number(action.payload),
-      object: null,
-      label: null,
-    }));
-    store.dispatch(loupeOpened(true));
-  }
-
-  else if (incrementFocusIndex.match(action)) {
+  if (incrementFocusIndex.match(action)) {
     next(action);
     const delta = action.payload;
     const reviewMode = selectReviewMode(store.getState());

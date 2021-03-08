@@ -9,11 +9,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   sortChanged,
   visibleRowsChanged,
-  imageFocused,
+  setFocus,
   selectFocusIndex,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
+import { loupeOpened } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -284,7 +285,8 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   }, [sortBy, dispatch]);
 
   const handleRowClick = useCallback((id) => {
-    dispatch(imageFocused(id));
+    dispatch(setFocus({ image: Number(id), object: null, label: null }));
+    dispatch(loupeOpened(true));
   }, [dispatch]);
 
   const RenderRow = useCallback(

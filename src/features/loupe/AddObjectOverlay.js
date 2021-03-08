@@ -49,13 +49,13 @@ const AddObjectOverlay = ({ dimensions, focusIndex }) => {
   const handlePointerMove = (event) => {
     const containerX = ('clientX' in event ? event.clientX : 0) - left;
     const containerY = ('clientY' in event ? event.clientY : 0) - top;
-    // TODO: figure out why the crosshair rendering is so laggy
     setMousePos({ x: containerX, y: containerY });
     if (drawingBBox) {
       // update tempBoxWidth and tempBoxHeight
       const newWidth = containerX - tempBBox.left;
       const newHeight = containerY - tempBBox.top;
       setTempBBox({...tempBBox, ...{ width: newWidth, height: newHeight }})
+      // TODO: constrain bbox to image
       // TODO: if width/height are negative, 
       // use absolute values, and update the top/left accordingly 
       // (so you can click and drag to the south west and it will still work)

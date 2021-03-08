@@ -1,5 +1,9 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
+import { setFocus } from '../images/imagesSlice';
+import { loupeOpened } from '../loupe/loupeSlice';
+
 
 const LabelPill = styled('div', {
   // backgroundColor: '$gray300',
@@ -56,11 +60,23 @@ const LabelContainer = styled('div', {
 
 const LabelPills = ({ image, imageIndex, focusIndex }) => {
   const isImageFocused = imageIndex === focusIndex.image;
+  const dispatch = useDispatch();
+
+  const handleLabelPillClick = (e, objIndex, lblIndex) => {
+    e.stopPropagation();
+    dispatch(setFocus({
+      image: imageIndex,
+      object: objIndex,
+      label: lblIndex 
+    }));
+    dispatch(loupeOpened(true));
+  };
 
   return (
     <LabelContainer>
       {image.objects.map((object, objIndex) => {
-        // TODO: must be a better way to do this
+
+        // TODO: find a cleaner way to do this
         const labels = object.locked 
           ? [object.labels.find((label) => (
               label.validation && label.validation.validated
@@ -68,6 +84,7 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
           : object.labels.filter((label) => (
               label.validation === null || label.validation.validated
             ));
+
         return (
           <div key={objIndex}>
           {labels.length > 0 &&
@@ -76,21 +93,24 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
               focused={isImageFocused && objIndex === focusIndex.object}
               locked={object.locked}
             >
-              {labels.map((label, lblIndex) => (
-                <LabelPill
-                  key={lblIndex}
-                  focused={isImageFocused &&
-                    objIndex === focusIndex.object &&
-                    lblIndex === focusIndex.label
-                  }
-                  css={{
-                    backgroundColor: labelColors(label.category).primary + 'b3', 
-                  }}
-                >
-                  {label.category}
-                </LabelPill>
-              ))
-              }
+              {labels.map((label, i) => {
+                const lblIndex = object.labels.indexOf(label);
+                return (
+                  <LabelPill
+                    key={i}
+                    focused={isImageFocused &&
+                      objIndex === focusIndex.object &&
+                      lblIndex === focusIndex.label
+                    }
+                    onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
+                    css={{
+                      backgroundColor: labelColors(label.category).primary + 'b3', 
+                    }}
+                  >
+                    {label.category}
+                  </LabelPill>
+                )
+              })}
             </ObjectPill>
           }
           </div>

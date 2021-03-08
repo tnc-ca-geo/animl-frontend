@@ -157,7 +157,6 @@ export const {
 } = imagesSlice.actions;
 
 // Actions only used in middlewares:
-export const imageFocused = createAction('images/imageFocused');
 export const incrementFocusIndex = createAction('loupe/incrementFocusIndex');
 export const incrementImage = createAction('loupe/incrementImage');
 
