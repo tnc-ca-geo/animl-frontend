@@ -222,6 +222,10 @@ const BoundingBox = (props) => {
     }));
   }
 
+  const [ showLabelButtons, setShowLabelButtons ] = useState(false);
+  const handleBBoxHover = () => setShowLabelButtons(true);
+  const handleBBoxMouseLeave = () => setShowLabelButtons(false);
+
   return (
     <Draggable
       bounds='parent'
@@ -244,6 +248,9 @@ const BoundingBox = (props) => {
         onResize={onResize}
         onResizeStop={onResizeStop}
         onClick={handleBBoxClick}
+        onMouseOver={handleBBoxHover}
+        onMouseEnter={handleBBoxHover}
+        onMouseLeave={handleBBoxMouseLeave}
         selected={objectSelected}
         css={{ borderColor: labelColor.primary }}
       >
@@ -258,6 +265,8 @@ const BoundingBox = (props) => {
           labelColor={labelColor}
           conf={conf}
           selected={objectSelected}
+          showLabelButtons={showLabelButtons}
+          setShowLabelButtons={setShowLabelButtons}
           // className='drag-handle'
         >
          {label.category} {conf}%

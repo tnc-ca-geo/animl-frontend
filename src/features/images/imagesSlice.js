@@ -111,7 +111,7 @@ export const imagesSlice = createSlice({
 
     labelAdded: (state, { payload }) => {
       const i = payload.index;
-      const object = state.images[i.images].objects[i.objects];
+      const object = state.images[i.image].objects[i.object];
       const newLabel = {
         category: payload.category,
         bbox: object.bbox,
@@ -126,8 +126,8 @@ export const imagesSlice = createSlice({
 
     labelValidated: (state, { payload }) => {
       const i = payload.index;
-      const object = state.images[i.images].objects[i.objects];
-      const label = object.labels[i.labels];
+      const object = state.images[i.image].objects[i.object];
+      const label = object.labels[i.label];
       if (payload.validated === true) {
         label.validation = { validated: true };
         object.locked = true;
@@ -139,7 +139,7 @@ export const imagesSlice = createSlice({
 
     objectLocked: (state, { payload }) => {
       const i = payload.index;
-      const object = state.images[i.images].objects[i.objects];
+      const object = state.images[i.image].objects[i.object];
       object.locked = payload.locked;
     },
 

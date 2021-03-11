@@ -141,14 +141,14 @@ const CategorySelector = styled(CreatableSelect, {
 
 const BoundingBoxLabel = (props) => {
   // TODO: tidy up props
-  const { focusIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected } = props;
+  const { focusIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected, showLabelButtons, setShowLabelButtons } = props;
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
   const dispatch = useDispatch();
   const index = {
-    images: focusIndex.image, // TODO: i think this should be 'image' not 'images'. make sure not a bug
-    objects: objectIndex,
-    labels: labelIndex
+    image: focusIndex.image,  
+    object: objectIndex,
+    label: labelIndex
   };
 
   const createOption = (category) => ({
@@ -231,9 +231,9 @@ const BoundingBoxLabel = (props) => {
     dispatch(objectLocked({ index, locked: false }));
   };
 
-  const [ showLabelButtons, setShowLabelButtons ] = useState();
-  const handleLabelMouseEnter = () => setShowLabelButtons(true);
-  const handleLabelMouseLeave = () => setShowLabelButtons(false);
+  // const [ showLabelButtons, setShowLabelButtons ] = useState();
+  // const handleLabelMouseEnter = () => setShowLabelButtons(true);
+  // const handleLabelMouseLeave = () => setShowLabelButtons(false);
 
   const handleValidationButtonClick = (e, validated) => {
     e.stopPropagation();
@@ -251,7 +251,6 @@ const BoundingBoxLabel = (props) => {
         backgroundColor: labelColor.primary,
         color: labelColor.text
       }}
-      onMouseLeave={handleLabelMouseLeave}
     >
       <div onClick={handleCategoryClick}>
         {catSelectorOpen
@@ -268,9 +267,7 @@ const BoundingBoxLabel = (props) => {
               className='react-select'
               classNamePrefix='react-select'
             />
-          : <LabelDisplay
-              onMouseEnter={handleLabelMouseEnter}
-            >
+          : <LabelDisplay>
               <Category>{label.category}</Category>
               {!object.locked && <Confidence>{conf}%</Confidence>}
             </LabelDisplay>
