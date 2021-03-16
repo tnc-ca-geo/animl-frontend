@@ -86,10 +86,10 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
             ));
 
         return (
-          <div key={objIndex}>
+          <div key={object._id}>  {/* TODO: don't use index for key */}
           {labels.length > 0 &&
             <ObjectPill
-              key={objIndex}
+              key={object._id}
               focused={isImageFocused && objIndex === focusIndex.object}
               locked={object.locked}
             >
@@ -97,7 +97,7 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
                 const lblIndex = object.labels.indexOf(label);
                 return (
                   <LabelPill
-                    key={i}
+                    key={label._id}
                     focused={isImageFocused &&
                       objIndex === focusIndex.object &&
                       lblIndex === focusIndex.label

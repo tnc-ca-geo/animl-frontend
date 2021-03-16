@@ -7,7 +7,7 @@ const initialState = {
   isAddingLabel: false,
   iterationOptions: {
     skipEmptyImages: false,
-    skipLockedObjects: false,
+    skipLockedObjects: true,
     // skipInvalidatedLabels: false,    
   },
 };

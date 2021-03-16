@@ -34,9 +34,11 @@ const imageFields = `
   make
   originalFileName
   objects {
+    _id
     bbox
     locked
     labels {
+      _id
       category
       bbox
       type

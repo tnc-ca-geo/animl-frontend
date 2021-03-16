@@ -1,5 +1,6 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import undoable from 'redux-undo';
+import { ObjectID } from 'bson';
 import { call } from '../../api';
 import moment from 'moment';
 import {
@@ -84,6 +85,7 @@ export const imagesSlice = createSlice({
     },
 
     setFocus: (state, { payload }) => {
+      console.log('imagesSlice.setFocus()');
       state.focusIndex = { ...state.focusIndex, ...payload };
     },
 
@@ -94,8 +96,10 @@ export const imagesSlice = createSlice({
     },
 
     objectAdded: (state, { payload }) => {
+      console.log('imagesSlice.objectAdded()');
       const focusedImage = state.images[payload.imageIndex];
       const newObject = {
+        _id: new ObjectID().toString(),
         bbox: payload.bbox,
         locked: false,
         isBeingAdded: true,
@@ -105,11 +109,13 @@ export const imagesSlice = createSlice({
     },
 
     objectRemoved: (state, { payload }) => {
+      console.log('imagesSlice.objectRemoved()');
       const focusedImage = state.images[payload.imageIndex];
       focusedImage.objects.splice(payload.objectIndex, 1);
     },
 
     labelAdded: (state, { payload }) => {
+      console.log('imagesSlice.labelAdded()');
       const i = payload.index;
       const object = state.images[i.image].objects[i.object];
       const newLabel = {
@@ -125,6 +131,7 @@ export const imagesSlice = createSlice({
     },
 
     labelValidated: (state, { payload }) => {
+      console.log('imagesSlice.labelValidated()');
       const i = payload.index;
       const object = state.images[i.image].objects[i.object];
       const label = object.labels[i.label];

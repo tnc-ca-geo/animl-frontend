@@ -93,7 +93,7 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
 };
 
 const BoundingBox = (props) => {
-  const {imageWidth, imageHeight, object, objectIndex, focusIndex, objectSelected } = props;
+  const { imageWidth, imageHeight, object, objectIndex, focusIndex } = props;
   // megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
   // so we are using that format in state.
   const [ bbox, setBbox ] = useState(object.bbox);
@@ -103,16 +103,20 @@ const BoundingBox = (props) => {
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
-  // if object is selected, show currently selected label,
+  const [ objectFocused, setObjectFocused ] = useState();
+  useEffect(() => {
+    setObjectFocused((focusIndex.object === objectIndex));
+  }, [ focusIndex.object, objectIndex ]);
+
+  // if object is focused, show currently focused label,
   // else show first non-invalidated in array
-  const reviewMode = useSelector(selectReviewMode);
   const [ label, setLabel ] = useState({ category: '', conf: 0, index: 0 });
   useEffect(() => {
     let newLabel;
     if (object.isBeingAdded) {
       newLabel = { category: '', conf: 0, index: 0 }; // temporary label
     }
-    else if (objectSelected) {
+    else if (objectFocused && focusIndex.label) {
       newLabel = object.labels[focusIndex.label];
     }
     else {
@@ -121,7 +125,7 @@ const BoundingBox = (props) => {
       ));
     }
     setLabel(newLabel);
-  }, [ object, focusIndex, objectSelected, reviewMode ]);
+  }, [ object, focusIndex.label, objectFocused ]);
 
   // set label color and confidence
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
@@ -132,7 +136,7 @@ const BoundingBox = (props) => {
     setLabelIndex(object.labels.indexOf(label))
     setLabelColor(labelColors(label.category));
     setConf(Number.parseFloat(label.conf * 100).toFixed(1));
-  }, [ label, object, objectSelected ]);  // weird behavior here if defaultColor is in dependency array
+  }, [ label, object, objectFocused ]);  // weird behavior here if defaultColor is in dependency array
   
   // update bbox when object changes
   useEffect(() => {
@@ -251,7 +255,7 @@ const BoundingBox = (props) => {
         onMouseOver={handleBBoxHover}
         onMouseEnter={handleBBoxHover}
         onMouseLeave={handleBBoxMouseLeave}
-        selected={objectSelected}
+        selected={objectFocused}
         css={{ borderColor: labelColor.primary }}
       >
         <BoundingBoxLabel
@@ -264,7 +268,7 @@ const BoundingBox = (props) => {
           label={label}
           labelColor={labelColor}
           conf={conf}
-          selected={objectSelected}
+          selected={objectFocused}
           showLabelButtons={showLabelButtons}
           setShowLabelButtons={setShowLabelButtons}
           // className='drag-handle'

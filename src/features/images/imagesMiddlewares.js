@@ -1,6 +1,7 @@
 
 import {
   setFocus,
+  objectAdded,
   labelAdded,
   incrementFocusIndex,
   incrementImage,
@@ -22,6 +23,7 @@ const isLabelInvalidated = (images, i) => {
 };
 
 const findNextLabel = (images, focusIndex, options) => {
+  console.log('finding next label')
   // need to seed the nested for loops with current indices,
   // but after the first loops have completed,
   // use 0 as initial index
@@ -34,19 +36,24 @@ const findNextLabel = (images, focusIndex, options) => {
     // don't skip empty images
     if (imageLoopExecuted && 
       (!options.skipEmptyImages && image.objects.length === 0)) {
+      console.log('incrementing to an empty image...')
       return { image: i, object: null, label: null };
     }
     
     const initialObjectIndex = imageLoopExecuted ? 0 : focusIndex.object;
     for (let o = initialObjectIndex; o < image.objects.length; o++) {
+      console.log('o: ', o);
+      console.log('object: ', image.objects[o]);
       const object = image.objects[o];
       const initialLabelIndex = objectLoopExecuted || imageLoopExecuted
         ? 0 
         : focusIndex.label + 1;
+
       if (!(options.skipLockedObjects && object.locked)) {
         for (let l = initialLabelIndex; l < object.labels.length; l++) {
           const currIndices = { image: i, object: o, label: l };
           if (!isLabelInvalidated(images, currIndices)) {
+            console.log('found it! returning: ', currIndices)
             return currIndices;
           }
         }
@@ -101,11 +108,12 @@ export const imagesMiddleware = store => next => action => {
 
   if (incrementFocusIndex.match(action)) {
     next(action);
+    console.log('incrementing focus index');
     const delta = action.payload;
     const reviewMode = selectReviewMode(store.getState());
     const images = selectImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
-
+    console.log('current focus index: ', focusIndex);
     // // If not review mode, just inc/decrement image
     // if (!reviewMode) {
     //   if (delta === 'decrement' && index.images > 0) {
@@ -117,11 +125,13 @@ export const imagesMiddleware = store => next => action => {
     // }
     // // Else, it's in review mode, and we need to inc/decrement the label
     // else {
-      const options = selectIterationOptions(store.getState())
+      const options = selectIterationOptions(store.getState());
       const newFocusIndex = (delta === 'increment')
         ? findNextLabel(images, focusIndex, options)
         : findPreviousLabel(images, focusIndex, options);
-        store.dispatch(setFocus(newFocusIndex));
+
+      console.log('new focus index: ', newFocusIndex);
+      store.dispatch(setFocus(newFocusIndex));
     // }
 
     // TODO: also stop at empty images (or have this be a setting?)
@@ -145,7 +155,14 @@ export const imagesMiddleware = store => next => action => {
     // (e.g. labels validated) and save it
   }
 
-  if (labelAdded.match(action)) {
+  else if (objectAdded.match(action)) {
+    next(action);
+    store.dispatch(setFocus({ object: 0 }));
+    // TODO: send request to backend to save new label to object
+    // TODO: add label category to label filters list? 
+  } 
+
+  else if (labelAdded.match(action)) {
     next(action);
     store.dispatch(setFocus({ label: 0 }));
     const reviewMode = selectReviewMode(store.getState());

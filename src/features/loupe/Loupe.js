@@ -192,7 +192,6 @@ const Loupe = ({ expanded }) => {
       // handle return, left/right arrows (invalidate/validate)
       const object = image.objects[focusIndex.object];
       if (reviewMode && object && !object.locked) {
-        if (e.code === 'Enter') { console.log('enter') }
         if (e.code === 'ArrowRight' || e.code === 'Enter') {
           console.log('arrow right / enter handler firing')
           dispatch(labelValidated({ index: focusIndex, validated: true}));

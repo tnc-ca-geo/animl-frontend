@@ -53,6 +53,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   const [ filteredObjects, setFilteredObjects ] = useState(image.objects);
   useEffect(() => {
+    console.log('image.objects has changed')
     const objectsToRender = image.objects.reduce((acc, object, i) => {
       const hasNonInvalidatedLabels = object.labels.some((label) => {
         return label.validation === null || label.validation.validated;
@@ -62,8 +63,9 @@ const FullSizeImage = ({ image, focusIndex }) => {
       }
       return acc;
     }, []);
+    console.log('setting filteredObjects: ', objectsToRender)
     setFilteredObjects(objectsToRender);
-  }, [ image ]);
+  }, [ image.objects ]);
 
   const handleImgLoaded = () => setImgLoaded(true);
 
@@ -81,13 +83,12 @@ const FullSizeImage = ({ image, focusIndex }) => {
       }
       {filteredObjects.map((object, i) => (
         <BoundingBox
-          key={i}
+          key={object._id}
           imageWidth={width}
           imageHeight={height}
           object={object}
           objectIndex={image.objects.indexOf(object)}
           focusIndex={focusIndex}
-          objectSelected={i === focusIndex.object}
         />
       ))
       }
