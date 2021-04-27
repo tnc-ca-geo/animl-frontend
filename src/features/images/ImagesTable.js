@@ -21,13 +21,13 @@ import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 // TODO: make table horizontally scrollable on smaller screens
-//   '.tableWrap': {
-//     display: 'block',
-//     margin: '$3',
-//     maxWidth: '100%',
-//     overflowX: 'scroll',
-//     overflowY: 'hidden',
-//   },
+  // '.tableWrap': {
+  //   display: 'block',
+  //   margin: '$3',
+  //   maxWidth: '100%',
+  //   overflowX: 'scroll',
+  //   overflowY: 'hidden',
+  // },
 
 const TableContainer = styled.div({
   display: 'flex',
@@ -185,7 +185,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const defaultColumn = useMemo(
     () => ({
       minWidth: 30,
-      width: 150, // width is used for both the flex-basis and flex-grow
+      width: 130, // width is used for both the flex-basis and flex-grow
       maxWidth: 400,
     }),
     []

@@ -20,26 +20,15 @@ import LabelFilter from './LabelFilter';
 
 const StyledFiltersPanel = styled.div({
   position: 'relative',
-  // width: '370px',
+  width: '370px',
   borderRight: '$1 solid $gray400',
   // transition: 'width 1s ease-out',
-  variants: {
-    expanded: {
-      true: {
-        width: '370px',
-      },
-      false: {
-        width: '0px',
-      },
-    },
-  }
 });
 
-const FiltersPanel = ({ expandedDefault }) => {
+const FiltersPanel = ({ toggleFiltersPanel }) => {
   const activeFilters = useSelector(selectActiveFilters);
   const availCameras = useSelector(selectAvailCameras);
   const availLabels = useSelector(selectAvailLabels);
-  const [ expanded, setExpanded ] = useState(expandedDefault);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,15 +40,11 @@ const FiltersPanel = ({ expandedDefault }) => {
     }
   }, [availCameras, availLabels, dispatch]);
 
-  const handleFilterPanelClose = () => {
-    setExpanded(false);
-  }
-
   return (
-    <StyledFiltersPanel expanded={expanded}>
+    <StyledFiltersPanel>
       <PanelHeader 
         title='Filters'
-        handlePanelClose={handleFilterPanelClose}
+        handlePanelClose={toggleFiltersPanel}
       >
       </PanelHeader>
       <Accordion

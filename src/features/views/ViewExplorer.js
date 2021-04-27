@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectSelectedView } from './viewsSlice';
@@ -19,15 +19,29 @@ const ViewExplorerBody = styled.div({
 
 export function ViewExplorer() {
   const selectedView = useSelector(selectSelectedView);
+  const [ filtersPanelOpen, setFiltersPanelOpen ] = useState(true);
   const loupeOpen = useSelector(selectLoupeOpen);
+
+  const toggleFiltersPanel = () => {
+    setFiltersPanelOpen(!filtersPanelOpen);
+  };
 
   return (
     <ViewExplorerWrapper>
-      <SidebarNav view={selectedView} />
+      <SidebarNav
+        view={selectedView} 
+        toggleFiltersPanel={toggleFiltersPanel}
+      />
       <ViewExplorerBody>
-        <FiltersPanel expandedDefault={true} />
+        {filtersPanelOpen && 
+          <FiltersPanel 
+            toggleFiltersPanel={toggleFiltersPanel}
+          />
+        }
         <ImagesPanel />
-        <Loupe expanded={loupeOpen} />
+        {loupeOpen &&
+          <Loupe />
+        }
       </ViewExplorerBody>
     </ViewExplorerWrapper>
   );

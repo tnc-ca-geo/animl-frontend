@@ -9,7 +9,6 @@ import {
   selectFocusIndex,
 } from './imagesSlice';
 import {
-  loupeOpened,
   selectReviewMode,
   selectIterationOptions,
 } from '../loupe/loupeSlice';

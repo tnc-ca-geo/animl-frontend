@@ -143,20 +143,21 @@ const StyledLoupe = styled.div({
   position: 'absolute',
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',
-  marginLeft: '100%',
+  // marginLeft: '100%',
+  marginLeft: '745px',
   // transition: 'margin-left 0.3s ease-out',
 
-  variants: {
-    expanded: {
-      true: {
-        marginLeft: '745px',
-      },
-    }
-  }
+  // variants: {
+  //   expanded: {
+  //     true: {
+  //       marginLeft: '745px',
+  //     },
+  //   }
+  // }
 
 });
 
-const Loupe = ({ expanded }) => {
+const Loupe = () => {
   const reviewMode = useSelector(selectReviewMode);
   const imageCount = useSelector(selectImagesCount);
   const focusIndex = useSelector(selectFocusIndex);
@@ -240,7 +241,7 @@ const Loupe = ({ expanded }) => {
   const handleAddObjectButtonClick = () => dispatch(addObjectStart());
 
   return (
-    <StyledLoupe expanded={expanded}>
+    <StyledLoupe>
       <PanelHeader handlePanelClose={handleLoupeClose}>
         <ProgressDisplay>
           <IconButton
@@ -260,7 +261,7 @@ const Loupe = ({ expanded }) => {
           </ProgressBar>
         </ProgressDisplay>
       </PanelHeader>
-      <LoupeBody className={expanded ? 'expanded' : null}>
+      <LoupeBody>
         {image &&
           <div>
             <ImagePane>

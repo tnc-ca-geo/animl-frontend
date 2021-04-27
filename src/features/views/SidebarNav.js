@@ -24,7 +24,7 @@ const StyledSidebarNav = styled('div', {
   borderRight: '$1 solid $gray400',
 });
 
-const SidebarNav = ({ view }) => {
+const SidebarNav = ({ view, toggleFiltersPanel }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState();
   const selectedView = useSelector(selectSelectedView);
@@ -36,7 +36,10 @@ const SidebarNav = ({ view }) => {
 
   return (
     <StyledSidebarNav>
-      <MenuButton variant='ghost' state='active'>
+      <MenuButton
+        variant='ghost'
+        state='active'
+        onClick={toggleFiltersPanel}>
         <FontAwesomeIcon icon={['fas', 'filter']} />
       </MenuButton>
 
