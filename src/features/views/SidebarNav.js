@@ -20,11 +20,13 @@ const StyledSidebarNav = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  width: '$9',
+  flexGrow: '0',
+  flexShrink: '0',
+  flexBasis: '$9',
   borderRight: '$1 solid $gray400',
 });
 
-const SidebarNav = ({ view, toggleFiltersPanel }) => {
+const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState();
   const selectedView = useSelector(selectSelectedView);
@@ -38,7 +40,7 @@ const SidebarNav = ({ view, toggleFiltersPanel }) => {
     <StyledSidebarNav>
       <MenuButton
         variant='ghost'
-        state='active'
+        state={filtersPanelOpen ? 'active' : ''}
         onClick={toggleFiltersPanel}>
         <FontAwesomeIcon icon={['fas', 'filter']} />
       </MenuButton>

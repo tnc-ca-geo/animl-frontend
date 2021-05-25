@@ -17,7 +17,8 @@ const StyledImagesPanel = styled.div({
   // display: 'grid',
   // gridTemplateRows: 'auto 1fr auto',
   // gridTemplateColumns: '100%',
-  width: '100%',
+  // width: '100%',
+  flexGrow: '1',
   backgroundColor: '$loContrast',
 });
 

@@ -9,6 +9,8 @@ import {
   IMAGE_QUERY_LIMITS,
 } from '../../config';
 
+// TODO: not all of these properties need to be undoable.
+// split focusIndex out into its own slice
 const initialState = {
   images: [],
   isLoading: false,
@@ -57,8 +59,9 @@ export const imagesSlice = createSlice({
       });
 
       const images = payload.images.images.map((img) => {
-        const url = IMAGES_URL + 'images/' + img.hash + '.jpg';
-        const thumbUrl = IMAGES_URL + 'thumbnails/' + img.hash + '-small.jpg';
+        const ext = img.originalFileName.split('.').pop();
+        const url = IMAGES_URL + 'medium/' + img._id + '-medium.' + ext;
+        const thumbUrl = IMAGES_URL + 'small/' + img._id + '-small.' + ext;
         img.dateTimeOriginal = moment(img.dateTimeOriginal).format(DFR);
         img.dateAdded = moment(img.dateAdded).format(DFR);
         return { thumbUrl, url, ...img };

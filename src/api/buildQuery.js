@@ -27,7 +27,7 @@ const viewFields = `
   `
 
 const imageFields = `
-  hash
+  _id
   dateTimeOriginal
   dateAdded
   cameraSn

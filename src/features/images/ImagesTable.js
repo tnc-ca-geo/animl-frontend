@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
@@ -14,7 +20,7 @@ import {
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
-import { loupeOpened } from '../loupe/loupeSlice';
+import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -167,6 +173,7 @@ const makeRows = (images, focusIndex) => {
 
 const ImagesTable = ({ images, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
+  const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
@@ -182,14 +189,11 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
 
   const data = makeRows(images, focusIndex);
 
-  const defaultColumn = useMemo(
-    () => ({
-      minWidth: 30,
-      width: 130, // width is used for both the flex-basis and flex-grow
-      maxWidth: 400,
-    }),
-    []
-  );
+  const defaultColumn = useMemo(() => ({
+    minWidth: 30,
+    width: 130, // width is used for both the flex-basis and flex-grow
+    maxWidth: 400,
+  }), []);
 
   const columns = useMemo(() => [
       {
@@ -229,6 +233,16 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
       },
   ], []);
 
+  const columnsToHide = useMemo(() => (
+    columns.reduce((acc, curr) => {
+      const id = curr.accessor;
+      if (id !== 'thumbnail' && id !== 'labelCagegories') {
+        acc.push(id)
+      }
+      return acc;
+    }, [])
+  ), [columns]);
+
   const initialState = {
     sortBy: [
       {
@@ -244,6 +258,8 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     headerGroups,
     rows,
     prepareRow,
+    setHiddenColumns,
+    toggleHideAllColumns,
     state: { sortBy },
   } = useTable(
     {
@@ -284,9 +300,18 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     hasMountedRef.current = true;
   }, [sortBy, dispatch]);
 
+  useEffect(() => {
+    if (isLoupeOpen) {
+      setHiddenColumns(columnsToHide);
+    }
+    else {
+      toggleHideAllColumns(false)
+    }
+  }, [isLoupeOpen, columnsToHide]);
+
   const handleRowClick = useCallback((id) => {
     dispatch(setFocus({ image: Number(id), object: null, label: null }));
-    dispatch(loupeOpened(true));
+    dispatch(toggleOpenLoupe(true));
   }, [dispatch]);
 
   const RenderRow = useCallback(
@@ -393,7 +418,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
                   >
                     {column.render('Header')}
                     {column.canSort && 
-                      <FontAwesomeIcon icon={ column.isSortedDesc 
+                      <FontAwesomeIcon icon={column.isSortedDesc 
                           ? ['fas', 'caret-down'] 
                           : ['fas', 'caret-up']
                       }/>

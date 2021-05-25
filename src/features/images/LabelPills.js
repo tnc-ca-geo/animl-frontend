@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
 import { setFocus } from '../images/imagesSlice';
-import { loupeOpened } from '../loupe/loupeSlice';
+import { toggleOpenLoupe } from '../loupe/loupeSlice';
 
 
 const LabelPill = styled('div', {
@@ -69,7 +69,7 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
       object: objIndex,
       label: lblIndex 
     }));
-    dispatch(loupeOpened(true));
+    dispatch(toggleOpenLoupe(true));
   };
 
   return (

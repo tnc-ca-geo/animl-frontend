@@ -17,7 +17,7 @@ export const loupeSlice = createSlice({
   initialState,
   reducers: {
 
-    loupeOpened: (state, { payload }) => {
+    toggleOpenLoupe: (state, { payload }) => {
       state.open = payload;
     },
 
@@ -53,7 +53,7 @@ export const loupeSlice = createSlice({
 });
 
 export const {
-  loupeOpened,
+  toggleOpenLoupe,
   reviewModeToggled,
   addObjectStart,
   addObjectEnd,

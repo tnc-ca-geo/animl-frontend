@@ -15,7 +15,7 @@ import {
   selectFocusIndex,
 } from '../images/imagesSlice';
 import {
-  loupeOpened,
+  toggleOpenLoupe,
   reviewModeToggled,
   addObjectStart,
   selectReviewMode,
@@ -138,13 +138,14 @@ const LoupeBody = styled.div({
 
 const StyledLoupe = styled.div({
   boxSizing: 'border-box',
-  width: 'calc(100% - 810px)',
-  height: 'calc(100% - 56px)',
-  position: 'absolute',
+  flexGrow: '1',
+  // width: 'calc(100% - 810px)',
+  // height: 'calc(100% - 56px)',
+  // position: 'absolute',
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',
   // marginLeft: '100%',
-  marginLeft: '745px',
+  // marginLeft: '745px',
   // transition: 'margin-left 0.3s ease-out',
 
   // variants: {
@@ -236,13 +237,13 @@ const Loupe = () => {
     e.currentTarget.blur();
   }
 
-  const handleLoupeClose = () => dispatch(loupeOpened(false));
+  const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   const handleAddObjectButtonClick = () => dispatch(addObjectStart());
 
   return (
     <StyledLoupe>
-      <PanelHeader handlePanelClose={handleLoupeClose}>
+      <PanelHeader handlePanelClose={handleCloseLoupe}>
         <ProgressDisplay>
           <IconButton
             variant='ghost'

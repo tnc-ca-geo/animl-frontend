@@ -20,9 +20,10 @@ import LabelFilter from './LabelFilter';
 
 const StyledFiltersPanel = styled.div({
   position: 'relative',
-  width: '370px',
   borderRight: '$1 solid $gray400',
-  // transition: 'width 1s ease-out',
+  flexGrow: '0',
+  flexShrink: '0',
+  flexBasis: '350px', 
 });
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {

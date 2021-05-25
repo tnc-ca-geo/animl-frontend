@@ -31,7 +31,18 @@ export function ViewExplorer() {
       <SidebarNav
         view={selectedView} 
         toggleFiltersPanel={toggleFiltersPanel}
+        filtersPanelOpen={filtersPanelOpen}
       />
+      {filtersPanelOpen && 
+        <FiltersPanel 
+          toggleFiltersPanel={toggleFiltersPanel}
+        />
+      }
+      <ImagesPanel />
+      {loupeOpen &&
+        <Loupe />
+      }
+      {/*
       <ViewExplorerBody>
         {filtersPanelOpen && 
           <FiltersPanel 
@@ -43,6 +54,7 @@ export function ViewExplorer() {
           <Loupe />
         }
       </ViewExplorerBody>
+      */}
     </ViewExplorerWrapper>
   );
 };
