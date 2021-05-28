@@ -28,13 +28,14 @@ const IndexDisplay = styled.div({
   fontFamily: '$mono',
   fontSize: '$3',
   fontWeight: '$1',
-  marginRight: '$3',
+  marginLeft: '$3',
   // minWidth: '200px',
   display: 'flex',
+  justifyContent: 'right',
   alignItems: 'center',
   flexGrow: '0',
   flexShrink: '0',
-  flexBasis: '160px',
+  // flexBasis: '160px',
 });
 
 const Index = styled('span', {
@@ -127,7 +128,7 @@ const MetadataPane = styled.div({
 
 const IncrementControls = styled.div({
   display: 'flex',
-  padding: '$0 $4 $0 $3',
+  padding: '$0 $4 $0 $1',
 });
 
 const ImagePane = styled.div({
@@ -281,13 +282,13 @@ const Loupe = () => {
             />
           </IconButton>
           */}
+          <ProgressBar>
+            <ProgressIndicator css={{ width: progress + `%` }} />
+          </ProgressBar>
           <IndexDisplay>
             <Index>{focusIndex.image + 1} / {imageCount}</Index>
             <IndexUnit>images</IndexUnit>
           </IndexDisplay>
-          <ProgressBar>
-            <ProgressIndicator css={{ width: progress + `%` }} />
-          </ProgressBar>
         </ProgressDisplay>
         <IncrementControls>
           <IconButton
