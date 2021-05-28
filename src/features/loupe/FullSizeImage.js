@@ -1,13 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useGlobalEvent, useThrottledFn } from 'beautiful-react-hooks';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { styled } from '../../theme/stitches.config';
 
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import AddObjectOverlay from './AddObjectOverlay';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { selectIsAddingObject } from './loupeSlice';
+import { addObjectStart, selectIsAddingObject} from './loupeSlice';
+import Button from '../../components/Button';
+
+const AddObjectButton = styled(Button, {
+  position: 'absolute',
+  bottom: 1,
+  right: -1,
+  ':hover': {
+    color: '$hiContrast',
+    backgroundColor: '$loContrast',
+    cursor: 'pointer',
+  },
+});
 
 const FullImage = styled(Image, {
   maxWidth: '100%',
@@ -17,6 +30,7 @@ const FullImage = styled(Image, {
 const ImageWrapper = styled.div({
   // border: '2px solid tomato',
   position: 'relative',
+  maxWidth: '900px',
 });
 
 const FullSizeImage = ({ image, focusIndex }) => {
@@ -29,6 +43,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const [ top, setTop ] = useState();
   const [ left, setLeft ] = useState();
   const onWindowResize = useGlobalEvent('resize');
+  const dispatch = useDispatch();
 
   const onWindowResizeHandler = useThrottledFn(() => {
     setWindowWidth(window.innerWidth);
@@ -73,6 +88,8 @@ const FullSizeImage = ({ image, focusIndex }) => {
     setImgLoaded(false);
   }, [ image ]);
 
+  const handleAddObjectButtonClick = () => dispatch(addObjectStart());
+
   return (
     <ImageWrapper ref={containerEl}>
       {isAddingObject &&
@@ -98,6 +115,13 @@ const FullSizeImage = ({ image, focusIndex }) => {
         </SpinnerOverlay>
       }*/}
       <FullImage src={image.url} onLoad={handleImgLoaded}/>
+      <AddObjectButton
+        onClick={handleAddObjectButtonClick}
+        size='large'
+      >
+        <FontAwesomeIcon icon={['fas', 'plus']} />
+        Add object
+      </AddObjectButton>
     </ImageWrapper>
   );
 };

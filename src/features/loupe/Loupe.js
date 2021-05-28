@@ -17,7 +17,6 @@ import {
 import {
   toggleOpenLoupe,
   reviewModeToggled,
-  addObjectStart,
   selectReviewMode,
   selectIsAddingLabel,
 } from './loupeSlice';
@@ -127,7 +126,9 @@ const InfoPaneHeader = ({ label }) => (
 );
 
 const ImagePane = styled.div({
-  background: 'aliceblue',
+  display: 'flex',
+  justifyContent: 'center',
+  // maxWidth: '900px',
 });
 
 const LoupeBody = styled.div({
@@ -239,8 +240,6 @@ const Loupe = () => {
 
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
-  const handleAddObjectButtonClick = () => dispatch(addObjectStart());
-
   return (
     <StyledLoupe>
       <PanelHeader handlePanelClose={handleCloseLoupe}>
@@ -271,18 +270,7 @@ const Loupe = () => {
                 focusIndex={focusIndex}
               />
             </ImagePane>
-            <Button
-              onClick={handleAddObjectButtonClick}
-              size='small'
-              css={{
-                position: 'absolute',
-                right: '16px',
-                marginTop: '8px',
-              }}
-            >
-              <FontAwesomeIcon icon={['fas', 'plus']} />
-              Add object
-            </Button>
+            {/*
             <MetadataPane>
               <InfoPaneHeader label='Metadata' />
               <MetadataList>
@@ -292,6 +280,7 @@ const Loupe = () => {
                 <Item label='File name' value={image.originalFileName}/>
               </MetadataList>
             </MetadataPane>
+            */}
           </div>
         }
       </LoupeBody>
