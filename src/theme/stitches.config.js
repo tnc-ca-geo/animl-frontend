@@ -17,7 +17,7 @@ export const labelColors = (label) => (
 export const { styled, css } = createStyled({
   tokens: {
     colors: {
-      $hiContrast: '#031b4e', // black
+      $hiContrast: '#000000', //'#031b4e', // black
       $loContrast: '#FFFFFF', // white
       $warning: '#E04040',
 

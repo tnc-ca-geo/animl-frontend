@@ -15,6 +15,8 @@ const AddObjectButton = styled(Button, {
   position: 'absolute',
   bottom: 1,
   right: -1,
+  border: 'none',
+  borderRadius: '$0',
   ':hover': {
     color: '$hiContrast',
     backgroundColor: '$loContrast',

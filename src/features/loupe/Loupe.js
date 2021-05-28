@@ -67,27 +67,25 @@ const ProgressDisplay = styled.div({
   alignItems: 'center',
   width: '100%',
   paddingRight: '$2',
-})
-
-// const LabelsPane = styled.div({
-//   padding: '$3',
-// });
+});
 
 const ItemValue = styled.div({
   fontSize: '$3',
-  fontFamily: '$mono',
+  fontFamily: '$roboto',
   color: '$hiContrast',
 });
 
 const ItemLabel = styled.div({
-  fontSize: '$3',
+  fontSize: '$2',
   color: '$gray600',
-  marginBottom: '$2',
+  fontFamily: '$mono',
+  marginBottom: '$1',
 });
 
 const StyledItem = styled.div({
   marginBottom: '$3',
-  marginRight: '$4',
+  marginRight: '$5',
+  textAlign: 'center',
 });
 
 const Item = ({label, value}) => (
@@ -105,30 +103,50 @@ const MetadataList = styled.div({
 const MetadataPane = styled.div({
   padding: '$3 0',
   marginBottom: '$6',
+  display: 'flex',
+  justifyContent: 'center',
 });
 
-const StyledInfoPaneHeader = styled.div({
-  fontSize: '$5',
-  fontWeight: '$5',
-  paddingBottom: '$2',
-  borderBottom: '$1 solid $gray400',
-  marginBottom: '$3',
-  'span': {
-    paddingBottom: '$2',
-    borderBottom: '$1 solid $gray600',
-  },
-});
+// const StyledInfoPaneHeader = styled.div({
+//   fontSize: '$5',
+//   fontWeight: '$5',
+//   paddingBottom: '$2',
+//   borderBottom: '$1 solid $gray400',
+//   marginBottom: '$3',
+//   'span': {
+//     paddingBottom: '$2',
+//     borderBottom: '$1 solid $gray600',
+//   },
+// });
 
-const InfoPaneHeader = ({ label }) => (
-  <StyledInfoPaneHeader>
-    <span>{label}</span>
-  </StyledInfoPaneHeader>
-);
+// const InfoPaneHeader = ({ label }) => (
+//   <StyledInfoPaneHeader>
+//     <span>{label}</span>
+//   </StyledInfoPaneHeader>
+// );
+
+const IncrementControls = styled.div({
+  display: 'flex',
+  padding: '$0 $4 $0 $3',
+});
 
 const ImagePane = styled.div({
   display: 'flex',
   justifyContent: 'center',
   // maxWidth: '900px',
+});
+
+const LoupeFooter = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  position: 'absolute',
+  bottom: 0,
+  width: '100%',
+  padding: '$0 $2 $0 $3',
+  height: '$7',
+  borderTop: '$1 solid $gray400',
+  fontWeight: '$5',
+  color: '$hiContrast',
 });
 
 const LoupeBody = styled.div({
@@ -140,23 +158,9 @@ const LoupeBody = styled.div({
 const StyledLoupe = styled.div({
   boxSizing: 'border-box',
   flexGrow: '1',
-  // width: 'calc(100% - 810px)',
-  // height: 'calc(100% - 56px)',
-  // position: 'absolute',
+  position: 'relative',
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',
-  // marginLeft: '100%',
-  // marginLeft: '745px',
-  // transition: 'margin-left 0.3s ease-out',
-
-  // variants: {
-  //   expanded: {
-  //     true: {
-  //       marginLeft: '745px',
-  //     },
-  //   }
-  // }
-
 });
 
 const Loupe = () => {
@@ -240,27 +244,11 @@ const Loupe = () => {
 
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
+  const handleIncrementClick = (delta) => dispatch(incrementImage(delta));
+
   return (
     <StyledLoupe>
-      <PanelHeader handlePanelClose={handleCloseLoupe}>
-        <ProgressDisplay>
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewMode}
-          >
-            <FontAwesomeIcon
-              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-            />
-          </IconButton>
-          <IndexDisplay>
-            <Index>{focusIndex.image + 1} / {imageCount}</Index>
-            <IndexUnit>images</IndexUnit>
-          </IndexDisplay>
-          <ProgressBar>
-            <ProgressIndicator css={{ width: progress + `%` }} />
-          </ProgressBar>
-        </ProgressDisplay>
-      </PanelHeader>
+      <PanelHeader handlePanelClose={handleCloseLoupe} />
       <LoupeBody>
         {image &&
           <div>
@@ -270,9 +258,7 @@ const Loupe = () => {
                 focusIndex={focusIndex}
               />
             </ImagePane>
-            {/*
             <MetadataPane>
-              <InfoPaneHeader label='Metadata' />
               <MetadataList>
                 <Item label='Date created' value={image.dateTimeOriginal}/>
                 <Item label='Camera' value={image.cameraSn}/>
@@ -280,10 +266,46 @@ const Loupe = () => {
                 <Item label='File name' value={image.originalFileName}/>
               </MetadataList>
             </MetadataPane>
-            */}
           </div>
         }
       </LoupeBody>
+      <LoupeFooter>
+        <ProgressDisplay>
+          {/*
+          <IconButton
+            variant='ghost'
+            onClick={handleToggleReviewMode}
+          >
+            <FontAwesomeIcon
+              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
+            />
+          </IconButton>
+          */}
+          <IndexDisplay>
+            <Index>{focusIndex.image + 1} / {imageCount}</Index>
+            <IndexUnit>images</IndexUnit>
+          </IndexDisplay>
+          <ProgressBar>
+            <ProgressIndicator css={{ width: progress + `%` }} />
+          </ProgressBar>
+        </ProgressDisplay>
+        <IncrementControls>
+          <IconButton
+            variant='ghost'
+            size='large'
+            onClick={() => handleIncrementClick('decrement')}
+          >
+            <FontAwesomeIcon icon={['fas', 'angle-left']}/>
+          </IconButton>
+          <IconButton
+            variant='ghost'
+            size='large'
+            onClick={() => handleIncrementClick('increment')}
+          >
+            <FontAwesomeIcon icon={['fas', 'angle-right']}/>
+          </IconButton>
+        </IncrementControls>
+      </LoupeFooter>
     </StyledLoupe>
   );
 };
