@@ -23,7 +23,7 @@ const StyledFiltersPanel = styled.div({
   borderRight: '$1 solid $gray400',
   flexGrow: '0',
   flexShrink: '0',
-  flexBasis: '350px', 
+  flexBasis: '300px', 
 });
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {

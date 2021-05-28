@@ -17,6 +17,9 @@ const AddObjectButton = styled(Button, {
   right: -1,
   border: 'none',
   borderRadius: '$0',
+  // backgroundColor: '$loContrast',
+  // color: '$hiContrast',
+  zIndex: '$3',
   ':hover': {
     color: '$hiContrast',
     backgroundColor: '$loContrast',
@@ -32,7 +35,7 @@ const FullImage = styled(Image, {
 const ImageWrapper = styled.div({
   // border: '2px solid tomato',
   position: 'relative',
-  maxWidth: '900px',
+  maxWidth: '940px',
 });
 
 const FullSizeImage = ({ image, focusIndex }) => {

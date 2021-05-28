@@ -45,6 +45,7 @@ const Index = styled('span', {
 
 const IndexUnit = styled('span', {
   color: '$gray600',
+  fontSize: '$2',
 });
 
 const ProgressBar = styled.div({
@@ -102,8 +103,8 @@ const MetadataList = styled.div({
 });
 
 const MetadataPane = styled.div({
-  padding: '$3 0',
-  marginBottom: '$6',
+  paddingTop: '$3',
+  // marginBottom: '$6',
   display: 'flex',
   justifyContent: 'center',
 });
