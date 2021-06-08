@@ -1,5 +1,5 @@
 import React from 'react';
-import globalStyle from '../theme/globalStyle';
+import globalStyle from '../theme/GlobalStyle';
 import { styled, css } from '../theme/stitches.config.js';
 import {
   Switch,
@@ -8,6 +8,10 @@ import {
 import NavBar from '../components/NavBar';
 import CounterPage from '../pages/CounterPage';
 import HomePage from '../pages/HomePage';
+import Amplify from 'aws-amplify';
+import awsconfig from '../aws-exports';
+import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
+Amplify.configure(awsconfig);
 
 const AppContainer = styled.div({
   display: 'grid',
@@ -19,16 +23,21 @@ const AppContainer = styled.div({
 const App = () => {
 
   return (
+
     <AppContainer>
-      <NavBar />
-      <Switch>
-        <Route path="/counter">
-          <CounterPage />
-        </Route>
-        <Route path="/">
-          <HomePage />
-        </Route>
-      </Switch>
+
+      <AmplifyAuthenticator>
+        <AmplifySignOut />
+        <NavBar />
+        <Switch>
+          <Route path="/counter">
+            <CounterPage />
+          </Route>
+          <Route path="/">
+            <HomePage />
+          </Route>
+        </Switch>
+      </AmplifyAuthenticator>
     </AppContainer>
   );
 }
