@@ -207,7 +207,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
         Header: 'Labels',
         accessor: 'labelCagegories',
         disableSortBy: true,
-        width: '250',
+        width: '275',
       },
       {
         Header: 'Date created',
