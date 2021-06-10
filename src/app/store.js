@@ -6,7 +6,8 @@ import {
   normalizeDatesMiddleware,
   setSelectedViewMiddleware,
 } from '../features/views/viewsMiddlewares';
-import { imagesMiddleware } from '../features/images/imagesMiddlewares';;
+import { imagesMiddleware } from '../features/images/imagesMiddlewares';
+import { reviewMiddleware } from '../features/review/reviewMiddleware';
 
 export const history = createBrowserHistory();
 
@@ -18,6 +19,7 @@ const store = configureStore({
       .concat(normalizeDatesMiddleware)
       .concat(setSelectedViewMiddleware)
       .concat(imagesMiddleware)
+      .concat(reviewMiddleware)
   ),
 });
 

@@ -5,11 +5,13 @@ import {
   labelAdded,
   incrementFocusIndex,
   incrementImage,
+  selectFocusIndex,
+} from './reviewSlice';
+import {
   clearImages,
   getImagesSuccess,
   selectImages,
-  selectFocusIndex,
-} from './imagesSlice';
+} from '../images/imagesSlice';
 import {
   selectReviewMode,
   selectIterationOptions,
@@ -147,6 +149,7 @@ export const reviewMiddleware = store => next => action => {
 
   else if (incrementImage.match(action)) {
     next(action);
+    console.log('incrementImage action caught in review middlewares')
     const delta = action.payload;
     const images = selectImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
