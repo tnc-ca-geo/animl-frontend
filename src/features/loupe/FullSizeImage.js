@@ -81,14 +81,13 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   // get image's objects
   const allObjects = useSelector(selectObjects);
-  const initObjects = allObjects[focusIndex.image];
-  const [currImgObjects, setCurrImgObjects] = useState(initObjects);
+  const [ currImgObjects, setCurrImgObjects ] = useState();
   useEffect(() => {
     setCurrImgObjects(allObjects[focusIndex.image]);
   }, [ allObjects, focusIndex.image ]);
 
   // filter image's objects
-  const [ filteredObjects, setFilteredObjects ] = useState(currImgObjects);
+  const [ filteredObjects, setFilteredObjects ] = useState();
   useEffect(() => {
     if (currImgObjects) {
       const objectsToRender = currImgObjects.reduce((acc, object, i) => {
@@ -114,7 +113,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
           focusIndex={focusIndex}
         />
       }
-      {filteredObjects.map((object) => (
+      {filteredObjects && filteredObjects.map((object, i) => (
         <BoundingBox
           key={object._id}
           imageWidth={width}
@@ -123,8 +122,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
           objectIndex={currImgObjects.indexOf(object)}
           focusIndex={focusIndex}
         />
-      ))
-      }
+      ))}
       {/*{!imgLoaded &&
         <SpinnerOverlay css={{ background: 'none'}}>
           <CircleSpinner />

@@ -78,11 +78,11 @@ const Loupe = () => {
   // track focused image
   const focusIndex = useSelector(selectFocusIndex);
   const images = useSelector(selectImages);
-  const [ image, setImage ] = useState(images[focusIndex.image]);
+  const [ image, setImage ] = useState();
   useEffect(() => {
-    console.log('new focusIndex: ', focusIndex)
+    console.log('new focusIndex: ', focusIndex);
     setImage(images[focusIndex.image]);
-  }, [images, focusIndex]);
+  }, [ images, focusIndex ]);
 
   // track reivew mode
   const reviewMode = useSelector(selectReviewMode);

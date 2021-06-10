@@ -141,9 +141,18 @@ const CategorySelector = styled(CreatableSelect, {
 
 const BoundingBoxLabel = (props) => {
   // TODO: tidy up props
-  const { focusIndex, objectIndex, labelIndex, object, label, labelColor, conf, selected, showLabelButtons, setShowLabelButtons } = props;
-  const [ options, setOptions ] = useState();
-  const availLabels = useSelector(selectAvailLabels);
+  const {
+    focusIndex,
+    objectIndex,
+    labelIndex,
+    object,
+    label,
+    labelColor,
+    conf,
+    selected,
+    showLabelButtons,
+    setShowLabelButtons 
+  } = props;
   const dispatch = useDispatch();
   const index = {
     image: focusIndex.image,  
@@ -151,12 +160,17 @@ const BoundingBoxLabel = (props) => {
     label: labelIndex
   };
 
+  useEffect(() => {
+    console.log('rendering BoundingBoxLabel')
+  }, [])
+
+  // update selctor options when new labels become available
+  const [ options, setOptions ] = useState();
+  const availLabels = useSelector(selectAvailLabels);
   const createOption = (category) => ({
     label: category,
     value: category.toLowerCase().replace(/\W/g, ''),
   });
-
-  // update options when new labels become available
   useEffect(() => {
     const newOptions = availLabels.categories.map((cat) => createOption(cat));
     setOptions(newOptions);
@@ -194,7 +208,7 @@ const BoundingBoxLabel = (props) => {
   }, [ catSelectorOpen, setCatSelectorOpen, object, focusIndex, objectIndex, 
     dispatch ]);
 
-  // listen for ctrl-e keydown (open cat selector to edit)
+  // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
     // TODO: should be able to use react synthetic onKeyDown events,
     // but couldn't get it working
