@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-
+import { selectObjects } from '../review/reviewSlice';
 import {
   fetchImages,
   selectImages,
@@ -29,15 +29,14 @@ const ImagesPanel = () => {
   const hasNext = useSelector(selectHasNext);
   const isLoading = useSelector(selectIsLoading);
   const images = useSelector(selectImages);
+  const objects = useSelector(selectObjects);
   const dispatch = useDispatch();
-
+  
   useEffect(() => {
-    console.log('loading first page of images...')
     dispatch(fetchImages(filters));
   }, [filters, paginatedField, sortAscending, dispatch]);
 
   const loadNextPage = () => {
-    console.log('loading next page...')
     // Pass an empty promise that immediately resolves to InfiniteLoader 
     // in case it asks us to load more than once
     return isLoading
@@ -49,6 +48,7 @@ const ImagesPanel = () => {
     <StyledImagesPanel>
       <ImagesTable
         images={images}
+        objects={objects}
         hasNext={hasNext}
         loadNextPage={loadNextPage}
       />

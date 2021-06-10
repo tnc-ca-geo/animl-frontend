@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useGlobalEvent, useThrottledFn } from 'beautiful-react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { styled } from '../../theme/stitches.config';
-
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import AddObjectOverlay from './AddObjectOverlay';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { addObjectStart, selectIsAddingObject} from './loupeSlice';
+import { selectObjects } from '../review/reviewSlice';
 import Button from '../../components/Button';
 
 const AddObjectButton = styled(Button, {
@@ -40,21 +40,22 @@ const ImageWrapper = styled.div({
 
 const FullSizeImage = ({ image, focusIndex }) => {
   const isAddingObject = useSelector(selectIsAddingObject);
-  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
-  const [ imgLoaded, setImgLoaded ] = useState(false);
-  const containerEl = useRef(null);
-  const [ width, setWidth ] = useState();
-  const [ height, setHeight ] = useState();
-  const [ top, setTop ] = useState();
-  const [ left, setLeft ] = useState();
   const onWindowResize = useGlobalEvent('resize');
   const dispatch = useDispatch();
 
+  // track window width
+  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
   const onWindowResizeHandler = useThrottledFn(() => {
     setWindowWidth(window.innerWidth);
   }, 100);
   onWindowResize(onWindowResizeHandler);
 
+  // track image position and dimensions
+  const containerEl = useRef(null);
+  const [ width, setWidth ] = useState();
+  const [ height, setHeight ] = useState();
+  const [ top, setTop ] = useState();
+  const [ left, setLeft ] = useState();
   useEffect(() => {
     const container = containerEl.current.getBoundingClientRect();
     if (width !== container.width) {
@@ -71,27 +72,38 @@ const FullSizeImage = ({ image, focusIndex }) => {
     }
   }, [ windowWidth, width, height, top, left, imgLoaded ]);
 
-  const [ filteredObjects, setFilteredObjects ] = useState(image.objects);
+  // get image's objects
+  const allObjects = useSelector(selectObjects);
+  const initObjects = allObjects[focusIndex.image];
+  const [currImgObjects, setCurrImgObjects] = useState(initObjects);
   useEffect(() => {
-    console.log('image.objects has changed')
-    const objectsToRender = image.objects.reduce((acc, object, i) => {
-      const hasNonInvalidatedLabels = object.labels.some((label) => {
-        return label.validation === null || label.validation.validated;
-      });
-      if (hasNonInvalidatedLabels || object.isBeingAdded) {
-        acc.push(object);
-      }
-      return acc;
-    }, []);
-    console.log('setting filteredObjects: ', objectsToRender)
-    setFilteredObjects(objectsToRender);
-  }, [ image.objects ]);
+    setCurrImgObjects(allObjects[focusIndex.image]);
+  }, [ allObjects, focusIndex.image ]);
 
-  const handleImgLoaded = () => setImgLoaded(true);
+  // filter image's objects
+  const [ filteredObjects, setFilteredObjects ] = useState(currImgObjects);
+  useEffect(() => {
+    if (currImgObjects) {
+      const objectsToRender = currImgObjects.reduce((acc, object, i) => {
+        const hasNonInvalidatedLabels = object.labels.some((label) => {
+          return label.validation === null || label.validation.validated;
+        });
+        if (hasNonInvalidatedLabels || object.isBeingAdded) {
+          acc.push(object);
+        }
+        return acc;
+      }, []);
+      setFilteredObjects(objectsToRender);
+    }
+  }, [ currImgObjects ]);
 
+  // track image loading state
+  const [ imgLoaded, setImgLoaded ] = useState(false);
   useEffect(() => {
     setImgLoaded(false);
   }, [ image ]);
+
+  const handleImgLoaded = () => setImgLoaded(true);
 
   const handleAddObjectButtonClick = () => dispatch(addObjectStart());
 
@@ -103,13 +115,13 @@ const FullSizeImage = ({ image, focusIndex }) => {
           focusIndex={focusIndex}
         />
       }
-      {filteredObjects.map((object, i) => (
+      {filteredObjects.map((object) => (
         <BoundingBox
           key={object._id}
           imageWidth={width}
           imageHeight={height}
           object={object}
-          objectIndex={image.objects.indexOf(object)}
+          objectIndex={currImgObjects.indexOf(object)}
           focusIndex={focusIndex}
         />
       ))

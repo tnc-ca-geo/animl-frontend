@@ -5,15 +5,13 @@ import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
-
+import { selectImages, selectImagesCount } from '../images/imagesSlice';
 import {
   labelValidated,
   incrementFocusIndex,
   incrementImage,
-  selectImages,
-  selectImagesCount,
   selectFocusIndex,
-} from '../images/imagesSlice';
+} from '../review/reviewSlice';
 import {
   toggleOpenLoupe,
   reviewModeToggled,

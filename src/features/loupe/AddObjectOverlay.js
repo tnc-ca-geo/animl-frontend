@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 
 import { absToRel } from './BoundingBox';
-import { objectAdded } from '../images/imagesSlice';
+import { objectAdded } from '../review/reviewSlice';
 import { addObjectEnd } from './loupeSlice';
 
 

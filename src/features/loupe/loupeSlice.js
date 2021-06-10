@@ -8,7 +8,7 @@ const initialState = {
   iterationOptions: {
     skipEmptyImages: false,
     skipLockedObjects: true,
-    // skipInvalidatedLabels: false,    
+    // skipInvalidatedLabels: false,
   },
 };
 

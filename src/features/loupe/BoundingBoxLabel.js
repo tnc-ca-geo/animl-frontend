@@ -9,7 +9,7 @@ import {
   labelValidated,
   objectRemoved,
   objectLocked
-} from '../images/imagesSlice';
+} from '../review/reviewSlice';
 import { addLabelStart, addLabelEnd } from './loupeSlice';
 
 const StyledBoundingBoxLabel = styled('div', {
@@ -170,6 +170,8 @@ const BoundingBoxLabel = (props) => {
       dispatch(addLabelStart());
       setCatSelectorOpen(true);
     } else {
+      // TODO: figure out why this is firing so much and fix it
+      console.log('addLabelEnd - from cat selector open useEffect')
       dispatch(addLabelEnd());
       setCatSelectorOpen(false);
     }
@@ -181,6 +183,7 @@ const BoundingBoxLabel = (props) => {
       if (object.isBeingAdded) {
         dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }))
       }
+      console.log('addLabelEnd - from cat selector close useEffect')
       dispatch(addLabelEnd());
       setCatSelectorOpen(false);
     }

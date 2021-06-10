@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactTestUtils from 'react-dom/test-utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { selectReviewMode } from './loupeSlice';
-import { bboxUpdated, setFocus } from '../images/imagesSlice';
+import { bboxUpdated, setFocus } from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
 const ResizeHandle = styled('div', {
