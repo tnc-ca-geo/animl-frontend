@@ -43,6 +43,13 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const onWindowResize = useGlobalEvent('resize');
   const dispatch = useDispatch();
 
+  // track image loading state
+  const [ imgLoaded, setImgLoaded ] = useState(false);
+  useEffect(() => {
+    setImgLoaded(false);
+  }, [ image ]);
+  const handleImgLoaded = () => setImgLoaded(true);
+
   // track window width
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
   const onWindowResizeHandler = useThrottledFn(() => {
@@ -96,14 +103,6 @@ const FullSizeImage = ({ image, focusIndex }) => {
       setFilteredObjects(objectsToRender);
     }
   }, [ currImgObjects ]);
-
-  // track image loading state
-  const [ imgLoaded, setImgLoaded ] = useState(false);
-  useEffect(() => {
-    setImgLoaded(false);
-  }, [ image ]);
-
-  const handleImgLoaded = () => setImgLoaded(true);
 
   const handleAddObjectButtonClick = () => dispatch(addObjectStart());
 
