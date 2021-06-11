@@ -106,10 +106,10 @@ const LoupeFooter = ({ image }) => {
 
       let charCode = String.fromCharCode(e.which).toLowerCase();
 
-      // handle up/down arrows (increment/decrement)
-      const delta = (e.code === 'ArrowUp' || charCode === 'w')
+      // key listeners for increment/decrement
+      const delta = (e.code === 'ArrowLeft' || charCode === 'a')
         ? 'decrement'
-        : (e.code === 'ArrowDown' || charCode === 's')
+        : (e.code === 'ArrowRight' || charCode === 'd')
           ? 'increment'
           : null;
   
@@ -119,19 +119,19 @@ const LoupeFooter = ({ image }) => {
           : dispatch(incrementImage(delta));
       }
 
-      // handle return, left/right arrows (invalidate/validate)
-      const object = image.objects[focusIndex.object];
-      if (reviewMode && object && !object.locked) {
-        if (e.code === 'ArrowRight' || e.code === 'Enter') {
-          console.log('arrow right / enter handler firing')
-          dispatch(labelValidated({ index: focusIndex, validated: true}));
-          dispatch(incrementFocusIndex('increment'));
-        }
-        if (e.code === 'ArrowLeft') {
-          dispatch(labelValidated({ index: focusIndex, validated: false })); 
-          dispatch(incrementFocusIndex('increment'));
-        }
-      }
+      // // handle return, left/right arrows (invalidate/validate)
+      // const object = image.objects[focusIndex.object];
+      // if (reviewMode && object && !object.locked) {
+      //   if (e.code === 'ArrowRight' || e.code === 'Enter') {
+      //     console.log('arrow right / enter handler firing')
+      //     dispatch(labelValidated({ index: focusIndex, validated: true}));
+      //     dispatch(incrementFocusIndex('increment'));
+      //   }
+      //   if (e.code === 'ArrowLeft') {
+      //     dispatch(labelValidated({ index: focusIndex, validated: false })); 
+      //     dispatch(incrementFocusIndex('increment'));
+      //   }
+      // }
 
       // handle ctrl-z/shift-ctrl-z (undo/redo)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
@@ -160,16 +160,6 @@ const LoupeFooter = ({ image }) => {
   return (
     <StyledLoupeFooter>
       <ProgressDisplay>
-        {/*
-        <IconButton
-          variant='ghost'
-          onClick={handleToggleReviewMode}
-        >
-          <FontAwesomeIcon
-            icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-          />
-        </IconButton>
-        */}
         <ProgressBar>
           <ProgressIndicator css={{ width: progress + `%` }} />
         </ProgressBar>

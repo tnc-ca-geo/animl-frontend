@@ -83,7 +83,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
 
         // TODO: find a cleaner way to do this
         // maybe make it a hook?
-        // We also need filtered objects in FullSizeImage component
+        // We also need filtered objects in FullSizeImage component...
         const labels = object.locked 
           ? [object.labels.find((label) => (
               label.validation && label.validation.validated

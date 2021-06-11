@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from '../../components/IconButton';
 import { useSelector } from 'react-redux';
 import { selectImages } from '../images/imagesSlice';
 import { selectFocusIndex } from '../review/reviewSlice';
@@ -63,6 +65,10 @@ const LoupeBody = styled.div({
   margin: '$3',
 });
 
+const LoupeHeader = styled(PanelHeader, {
+  flexDirection: 'row-reverse',
+})
+
 const StyledLoupe = styled.div({
   boxSizing: 'border-box',
   flexGrow: '1',
@@ -70,7 +76,6 @@ const StyledLoupe = styled.div({
   backgroundColor: '$loContrast',
   borderLeft: '$1 solid $gray400',
 });
-
 
 const Loupe = () => {
   const dispatch = useDispatch();
@@ -95,7 +100,16 @@ const Loupe = () => {
 
   return (
     <StyledLoupe>
-      <PanelHeader handlePanelClose={handleCloseLoupe} />
+      <LoupeHeader handlePanelClose={handleCloseLoupe}>
+        <IconButton
+          variant='ghost'
+          onClick={handleToggleReviewMode}
+        >
+          <FontAwesomeIcon
+            icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
+          />
+        </IconButton>
+      </LoupeHeader>
       <LoupeBody>
         {image &&
           <div>

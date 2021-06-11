@@ -1,4 +1,5 @@
 
+import { selectImages } from '../images/imagesSlice';
 import {
   setFocus,
   objectAdded,
@@ -8,21 +9,14 @@ import {
   selectFocusIndex,
 } from './reviewSlice';
 import {
-  clearImages,
-  getImagesSuccess,
-  selectImages,
-} from '../images/imagesSlice';
-import {
   addLabelStart,
   addLabelEnd,
   selectReviewMode,
   selectIterationOptions,
 } from '../loupe/loupeSlice';
-import {
-  clearObjects,
-  syncObjects,
-} from '../review/reviewSlice';
 
+// TODO: this is similar to what's used to filter labels in FullSizeImage and
+// LabelPills. Make DRY?
 const isLabelInvalidated = (images, i) => {
   const label = images[i.image].objects[i.object].labels[i.label];
   if (label.validation && label.validation.validated === false) {
@@ -32,84 +26,91 @@ const isLabelInvalidated = (images, i) => {
 };
 
 const findNextLabel = (images, focusIndex, options) => {
-  console.log('finding next label')
-  // need to seed the nested for loops with current indices,
-  // but after the first loops have completed,
-  // use 0 as initial index
-  let imageLoopExecuted = false;
-  let objectLoopExecuted = false;
-
+  let initialImageEvaluated = false;
+  let initialObjectEvaluated = false;
+  
+  // loop through images
   for (let i = focusIndex.image; i < images.length; i++) {
     const image = images[i];
 
     // don't skip empty images
-    if (imageLoopExecuted && 
-      (!options.skipEmptyImages && image.objects.length === 0)) {
-      console.log('incrementing to an empty image...')
+    if ((!options.skipEmptyImages && image.objects.length === 0) &&
+        initialImageEvaluated) {
       return { image: i, object: null, label: null };
     }
-    
-    const initialObjectIndex = imageLoopExecuted ? 0 : focusIndex.object;
-    for (let o = initialObjectIndex; o < image.objects.length; o++) {
-      console.log('o: ', o);
-      console.log('object: ', image.objects[o]);
-      const object = image.objects[o];
-      const initialLabelIndex = objectLoopExecuted || imageLoopExecuted
-        ? 0 
-        : focusIndex.label + 1;
 
+    // loop through objects
+    // seed the object and label loops with current indices (if they exist),
+    // but after the first loops have completed, use 0 as initial index
+    const objIndex = !initialImageEvaluated && (focusIndex.object !== null)
+      ? focusIndex.object
+      : 0;
+    for (let o = objIndex; o < image.objects.length; o++) {
+      const object = image.objects[o];
+
+      // loop through labels
+      const lblIndex = !initialObjectEvaluated && (focusIndex.label !== null)
+        ? focusIndex.label + 1  // check next label
+        : 0;
       if (!(options.skipLockedObjects && object.locked)) {
-        for (let l = initialLabelIndex; l < object.labels.length; l++) {
+        for (let l = lblIndex; l < object.labels.length; l++) {
           const currIndices = { image: i, object: o, label: l };
+          // TODO: we also need to see check if there's a validated label sitting
+          // before this one in the labels array, and if so, skip this one
+          // (it's implicitly invalid)
           if (!isLabelInvalidated(images, currIndices)) {
-            console.log('found it! returning: ', currIndices)
             return currIndices;
           }
         }
       }
-      objectLoopExecuted = true;
+      initialObjectEvaluated = true;
     }
-    imageLoopExecuted = true;
+    initialImageEvaluated = true;
   }
 };
 
 const findPreviousLabel = (images, focusIndex, options) => {
-  // need to seed the nested for loops with current indices,
-  // but after the first loops have completed,
-  // use last item as initial index
-  let imageLoopExecuted = false;
-  let objectLoopExecuted = false;
+  let initialImageEvaluated = false;
+  let initialObjectEvaluated = false;
 
-  for (let i = focusIndex.images; i >= 0; i--) {
+  // loop backwards through images
+  for (let i = focusIndex.image; i >= 0; i--) {
     const image = images[i];
 
     // don't skip empty images
-    if (imageLoopExecuted && 
-      (!options.skipEmptyImages && image.objects.length === 0)) {
+    if ((!options.skipEmptyImages && image.objects.length === 0) &&
+        initialImageEvaluated) {
       return { image: i, object: null, label: null };
     }
-        
-    const initialObjectIndex = imageLoopExecuted
-      ? image.objects.length - 1
-      : focusIndex.object;
 
-    for (let o = initialObjectIndex; o >= 0; o--) {
+    // loop backwards through objects
+    // seed the object and label loops with current indices (if they exist),
+    // but after the first loops have completed, use 0 as initial index
+    const objIndex = !initialImageEvaluated && (focusIndex.object !== null)
+      ? focusIndex.object
+      : image.objects.length - 1; // check image's last object
+
+    for (let o = objIndex; o >= 0; o--) {
       const object = image.objects[o];
-      const initialLabelIndex = objectLoopExecuted
-        ? object.labels.length - 1
-        : focusIndex.label - 1;
 
+      // loop backwards through labels
+      const lblIndex = !initialObjectEvaluated && (focusIndex.label !== null)
+        ? focusIndex.label - 1
+        : object.labels.length - 1; // check object's last label
       if (!(options.skipLockedObjects && object.locked)) {
-        for (let l = initialLabelIndex; l >= 0; l--) {
+        for (let l = lblIndex; l >= 0; l--) {
           const currIndices = { image: i, object: o, label: l };
+          // TODO: we also need to see check if there's a validated label sitting
+          // before this one in the labels array, and if so, skip this one
+          // (it's implicitly invalid)
           if (!isLabelInvalidated(images, currIndices)) {
             return currIndices;
           }
         }
       }
-      objectLoopExecuted = true;
+      initialObjectEvaluated = true;
     }
-    imageLoopExecuted = true;
+    initialImageEvaluated = true;
   }
 };
 
@@ -117,41 +118,20 @@ export const reviewMiddleware = store => next => action => {
 
   if (incrementFocusIndex.match(action)) {
     next(action);
-    console.log('incrementing focus index');
     const delta = action.payload;
-    const reviewMode = selectReviewMode(store.getState());
     const images = selectImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
-    console.log('current focus index: ', focusIndex);
-    // // If not review mode, just inc/decrement image
-    // if (!reviewMode) {
-    //   if (delta === 'decrement' && index.images > 0) {
-    //     store.dispatch(setFocus({ image: index.images - 1 }));
-    //   }
-    //   else if (delta === 'increment' && index.images <= images.length) {
-    //     store.dispatch(setFocus({ image: index.images + 1 }));
-    //   }
-    // }
-    // // Else, it's in review mode, and we need to inc/decrement the label
-    // else {
-      const options = selectIterationOptions(store.getState());
-      const newFocusIndex = (delta === 'increment')
-        ? findNextLabel(images, focusIndex, options)
-        : findPreviousLabel(images, focusIndex, options);
-
-      console.log('new focus index: ', newFocusIndex);
-      store.dispatch(setFocus(newFocusIndex));
-    // }
-
-    // TODO: also stop at empty images (or have this be a setting?)
-
+    const options = selectIterationOptions(store.getState());
+    const newFocusIndex = delta === 'increment'
+      ? findNextLabel(images, focusIndex, options)
+      : findPreviousLabel(images, focusIndex, options);
+    store.dispatch(setFocus(newFocusIndex));
     // TODO: figure out if the image record has been altered 
     // (e.g. labels validated) and save it
   }
 
   else if (incrementImage.match(action)) {
     next(action);
-    console.log('incrementImage action caught in review middlewares')
     const delta = action.payload;
     const images = selectImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
@@ -169,7 +149,6 @@ export const reviewMiddleware = store => next => action => {
     next(action);
     store.dispatch(setFocus({ object: 0 }));
     store.dispatch(addLabelStart());// dispatch addLabelStart() ?? 
-
     // TODO: send request to backend to save new label to object
     // TODO: add label category to label filters list? 
   } 

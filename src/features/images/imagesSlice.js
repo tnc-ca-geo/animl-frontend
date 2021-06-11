@@ -8,10 +8,8 @@ import {
   IMAGE_QUERY_LIMITS,
 } from '../../config';
 
-// TODO: not all of these properties need to be undoable.
-// use action filters?  https://github.com/omnidan/redux-undo#filtering-actions
 const initialState = {
-  images: [], // how to make some image properties (objects/labels) undoable, but not the array itself? 
+  images: [],
   isLoading: false,
   error: null,
   visibleRows: [], // don't really need this anymore?
@@ -24,12 +22,7 @@ const initialState = {
     next: null,
     hasNext: null,
     count: null,
-  },
-  // focusIndex: { // should be undoable
-  //   image: null, 
-  //   object: null,
-  //   label: null,
-  // },
+  }
 };
 
 export const imagesSlice = createSlice({
@@ -86,73 +79,6 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
-    // setFocus: (state, { payload }) => {
-    //   console.log('imagesSlice.setFocus()');
-    //   state.focusIndex = { ...state.focusIndex, ...payload };
-    // },
-
-    // bboxUpdated: (state, { payload }) => {
-    //   const { imageIndex, objectIndex } = payload;
-    //   const object = state.images[imageIndex].objects[objectIndex];
-    //   object.bbox = payload.bbox;
-    // },
-
-    // objectAdded: (state, { payload }) => {
-    //   console.log('imagesSlice.objectAdded()');
-    //   const focusedImage = state.images[payload.imageIndex];
-    //   const newObject = {
-    //     _id: new ObjectID().toString(),
-    //     bbox: payload.bbox,
-    //     locked: false,
-    //     isBeingAdded: true,
-    //     labels: [],
-    //   };
-    //   focusedImage.objects.unshift(newObject);
-    // },
-
-    // objectRemoved: (state, { payload }) => {
-    //   console.log('imagesSlice.objectRemoved()');
-    //   const focusedImage = state.images[payload.imageIndex];
-    //   focusedImage.objects.splice(payload.objectIndex, 1);
-    // },
-
-    // labelAdded: (state, { payload }) => {
-    //   console.log('imagesSlice.labelAdded()');
-    //   const i = payload.index;
-    //   const object = state.images[i.image].objects[i.object];
-    //   const newLabel = {
-    //     category: payload.category,
-    //     bbox: object.bbox,
-    //     validation: { validated: true },
-    //     type: 'manual',
-    //     conf: 1,
-    //   };
-    //   object.labels.unshift(newLabel);
-    //   object.locked = true;
-    //   object.isBeingAdded = false;
-    // },
-
-    // labelValidated: (state, { payload }) => {
-    //   console.log('imagesSlice.labelValidated()');
-    //   const i = payload.index;
-    //   const object = state.images[i.image].objects[i.object];
-    //   const label = object.labels[i.label];
-    //   if (payload.validated === true) {
-    //     label.validation = { validated: true };
-    //     object.locked = true;
-    //   }
-    //   else {
-    //     label.validation = { validated: false };
-    //   }
-    // },
-
-    // objectLocked: (state, { payload }) => {
-    //   console.log('imagesSlice.objectLocked()');
-    //   const i = payload.index;
-    //   const object = state.images[i.image].objects[i.object];
-    //   object.locked = payload.locked;
-    // },
-
   },
 });
 
@@ -163,18 +89,7 @@ export const {
   getImagesFailure,
   sortChanged,
   visibleRowsChanged,
-  // setFocus,
-  // bboxUpdated,
-  // objectAdded,
-  // objectRemoved,
-  // labelAdded,
-  // labelValidated,
-  // objectLocked,
 } = imagesSlice.actions;
-
-// // Actions only used in middlewares:
-// export const incrementFocusIndex = createAction('loupe/incrementFocusIndex');
-// export const incrementImage = createAction('loupe/incrementImage');
 
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current') => 
@@ -206,6 +121,5 @@ export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectIsLoading = state => state.images.isLoading;
 export const selectVisibleRows = state => state.images.visibleRows;
-// export const selectFocusIndex = state => state.images.focusIndex;
 
 export default imagesSlice.reducer;
