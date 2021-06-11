@@ -13,6 +13,8 @@ import {
   selectImages,
 } from '../images/imagesSlice';
 import {
+  addLabelStart,
+  addLabelEnd,
   selectReviewMode,
   selectIterationOptions,
 } from '../loupe/loupeSlice';
@@ -166,6 +168,8 @@ export const reviewMiddleware = store => next => action => {
   else if (objectAdded.match(action)) {
     next(action);
     store.dispatch(setFocus({ object: 0 }));
+    store.dispatch(addLabelStart());// dispatch addLabelStart() ?? 
+
     // TODO: send request to backend to save new label to object
     // TODO: add label category to label filters list? 
   } 
@@ -173,6 +177,7 @@ export const reviewMiddleware = store => next => action => {
   else if (labelAdded.match(action)) {
     next(action);
     store.dispatch(setFocus({ label: 0 }));
+    store.dispatch(addLabelEnd());
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) {
       store.dispatch(incrementFocusIndex('increment'));

@@ -8,9 +8,14 @@ import {
   labelAdded,
   labelValidated,
   objectRemoved,
-  objectLocked
+  objectLocked,
+  setFocus,
 } from '../review/reviewSlice';
-import { addLabelStart, addLabelEnd } from './loupeSlice';
+import {
+  addLabelStart,
+  addLabelEnd,
+  selectIsAddingLabel
+} from './loupeSlice';
 
 const StyledBoundingBoxLabel = styled('div', {
   backgroundColor: '#345EFF',
@@ -140,7 +145,6 @@ const CategorySelector = styled(CreatableSelect, {
 });
 
 const BoundingBoxLabel = (props) => {
-  // TODO: tidy up props
   const {
     focusIndex,
     objectIndex,
@@ -160,10 +164,6 @@ const BoundingBoxLabel = (props) => {
     label: labelIndex
   };
 
-  useEffect(() => {
-    console.log('rendering BoundingBoxLabel')
-  }, [])
-
   // update selctor options when new labels become available
   const [ options, setOptions ] = useState();
   const availLabels = useSelector(selectAvailLabels);
@@ -176,37 +176,26 @@ const BoundingBoxLabel = (props) => {
     setOptions(newOptions);
   }, [ availLabels ]);
 
-  // open category selector if it doesn't have a label yet
-  // i.e. - user just added an object
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState();
+  // manage catagory selector state (open/closed)
+  const addingLabel = useSelector(selectIsAddingLabel);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
   useEffect(() => {
-    if (object.isBeingAdded && object.labels.length === 0) {
-      dispatch(addLabelStart());
-      setCatSelectorOpen(true);
-    } else {
-      // TODO: figure out why this is firing so much and fix it
-      console.log('addLabelEnd - from cat selector open useEffect')
-      dispatch(addLabelEnd());
-      setCatSelectorOpen(false);
-    }
-  }, [ object, label, selected, dispatch ]);
-
-  // close category selector if user clicks outside of it
+    setCatSelectorOpen((addingLabel && selected))
+  }, [ addingLabel, selected ]);
+  
+  // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
       if (object.isBeingAdded) {
         dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }))
       }
-      console.log('addLabelEnd - from cat selector close useEffect')
       dispatch(addLabelEnd());
-      setCatSelectorOpen(false);
     }
-    catSelectorOpen
+    addingLabel
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
-  }, [ catSelectorOpen, setCatSelectorOpen, object, focusIndex, objectIndex, 
-    dispatch ]);
+  }, [ addingLabel, object, objectIndex, focusIndex, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -216,7 +205,6 @@ const BoundingBoxLabel = (props) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
       if (selected && (e.ctrlKey || e.metaKey) && charCode === 'e') {
         dispatch(addLabelStart());
-        setCatSelectorOpen(true);
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -226,8 +214,8 @@ const BoundingBoxLabel = (props) => {
   const handleCategoryClick = (e) => {
     e.stopPropagation();
     if (!object.locked) {
+      dispatch(setFocus(index));
       dispatch(addLabelStart());
-      setCatSelectorOpen(true);
     }
   };
 
@@ -247,10 +235,6 @@ const BoundingBoxLabel = (props) => {
     e.stopPropagation();
     dispatch(objectLocked({ index, locked: false }));
   };
-
-  // const [ showLabelButtons, setShowLabelButtons ] = useState();
-  // const handleLabelMouseEnter = () => setShowLabelButtons(true);
-  // const handleLabelMouseLeave = () => setShowLabelButtons(false);
 
   const handleValidationButtonClick = (e, validated) => {
     e.stopPropagation();
