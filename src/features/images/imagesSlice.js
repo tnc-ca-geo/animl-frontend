@@ -2,6 +2,8 @@ import { createSlice, createAction } from '@reduxjs/toolkit';
 import undoable from 'redux-undo';
 import { ObjectID } from 'bson';
 import { call } from '../../api';
+
+import { Auth } from 'aws-amplify';
 import moment from 'moment';
 import {
   DATE_FORMAT_READABLE as DFR,
@@ -180,13 +182,19 @@ export const incrementImage = createAction('loupe/incrementImage');
 export const fetchImages = (filters, page = 'current') => 
   async (dispatch, getState) => {
     try {
-      dispatch(getImagesStart());
-      if (page !== 'next') {
-        dispatch(clearImages());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      if(token) {
+        dispatch(getImagesStart());
+        if (page !== 'next') {
+          dispatch(clearImages());
+        }
+        const pageInfo = getState().images.present.pageInfo;
+  
+      
+        const images = await call('getImages', {filters, pageInfo, page});
+        dispatch(getImagesSuccess(images))
       }
-      const pageInfo = getState().images.present.pageInfo;
-      const images = await call('getImages', {filters, pageInfo, page});
-      dispatch(getImagesSuccess(images))
     } catch (err) {
       dispatch(getImagesFailure(err.toString()))
     }

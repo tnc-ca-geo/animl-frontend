@@ -1,5 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { call } from '../../api';
+import { Auth } from 'aws-amplify';
 
 const initialState = {
   availFilters: {
@@ -123,9 +124,13 @@ export const {
 // fetchCameras thunk
 export const fetchCameras = () => async dispatch => {
   try {
-    dispatch(getCamerasStart());
-    const cameras = await call('getCameras');
-    dispatch(getCamerasSuccess(cameras))
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if(token){
+      dispatch(getCamerasStart());
+      const cameras = await call('getCameras');
+      dispatch(getCamerasSuccess(cameras))
+    }
   } catch (err) {
     dispatch(getCamerasFailure(err.toString()))
   }
@@ -134,9 +139,14 @@ export const fetchCameras = () => async dispatch => {
 // fetchLabels thunk
 export const fetchLabels = () => async dispatch => {
   try {
-    dispatch(getLabelsStart());
-    const labels = await call('getLabels');
-    dispatch(getLabelsSuccess(labels))
+
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if(token){
+      dispatch(getLabelsStart());
+      const labels = await call('getLabels');
+      dispatch(getLabelsSuccess(labels))
+    }
   } catch (err) {
     dispatch(getLabelsFailure(err.toString()))
   }
