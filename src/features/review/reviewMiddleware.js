@@ -19,23 +19,25 @@ import {
 
 // we could also clone the label and append the original index to it as a prop
 // and return that if it helps make this function more generalizable 
-// Really it should be a selector maybe? 
+// Really this should be a selector maybe? 
 
 // active labels = labels that are validated, not invalidated, 
 // or not implicitly invalidated (i.e., labels in a locked object that have 
 // validated labels ahead of them in the array)
-const getActiveLabelIndices = (imageIndex, objects) => {
+const getActiveLabelIndices = (imageIndex, objects, opts) => {
   let filtLabels = [];
   
   for (const [i, object] of objects.entries()) {
 
-    let labels = object.locked 
-      ? [object.labels.find((label) => (
-          label.validation && label.validation.validated
-        ))]
-      : object.labels.filter((label) => (
+    let labels = !object.locked 
+      ? object.labels.filter((label) => (
           label.validation === null || label.validation.validated
-        ));
+        ))
+      : !opts.skipLockedObjects 
+        ? [object.labels.find((label) => (
+            label.validation && label.validation.validated
+          ))]
+        : [];
 
     labels = labels.map((label) => ({
       image: imageIndex,
@@ -49,20 +51,20 @@ const getActiveLabelIndices = (imageIndex, objects) => {
   return filtLabels;
 };
 
-const findNextLabel = (delta, images, focusIndex, options) => {
+const findNextLabel = (delta, images, focusIndex, opts) => {
   let initialImageEvaluated = false;
 
   const findNextLabelOnImage = (imageIndex) => {
     const objects = images[imageIndex];
 
     // don't skip empty images
-    if ((!options.skipEmptyImages && objects.length === 0) &&
+    if ((!opts.skipEmptyImages && objects.length === 0) &&
         initialImageEvaluated) {
       return { image: imageIndex, object: null, label: null };
     }
 
     // filter out inactive labels for all images' objects and flatten
-    const activeLabelIndices = getActiveLabelIndices(imageIndex, objects);
+    const activeLabelIndices = getActiveLabelIndices(imageIndex, objects, opts);
 
     let nextIndex = delta === 'increment' ? 0 : activeLabelIndices.length - 1;
     // if we have an initial focusIndex.label, try the next active label

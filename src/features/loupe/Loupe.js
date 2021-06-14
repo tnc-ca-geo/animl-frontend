@@ -12,8 +12,9 @@ import {
   selectReviewMode,
 } from './loupeSlice';
 import PanelHeader from '../../components/PanelHeader';
+import ReviewSettingsForm from './ReviewSettingsForm';
 import FullSizeImage from './FullSizeImage';
-import LoupeFooter from './LoupeFooter'
+import LoupeFooter from './LoupeFooter';
 
 const ItemValue = styled.div({
   fontSize: '$3',
@@ -94,21 +95,43 @@ const Loupe = () => {
   const handleToggleReviewMode = (e) => {
     dispatch(reviewModeToggled());
     e.currentTarget.blur();
-  }
+  };
+
+  // review mode settings modal
+  const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
+  const handleToggleReviewSettings = () => {
+    setReviewSettingsOpen(!reviewSettingsOpen);
+  };
 
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   return (
     <StyledLoupe>
       <LoupeHeader handlePanelClose={handleCloseLoupe}>
-        <IconButton
-          variant='ghost'
-          onClick={handleToggleReviewMode}
-        >
-          <FontAwesomeIcon
-            icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-          />
-        </IconButton>
+        <div>
+          Label review
+          <IconButton
+            variant='ghost'
+            onClick={handleToggleReviewMode}
+          >
+            <FontAwesomeIcon
+              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
+            />
+          </IconButton>
+          <IconButton
+            variant='ghost'
+            onClick={handleToggleReviewSettings}
+          >
+            <FontAwesomeIcon
+              icon={['fas', 'cog']}
+            />
+          </IconButton>
+          {reviewSettingsOpen && 
+            <ReviewSettingsForm
+              handleClose={handleToggleReviewSettings}
+            />
+          }
+        </div>
       </LoupeHeader>
       <LoupeBody>
         {image &&
