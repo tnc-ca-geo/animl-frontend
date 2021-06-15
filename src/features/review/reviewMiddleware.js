@@ -19,7 +19,7 @@ import {
 
 // we could also clone the label and append the original index to it as a prop
 // and return that if it helps make this function more generalizable 
-// Really this should be a selector maybe? 
+// Maybe this should be a selector? 
 
 // active labels = labels that are validated, not invalidated, 
 // or not implicitly invalidated (i.e., labels in a locked object that have 

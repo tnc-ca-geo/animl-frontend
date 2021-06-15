@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectReviewMode } from './loupeSlice';
 import { bboxUpdated, setFocus } from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
@@ -60,9 +59,12 @@ const StyledResizableBox = styled(ResizableBox, {
       true: {
         zIndex: '$3',
         opacity: '1',
+        // outline: 'none',
+        // boxShadow: '0 0 0 3px $blue200',
+        // borderColor: '$blue500',  
       },  
       false: {
-        opacity: '0.5',
+        opacity: '0.25',
       },
     }
   }

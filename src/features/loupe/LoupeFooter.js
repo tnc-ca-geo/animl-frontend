@@ -155,7 +155,11 @@ const LoupeFooter = ({ image }) => {
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ isAddingLabel, reviewMode, focusIndex, image, dispatch ]);
 
-  const handleIncrementClick = (delta) => dispatch(incrementImage(delta));
+  const handleIncrementClick = (delta) => {
+    reviewMode
+      ? dispatch(incrementFocusIndex(delta))
+      : dispatch(incrementImage(delta));
+  }
 
   return (
     <StyledLoupeFooter>
