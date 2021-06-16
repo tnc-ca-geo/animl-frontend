@@ -14,12 +14,11 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   sortChanged,
-  visibleRowsChanged,
-  setFocus,
-  selectFocusIndex,
+  // visibleRowsChanged,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
+import { setFocus, selectFocusIndex } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
@@ -145,12 +144,12 @@ const scrollbarWidth = () => {
   return scrollbarWidth;
 };
 
-const makeRows = (images, focusIndex) => {
+const makeRows = (images, objects, focusIndex) => {
   return images.map((image, imageIndex) => {
     const isImageFocused = imageIndex === focusIndex.image;
     const thumbnail = <Image selected={isImageFocused} src={image.thumbUrl} />;
     const labelCagegories = <LabelPills
-      image={image}
+      objects={objects[imageIndex]}
       imageIndex={imageIndex}
       focusIndex={focusIndex}
     />
@@ -171,14 +170,14 @@ const makeRows = (images, focusIndex) => {
   })
 };
 
-const ImagesTable = ({ images, hasNext, loadNextPage }) => {
+const ImagesTable = ({ images, objects, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useMemo(() => scrollbarWidth(), []);
-  const [ visibleRows, setVisibleRows ] = useState([null, null]);
+  // const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const hasMountedRef = useRef(false);
@@ -187,7 +186,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
     return !hasNext || index < images.length;
   }, [hasNext, images]);
 
-  const data = makeRows(images, focusIndex);
+  const data = makeRows(images, objects, focusIndex);
 
   const defaultColumn = useMemo(() => ({
     minWidth: 30,
@@ -368,7 +367,7 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
                 visibleStartIndex,
                 visibleStopIndex
               }) => {
-                setVisibleRows([visibleStartIndex, visibleStopIndex]);
+                // setVisibleRows([visibleStartIndex, visibleStopIndex]);
                 onItemsRendered({
                   overscanStartIndex,
                   overscanStopIndex,
@@ -400,39 +399,41 @@ const ImagesTable = ({ images, hasNext, loadNextPage }) => {
           <PulseSpinner />
         </SpinnerOverlay>
       }
-      <Table {...getTableProps()}>
-        <div
-          style={{ height: '51px', width: `calc(100% - ${scrollBarSize}px)` }}
-        >
-          {headerGroups.map(headerGroup => (
-            <TableRow
-              {...headerGroup.getHeaderGroupProps()}
-            >
-              {headerGroup.headers.map(column => (
-                <HeaderCell 
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                >
-                  <TableHeader
-                    issorted={column.isSorted.toString()}
-                    cansort={column.canSort.toString()}
+      {(objects.length > 0 && images.length > 0) &&
+        <Table {...getTableProps()}>
+          <div
+            style={{ height: '51px', width: `calc(100% - ${scrollBarSize}px)` }}
+          >
+            {headerGroups.map(headerGroup => (
+              <TableRow
+                {...headerGroup.getHeaderGroupProps()}
+              >
+                {headerGroup.headers.map(column => (
+                  <HeaderCell 
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
-                    {column.render('Header')}
-                    {column.canSort && 
-                      <FontAwesomeIcon icon={column.isSortedDesc 
-                          ? ['fas', 'caret-down'] 
-                          : ['fas', 'caret-up']
-                      }/>
-                    }
-                  </TableHeader>
-                </HeaderCell>
-              ))}
-            </TableRow>
-          ))}
-        </div>
-        <AutoSizer>
-          { InfiniteList }
-        </AutoSizer>
-      </Table>
+                    <TableHeader
+                      issorted={column.isSorted.toString()}
+                      cansort={column.canSort.toString()}
+                    >
+                      {column.render('Header')}
+                      {column.canSort && 
+                        <FontAwesomeIcon icon={column.isSortedDesc 
+                            ? ['fas', 'caret-down'] 
+                            : ['fas', 'caret-up']
+                        }/>
+                      }
+                    </TableHeader>
+                  </HeaderCell>
+                ))}
+              </TableRow>
+            ))}
+          </div>
+          <AutoSizer>
+            { InfiniteList }
+          </AutoSizer>
+        </Table>
+      }
     </TableContainer>
   );  
 }

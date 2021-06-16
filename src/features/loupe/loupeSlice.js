@@ -1,4 +1,4 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   open: false,
@@ -7,8 +7,8 @@ const initialState = {
   isAddingLabel: false,
   iterationOptions: {
     skipEmptyImages: false,
-    skipLockedObjects: true,
-    // skipInvalidatedLabels: false,    
+    skipLockedObjects: false,
+    // skipInvalidatedLabels: false,
   },
 };
 

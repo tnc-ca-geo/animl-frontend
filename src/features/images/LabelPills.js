@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
-import { setFocus } from '../images/imagesSlice';
+import { setFocus } from '../review/reviewSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 
 
@@ -58,7 +58,12 @@ const LabelContainer = styled('div', {
   flexWrap: 'wrap',
 });
 
-const LabelPills = ({ image, imageIndex, focusIndex }) => {
+const LabelPills = ({ objects, imageIndex, focusIndex }) => {
+  // todo: maybe use a selector here for to get objects from review slice 
+  // instead of passing it ImagesPanel and Images Table? 
+
+  // console.log(objects)
+
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
 
@@ -74,9 +79,12 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
 
   return (
     <LabelContainer>
-      {image.objects.map((object, objIndex) => {
+      {objects.map((object, objIndex) => {
 
         // TODO: find a cleaner way to do this
+        // maybe make it a hook?
+        // We also need filtered objects in FullSizeImage component...
+        // and reviewMiddleware 
         const labels = object.locked 
           ? [object.labels.find((label) => (
               label.validation && label.validation.validated
@@ -86,7 +94,7 @@ const LabelPills = ({ image, imageIndex, focusIndex }) => {
             ));
 
         return (
-          <div key={object._id}>  {/* TODO: don't use index for key */}
+          <div key={object._id}>
           {labels.length > 0 &&
             <ObjectPill
               key={object._id}

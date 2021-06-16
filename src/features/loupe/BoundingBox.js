@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactTestUtils from 'react-dom/test-utils';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectReviewMode } from './loupeSlice';
-import { bboxUpdated, setFocus } from '../images/imagesSlice';
+import { bboxUpdated, setFocus } from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 
 const ResizeHandle = styled('div', {
@@ -52,7 +50,6 @@ const DragHandle = styled('div', {
   }
 });
 
-
 const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
   position: 'absolute !important;',
@@ -62,13 +59,21 @@ const StyledResizableBox = styled(ResizableBox, {
       true: {
         zIndex: '$3',
         opacity: '1',
+        // outline: 'none',
+        // boxShadow: '0 0 0 3px $blue200',
+        // borderColor: '$blue500',  
       },  
       false: {
-        opacity: '0.5',
+        opacity: '0.25',
       },
     }
   }
 });
+
+/*
+ * megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
+ * so we are using that format in state
+ */
 
 // convert [left, top, width, height] in absolute values to 
 // [ymin, xmin, ymax, xmax] in relative values
@@ -94,32 +99,29 @@ const relToAbs = (bbox, imageWidth, imageHeight) => {
 
 const BoundingBox = (props) => {
   const { imageWidth, imageHeight, object, objectIndex, focusIndex } = props;
-  // megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
-  // so we are using that format in state.
-  const [ bbox, setBbox ] = useState(object.bbox);
-  let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
-  const [ constraintX, setConstraintX ] = useState(Infinity);
-  const [ constraintY, setConstraintY ] = useState(Infinity);
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
+  // track whether the object is focused
   const [ objectFocused, setObjectFocused ] = useState();
   useEffect(() => {
     setObjectFocused((focusIndex.object === objectIndex));
   }, [ focusIndex.object, objectIndex ]);
 
-  // if object is focused, show currently focused label,
-  // else show first non-invalidated in array
-  const [ label, setLabel ] = useState({ category: '', conf: 0, index: 0 });
+  // set label
+  const [ label, setLabel ] = useState();
   useEffect(() => {
     let newLabel;
     if (object.isBeingAdded) {
-      newLabel = { category: '', conf: 0, index: 0 }; // temporary label
+      // if the object is brand new, set temporary label
+      newLabel = { category: '', conf: 0, index: 0 };
     }
     else if (objectFocused && focusIndex.label) {
+      // else if object is focused, show currently focused label
       newLabel = object.labels[focusIndex.label];
     }
     else {
+      // else show first non-invalidated label in array
       newLabel = object.labels.find((label) => (
         label.validation === null || label.validation.validated 
       ));
@@ -133,12 +135,16 @@ const BoundingBox = (props) => {
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
-    setLabelIndex(object.labels.indexOf(label))
-    setLabelColor(labelColors(label.category));
-    setConf(Number.parseFloat(label.conf * 100).toFixed(1));
+    if (label) {
+      setLabelIndex(object.labels.indexOf(label))
+      setLabelColor(labelColors(label.category));
+      setConf(Number.parseFloat(label.conf * 100).toFixed(1));
+    }
   }, [ label, object, objectFocused ]);  // weird behavior here if defaultColor is in dependency array
   
-  // update bbox when object changes
+  // track bbox
+  const [ bbox, setBbox ] = useState(object.bbox);
+  let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   useEffect(() => {
     setBbox(object.bbox);
   }, [ object ]);
@@ -163,6 +169,8 @@ const BoundingBox = (props) => {
     }));
   }
 
+  const [ constraintX, setConstraintX ] = useState(Infinity);
+  const [ constraintY, setConstraintY ] = useState(Infinity);
   const onResize = (event, { size, handle }) => {
       // drags from left or top handles need require repositioning the box.
       // bottom & right can be left alone
@@ -206,7 +214,7 @@ const BoundingBox = (props) => {
     const image = { imageWidth, imageHeight };
     const newBbox = absToRel(rect, image);
     setBbox(newBbox);
-  }
+  };
 
   const onResizeStop = () => {
     setConstraintX(Infinity);
@@ -258,23 +266,25 @@ const BoundingBox = (props) => {
         selected={objectFocused}
         css={{ borderColor: labelColor.primary }}
       >
-        <BoundingBoxLabel
-          verticalPos={(top > 30) ? 'top' : 'bottom'}
-          horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
-          focusIndex={focusIndex}
-          objectIndex={objectIndex}
-          labelIndex={labelIndex}
-          object={object}
-          label={label}
-          labelColor={labelColor}
-          conf={conf}
-          selected={objectFocused}
-          showLabelButtons={showLabelButtons}
-          setShowLabelButtons={setShowLabelButtons}
-          // className='drag-handle'
-        >
-         {label.category} {conf}%
-        </BoundingBoxLabel>
+        {label &&
+          <BoundingBoxLabel
+            verticalPos={(top > 30) ? 'top' : 'bottom'}
+            horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
+            focusIndex={focusIndex}
+            objectIndex={objectIndex}
+            labelIndex={labelIndex}
+            object={object}
+            label={label}
+            labelColor={labelColor}
+            conf={conf}
+            selected={objectFocused}
+            showLabelButtons={showLabelButtons}
+            setShowLabelButtons={setShowLabelButtons}
+            // className='drag-handle'
+          >
+          {label.category} {conf}%
+          </BoundingBoxLabel>
+        }
         <DragHandle className='drag-handle'/>
       </StyledResizableBox>
     </Draggable>

@@ -18,8 +18,8 @@ const StyledHeader = styled.div({
   color: '$hiContrast',
 });
 
-const PanelHeader = ({ children, title, handlePanelClose, }) => (
-  <StyledHeader>
+const PanelHeader = ({ children, title, handlePanelClose, className }) => (
+  <StyledHeader className={className}>
     {title &&
       <PanelTitle>
         {title}
