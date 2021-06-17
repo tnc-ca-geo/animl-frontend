@@ -104,7 +104,7 @@ export const fetchImages = (filters, page = 'current') =>
         if (page !== 'next') {
           dispatch(clearImages());
         }
-        const pageInfo = getState().images.present.pageInfo;
+        const pageInfo = getState().images.pageInfo;
   
       
         const images = await call('getImages', {filters, pageInfo, page});
