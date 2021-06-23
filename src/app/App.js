@@ -10,7 +10,7 @@ import CounterPage from '../pages/CounterPage';
 import HomePage from '../pages/HomePage';
 import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
-import { AmplifyAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
+import { AmplifyAuthenticator, AmplifySignOut, AmplifySignIn } from "@aws-amplify/ui-react";
 Amplify.configure(awsconfig);
 
 const AppContainer = styled.div({
@@ -27,6 +27,7 @@ const App = () => {
     <AppContainer>
 
       <AmplifyAuthenticator>
+        <AmplifySignIn slot="sign-in"><div slot="secondary-footer-content"></div></AmplifySignIn>
         <AmplifySignOut />
         <NavBar />
         <Switch>
