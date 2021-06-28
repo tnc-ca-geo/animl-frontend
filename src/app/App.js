@@ -1,5 +1,5 @@
 import React from 'react';
-import globalStyle from '../theme/GlobalStyle';
+import globalStyles from '../theme/globalStyles';
 import { styled, css } from '../theme/stitches.config.js';
 import {
   Switch,
