@@ -1,6 +1,8 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { call } from '../../api';
 
+import { Auth } from 'aws-amplify';
+
 const initialState = {
   views: [],  // TODO: make object w/ _ids as keys?
   models: [], // TODO: make object w/ _ids as keys?
@@ -113,9 +115,16 @@ export const {
 // fetchViews thunk
 export const fetchViews = () => async dispatch => {
   try {
-    dispatch(getViewsStart());
-    const views = await call('getViews');
-    dispatch(getViewsSuccess(views));
+    
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+   
+    if(token){
+      dispatch(getViewsStart());  
+      console.log("Trying to get views");
+      const views = await call('getViews');
+      dispatch(getViewsSuccess(views));
+    }
   } catch (err) {
     dispatch(getViewsFailure(err.toString()))
   }
@@ -167,9 +176,15 @@ export const editView = (operation, payload) =>
 // fetchModels thunk
 export const fetchModels = () => async dispatch => {
   try {
-    dispatch(getViewsStart());
-    const models = await call('getModels');
-    dispatch(getModelsSuccess(models));
+
+    
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if(token){
+      dispatch(getViewsStart());
+      const models = await call('getModels');
+      dispatch(getModelsSuccess(models));
+    }
   } catch (err) {
     dispatch(getViewsFailure(err.toString()))
   }
