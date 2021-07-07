@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import globalStyles from '../theme/globalStyles';
 import { styled, css } from '../theme/stitches.config.js';
@@ -16,7 +16,7 @@ import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import {
   selectUserAuthState,
   selectUserUsername,
-  userAuthenticated
+  userAuthStateChanged
 } from '../features/user/userSlice';
 
 Amplify.configure(awsconfig);
@@ -35,7 +35,13 @@ const App = () => {
 
   useEffect(() => {
     return onAuthUIStateChange((nextAuthState, authData) => {
-      dispatch(userAuthenticated({ nextAuthState, authData }));
+      const payload = { nextAuthState };
+      if (authData) {
+        const idToken = authData.signInUserSession.idToken.payload;
+        payload.username = idToken['cognito:username'];
+        payload.groups = idToken['cognito:groups'];
+      }
+      dispatch(userAuthStateChanged(payload));
     });
   }, [dispatch]);
 
@@ -52,7 +58,7 @@ const App = () => {
       </Switch>
     </AppContainer>
   ) : (
-    <AmplifyAuthenticator />
+    <AmplifyAuthenticator hideDefault={true}/>
   );
 }
 

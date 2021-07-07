@@ -65,8 +65,8 @@ const Button = styled('button', {
       small: {
         fontSize: '$2',
         height: '$5',
-        paddingLeft: '$2',
-        paddingRight: '$2',
+        paddingLeft: '$3',
+        paddingRight: '$3',
       },
       large: {
         fontSize: '$2',

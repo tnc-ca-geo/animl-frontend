@@ -2,9 +2,17 @@ import React from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { Link, NavLink } from 'react-router-dom';
 import ViewSelector from '../features/views/ViewSelector';
-import { AmplifySignOut } from "@aws-amplify/ui-react";
+import { Auth, Hub } from 'aws-amplify';
 import logo from '../assets/animl-logo.svg';
+import Button from './Button';
 
+// const StyledSignOut = styled(AmplifySignOut, {
+//   backgroundColor: '$hiContrast',
+// })
+
+const SignOutButton = styled(Button, {
+
+});
 
 const Logo = styled(Link, {
   position: 'absolute',
@@ -34,7 +42,21 @@ const StyledNav = styled.nav({
   backgroundColor: '$loContrast',
 });
 
+
 const NavBar = () => {
+
+  const handleSignOutButtonClick = async () => {
+    try {
+      await Auth.signOut();
+      Hub.dispatch('UI Auth', { 
+        event: 'AuthStateChange',
+        message: 'signedout'
+      });
+    } catch (error) {
+      console.log('error signing out: ', error);
+    }
+  };
+
   return (
     <StyledNav>
       <Logo to='/'>
@@ -55,7 +77,12 @@ const NavBar = () => {
       <ViewSelectorWrapper>
         <ViewSelector />
       </ViewSelectorWrapper>
-      <AmplifySignOut />
+      <SignOutButton
+        onClick={handleSignOutButtonClick}
+        size='small'
+      >
+        Sign out
+      </SignOutButton>
     </StyledNav>
   );
 };

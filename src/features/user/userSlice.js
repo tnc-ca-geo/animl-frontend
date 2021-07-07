@@ -11,20 +11,17 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
 
-    userAuthenticated: (state, { payload }) => {
+    userAuthStateChanged: (state, { payload }) => {
       state.authState = payload.nextAuthState;
-      if (payload.authData) {
-        const idToken = payload.authData.signInUserSession.idToken.payload;
-        state.username = idToken['cognito:username'];
-        state.groups = idToken['cognito:groups'];
-      }
+      state.username = payload.username ? payload.username : null;
+      state.groups = payload.groups ? payload.groups : null;
     },
 
   },
 });
 
 export const {
-  userAuthenticated,
+  userAuthStateChanged,
 } = userSlice.actions;
 
 // Selectors
