@@ -13,10 +13,10 @@ const ViewExplorerWrapper = styled.div({
   display: 'flex',
 });
 
-const ViewExplorerBody = styled.div({
-  display: 'flex',
-  flexGrow: 1,
-});
+// const ViewExplorerBody = styled.div({
+//   display: 'flex',
+//   flexGrow: 1,
+// });
 
 export function ViewExplorer() {
   const selectedView = useSelector(selectSelectedView);

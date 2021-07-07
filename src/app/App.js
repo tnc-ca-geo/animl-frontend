@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import globalStyles from '../theme/globalStyles';
 import { styled, css } from '../theme/stitches.config.js';
 import {
@@ -10,7 +11,14 @@ import CounterPage from '../pages/CounterPage';
 import HomePage from '../pages/HomePage';
 import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
-import { AmplifyAuthenticator, AmplifySignOut, AmplifySignIn } from "@aws-amplify/ui-react";
+import { AmplifyAuthenticator } from "@aws-amplify/ui-react";
+import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
+import {
+  selectUserAuthState,
+  selectUserUsername,
+  userAuthenticated
+} from '../features/user/userSlice';
+
 Amplify.configure(awsconfig);
 
 const AppContainer = styled.div({
@@ -21,25 +29,30 @@ const AppContainer = styled.div({
 });
 
 const App = () => {
+  const authState = useSelector(selectUserAuthState);
+  const user = useSelector(selectUserUsername);
+  const dispatch = useDispatch();
 
-  return (
+  useEffect(() => {
+    return onAuthUIStateChange((nextAuthState, authData) => {
+      dispatch(userAuthenticated({ nextAuthState, authData }));
+    });
+  }, [dispatch]);
 
+  return authState === AuthState.SignedIn && user ? (
     <AppContainer>
-
-      <AmplifyAuthenticator>
-        <AmplifySignIn slot="sign-in"><div slot="secondary-footer-content"></div></AmplifySignIn>
-        <AmplifySignOut />
-        <NavBar />
-        <Switch>
-          <Route path="/counter">
-            <CounterPage />
-          </Route>
-          <Route path="/">
-            <HomePage />
-          </Route>
-        </Switch>
-      </AmplifyAuthenticator>
+      <NavBar />
+      <Switch>
+        <Route path="/counter">
+          <CounterPage />
+        </Route>
+        <Route path="/">
+          <HomePage />
+        </Route>
+      </Switch>
     </AppContainer>
+  ) : (
+    <AmplifyAuthenticator />
   );
 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { Link, NavLink } from 'react-router-dom';
 import ViewSelector from '../features/views/ViewSelector';
+import { AmplifySignOut } from "@aws-amplify/ui-react";
 import logo from '../assets/animl-logo.svg';
 
 
@@ -54,6 +55,7 @@ const NavBar = () => {
       <ViewSelectorWrapper>
         <ViewSelector />
       </ViewSelectorWrapper>
+      <AmplifySignOut />
     </StyledNav>
   );
 };
