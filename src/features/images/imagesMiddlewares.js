@@ -1,18 +1,18 @@
 
 import { clearImages, getImagesSuccess } from './imagesSlice';
-import { clearObjects, syncObjects } from '../review/reviewSlice';
+import { clearWorkingImages, syncWorkingImages } from '../review/reviewSlice';
 
 export const imagesMiddleware = store => next => action => {
 
   if (clearImages.match(action)) {
     // clear objects out of review slice
-    store.dispatch(clearObjects(action));
+    // store.dispatch(clearWorkingImages(action));
     next(action);
   }
 
   if (getImagesSuccess.match(action)) {
     // add objects to review slice
-    store.dispatch(syncObjects(action));
+    // store.dispatch(syncWorkingImages(action));
     next(action);
   }
 

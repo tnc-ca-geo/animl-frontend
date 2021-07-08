@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectObjects } from '../review/reviewSlice';
+import { selectWorkingImages } from '../review/reviewSlice';
 import {
   fetchImages,
   selectImages,
@@ -26,10 +26,9 @@ const ImagesPanel = () => {
   const filters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
+  const workingImages = useSelector(selectWorkingImages);
   const hasNext = useSelector(selectHasNext);
   const isLoading = useSelector(selectIsLoading);
-  const images = useSelector(selectImages);
-  const objects = useSelector(selectObjects);
   const dispatch = useDispatch();
   
   useEffect(() => {
@@ -47,8 +46,7 @@ const ImagesPanel = () => {
   return (
     <StyledImagesPanel>
       <ImagesTable
-        images={images}
-        objects={objects}
+        workingImages={workingImages}
         hasNext={hasNext}
         loadNextPage={loadNextPage}
       />

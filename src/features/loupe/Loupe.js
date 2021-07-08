@@ -4,8 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import { useSelector } from 'react-redux';
-import { selectImages } from '../images/imagesSlice';
-import { selectFocusIndex } from '../review/reviewSlice';
+import { selectWorkingImages, selectFocusIndex } from '../review/reviewSlice';
 import {
   toggleOpenLoupe,
   reviewModeToggled,
@@ -83,12 +82,12 @@ const Loupe = () => {
 
   // track focused image
   const focusIndex = useSelector(selectFocusIndex);
-  const images = useSelector(selectImages);
+  const workingImages = useSelector(selectWorkingImages);
   const [ image, setImage ] = useState();
   useEffect(() => {
     console.log('new focusIndex: ', focusIndex);
-    setImage(images[focusIndex.image]);
-  }, [ images, focusIndex ]);
+    setImage(workingImages[focusIndex.image]);
+  }, [ workingImages, focusIndex ]);
 
   // track reivew mode
   const reviewMode = useSelector(selectReviewMode);

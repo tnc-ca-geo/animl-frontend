@@ -144,17 +144,18 @@ const scrollbarWidth = () => {
   return scrollbarWidth;
 };
 
-const makeRows = (images, objects, focusIndex) => {
-  return images.map((image, imageIndex) => {
+const makeRows = (workingImages, focusIndex) => {
+  return workingImages.map((image, imageIndex) => {
     const isImageFocused = imageIndex === focusIndex.image;
     const thumbnail = <Image selected={isImageFocused} src={image.thumbUrl} />;
-    const labelCagegories = <LabelPills
-      objects={objects[imageIndex]}
+    const labelPills = <LabelPills
+      objects={workingImages[imageIndex].objects}
       imageIndex={imageIndex}
       focusIndex={focusIndex}
-    />
+    />;
     let needsReview = 'Yes'; 
-    // TODO: revisit this
+    // TODO: revisit this. If any objects are unlocked on an image,
+    // mark as 'needs review'
     // image.labels.forEach((label) => {
     //   if (label.validation.reviewed) {
     //     needsReview = 'No';
@@ -163,14 +164,14 @@ const makeRows = (images, objects, focusIndex) => {
 
     return {
       thumbnail,
-      labelCagegories,
+      labelPills,
       needsReview,
       ...image,
     }
   })
 };
 
-const ImagesTable = ({ images, objects, hasNext, loadNextPage }) => {
+const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
@@ -181,12 +182,12 @@ const ImagesTable = ({ images, objects, hasNext, loadNextPage }) => {
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const hasMountedRef = useRef(false);
-  const imagesCount = hasNext ? images.length + 1 : images.length;
+  const imagesCount = hasNext ? workingImages.length + 1 : workingImages.length;
   const isImageLoaded = useCallback((index) => {
-    return !hasNext || index < images.length;
-  }, [hasNext, images]);
+    return !hasNext || index < workingImages.length;
+  }, [hasNext, workingImages]);
 
-  const data = makeRows(images, objects, focusIndex);
+  const data = makeRows(workingImages, focusIndex);
 
   const defaultColumn = useMemo(() => ({
     minWidth: 30,
@@ -195,47 +196,47 @@ const ImagesTable = ({ images, objects, hasNext, loadNextPage }) => {
   }), []);
 
   const columns = useMemo(() => [
-      {
-        Header: '',
-        accessor: 'thumbnail',
-        disableSortBy: true,
-        width: '155',
-        disableResizing: true,
-      },
-      {
-        Header: 'Labels',
-        accessor: 'labelCagegories',
-        disableSortBy: true,
-        width: '275',
-      },
-      {
-        Header: 'Date created',
-        accessor: 'dateTimeOriginal',
-      },
-      {
-        Header: 'Date added',
-        accessor: 'dateAdded',
-      },
-      {
-        Header: 'Needs review',
-        accessor: 'needsReview',
-        disableSortBy: true,
-      },
-      {
-        Header: 'Camera',
-        accessor: 'cameraSn',
-      },
-      {
-        Header: 'Camera make',
-        accessor: 'make',
-        disableSortBy: true,
-      },
+    {
+      Header: '',
+      accessor: 'thumbnail',
+      disableSortBy: true,
+      width: '155',
+      disableResizing: true,
+    },
+    {
+      Header: 'Labels',
+      accessor: 'labelPills',
+      disableSortBy: true,
+      width: '275',
+    },
+    {
+      Header: 'Date created',
+      accessor: 'dateTimeOriginal',
+    },
+    {
+      Header: 'Date added',
+      accessor: 'dateAdded',
+    },
+    {
+      Header: 'Needs review',
+      accessor: 'needsReview',
+      disableSortBy: true,
+    },
+    {
+      Header: 'Camera',
+      accessor: 'cameraSn',
+    },
+    {
+      Header: 'Camera make',
+      accessor: 'make',
+      disableSortBy: true,
+    },
   ], []);
 
   const columnsToHide = useMemo(() => (
     columns.reduce((acc, curr) => {
       const id = curr.accessor;
-      if (id !== 'thumbnail' && id !== 'labelCagegories') {
+      if (id !== 'thumbnail' && id !== 'labelPills') {
         acc.push(id)
       }
       return acc;
@@ -351,7 +352,7 @@ const ImagesTable = ({ images, objects, hasNext, loadNextPage }) => {
       <div {...getTableBodyProps()}>
         <InfiniteLoader
           ref={infiniteLoaderRef}
-          items={images}
+          items={workingImages}
           isItemLoaded={isImageLoaded}
           itemCount={imagesCount}
           loadMoreItems={loadNextPage}
@@ -388,18 +389,18 @@ const ImagesTable = ({ images, objects, hasNext, loadNextPage }) => {
         </InfiniteLoader>
       </div>
     ),
-    [ RenderRow, getTableBodyProps, images, isImageLoaded, imagesCount,
+    [ RenderRow, getTableBodyProps, workingImages, isImageLoaded, imagesCount,
       loadNextPage ]
   );
 
   return (
     <TableContainer>
-      {images.length === 0 &&
+      {workingImages.length === 0 &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>
       }
-      {(objects.length > 0 && images.length > 0) &&
+      {workingImages.length > 0 &&
         <Table {...getTableProps()}>
           <div
             style={{ height: '51px', width: `calc(100% - ${scrollBarSize}px)` }}

@@ -8,7 +8,7 @@ import BoundingBox from './BoundingBox';
 import AddObjectOverlay from './AddObjectOverlay';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { addObjectStart, selectIsAddingObject} from './loupeSlice';
-import { selectObjects } from '../review/reviewSlice';
+import { selectWorkingImages } from '../review/reviewSlice';
 import Button from '../../components/Button';
 
 const AddObjectButton = styled(Button, {
@@ -80,11 +80,11 @@ const FullSizeImage = ({ image, focusIndex }) => {
   }, [ windowWidth, width, height, top, left, imgLoaded ]);
 
   // get image's objects
-  const allObjects = useSelector(selectObjects);
+  const workingImages = useSelector(selectWorkingImages);
   const [ currImgObjects, setCurrImgObjects ] = useState();
   useEffect(() => {
-    setCurrImgObjects(allObjects[focusIndex.image]);
-  }, [ allObjects, focusIndex.image ]);
+    setCurrImgObjects(workingImages[focusIndex.image].objects);
+  }, [ workingImages, focusIndex.image ]);
 
   // filter image's objects
   const [ filteredObjects, setFilteredObjects ] = useState();

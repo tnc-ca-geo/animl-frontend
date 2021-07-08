@@ -7,7 +7,7 @@ import {
   incrementFocusIndex,
   incrementImage,
   selectFocusIndex,
-  selectObjects,
+  selectWorkingImages,
 } from './reviewSlice';
 import {
   addLabelStart,
@@ -55,7 +55,7 @@ const findNextLabel = (delta, images, focusIndex, opts) => {
   let initialImageEvaluated = false;
 
   const findNextLabelOnImage = (imageIndex) => {
-    const objects = images[imageIndex];
+    const objects = images[imageIndex].objects;
 
     // don't skip empty images
     if ((!opts.skipEmptyImages && objects.length === 0) &&
@@ -108,9 +108,7 @@ export const reviewMiddleware = store => next => action => {
   if (incrementFocusIndex.match(action)) {
     next(action);
     const delta = action.payload;
-    // TODO: make it more clear that we're actually referencing the 
-    // objects proxy in the review slice here
-    const images = selectObjects(store.getState());
+    const images = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     const options = selectIterationOptions(store.getState());
     const newFocusIndex = findNextLabel(delta, images, focusIndex, options);
@@ -122,7 +120,7 @@ export const reviewMiddleware = store => next => action => {
   else if (incrementImage.match(action)) {
     next(action);
     const delta = action.payload;
-    const images = selectObjects(store.getState());
+    const images = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     if (delta === 'decrement' && focusIndex.image > 0) {
       store.dispatch(setFocus({ image: focusIndex.image - 1 }));

@@ -1,9 +1,10 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import undoable, { excludeAction } from 'redux-undo';
+import { getImagesSuccess, clearImages } from '../images/imagesSlice';
 import { ObjectID } from 'bson';
 
 const initialState = {
-  objects: [],
+  workingImages: [],
   focusIndex: {
     image: null, 
     object: null,
@@ -16,11 +17,10 @@ export const reviewSlice = createSlice({
   initialState,
   reducers: {
 
-    clearObjects: (state) => { state.objects = []; },
-
-    syncObjects: (state, { payload }) => {
-      const objects = payload.payload.images.images.map((img) => img.objects || []);
-      state.objects = state.objects.concat(objects);
+    syncWorkingImages: (state, { payload }) => {
+      console.log('syncWorkingImages: ', payload);
+      // const newImgs = payload.payload.images.images;
+      // state.workingImages = state.workingImages.concat(newImgs);
     },
 
     setFocus: (state, { payload }) => {
@@ -90,11 +90,26 @@ export const reviewSlice = createSlice({
     },
 
   },
+  extraReducers: (builder) => {
+    // TODO: can we use extra reducers instead of middleware in a lot of places?
+    // extraReducers are for handling actions not created by this slice
+    // https://redux-toolkit.js.org/api/createslice/#extrareducers
+    builder
+      .addCase(getImagesSuccess, (state, { payload }) => {
+        console.log('get images success from reviews slice')
+        const newImages = payload.images.images
+        state.workingImages = state.workingImages.concat(newImages);
+      })
+      .addCase(clearImages, (state) => {
+        console.log('clear images from reviews slice');
+        state.workingImages = [];
+      })
+  },
 });
 
 export const {
-  clearObjects,
-  syncObjects,
+  clearWorkingImages,
+  syncWorkingImages,
   setFocus,
   bboxUpdated,
   objectAdded,
@@ -113,7 +128,7 @@ export const incrementImage = createAction('loupe/incrementImage');
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
-export const selectObjects = state => state.review.present.objects;
+export const selectWorkingImages = state => state.review.present.workingImages;
 export const selectFocusIndex = state => state.review.present.focusIndex;
 
 export default undoable(reviewSlice.reducer, { 

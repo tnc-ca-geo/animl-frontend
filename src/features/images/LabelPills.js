@@ -59,11 +59,6 @@ const LabelContainer = styled('div', {
 });
 
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
-  // todo: maybe use a selector here for to get objects from review slice 
-  // instead of passing it ImagesPanel and Images Table? 
-
-  // console.log(objects)
-
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
 

@@ -1,14 +1,9 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import { ObjectID } from 'bson';
-import { call } from '../../api';
-
 import { Auth } from 'aws-amplify';
-import moment from 'moment';
-import {
-  DATE_FORMAT_READABLE as DFR,
-  IMAGES_URL, 
-  IMAGE_QUERY_LIMITS,
-} from '../../config';
+import { call } from '../../api';
+import { enrichImages } from './utils';
+import { IMAGE_QUERY_LIMITS } from '../../config';
 
 const initialState = {
   images: [],
@@ -42,6 +37,7 @@ export const imagesSlice = createSlice({
     },
 
     getImagesSuccess: (state, { payload }) => {
+      console.log('get images success from images slice: ', payload)
       state.isLoading = false;
       state.error = null;
 
@@ -52,15 +48,7 @@ export const imagesSlice = createSlice({
         }
       });
 
-      const images = payload.images.images.map((img) => {
-        const ext = img.originalFileName.split('.').pop();
-        const url = IMAGES_URL + 'medium/' + img._id + '-medium.' + ext;
-        const thumbUrl = IMAGES_URL + 'small/' + img._id + '-small.' + ext;
-        img.dateTimeOriginal = moment(img.dateTimeOriginal).format(DFR);
-        img.dateAdded = moment(img.dateAdded).format(DFR);
-        return { thumbUrl, url, ...img };
-      });
-      state.images = state.images.concat(images);
+      state.images = state.images.concat(payload.images.images);
     },
 
     sortChanged: (state, { payload }) => {
@@ -99,16 +87,16 @@ export const fetchImages = (filters, page = 'current') =>
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      if(token) {
+      if (token) {
         dispatch(getImagesStart());
         if (page !== 'next') {
           dispatch(clearImages());
         }
         const pageInfo = getState().images.pageInfo;
-  
       
-        const images = await call('getImages', {filters, pageInfo, page});
-        dispatch(getImagesSuccess(images))
+        let res = await call('getImages', { filters, pageInfo, page });
+        res = enrichImages(res);
+        dispatch(getImagesSuccess(res));
       }
     } catch (err) {
       dispatch(getImagesFailure(err.toString()))
