@@ -1,13 +1,14 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
-import { ObjectID } from 'bson';
+import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichImages } from './utils';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 
+
 const initialState = {
   images: [],
   isLoading: false,
+  isUpdatingObjects: false,
   error: null,
   visibleRows: [], // don't really need this anymore?
   pageInfo: {
@@ -69,6 +70,23 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    updateObjectsStart: (state) => { state.isUpdatingObjects = true; },
+
+    updateObjectsFailure: (state, { payload }) => {
+      state.isUpdatingObjects = false;
+      state.error = payload;
+    },
+
+    updateObjectsSuccess: (state, { payload }) => {
+      state.isUpdatingObjects = false;
+      state.error = null;
+      const imageId = payload.updateObjects.image._id;
+      const newObjects = payload.updateObjects.image.objects;
+      console.log('successfully updated objects: ', payload);
+      const image = state.images.find(img => img._id === imageId);
+      image.objects = newObjects;
+    },
+
   },
 });
 
@@ -79,11 +97,14 @@ export const {
   getImagesFailure,
   sortChanged,
   visibleRowsChanged,
+  updateObjectsStart,
+  updateObjectsFailure,
+  updateObjectsSuccess,
 } = imagesSlice.actions;
 
 // fetchImages thunk
-export const fetchImages = (filters, page = 'current') => 
-  async (dispatch, getState) => {
+export const fetchImages = (filters, page = 'current') => {
+  return async (dispatch, getState) => {
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -102,6 +123,22 @@ export const fetchImages = (filters, page = 'current') =>
       dispatch(getImagesFailure(err.toString()))
     }
   };
+};
+
+// updateObjects thunk
+export const updateObjects = (payload) => async dispatch => {
+  try {
+    const currUser = await Auth.currentAuthenticatedUser();
+    const token = currUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      dispatch(updateObjectsStart());
+      let res = await call('updateObjects', payload);
+      dispatch(updateObjectsSuccess(res));
+    }
+  } catch (err) {
+    dispatch(updateObjectsFailure(err.toString()))
+  }
+};
   
 // The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

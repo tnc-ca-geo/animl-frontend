@@ -163,4 +163,17 @@ export default {
       }
     `,
   }),
+
+  updateObjects: (input) => ({
+    template: `
+      mutation UpdateObjects($input: UpdateObjectsInput!) {
+        updateObjects(input: $input) {
+          image {
+            ${imageFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
 };

@@ -1,6 +1,10 @@
 
 import _ from 'lodash';
 import {
+  selectImages,
+  updateObjects,
+} from '../images/imagesSlice';
+import {
   setFocus,
   objectAdded,
   labelAdded,
@@ -105,39 +109,64 @@ const findNextLabel = (delta, images, focusIndex, opts) => {
 
 export const reviewMiddleware = store => next => action => {
 
-  if (incrementFocusIndex.match(action)) {
+  if (setFocus.match(action)) {
+    const lastFocusIndex = selectFocusIndex(store.getState());
+    next(action);
+    const currFocusIndex = selectFocusIndex(store.getState());
+    // If the user has moved away from an image, check for changes & save them
+
+    // TODO: focus index doesn't change when you close out of the loupe
+    // so need to fix that if this is the diffing approach we go with
+
+    // TODO: also should figure out how to save if a user logs out or closes
+    // the browser window or refreshes... if they edited an image and didn't
+    // move off of it those changes won't be saved
+
+    if (lastFocusIndex.image !== null && 
+      lastFocusIndex.image !== currFocusIndex.image) {
+      const images = selectImages(store.getState());
+      const workingImages = selectWorkingImages(store.getState());
+      const lastImage = images[lastFocusIndex.image];
+      const lastWorkingImage = workingImages[lastFocusIndex.image];
+      
+      // If the last image was edited, so request updateObjects() mutation.
+      if (!_.isEqual(lastWorkingImage, lastImage)) {
+        const payload = {
+          imageId: lastWorkingImage._id,
+          objects: lastWorkingImage.objects
+        };
+        store.dispatch(updateObjects(payload));
+      }
+    }
+  }
+
+  else if (incrementFocusIndex.match(action)) {
     next(action);
     const delta = action.payload;
-    const images = selectWorkingImages(store.getState());
+    const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     const options = selectIterationOptions(store.getState());
-    const newFocusIndex = findNextLabel(delta, images, focusIndex, options);
+    const newFocusIndex = findNextLabel(delta, workingImages, focusIndex, options);
     store.dispatch(setFocus(newFocusIndex));
-    // TODO: figure out if the image record has been altered 
-    // (e.g. labels validated) and save it
   }
 
   else if (incrementImage.match(action)) {
     next(action);
     const delta = action.payload;
-    const images = selectWorkingImages(store.getState());
+    const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     if (delta === 'decrement' && focusIndex.image > 0) {
       store.dispatch(setFocus({ image: focusIndex.image - 1 }));
     }
-    else if (delta === 'increment' && focusIndex.image <= images.length) {
+    else if (delta === 'increment' && focusIndex.image <= workingImages.length) {
       store.dispatch(setFocus({ image: focusIndex.image + 1 }));
     }
-    // TODO: figure out if the image record has been altered 
-    // (e.g. labels validated) and save it
   }
 
   else if (objectAdded.match(action)) {
     next(action);
     store.dispatch(setFocus({ object: 0 }));
-    store.dispatch(addLabelStart());// dispatch addLabelStart() ?? 
-    // TODO: send request to backend to save new label to object
-    // TODO: add label category to label filters list? 
+    store.dispatch(addLabelStart());
   } 
 
   else if (labelAdded.match(action)) {
@@ -148,9 +177,8 @@ export const reviewMiddleware = store => next => action => {
     if (reviewMode) {
       store.dispatch(incrementFocusIndex('increment'));
     }
-    // TODO: send request to backend to save new label to object
-    // TODO: add label category to label filters list? 
-  } 
+    // TODO: add label category to label filters list
+  }
 
   else {
     next(action);

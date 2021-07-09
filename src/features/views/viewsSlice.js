@@ -1,7 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import { call } from '../../api';
-
 import { Auth } from 'aws-amplify';
+import { call } from '../../api';
 
 const initialState = {
   views: [],  // TODO: make object w/ _ids as keys?
@@ -132,8 +131,8 @@ export const fetchViews = () => async dispatch => {
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?
-export const editView = (operation, payload) =>
-  async (dispatch, getState) => {
+export const editView = (operation, payload) => {
+  return async (dispatch, getState) => {
     try {
       dispatch(editViewStart());
       switch (operation) {
@@ -171,13 +170,12 @@ export const editView = (operation, payload) =>
       console.log(`error attempting to ${operation} view: ${err.toString()}`);
       dispatch(editViewFailure(err.toString()));
     }
+  };
 };
 
 // fetchModels thunk
 export const fetchModels = () => async dispatch => {
   try {
-
-    
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if(token){
