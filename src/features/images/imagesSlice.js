@@ -126,6 +126,21 @@ export const fetchImages = (filters, page = 'current') => {
 };
 
 // updateObjects thunk
+
+// TODO: right now we're taking a brute force approach: if there are any 
+// edits detected to an image's objects array, we send the whole array back to
+// the API replace the obejcts array that was in the image's DB record with 
+// the one the user had edited on the front end. 
+// This works but is crude and requires us to request ALL fields from the 
+// objects from the DB in the first place: if we forget to request a field and 
+// then edit & save the object that field/value will be lost forever. Not great.
+// It's risky b/c we need to (1) remember to request all object fields, which 
+// makes it hard to maintain and defeats purpose of graphQL, and we also need to 
+// (2) keep the object perfectly intact w/ no modification on the front end 
+// other than intended edits. 
+// We should move to a more granular approach to diffing changes and just 
+// requesting that the object's modified fields be updated instead. 
+
 export const updateObjects = (payload) => async dispatch => {
   try {
     const currUser = await Auth.currentAuthenticatedUser();

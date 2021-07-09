@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { selectUserUsername } from '../user/userSlice.js';
 import { selectAvailLabels } from '../filters/filtersSlice';
 import {
   labelAdded,
@@ -157,6 +158,7 @@ const BoundingBoxLabel = (props) => {
     showLabelButtons,
     setShowLabelButtons 
   } = props;
+  const username = useSelector(selectUserUsername);
   const dispatch = useDispatch();
   const index = {
     image: focusIndex.image,  
@@ -221,13 +223,23 @@ const BoundingBoxLabel = (props) => {
 
   const handleCategoryChange = (newValue) => {
     if (newValue) {
-      dispatch(labelAdded({ category: newValue.value, index }));
+      const payload = {
+        category: newValue.value,
+        userId: username,
+        index
+      };
+      dispatch(labelAdded(payload));
     }
   };
 
   const handleCategoryCreate = (inputValue) => {
     if (inputValue) {
-      dispatch(labelAdded({ category: inputValue, index }));
+      const payload = {
+        category: inputValue,
+        userId: username,
+        index
+      };
+      dispatch(labelAdded(payload));
     }
   };
 
@@ -238,7 +250,12 @@ const BoundingBoxLabel = (props) => {
 
   const handleValidationButtonClick = (e, validated) => {
     e.stopPropagation();
-    dispatch(labelValidated({ index, validated }));
+    const payload = {
+      userId: username,
+      index,
+      validated,
+    };
+    dispatch(labelValidated(payload));
     setShowLabelButtons(false);
   };
 

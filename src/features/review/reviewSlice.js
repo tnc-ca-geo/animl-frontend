@@ -1,6 +1,10 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import undoable, { excludeAction } from 'redux-undo';
-import { getImagesSuccess, clearImages } from '../images/imagesSlice';
+import {
+  getImagesSuccess,
+  clearImages,
+  updateObjectsSuccess
+} from '../images/imagesSlice';
 import { ObjectID } from 'bson';
 
 
@@ -29,9 +33,12 @@ export const reviewSlice = createSlice({
       console.log('reviewSlice.bboxUpdated()');
       const { imageIndex, objectIndex } = payload;
       const object = state.workingImages[imageIndex].objects[objectIndex];
-      // update object ... and label's bboxes too? I think we need to be
-      // updating the label(s) bboxes in both the front end workingImage copy
-      // and the db? Or maybe not. 
+      // update object ... 
+      // and label's bboxes too? Or maybe not. Maybe we treat the object's 
+      // bbox as the source of truth for bbox and preserve the original label's
+      // bbox as is b/c that's what was submitted to or returned from ML.
+      // Locked object is the the final product. ML labels and supporting bboxes
+      // are just to help users get there faster. 
       object.bbox = payload.bbox;
     },
 
@@ -44,7 +51,7 @@ export const reviewSlice = createSlice({
         _id: new ObjectID().toString(),
         bbox: payload.bbox,
         locked: false,
-        isBeingAdded: true, // don't need this in DB
+        isBeingAdded: true,
         labels: [],
       };
       objects.unshift(newObject);
@@ -63,20 +70,22 @@ export const reviewSlice = createSlice({
       const object = state.workingImages[i.image].objects[i.object];
       // create label - already have this in api
       const newLabel = {
-        // TODO: add user data
         _id: new ObjectID().toString(),
         category: payload.category,
         bbox: object.bbox,
-        validation: { validated: true },  
+        validation: {
+          validated: true,
+          userId: payload.userId
+        },  
         type: 'manual',
         conf: 1,
+        userId: payload.userId
       };
       object.labels.unshift(newLabel);
       // update object - but, if this is a brand new object it doesn't exist
       // in API/DB yet. API would create a new object on it's own if it doesn't
       // find a matching one, but the _id would be wrong...
       object.locked = true;
-      // object.isBeingAdded = false; // we should just remove this prop entirely
       delete object.isBeingAdded
     },
 
@@ -85,15 +94,20 @@ export const reviewSlice = createSlice({
       const i = payload.index;
       const object = state.workingImages[i.image].objects[i.object];
       // update label
-      // TODO: add user data?
       const label = object.labels[i.label];
       if (payload.validated === true) {
-        label.validation = { validated: true };
+        label.validation = {
+          validated: true,
+          userId: payload.userId
+        };
         // update object
         object.locked = true;
       }
       else {
-        label.validation = { validated: false };
+        label.validation = {
+          validated: false,
+          userId: payload.userId
+        };
       }
     },
 
@@ -113,14 +127,18 @@ export const reviewSlice = createSlice({
     // https://redux-toolkit.js.org/api/createslice/#extrareducers
     builder
       .addCase(getImagesSuccess, (state, { payload }) => {
-        console.log('get images success from reviews slice')
-        const newImages = payload.images.images
+        const newImages = payload.images.images;
         state.workingImages = state.workingImages.concat(newImages);
       })
       .addCase(clearImages, (state) => {
-        console.log('clear images from reviews slice');
         state.workingImages = [];
       })
+      .addCase(updateObjectsSuccess, (state, { payload }) => {
+        const imageId = payload.updateObjects.image._id;
+        const newObjects = payload.updateObjects.image.objects;
+        const image = state.workingImages.find(img => img._id === imageId);
+        image.objects = newObjects;
+      });
   },
 
 });

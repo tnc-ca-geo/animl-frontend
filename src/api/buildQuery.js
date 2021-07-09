@@ -24,7 +24,32 @@ const viewFields = `
       model
     }
   }
-  `
+`
+
+const labelFields = `
+  _id
+  type
+  category
+  conf
+  bbox
+  labeledDate
+  validation {
+    validated
+    validationDate
+    userId
+  }
+  modelId
+  userId
+`
+
+const objectFields = `
+  _id
+  bbox
+  locked
+  labels {
+    ${labelFields}
+  }
+`
 
 const imageFields = `
   _id
@@ -34,19 +59,7 @@ const imageFields = `
   make
   originalFileName
   objects {
-    _id
-    bbox
-    locked
-    labels {
-      _id
-      category
-      bbox
-      type
-      conf
-      validation {
-        validated
-      }
-    }
+    ${objectFields}
   }`;
 
 const pageInfoFields = `
