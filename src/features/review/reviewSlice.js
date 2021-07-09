@@ -21,7 +21,7 @@ export const reviewSlice = createSlice({
   reducers: {
 
     setFocus: (state, { payload }) => {
-      console.log('imagesSlice.setFocus(): ', payload);
+      console.log('reviewSlice.setFocus(): ', payload);
       state.focusIndex = { ...state.focusIndex, ...payload };
     },
 
