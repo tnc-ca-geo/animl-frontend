@@ -245,6 +245,7 @@ const BoundingBox = (props) => {
       position={{x: left, y: top}}
       onDrag={onDrag}
       onStop={onDragEnd}
+      disabled={object.locked}
     >
       <StyledResizableBox
         width={width}
