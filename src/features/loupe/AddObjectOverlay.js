@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 
@@ -73,7 +73,7 @@ const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
     const newLeft = mousePos.x - 2;
     setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
     setDrawingBBox(true);
-  }
+  };
 
   const handleMouseUp = () => {
     // create object  
@@ -86,14 +86,27 @@ const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
     setDrawingBBox(false);
     setTempBBox(defaultBBox);
     dispatch(addObjectEnd());
-  }
+  };
+
+  // listen for esc keydown and end addObject
+  useEffect(() => {
+    // TODO: should be able to use react synthetic onKeyDown events,
+    // but couldn't get it working
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        dispatch(addObjectEnd());
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => { window.removeEventListener('keydown', handleKeyDown) }
+  }, [ dispatch ]);
+
 
   return (
     <Overlay
       onPointerMove={handlePointerMove}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-
     >
       <CrossHairHorizontal
         style={{ transform: `translateY(${mousePos.y}px)` }}

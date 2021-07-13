@@ -7,6 +7,7 @@ const labelColorMap = {
   skunk:  { primary: '#E83797', text: '$loContrast' },
   rodent: { primary: '#E04040', text: '$loContrast' },
   person: { primary: '#00C797', text: '$hiContrast' },
+  empty:  { primary: '#DEDEDE', text: '$hiContrast'},
   default: { primary: '#00C797', text: '$hiContrast' },
 };
 

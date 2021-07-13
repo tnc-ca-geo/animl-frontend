@@ -11,6 +11,7 @@ import {
   objectLocked,
   labelAdded,
   labelValidated,
+  markedEmpty,
   incrementFocusIndex,
   incrementImage,
   selectFocusIndex,
@@ -22,6 +23,7 @@ import {
   selectReviewMode,
   selectIterationOptions,
 } from '../loupe/loupeSlice';
+import { selectUserUsername } from '../user/userSlice';
 
 
 // we could also clone the label and append the original index to it as a prop
@@ -341,6 +343,41 @@ export const reviewMiddleware = store => next => action => {
     store.dispatch(setFocus({ object: 0 }));
     store.dispatch(addLabelStart());
     store.dispatch(editLabel('create', 'object', createObjectPayload));
+  }
+
+  /* 
+   * objectAdded
+   */
+
+  else if (markedEmpty.match(action)) {
+    console.log('reviewMiddleware.markedEmpty(): ', action.payload);
+    const { imageIndex } = action.payload;
+    const userId = selectUserUsername(store.getState());
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[imageIndex];
+    const newObject = {
+      _id: new ObjectID().toString(),
+      bbox: [0,0,1,1],
+      locked: true,
+      labels: [{
+        _id: new ObjectID().toString(),
+        category: 'empty',
+        bbox: [0,0,1,1],
+        validation: {
+          validated: true,
+          userId: userId
+        },  
+        type: 'manual',
+        conf: 1,
+        userId: action.payload.userId
+      }],
+    };
+    action.payload.newObject = newObject;
+    next(action);
+    store.dispatch(editLabel('create', 'object', {
+      imageId: image._id,
+      object: newObject,
+    }));
   }
 
   else {

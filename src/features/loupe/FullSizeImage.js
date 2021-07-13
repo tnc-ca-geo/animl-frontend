@@ -8,13 +8,29 @@ import BoundingBox from './BoundingBox';
 import AddObjectOverlay from './AddObjectOverlay';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { addObjectStart, selectIsAddingObject} from './loupeSlice';
-import { selectWorkingImages } from '../review/reviewSlice';
+import { selectWorkingImages, markedEmpty } from '../review/reviewSlice';
 import Button from '../../components/Button';
 
+const MarkEmptyButton = styled(Button, {
+  // position: 'absolute',
+  // bottom: 1,
+  // right: -75,
+  border: 'none',
+  borderRadius: '$0',
+  backgroundColor: '$loContrast',
+  color: '$hiContrast',
+  zIndex: '$3',
+  ':hover': {
+    color: '$hiContrast',
+    backgroundColor: '$gray400',
+    cursor: 'pointer',
+  },
+});
+
 const AddObjectButton = styled(Button, {
-  position: 'absolute',
-  bottom: 1,
-  right: -1,
+  // position: 'absolute',
+  // bottom: 1,
+  // right: -1,
   border: 'none',
   borderRadius: '$0',
   // backgroundColor: '$loContrast',
@@ -22,9 +38,16 @@ const AddObjectButton = styled(Button, {
   zIndex: '$3',
   ':hover': {
     color: '$hiContrast',
-    backgroundColor: '$loContrast',
+    backgroundColor: '$gray400',
     cursor: 'pointer',
   },
+});
+
+const EditObjectButtons = styled.div({
+  position: 'absolute',
+  bottom: 1,
+  right: -1,
+  display: 'flex',
 });
 
 const FullImage = styled(Image, {
@@ -105,6 +128,10 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   const handleAddObjectButtonClick = () => dispatch(addObjectStart());
 
+  const handleMarkEmptyButtonClick = () => {
+    dispatch(markedEmpty({imageIndex: focusIndex.image}));
+  };
+
   return (
     <ImageWrapper ref={containerEl}>
       {isAddingObject &&
@@ -129,13 +156,22 @@ const FullSizeImage = ({ image, focusIndex }) => {
         </SpinnerOverlay>
       }*/}
       <FullImage src={image.url} onLoad={handleImgLoaded}/>
-      <AddObjectButton
-        onClick={handleAddObjectButtonClick}
-        size='large'
-      >
-        <FontAwesomeIcon icon={['fas', 'plus']} />
-        Add object
-      </AddObjectButton>
+      <EditObjectButtons>
+        <MarkEmptyButton
+          onClick={handleMarkEmptyButtonClick}
+          size='large'
+        >
+            <FontAwesomeIcon icon={['fas', 'times']} />
+            Mark empty
+        </MarkEmptyButton>
+        <AddObjectButton
+          onClick={handleAddObjectButtonClick}
+          size='large'
+        >
+          <FontAwesomeIcon icon={['fas', 'plus']} />
+          Add object
+        </AddObjectButton>
+      </EditObjectButtons>
     </ImageWrapper>
   );
 };
