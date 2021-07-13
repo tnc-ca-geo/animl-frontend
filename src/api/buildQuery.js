@@ -69,7 +69,7 @@ const pageInfoFields = `
   hasNext
   count`;
 
-export default {
+const queries = {
 
   getViews: (input) => ({
     template: `
@@ -177,10 +177,23 @@ export default {
     `,
   }),
 
-  updateObjects: (input) => ({
+  // updateObjects: (input) => ({
+  //   template: `
+  //     mutation UpdateObjects($input: UpdateObjectsInput!) {
+  //       updateObjects(input: $input) {
+  //         image {
+  //           ${imageFields}
+  //         }
+  //       }
+  //     }
+  //   `,
+  //   variables: { input: input },
+  // }),
+
+  createObject: (input) => ({
     template: `
-      mutation UpdateObjects($input: UpdateObjectsInput!) {
-        updateObjects(input: $input) {
+      mutation CreateObject($input: CreateObjectInput!) {
+        createObject(input: $input) {
           image {
             ${imageFields}
           }
@@ -189,4 +202,72 @@ export default {
     `,
     variables: { input: input },
   }),
+
+  updateObject: (input) => ({
+    template: `
+      mutation UpdateObject($input: UpdateObjectInput!) {
+        updateObject(input: $input) {
+          image {
+            ${imageFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteObject: (input) => ({
+    template: `
+      mutation DeleteObject($input: DeleteObjectInput!) {
+        deleteObject(input: $input) {
+          image {
+            ${imageFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createLabel: (input) => ({
+    template: `
+      mutation CreateLabels($input: CreateLabelsInput!) {
+        createLabels(input: $input) {
+          image {
+            ${imageFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateLabel: (input) => ({
+    template: `
+      mutation UpdateLabel($input: UpdateLabelInput!) {
+        updateLabel(input: $input) {
+          image {
+            ${imageFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteLabel: (input) => ({
+    template: `
+      mutation DeleteLabel($input: DeleteLabelInput!) {
+        deleteLabel(input: $input) {
+          image {
+            ${imageFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
 };
+
+export default queries;

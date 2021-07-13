@@ -1,4 +1,5 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { labelAdded } from '../review/reviewSlice';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
 
@@ -7,11 +8,13 @@ const initialState = {
     cameras: {
       ids: [],
       isLoading: false,
+      noneFound: false,
       error: null,
     },
     labels: {
       categories: [],
       isLoading: false,
+      noneFound: false,
       error: null,
     }
   },
@@ -48,6 +51,9 @@ export const filtersSlice = createSlice({
           state.availFilters.cameras.ids.push(camera._id);
         }
       });
+      if (payload.cameras.length === 0) {
+        state.availFilters.cameras.noneFound = true;
+      }
     },
 
     getLabelsStart: (state) => { state.availFilters.labels.isLoading = true; },
@@ -67,6 +73,9 @@ export const filtersSlice = createSlice({
           state.availFilters.labels.categories.push(cat);
         }
       });
+      if (payload.labels.categories.length === 0) {
+        state.availFilters.labels.noneFound = true;
+      }
     },
 
     checkboxFilterToggled: (state, { payload }) => {
@@ -129,23 +138,22 @@ export const fetchCameras = () => async dispatch => {
     if(token){
       dispatch(getCamerasStart());
       const cameras = await call('getCameras');
-      dispatch(getCamerasSuccess(cameras))
+      dispatch(getCamerasSuccess(cameras));
     }
   } catch (err) {
-    dispatch(getCamerasFailure(err.toString()))
+    dispatch(getCamerasFailure(err.toString()));
   }
 };
 
 // fetchLabels thunk
 export const fetchLabels = () => async dispatch => {
   try {
-
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if(token){
       dispatch(getLabelsStart());
       const labels = await call('getLabels');
-      dispatch(getLabelsSuccess(labels))
+      dispatch(getLabelsSuccess(labels));
     }
   } catch (err) {
     dispatch(getLabelsFailure(err.toString()))

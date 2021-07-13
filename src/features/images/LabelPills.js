@@ -76,17 +76,24 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
     <LabelContainer>
       {objects.map((object, objIndex) => {
 
-        // TODO: find a cleaner way to do this
-        // maybe make it a hook?
+        // TODO: find a cleaner way to do this. Maybe make it a hook?
         // We also need filtered objects in FullSizeImage component...
         // and reviewMiddleware 
-        const labels = object.locked 
-          ? [object.labels.find((label) => (
-              label.validation && label.validation.validated
-            ))]
-          : object.labels.filter((label) => (
-              label.validation === null || label.validation.validated
-            ));
+        let labels;
+        if (object.locked) {
+          const firstValidatedLabel = object.labels.find((label) => (
+            label.validation && label.validation.validated
+          ));
+          // console.log('object.labels: ', object.labels)
+          // console.log(firstValidatedLabel);
+          labels = firstValidatedLabel ? [firstValidatedLabel] : [];
+        }
+        else {
+          const allNonInvalLabels = object.labels.filter((label) => (
+            label.validation === null || label.validation.validated
+          ));
+          labels = allNonInvalLabels;
+        }
 
         return (
           <div key={object._id}>

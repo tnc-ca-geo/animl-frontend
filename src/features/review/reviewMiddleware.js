@@ -1,13 +1,16 @@
 
 import _ from 'lodash';
-import {
-  selectImages,
-  updateObjects,
-} from '../images/imagesSlice';
+import { ObjectID } from 'bson';
+import { selectAvailLabels, fetchLabels } from '../filters/filtersSlice';
+import { selectImages, editLabel } from '../images/imagesSlice';
 import {
   setFocus,
+  bboxUpdated,
   objectAdded,
+  objectRemoved,
+  objectLocked,
   labelAdded,
+  labelValidated,
   incrementFocusIndex,
   incrementImage,
   selectFocusIndex,
@@ -109,36 +112,182 @@ const findNextLabel = (delta, images, focusIndex, opts) => {
 
 export const reviewMiddleware = store => next => action => {
 
-  if (setFocus.match(action)) {
-    const lastFocusIndex = selectFocusIndex(store.getState());
-    next(action);
-    const currFocusIndex = selectFocusIndex(store.getState());
-    // If the user has moved away from an image, check for changes & save them
+  /* 
+   * setFocus
+   */
 
-    // TODO: focus index doesn't change when you close out of the loupe
-    // so need to fix that if this is the diffing approach we go with
-
-    // TODO: also should figure out how to save if a user logs out or closes
-    // the browser window or refreshes... if they edited an image and didn't
-    // move off of it those changes won't be saved
-
-    if (lastFocusIndex.image !== null && 
-      lastFocusIndex.image !== currFocusIndex.image) {
-      const images = selectImages(store.getState());
-      const workingImages = selectWorkingImages(store.getState());
-      const lastImage = images[lastFocusIndex.image];
-      const lastWorkingImage = workingImages[lastFocusIndex.image];
+  // if (setFocus.match(action)) {
+  //   const lastFocusIndex = selectFocusIndex(store.getState());
+  //   next(action);
+  //   const currFocusIndex = selectFocusIndex(store.getState());
+  //   // If the user has moved away from an image, check for changes & save them
+  //   if (lastFocusIndex.image !== null && 
+  //     lastFocusIndex.image !== currFocusIndex.image) {
+  //     const images = selectImages(store.getState());
+  //     const workingImages = selectWorkingImages(store.getState());
+  //     const lastImage = images[lastFocusIndex.image];
+  //     const lastWorkingImage = workingImages[lastFocusIndex.image];
       
-      // If the last image was edited, so request updateObjects() mutation.
-      if (!_.isEqual(lastWorkingImage, lastImage)) {
-        const payload = {
-          imageId: lastWorkingImage._id,
-          objects: lastWorkingImage.objects
-        };
-        store.dispatch(updateObjects(payload));
-      }
+  //     // // If the last image was edited, so request updateObjects() mutation.
+  //     // if (!_.isEqual(lastWorkingImage, lastImage)) {
+  //     //   const payload = {
+  //     //     imageId: lastWorkingImage._id,
+  //     //     objects: lastWorkingImage.objects
+  //     //   };
+  //     //   store.dispatch(updateObjects(payload));
+  //     // }
+  //   }
+  // }
+
+  /* 
+   * labelAdded
+   */
+
+  if (labelAdded.match(action)) {
+    console.log('reviewMiddleware.labelAdded(): ', action.payload);
+    const i = action.payload.index;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[i.image]
+    const object = image.objects[i.object];
+    const newLabel = {
+      _id: new ObjectID().toString(),
+      category: action.payload.category,
+      bbox: object.bbox,
+      validation: {
+        validated: true,
+        userId: action.payload.userId
+      },  
+      type: 'manual',
+      conf: 1,
+      userId: action.payload.userId
+    };
+
+    action.payload.newLabel = newLabel;
+    next(action);
+
+    store.dispatch(editLabel('create', 'label', {
+      imageId: image._id,
+      objectId: object._id,
+      labels: [newLabel]
+    }));
+
+    store.dispatch(editLabel('update', 'object', {
+      imageId: image._id,
+      objectId: object._id,
+      diffs: { locked: true },
+    }));
+
+    store.dispatch(setFocus({ label: 0 }));
+    store.dispatch(addLabelEnd());
+    const reviewMode = selectReviewMode(store.getState());
+    if (reviewMode) {
+      store.dispatch(incrementFocusIndex('increment'));
+    }
+
+    const availLabels = selectAvailLabels(store.getState());
+    if (!availLabels.categories.find((cat) => cat === newLabel.category)) {
+      console.log('new label detected: ', newLabel.category);
+      store.dispatch(fetchLabels());
+    }
+
+
+  }
+
+  /* 
+   * bboxUpdated
+   */
+
+  else if (bboxUpdated.match(action)) {
+    console.log('reviewMiddleware.bboxUpdated()');
+    next(action);
+    const { imageIndex, objectIndex, bbox } = action.payload;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[imageIndex]
+    const object = image.objects[objectIndex];
+    store.dispatch(editLabel('update', 'object', {
+      imageId: image._id,
+      objectId: object._id,
+      diffs: { bbox },
+    }));
+  }
+
+  /* 
+   * objectRemoved
+   */
+
+  else if (objectRemoved.match(action)) {
+    console.log('reviewMiddleware.objectRemoved()');
+    next(action);
+    const { imageIndex, objectIndex } = action.payload;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[imageIndex]
+    const object = image.objects[objectIndex];
+    store.dispatch(editLabel('delete', 'object', {
+      imageId: image._id,
+      objectId: object._id,
+    }));
+  }
+
+  /* 
+   * labelValidated
+   */
+
+  else if (labelValidated.match(action)) {
+    console.log('reviewMiddleware.labelValidated()');
+    next(action);
+    const i = action.payload.index;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[i.image]
+    const object = image.objects[i.object];
+    const label = object.labels[i.label];
+
+    // update label
+    store.dispatch(editLabel('update', 'label', {
+      imageId: image._id,
+      objectId: object._id,
+      labelId: label._id,
+      diffs: { 
+        validation: {
+          validated: action.payload.validated,
+          userId: action.payload.userId,
+        }
+      },
+    }));
+
+    // update object
+    // TODO: figure out why don't we unlock if an object if it becomes invalidated
+    // and make sure if we handle that somehow on the front end the backend is doing the same
+    if (action.payload.validated === true) {
+      store.dispatch(editLabel('update', 'object', {
+        imageId: image._id,
+        objectId: object._id,
+        diffs: { locked: true },
+      }));
     }
   }
+
+  /* 
+   * objectLocked
+   */
+
+  else if (objectLocked.match(action)) {
+    console.log('reviewMiddleware.objectLocked()');
+
+    next(action);
+    const i = action.payload.index;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[i.image]
+    const object = image.objects[i.object];
+    store.dispatch(editLabel('update', 'object', {
+      imageId: image._id,
+      objectId: object._id,
+      diffs: { locked: action.payload.locked },
+    }));
+  }
+
+  /* 
+   * incrementFocusIndex
+   */
 
   else if (incrementFocusIndex.match(action)) {
     next(action);
@@ -149,6 +298,10 @@ export const reviewMiddleware = store => next => action => {
     const newFocusIndex = findNextLabel(delta, workingImages, focusIndex, options);
     store.dispatch(setFocus(newFocusIndex));
   }
+
+  /* 
+   * incrementImage
+   */
 
   else if (incrementImage.match(action)) {
     next(action);
@@ -163,21 +316,31 @@ export const reviewMiddleware = store => next => action => {
     }
   }
 
+
+  /* 
+   * objectAdded
+   */
+
   else if (objectAdded.match(action)) {
+    console.log('reviewMiddleware.objectAdded(): ', action.payload);
+    const { imageIndex, bbox } = action.payload;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[imageIndex];
+    const newObject = {
+      _id: new ObjectID().toString(),
+      bbox: bbox,
+      locked: false,
+      labels: [],
+    };
+    const createObjectPayload = {
+      imageId: image._id,
+      object: Object.assign({}, newObject),
+    };
+    action.payload.newObject = newObject;
     next(action);
     store.dispatch(setFocus({ object: 0 }));
     store.dispatch(addLabelStart());
-  } 
-
-  else if (labelAdded.match(action)) {
-    next(action);
-    store.dispatch(setFocus({ label: 0 }));
-    store.dispatch(addLabelEnd());
-    const reviewMode = selectReviewMode(store.getState());
-    if (reviewMode) {
-      store.dispatch(incrementFocusIndex('increment'));
-    }
-    // TODO: add label category to label filters list
+    store.dispatch(editLabel('create', 'object', createObjectPayload));
   }
 
   else {

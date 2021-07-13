@@ -162,7 +162,7 @@ export const editView = (operation, payload) => {
           break;
         }
         default: {
-          const err = 'An peration (create, update, or delete) is required';
+          const err = 'An operation (create, update, or delete) is required';
           throw new Error(err);
         }
       }

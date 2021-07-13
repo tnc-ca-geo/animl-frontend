@@ -33,7 +33,8 @@ export const reviewSlice = createSlice({
       console.log('reviewSlice.bboxUpdated()');
       const { imageIndex, objectIndex } = payload;
       const object = state.workingImages[imageIndex].objects[objectIndex];
-      // update object ... 
+      // update object ... e.g. updateObject({ imgId, objId, [bbox]})
+
       // and label's bboxes too? Or maybe not. Maybe we treat the object's 
       // bbox as the source of truth for bbox and preserve the original label's
       // bbox as is b/c that's what was submitted to or returned from ML.
@@ -44,23 +45,29 @@ export const reviewSlice = createSlice({
 
     objectAdded: (state, { payload }) => {
       console.log('reviewSlice.objectAdded(): ', payload);
+
       const objects = state.workingImages[payload.imageIndex].objects;
       // create object ... but maybe we don't want request createObject just yet?
       // wait until labels have been added?
-      const newObject = {
-        _id: new ObjectID().toString(),
-        bbox: payload.bbox,
-        locked: false,
-        isBeingAdded: true,
-        labels: [],
-      };
-      objects.unshift(newObject);
+      // Or we do create the object on the backend (allow for objects to exist w/o labels),
+      // allow for an optional object ID to be passed into createLabel() mutation 
+      // to indicate that you want to attach the new label to a specific obj rather than let the API consolodate them
+      // and we implement a 'removeObject' 
+      // const newObject = {
+      //   _id: new ObjectID().toString(),
+      //   bbox: payload.bbox,
+      //   locked: false,
+      //   isBeingAdded: true,
+      //   labels: [],
+      // };
+      payload.newObject.isBeingAdded = true; 
+      objects.unshift(payload.newObject);
     },
 
     objectRemoved: (state, { payload }) => {
       console.log('reviewSlice.objectRemoved()');
       const objects = state.workingImages[payload.imageIndex].objects;
-      // delete object not necessary to implement on backend
+      // delete object - deleteObjectById(_id)
       objects.splice(payload.objectIndex, 1);
     },
 
@@ -68,23 +75,25 @@ export const reviewSlice = createSlice({
       console.log('reviewSlice.labelAdded(): ', payload);
       const i = payload.index;
       const object = state.workingImages[i.image].objects[i.object];
-      // create label - already have this in api
-      const newLabel = {
-        _id: new ObjectID().toString(),
-        category: payload.category,
-        bbox: object.bbox,
-        validation: {
-          validated: true,
-          userId: payload.userId
-        },  
-        type: 'manual',
-        conf: 1,
-        userId: payload.userId
-      };
-      object.labels.unshift(newLabel);
+      // // create label - already have this in api, but add optional param to 
+      // // specify an object ID to attach it to if we want to 
+      // const newLabel = {
+      //   _id: new ObjectID().toString(),
+      //   category: payload.category,
+      //   bbox: object.bbox,
+      //   validation: {
+      //     validated: true,
+      //     userId: payload.userId
+      //   },  
+      //   type: 'manual',
+      //   conf: 1,
+      //   userId: payload.userId
+      // };
+      object.labels.unshift(payload.newLabel);
       // update object - but, if this is a brand new object it doesn't exist
       // in API/DB yet. API would create a new object on it's own if it doesn't
       // find a matching one, but the _id would be wrong...
+      // solved by idea above
       object.locked = true;
       delete object.isBeingAdded
     },

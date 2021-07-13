@@ -9,6 +9,7 @@ const initialState = {
   images: [],
   isLoading: false,
   isUpdatingObjects: false,
+  isEditingLabel: false,
   error: null,
   visibleRows: [], // don't really need this anymore?
   pageInfo: {
@@ -87,6 +88,20 @@ export const imagesSlice = createSlice({
       image.objects = newObjects;
     },
 
+    editLabelStart: (state) => { state.isEditingLabel = true; },
+
+    editLabelFailure: (state, { payload }) => {
+      state.isEditingLabel = false;
+      state.error = payload;
+    },
+
+    editLabelSuccess: (state, { payload }) => {
+      state.isEditingLabel = false;
+      state.error = null;
+      const image = state.images.find(img => img._id === payload._id);
+      image.objects = payload.objects;
+    },
+
   },
 });
 
@@ -100,6 +115,9 @@ export const {
   updateObjectsStart,
   updateObjectsFailure,
   updateObjectsSuccess,
+  editLabelStart,
+  editLabelFailure,
+  editLabelSuccess,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -155,6 +173,62 @@ export const updateObjects = (payload) => async dispatch => {
   }
 };
   
+
+// editLabel thunk
+// TODO: maybe break this up into discrete thunks?
+export const editLabel = (operation, entity, payload) => {
+  return async (dispatch, getState) => {
+    try {
+      if (!operation || !entity || !payload) {
+        const err = `An operation (create, update, or delete) 
+          and entity are required`;
+        throw new Error(err);
+      }
+      dispatch(editLabelStart());
+      const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
+      console.log('request: ', req);
+      const res = await call(req, payload);
+      console.log('res: ', res);
+      const mutation = Object.keys(res)[0];
+      const image = res[mutation].image;
+      dispatch(editLabelSuccess(image));
+
+      // switch (operation) {
+      //   case 'create': {
+      //     const res = entity === 'object'
+      //       ? await call('createObject', payload)
+      //       : await call('createLabel', payload);
+      //     console.log('res: ', res);
+      //     dispatch(editLabelSuccess(res));
+      //     break;
+      //   }
+      //   case 'update': {
+      //     const res = entity === 'object'
+      //       ? await call('updateObject', payload)
+      //       : await call('updateLabel', payload);
+      //     dispatch(editLabelSuccess(res));
+      //     break;
+      //   }
+      //   case 'delete': {
+      //     const res = entity === 'object'
+      //       ? await call('deleteObject', payload)
+      //       : await call('deleteLabel', payload); // do we need delete label?
+      //     dispatch(editLabelSuccess(res));
+      //     break;
+      //   }
+      //   default: {
+      //     const err = 'An operation (create, update, or delete) is required';
+      //     throw new Error(err);
+      //   }
+      // }
+
+    } catch (err) {
+      console.log(`error attempting to ${operation} ${entity}: ${err.toString()}`);
+      dispatch(editLabelFailure(err.toString()));
+    }
+  };
+};
+
 // The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`

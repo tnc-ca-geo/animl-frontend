@@ -33,10 +33,10 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!availCameras.ids.length) {
+    if (!availCameras.ids.length && !availCameras.noneFound) {
       dispatch(fetchCameras());
     }
-    if (!availLabels.categories.length) {
+    if (!availLabels.categories.length && !availLabels.noneFound) {
       dispatch(fetchLabels());
     }
   }, [availCameras, availLabels, dispatch]);
