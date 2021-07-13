@@ -154,13 +154,11 @@ const makeRows = (workingImages, focusIndex) => {
       focusIndex={focusIndex}
     />;
     let needsReview = 'Yes'; 
-    // TODO: revisit this. If any objects are unlocked on an image,
-    // mark as 'needs review'
-    // image.labels.forEach((label) => {
-    //   if (label.validation.reviewed) {
-    //     needsReview = 'No';
-    //   }
-    // });
+    image.objects.forEach((obj) => {
+      if (obj.locked) {
+        needsReview = 'No';
+      }
+    });
 
     return {
       thumbnail,

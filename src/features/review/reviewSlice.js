@@ -5,7 +5,6 @@ import {
   clearImages,
   updateObjectsSuccess
 } from '../images/imagesSlice';
-import { ObjectID } from 'bson';
 
 
 const initialState = {
