@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { clearImages } from '../images/imagesSlice';
 
 const initialState = {
   open: false,
@@ -50,6 +51,14 @@ export const loupeSlice = createSlice({
     },
 
   },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(clearImages, (state) => {
+        state.open = false;
+      });
+  }
+
 });
 
 export const {
