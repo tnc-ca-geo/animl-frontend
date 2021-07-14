@@ -11,6 +11,7 @@ import {
 import PanelHeader from '../../components/PanelHeader';
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
+import ObjectFilter from './ObjectFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 
@@ -69,6 +70,12 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
           availLabels={availLabels}
           activeLabels={activeFilters.labels}
         />
+      </Accordion>
+      <Accordion
+        label='Objects'
+        expandedDefault={true}
+      >
+        <ObjectFilter/>
       </Accordion>
       <Accordion
         label='Date Created'
