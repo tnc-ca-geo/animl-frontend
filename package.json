@@ -40,11 +40,14 @@
     "react-window-infinite-loader": "^1.0.5",
     "react-with-direction": "^1.3.1",
     "redux-undo": "^1.0.1",
+    "serverless-finch": "^2.6.0",
     "yup": "^0.32.8"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy-dev": "sls client deploy --no-confirm --stage dev",
+    "deploy-prod": "sls client deploy --no-confirm --stage prod",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
