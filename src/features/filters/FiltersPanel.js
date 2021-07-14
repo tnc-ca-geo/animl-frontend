@@ -11,7 +11,7 @@ import {
 import PanelHeader from '../../components/PanelHeader';
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
-import ObjectFilter from './ObjectFilter';
+import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 
@@ -72,10 +72,10 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
         />
       </Accordion>
       <Accordion
-        label='Objects'
+        label='Review'
         expandedDefault={true}
       >
-        <ObjectFilter/>
+        <ReviewFilter/>
       </Accordion>
       <Accordion
         label='Date Created'

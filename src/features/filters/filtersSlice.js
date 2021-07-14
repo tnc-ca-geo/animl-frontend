@@ -25,8 +25,7 @@ const initialState = {
     createdEnd: null,
     addedStart: null,
     addedEnd: null,
-    hasLockedObjects: true,
-    hasUnlockedObjects: true,
+    reviewed: true,
   },
 };
 
@@ -103,8 +102,7 @@ export const filtersSlice = createSlice({
       }
     },
 
-    objectFilterToggled: (state, { payload }) => {
-      console.log('object filter changed: ', payload)
+    reviewFilterToggled: (state, { payload }) => {
       state.activeFilters[payload.type] = !state.activeFilters[payload.type];
     },
 
@@ -130,7 +128,7 @@ export const {
   getLabelsFailure,
   getModelsSuccess,
   checkboxFilterToggled,
-  objectFilterToggled,
+  reviewFilterToggled,
   dateFilterChanged,
   setActiveFilters,
 } = filtersSlice.actions;
@@ -172,12 +170,7 @@ export const fetchLabels = () => async dispatch => {
 export const selectActiveFilters = state => state.filters.activeFilters;
 export const selectAvailCameras = state => state.filters.availFilters.cameras;
 export const selectAvailLabels = state => state.filters.availFilters.labels;
-export const selectHasLockedObjects = state => (
-  state.filters.activeFilters.hasLockedObjects
-);
-export const selectHasUnlockedObjects = state => (
-  state.filters.activeFilters.hasUnlockedObjects
-);
+export const selectReviewed = state => state.filters.activeFilters.reviewed;
 export const selectDateAddedFilter = state => ({
   start: state.filters.activeFilters.addedStart,
   end: state.filters.activeFilters.addedEnd,
