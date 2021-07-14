@@ -18,7 +18,7 @@ const store = configureStore({
       .concat(diffFiltersMiddleware)
       .concat(normalizeDatesMiddleware)
       .concat(setSelectedViewMiddleware)
-      .concat(imagesMiddleware)
+      // .concat(imagesMiddleware)
       .concat(reviewMiddleware)
   ),
 });

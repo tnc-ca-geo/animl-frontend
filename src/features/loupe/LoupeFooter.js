@@ -5,6 +5,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
+import { selectUserUsername } from '../user/userSlice';
 import { selectImagesCount } from '../images/imagesSlice';
 import {
   labelValidated,
@@ -98,6 +99,7 @@ const LoupeFooter = ({ image }) => {
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
   const isAddingLabel = useSelector(selectIsAddingLabel);
+  const username = useSelector(selectUserUsername);
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!image || isAddingLabel) {
@@ -119,19 +121,31 @@ const LoupeFooter = ({ image }) => {
           : dispatch(incrementImage(delta));
       }
 
-      // // handle return, left/right arrows (invalidate/validate)
-      // const object = image.objects[focusIndex.object];
-      // if (reviewMode && object && !object.locked) {
-      //   if (e.code === 'ArrowRight' || e.code === 'Enter') {
-      //     console.log('arrow right / enter handler firing')
-      //     dispatch(labelValidated({ index: focusIndex, validated: true}));
-      //     dispatch(incrementFocusIndex('increment'));
-      //   }
-      //   if (e.code === 'ArrowLeft') {
-      //     dispatch(labelValidated({ index: focusIndex, validated: false })); 
-      //     dispatch(incrementFocusIndex('increment'));
-      //   }
-      // }
+      // handle return, left/right arrows (invalidate/validate)
+      const object = image.objects[focusIndex.object];
+      if (reviewMode && object) {
+        if (e.code === 'ArrowRight' || e.code === 'Enter') {
+          console.log('arrow right / enter handler firing')
+          if (!object.locked) {
+            dispatch(labelValidated({
+              userId: username,
+              index: focusIndex,
+              validated: true,
+            }));
+          }
+          dispatch(incrementFocusIndex('increment'));
+        }
+        if (e.code === 'ArrowLeft') {
+          if (!object.locked) {
+            dispatch(labelValidated({
+              userId: username,
+              index: focusIndex,
+              validated: false,
+            }));  
+          }
+          dispatch(incrementFocusIndex('increment'));
+        }
+      }
 
       // handle ctrl-z/shift-ctrl-z (undo/redo)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {

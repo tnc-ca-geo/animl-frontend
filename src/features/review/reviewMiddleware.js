@@ -67,6 +67,7 @@ const findNextLabel = (delta, images, focusIndex, opts) => {
     const objects = images[imageIndex].objects;
 
     // don't skip empty images
+    // TODO: "empty" now means has an empty label, not no labels. update this
     if ((!opts.skipEmptyImages && objects.length === 0) &&
         initialImageEvaluated) {
       return { image: imageIndex, object: null, label: null };
@@ -192,8 +193,6 @@ export const reviewMiddleware = store => next => action => {
       store.dispatch(fetchLabels());
       // TODO: also dispatch fetchLabels after label invalidations?
     }
-
-
   }
 
   /* 
@@ -298,6 +297,9 @@ export const reviewMiddleware = store => next => action => {
     const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     const options = selectIterationOptions(store.getState());
+    // TODO: bug here. If there isn't an next label to go to (say, b/c there 
+    // are only 20 images loaded, all of them only have locked objects, and
+    // the skipLockedObjects option is on), it won't return a valid newFocusIndex. 
     const newFocusIndex = findNextLabel(delta, workingImages, focusIndex, options);
     store.dispatch(setFocus(newFocusIndex));
   }

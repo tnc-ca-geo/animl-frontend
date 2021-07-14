@@ -13,7 +13,7 @@ const initialState = {
   error: null,
   visibleRows: [], // don't really need this anymore?
   pageInfo: {
-    limit: IMAGE_QUERY_LIMITS[0],
+    limit: IMAGE_QUERY_LIMITS[1],
     paginatedField: 'dateTimeOriginal',
     sortAscending: false,
     previous: null,
