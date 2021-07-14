@@ -74,6 +74,9 @@ export const reviewSlice = createSlice({
           validated: false,
           userId: payload.userId
         };
+        object.locked = object.labels.every((lbl) => (
+          lbl.validation && lbl.validation.validated === false
+        ));
       }
     },
 
