@@ -18,8 +18,21 @@ import {
   selectUserUsername,
   userAuthStateChanged
 } from '../features/user/userSlice';
+import logo from '../assets/animl-logo.svg';
+
 
 Amplify.configure(awsconfig);
+
+const LoginScreen = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center'
+});
+
+const Logo = styled.div({
+  position: 'absolute',
+  top: '100px',
+});
 
 const AppContainer = styled.div({
   display: 'grid',
@@ -58,7 +71,16 @@ const App = () => {
       </Switch>
     </AppContainer>
   ) : (
-    <AmplifyAuthenticator hideDefault={true}/>
+    <LoginScreen>
+      <Logo>
+        <img
+          alt='Animl'
+          src={logo}
+          width='300'
+        />
+      </Logo>
+      <AmplifyAuthenticator hideDefault={true}/>
+    </LoginScreen>
   );
 }
 
