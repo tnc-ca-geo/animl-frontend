@@ -54,6 +54,10 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       <MenuButton
         variant='ghost'
         disabled={!selectedView}
+        state={modalOpen && (modalContent === 'automation-rules-form') 
+          ? 'active' 
+          : ''
+        }
         onClick={() => handleModalToggle('automation-rules-form')}
       >
         <FontAwesomeIcon icon={['fas', 'robot']} />
@@ -70,14 +74,10 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
       <MenuButton
         variant='ghost'
-        css={{ 
-          '@keyframes rotate': {
-            'to': {
-              transform: 'rotate(360deg)'
-            }
-          },
-          animation: 'rotate 1s infinite linear',
-         }}
+        state={modalOpen && (modalContent === 'save-view-form') 
+          ? 'active' 
+          : ''
+        }
         onClick={() => handleModalToggle('save-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'save']} />
@@ -95,6 +95,10 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       <MenuButton
         variant='ghost'
         disabled={selectedView && !selectedView.editable}
+        state={modalOpen && (modalContent === 'delete-view-form') 
+          ? 'active' 
+          : ''
+        }
         onClick={() => handleModalToggle('delete-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'trash-alt']} />
