@@ -31,7 +31,7 @@ export const imagesSlice = createSlice({
 
     clearImages: (state) => { state.images = []; },
 
-    getImagesStart: (state) => { state.pisLoading = true; },
+    getImagesStart: (state) => { state.isLoading = true; },
 
     getImagesFailure: (state, { payload }) => {
       state.isLoading = false;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
+import { fetchCameras } from '../cameras/camerasSlice';
 import {
-  fetchCameras,
   fetchLabels,
   selectActiveFilters,
   selectAvailCameras,

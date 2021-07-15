@@ -1,3 +1,5 @@
+// TODO: Prune fields we're not using
+
 const viewFields = `
   _id
   name
@@ -22,6 +24,26 @@ const viewFields = `
       type
       alertRecipient
       model
+    }
+  }
+`
+
+const cameraFields = `
+  _id
+  make
+  deployments {
+    _id
+    name
+    description
+    startDate
+    editable
+    location {
+      _id
+      geometry {
+        type
+        coordinates
+      }
+      name
     }
   }
 `
@@ -58,6 +80,7 @@ const imageFields = `
   cameraSn
   make
   originalFileName
+  deploymentId
   objects {
     ${objectFields}
   }`;
@@ -148,7 +171,7 @@ const queries = {
     template: `
       {
         cameras {
-          _id
+          ${cameraFields}
         }
       }
     `,
