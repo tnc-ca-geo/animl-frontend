@@ -1,4 +1,4 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
 
@@ -24,29 +24,10 @@ export const camerasSlice = createSlice({
     },
 
     getCamerasSuccess: (state, { payload }) => {
-      console.log('getCamerasSuccess: ', payload);
-
-      // state.availFilters.deployments.isLoading = false;  // maybe don't need
-      // state.availFilters.deployments.error = null;  // maybe don't need
-      // const depsInState = state.availFilters.deployments.ids;
-      // const newDeployments = payload.cameras.reduce((acc, camera) => {
-      //   for (const dep of camera.deployments) {
-      //     acc.push(dep);
-      //   }
-      //   return acc;
-      // },[]);
-      // console.log('newDeployments: ', newDeployments);
-      
-      // for (const dep of newDeployments) {
-      //   if (!depsInState.includes(dep._id)) {
-      //     state.availFilters.deployments.ids.push(dep._id);
-      //   }
-      // }
-
       state.isLoading = false;
       state.error = null;
       const camsIdsInState = state.cameras.map((cam) => cam._id);
-      for (const camera in payload.cameras) {
+      for (const camera of payload.cameras) {
         if (!camsIdsInState.includes(camera._id)) {
           state.cameras.push(camera);
         }
@@ -84,30 +65,6 @@ export const fetchCameras = () => async dispatch => {
 };
 
 // Selectors
-// export const selectActiveFilters = state => state.filters.activeFilters;
-// export const selectAvailCameras = state => state.filters.availFilters.cameras;
-// export const selectAvailLabels = state => state.filters.availFilters.labels;
-// export const selectReviewed = state => state.filters.activeFilters.reviewed;
-// export const selectDateAddedFilter = state => ({
-//   start: state.filters.activeFilters.addedStart,
-//   end: state.filters.activeFilters.addedEnd,
-// });
-// export const selectDateCreatedFilter = state => ({
-//   start: state.filters.activeFilters.createdStart,
-//   end: state.filters.activeFilters.createdEnd,
-// });
-// export const selectFiltersReady = createSelector(
-//   [selectAvailCameras, selectAvailLabels],
-//   (cameras, labels) => {
-//     let ready = true;
-//     const fetchedFilters = [cameras, labels];
-//     fetchedFilters.forEach(filter => {
-//       if (filter.isLoading || filter.error) {
-//         ready = false;
-//       };
-//     })
-//     return ready;
-//   }
-// );
+export const selectCameras = state => state.cameras;
 
 export default camerasSlice.reducer;

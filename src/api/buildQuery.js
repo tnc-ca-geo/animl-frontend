@@ -7,11 +7,13 @@ const viewFields = `
   editable
   filters {
     cameras
+    deployments
     labels
     createdStart
     createdEnd
     addedStart
     addedEnd
+    reviewed
   }
   automationRules {
     _id
@@ -80,7 +82,7 @@ const imageFields = `
   cameraSn
   make
   originalFileName
-  deploymentId
+  deployment
   objects {
     ${objectFields}
   }`;

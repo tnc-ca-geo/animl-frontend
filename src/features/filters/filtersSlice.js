@@ -37,7 +37,7 @@ const initialState = {
     createdEnd: null,
     addedStart: null,
     addedEnd: null,
-    reviewed: true,
+    reviewed: null,
   },
 };
 
@@ -67,6 +67,7 @@ export const filtersSlice = createSlice({
     },
 
     checkboxFilterToggled: (state, { payload }) => {
+      console.log('checkBoxFilterToggled() - payload: ', payload)
       const activeFil = state.activeFilters[payload.filter];
       const availFil = state.availFilters[payload.filter][payload.key];
       if (activeFil === null) {
@@ -90,7 +91,10 @@ export const filtersSlice = createSlice({
     },
 
     reviewFilterToggled: (state, { payload }) => {
-      state.activeFilters[payload.type] = !state.activeFilters[payload.type];
+      const reviewedFilter = state.activeFilters[payload.type];
+      state.activeFilters[payload.type] = reviewedFilter === null 
+        ? false 
+        : null;
     },
 
     dateFilterChanged: (state, { payload }) => {
@@ -108,20 +112,19 @@ export const filtersSlice = createSlice({
     builder
       .addCase(getCamerasStart, (state, { payload }) => {
         state.availFilters.cameras.isLoading = true;
-        state.availFilters.deployments.isLoading = true;  // maybe don't need
+        state.availFilters.deployments.isLoading = true;
       })          
       .addCase(getCamerasFailure, (state, { payload }) => {
         state.availFilters.cameras.isLoading = false;
         state.availFilters.cameras.error = payload;
   
-        state.availFilters.deployments.isLoading = false;  // maybe don't need
-        state.availFilters.deployments.error = payload;  // maybe don't need
+        state.availFilters.deployments.isLoading = false;
+        state.availFilters.deployments.error = payload;
       })      
       .addCase(getCamerasSuccess, (state, { payload }) => {
-        console.log('getCamerasSuccess: ', payload);
-
-        state.availFilters.deployments.isLoading = false;  // maybe don't need
-        state.availFilters.deployments.error = null;  // maybe don't need
+        // update deployment filters state
+        state.availFilters.deployments.isLoading = false;
+        state.availFilters.deployments.error = null;
         const depsInState = state.availFilters.deployments.ids;
         const newDeployments = payload.cameras.reduce((acc, camera) => {
           for (const dep of camera.deployments) {
@@ -129,18 +132,18 @@ export const filtersSlice = createSlice({
           }
           return acc;
         },[]);
-        console.log('newDeployments: ', newDeployments);
         
         for (const dep of newDeployments) {
           if (!depsInState.includes(dep._id)) {
             state.availFilters.deployments.ids.push(dep._id);
           }
         }
-  
+        
+        // update camera filters state
         state.availFilters.cameras.isLoading = false;
         state.availFilters.cameras.error = null;
         const camsInState = state.availFilters.cameras.ids;
-        for (const camera in payload.cameras) {
+        for (const camera of payload.cameras) {
           if (!camsInState.includes(camera._id)) {
             state.availFilters.cameras.ids.push(camera._id);
           }

@@ -23,6 +23,7 @@ export const viewsSlice = createSlice({
     },
 
     getViewsSuccess: (state, { payload }) => {
+      // console.log('getViewsSuccess: ', JSON.stringify(payload, undefined, 2))
       state.isLoading = false;
       state.error = null;
       const viewsInState = state.views.map((view) => view._id);
@@ -114,14 +115,13 @@ export const {
 // fetchViews thunk
 export const fetchViews = () => async dispatch => {
   try {
-    
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
    
     if(token){
       dispatch(getViewsStart());  
-      console.log("Trying to get views");
       const views = await call('getViews');
+      console.log('fetchViews: ', JSON.stringify(views, undefined, 2))
       dispatch(getViewsSuccess(views));
     }
   } catch (err) {

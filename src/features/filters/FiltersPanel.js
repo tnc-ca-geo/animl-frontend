@@ -34,11 +34,11 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!availCameras.ids.length &&
-        !availCameras.noneFound && 
-        !availCameras.error) {
-      dispatch(fetchCameras());
-    }
+    // if (!availCameras.ids.length &&
+    //     !availCameras.noneFound && 
+    //     !availCameras.error) {
+    //   dispatch(fetchCameras());
+    // }
     if (!availLabels.categories.length && 
         !availLabels.noneFound && 
         !availLabels.error) {

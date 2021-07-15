@@ -31,7 +31,7 @@ const ReviewFilter = () => {
       <CheckboxWrapper>
         <label>
           <Checkbox
-            checked={reviewed}
+            checked={reviewed === null || reviewed}
             data-obj-filter={'reviewed'}
             onChange={handleCheckboxChange}
           />

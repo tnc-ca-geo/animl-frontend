@@ -4,6 +4,7 @@ import {
   checkboxFilterToggled,
   dateFilterChanged,
   setActiveFilters,
+  reviewFilterToggled,
   selectActiveFilters
 } from '../filters/filtersSlice';
 import {
@@ -21,6 +22,7 @@ export const diffFiltersMiddleware = store => next => action => {
 
   if (checkboxFilterToggled.match(action) ||
       dateFilterChanged.match(action) ||
+      reviewFilterToggled.match(action) ||
       setSelectedView.match(action) ||
       saveViewSuccess.match(action)) {
 
@@ -28,39 +30,45 @@ export const diffFiltersMiddleware = store => next => action => {
     const selectedView = selectSelectedView(store.getState());
 
     if (activeFilters && selectedView) {
+      console.log('trying to match: ')
+      console.log('activeFilters: ', activeFilters)
+      console.log('and selectedView.filters: ', selectedView.filters)
       const match = _.isEqual(activeFilters, selectedView.filters);
       store.dispatch(setUnsavedChanges(!match));
     }
   }
 };
 
-export const normalizeDatesMiddleware = store => next => action => {
-  const convertViewDates = (view) => {
-    const dateFields = [
-      'createdStart',
-      'createdEnd',
-      'addedStart',
-      'addedEnd'
-    ];
-    dateFields.forEach((df) => {
-      if (view.filters[df] !== null) {
-        view.filters[df] = moment(view.filters[df]).format(DFE);
-      }
-    });
-    return view;
-  };
+// TODO: Don't need this anymore b/c we're converting all dates returned by 
+// api to EXIF format
 
-  if (getViewsSuccess.match(action)) {
-    action.payload.views = action.payload.views.map((view) => (
-      convertViewDates(view)
-    ));
-  }
-  else if (saveViewSuccess.match(action)) {
-    action.payload = convertViewDates(action.payload);
-  }
+// export const normalizeDatesMiddleware = store => next => action => {
+//   const convertViewDates = (view) => {
+//     const dateFields = [
+//       'createdStart',
+//       'createdEnd',
+//       'addedStart',
+//       'addedEnd'
+//     ];
+//     dateFields.forEach((df) => {
+//       if (view.filters[df] !== null) {
+//         view.filters[df] = moment(view.filters[df]).format(DFE);
+//       }
+//     });
+//     return view;
+//   };
 
-  next(action);
-};
+//   if (getViewsSuccess.match(action)) {
+//     action.payload.views = action.payload.views.map((view) => (
+//       convertViewDates(view)
+//     ));
+//   }
+//   else if (saveViewSuccess.match(action)) {
+//     action.payload = convertViewDates(action.payload);
+//   }
+
+//   next(action);
+// };
 
 export const setSelectedViewMiddleware = store => next => action => {
   if (setSelectedView.match(action)) {

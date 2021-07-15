@@ -14,7 +14,7 @@ const CheckboxLabel = styled.span({
 });
 
 const CheckboxWrapper = styled.div({
-  marginBottom: '$1',
+  marginBottom: '$2',
 });
 
 const LabelFilter = ({ availLabels, activeLabels }) => {
