@@ -3,21 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { styled } from '../../theme/stitches.config.js';
 import { checkboxFilterToggled, selectActiveFilters } from './filtersSlice';
 import { fetchCameras, selectCameras } from '../cameras/camerasSlice';
-
 import Checkbox from '../../components/Checkbox';
+import { CheckboxLabel } from '../../components/CheckboxLabel';
 
 const CameraSection = styled.div({
   fontFamily: '$mono',
   fontSize: '$3',
-});
-
-const CheckboxLabel = styled.span({
-  marginLeft: '$2',
-  fontFamily: '$mono',
-  fontSize: '$3',
-  ':hover': {
-    cursor: 'pointer',
-  },
 });
 
 const DeploymentCheckboxWrapper = styled.div({
@@ -56,40 +47,42 @@ const CameraFilter = ({ availCams, activeCams }) => {
   return (
     <div>
       {cameras.cameras.map((camera) => {
+        const checked = activeCams === null || activeCams.includes(camera._id);
+        
         return (
           <CameraSection key={camera._id}>
 
             <CheckboxWrapper key={camera._id}>
               <label>
                 <Checkbox
-                  checked={activeCams === null || 
-                    activeCams.includes(camera._id)
-                  }
+                  checked={checked}
                   data-filter={'cameras'}
                   data-key={'ids'}
                   data-sn={camera._id}
                   onChange={handleCheckboxChange}
                 />
-                <CheckboxLabel>{camera._id}</CheckboxLabel>
+                <CheckboxLabel checked={checked}>{camera._id}</CheckboxLabel>
               </label>
             </CheckboxWrapper>
 
-            {camera.deployments.map((deployment) => (
-              <DeploymentCheckboxWrapper key={deployment._id}>
-                <label>
-                  <Checkbox
-                    checked={activeDeps === null ||
-                      activeDeps.includes(deployment._id)
-                    }
-                    data-filter={'deployments'}
-                    data-key={'ids'}
-                    data-sn={deployment._id}
-                    onChange={handleCheckboxChange}
-                  />
-                  <CheckboxLabel>{deployment.name}</CheckboxLabel>
-                </label>
-              </DeploymentCheckboxWrapper>
-            ))}
+            {camera.deployments.map((deployment) => {
+              const checked = activeDeps === null || 
+                              activeDeps.includes(deployment._id);
+              return (
+                <DeploymentCheckboxWrapper key={deployment._id}>
+                  <label>
+                    <Checkbox
+                      checked={checked}
+                      data-filter={'deployments'}
+                      data-key={'ids'}
+                      data-sn={deployment._id}
+                      onChange={handleCheckboxChange}
+                    />
+                    <CheckboxLabel checked={checked}>{deployment.name}</CheckboxLabel>
+                  </label>
+                </DeploymentCheckboxWrapper>
+              )
+            })}
           </CameraSection>
         )
       })}

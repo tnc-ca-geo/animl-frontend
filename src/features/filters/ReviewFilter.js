@@ -3,15 +3,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { useDispatch, useSelector } from 'react-redux'
 import { reviewFilterToggled, selectReviewed } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
-
-const CheckboxLabel = styled.span({
-  marginLeft: '$2',
-  fontFamily: '$mono',
-  fontSize: '$3',
-  ':hover': {
-    cursor: 'pointer',
-  },
-});
+import { CheckboxLabel } from '../../components/CheckboxLabel';
 
 const CheckboxWrapper = styled.div({
   marginBottom: '$1',
@@ -35,7 +27,11 @@ const ReviewFilter = () => {
             data-obj-filter={'reviewed'}
             onChange={handleCheckboxChange}
           />
-          <CheckboxLabel>reviewed images</CheckboxLabel>
+          <CheckboxLabel
+            checked={reviewed === null || reviewed}
+          >
+            reviewed images
+          </CheckboxLabel>
         </label>
       </CheckboxWrapper>
     </>

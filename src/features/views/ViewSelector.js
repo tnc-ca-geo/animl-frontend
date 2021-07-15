@@ -14,6 +14,7 @@ import {
  } from './viewsSlice';
 
 const ViewMenuItem = styled('li', {
+  color: '$hiContrast',
   padding: '$2 $3',
   fontWeight: '$2',
   ':hover': {

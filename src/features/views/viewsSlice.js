@@ -70,7 +70,6 @@ export const viewsSlice = createSlice({
 
     setSelectedView: (state, { payload }) => {
       if (payload.dirty) {
-        console.log('selected view changed: ', payload);
         state.views.forEach((view) => {
           view.selected = view._id === payload.view._id;
         });
@@ -121,7 +120,6 @@ export const fetchViews = () => async dispatch => {
     if(token){
       dispatch(getViewsStart());  
       const views = await call('getViews');
-      console.log('fetchViews: ', JSON.stringify(views, undefined, 2))
       dispatch(getViewsSuccess(views));
     }
   } catch (err) {
