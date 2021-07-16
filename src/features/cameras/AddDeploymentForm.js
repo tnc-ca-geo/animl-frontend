@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import moment from 'moment';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { DATE_FORMAT_EXIF as EXIF } from '../../config';
+
 
 import {
   selectViewsLoading,
@@ -53,14 +56,17 @@ const newDeploymentSchema = Yup.object().shape({
   longitude: Yup.number().test(
     'is-decimal',
     'Coordinates must be in decimal degrees',
-    value => (value + "").match(/^\d*\.{1}\d*$/),
+    value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
   ),
   latitude: Yup.number().test(
     'is-decimal',
     'Coordinates must be in decimal degrees',
-    value => (value + "").match(/^\d*\.{1}\d*$/),
+    value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/), 
   ),
-  // startDate: Yup.date().required(),
+  startDate: Yup.date().transform((value, originalValue) => {
+    value = moment(originalValue, EXIF);
+    return value.isValid() ? value.toDate() : new Date('');
+  }).required(),
 });
 
 const AddDeploymentForm = ({ cameraId, handleClose }) => {

@@ -22,6 +22,15 @@ const DepButtons = styled.div({
 
 });
 
+const DateDash = styled.span({
+  paddingLeft: '15px',
+  paddingRight: '15px',
+})
+
+const Date = styled.span({
+  width: '80px',
+})
+
 const DepDates = styled.div({
   display: 'flex',
   alignItems: 'center',
@@ -85,7 +94,9 @@ const CameraList = ({ cameras, handleAddDepButtonClick }) => {
               <DeploymentItem key={dep._id}> 
                 <DepName>{dep.name}</DepName>
                 <DepDates>
-                  {dep.startDate && format(dep.startDate)} - {dep.endDate && format(dep.endDate)}
+                  <Date>{dep.startDate && format(dep.startDate)}</Date>
+                  <DateDash>-</DateDash>
+                  <Date>{dep.endDate && format(dep.endDate)}</Date>
                 </DepDates>
                 <DepButtons>
                   <IconButton
