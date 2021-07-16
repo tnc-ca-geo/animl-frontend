@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectSelectedView } from './viewsSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
+import CameraAdminModal from '../cameras/CameraAdminModal';
 import AutomationRulesForm from './AutomationRulesForm';
 import SaveViewForm from './SaveViewForm';
 import DeleteViewForm from './DeleteViewForm';
@@ -50,6 +51,27 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         <FontAwesomeIcon icon={['fas', 'cog']} />
       </MenuButton>
       */}
+
+      <MenuButton
+        variant='ghost'
+        disabled={!selectedView}
+        state={modalOpen && (modalContent === 'camera-admin-modal') 
+          ? 'active' 
+          : ''
+        }
+        onClick={() => handleModalToggle('camera-admin-modal')}
+      >
+        <FontAwesomeIcon icon={['fas', 'camera']} />
+      </MenuButton>
+      {(modalOpen && (modalContent === 'camera-admin-modal')) &&
+        <Modal 
+          handleClose={handleModalToggle}
+          title='Manage Cameras'
+          size='md'
+        >
+          <CameraAdminModal/>
+        </Modal>
+      }
 
       <MenuButton
         variant='ghost'
