@@ -11,7 +11,7 @@ import Button from './Button';
 // })
 
 const SignOutButton = styled(Button, {
-
+  borderRadius: '$1',
 });
 
 const Logo = styled(Link, {

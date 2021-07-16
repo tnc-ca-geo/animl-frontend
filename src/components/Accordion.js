@@ -14,7 +14,7 @@ const AccordionHeader = styled.div({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  fontWeight: '$2',
+  fontWeight: '$3',
   fontFamily: '$roboto',
   height: '$7',
   borderBottom: '$1 solid $gray400',

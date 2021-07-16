@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
+import { enrichCameras } from './utils';
 
 const initialState = {
   cameras: [],
@@ -56,7 +57,8 @@ export const fetchCameras = () => async dispatch => {
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if(token){
       dispatch(getCamerasStart());
-      const cameras = await call('getCameras');
+      let cameras = await call('getCameras');
+      cameras = enrichCameras(cameras);
       dispatch(getCamerasSuccess(cameras));
     }
   } catch (err) {
