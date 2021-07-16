@@ -10,10 +10,6 @@ import Button from './Button';
 //   backgroundColor: '$hiContrast',
 // })
 
-const SignOutButton = styled(Button, {
-  borderRadius: '$1',
-});
-
 const Logo = styled(Link, {
   position: 'absolute',
   display: 'flex',
@@ -77,12 +73,12 @@ const NavBar = () => {
       <ViewSelectorWrapper>
         <ViewSelector />
       </ViewSelectorWrapper>
-      <SignOutButton
+      <Button
         onClick={handleSignOutButtonClick}
         size='small'
       >
         Sign out
-      </SignOutButton>
+      </Button>
     </StyledNav>
   );
 };

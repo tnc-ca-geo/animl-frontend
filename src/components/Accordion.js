@@ -25,7 +25,7 @@ const AccordionHeader = styled.div({
   },
 });
 
-const Accordion = ({ children, expandedDefault, label }) => {
+const Accordion = ({ children, expandedDefault, label, headerButtons }) => {
   const [expanded, setExpanded] = useState(expandedDefault)
 
   const handleAccordionHeaderClick = () => {
@@ -36,11 +36,14 @@ const Accordion = ({ children, expandedDefault, label }) => {
     <div>
       <AccordionHeader onClick={handleAccordionHeaderClick}>
         {label}
-        <IconButton variant='ghost'>
-          <FontAwesomeIcon icon={ 
-            expanded ? ['fas', 'angle-up'] : ['fas', 'angle-down']
-          }/>
-        </IconButton>
+        <div>
+          {headerButtons}
+          <IconButton variant='ghost'>
+            <FontAwesomeIcon icon={ 
+              expanded ? ['fas', 'angle-up'] : ['fas', 'angle-down']
+            }/>
+          </IconButton>
+        </div>
       </AccordionHeader>
       {expanded && (
         <AccordionBody>

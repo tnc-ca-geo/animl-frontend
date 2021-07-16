@@ -211,7 +211,7 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
                 size='large'
                 onClick={handleDiscardRuleClick}
               >
-                Discard
+                Cancel
               </Button>
               <Button
                 type='submit'

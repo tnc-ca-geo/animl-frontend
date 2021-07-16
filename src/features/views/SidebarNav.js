@@ -96,6 +96,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
       <MenuButton
         variant='ghost'
+        disabled={!selectedView}
         state={modalOpen && (modalContent === 'save-view-form') 
           ? 'active' 
           : ''
@@ -116,7 +117,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       
       <MenuButton
         variant='ghost'
-        disabled={selectedView && !selectedView.editable}
+        disabled={!selectedView || !selectedView.editable}
         state={modalOpen && (modalContent === 'delete-view-form') 
           ? 'active' 
           : ''
