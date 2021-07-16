@@ -21,6 +21,7 @@ import {
   FormError,
   HelperText,
 } from '../../components/Form';
+import DatePickerWithFormik from '../../components/DatePicker';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const FormHeader = styled.div({
@@ -59,6 +60,7 @@ const newDeploymentSchema = Yup.object().shape({
     'Coordinates must be in decimal degrees',
     value => (value + "").match(/^\d*\.{1}\d*$/),
   ),
+  // startDate: Yup.date().required(),
 });
 
 const AddDeploymentForm = ({ cameraId, handleClose }) => {
@@ -94,6 +96,10 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
     setQueuedForClose(true);
   };
 
+  const handleAddDeploymentSubmit = (formVals) => {
+    console.log('form submitted with values: ', formVals);
+  };
+
   return (
     <div>
       <FormHeader>Add deployment to camera {cameraId}</FormHeader>
@@ -102,14 +108,14 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
           initialValues={{
             name: '',
             description: '',
-            latitude: null,
-            longitude: null,
+            latitude: '',
+            longitude: '',
             startDate: null,
             editable: true,
           }}
           validationSchema={newDeploymentSchema}
           onSubmit={(values) => {
-            handleSaveViewSubmit(saveMode, selectedView, values);
+            handleAddDeploymentSubmit(values);
           }}              >
           {({ errors, touched, isValid, dirty }) => (
             <Form>
@@ -149,7 +155,7 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
                     name='latitude'
                   />
                 </FormFieldWrapper>
-                  <FormFieldWrapper>
+                <FormFieldWrapper>
                   <label htmlFor='longitude'>Longitude</label>
                   <Field
                     name='longitude'
@@ -161,6 +167,22 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
                   />
                 </FormFieldWrapper>
               </FieldRow>
+
+              <FieldRow>
+                <FormFieldWrapper>
+                  <label htmlFor='startDate'>Start Date</label>
+                  <Field
+                    component={DatePickerWithFormik}
+                    // name="DatePickerWithFormik"
+                    className="form-control"
+                  />
+                  <ErrorMessage
+                    component={FormError}
+                    name='startDate'
+                  />
+                </FormFieldWrapper>
+              </FieldRow>
+
               <Field
                 name='editable'
                 type='hidden'
