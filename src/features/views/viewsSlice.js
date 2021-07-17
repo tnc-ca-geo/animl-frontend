@@ -129,6 +129,7 @@ export const fetchViews = () => async dispatch => {
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?
+// or take the more consolodated approach in editLabels thunk (imagesSlice.js)
 export const editView = (operation, payload) => {
   return async (dispatch, getState) => {
     try {

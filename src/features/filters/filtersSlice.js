@@ -126,7 +126,7 @@ export const filtersSlice = createSlice({
         state.availFilters.deployments.isLoading = false;
         state.availFilters.deployments.error = null;
         const depsInState = state.availFilters.deployments.ids;
-        const newDeployments = payload.cameras.reduce((acc, camera) => {
+        const newDeployments = payload.reduce((acc, camera) => {
           for (const dep of camera.deployments) {
             acc.push(dep);
           }
@@ -143,12 +143,12 @@ export const filtersSlice = createSlice({
         state.availFilters.cameras.isLoading = false;
         state.availFilters.cameras.error = null;
         const camsInState = state.availFilters.cameras.ids;
-        for (const camera of payload.cameras) {
+        for (const camera of payload) {
           if (!camsInState.includes(camera._id)) {
             state.availFilters.cameras.ids.push(camera._id);
           }
         }
-        if (payload.cameras.length === 0) {
+        if (payload.length === 0) {
           state.availFilters.cameras.noneFound = true;
         }
       });

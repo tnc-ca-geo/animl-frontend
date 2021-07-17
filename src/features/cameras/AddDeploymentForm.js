@@ -2,19 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import { styled } from '../../theme/stitches.config.js';
+import { ObjectID } from 'bson';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
-
-
-import {
-  selectViewsLoading,
-  selectSelectedView,
-  selectUnsavedViewChanges,
-  editView,
-} from '../views/viewsSlice';
-import { selectActiveFilters } from '../filters/filtersSlice';
+import { editDeployments, selectCamerasLoading } from './camerasSlice';
 import Button from '../../components/Button';
 import {
   FormWrapper,
@@ -72,42 +65,47 @@ const newDeploymentSchema = Yup.object().shape({
 const AddDeploymentForm = ({ cameraId, handleClose }) => {
   const [saveMode, setSaveMode] = useState();
   const [queuedForClose, setQueuedForClose ] = useState(false);
-  const viewsLoading = useSelector(selectViewsLoading);
-  const selectedView = useSelector(selectSelectedView);
-  const activeFilters = useSelector(selectActiveFilters);
-  const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
+  const camerasLoading = useSelector(selectCamerasLoading);
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !viewsLoading) {
+    if (queuedForClose && !camerasLoading) {
       handleClose();
     }
-  }, [queuedForClose, viewsLoading, handleClose])
+  }, [queuedForClose, camerasLoading, handleClose])
 
   const handleSaveModeSelection = (mode) => {
     setSaveMode(mode);
   };
 
-  const handleSaveViewSubmit = (operation, selectedView, formVals) => {
-    const payload = (operation === 'update')
-      ? {
-          _id: selectedView._id,
-          diffs: {
-            filters: formVals.filters,
-          }
-        }
-      : formVals;
-    dispatch(editView(operation, payload));
-    setQueuedForClose(true);
-  };
-
   const handleAddDeploymentSubmit = (formVals) => {
     console.log('form submitted with values: ', formVals);
+    const lon = parseFloat(formVals.longitude);
+    const lat = parseFloat(formVals.latitude);
+    dispatch(editDeployments('createDeployment', {
+      cameraId,
+      deployment: {
+        _id: new ObjectID().toString(),
+        name: formVals.name,
+        description: formVals.description,
+        location: {
+          _id: new ObjectID().toString(),
+          geometry: { type: 'Point', coordinates: [lon, lat] },
+        },
+        startDate: formVals.startDate,
+      }
+    }));
+    setQueuedForClose(true);
   };
 
   return (
     <div>
+      {camerasLoading &&
+        <SpinnerOverlay>
+          <PulseSpinner />
+        </SpinnerOverlay>
+      }
       <FormHeader>Add deployment to camera {cameraId}</FormHeader>
       <FormWrapper>
         <Formik

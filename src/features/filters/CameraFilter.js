@@ -34,7 +34,7 @@ const CameraFilter = ({ availCams, activeCams }) => {
         !cameras.error) {
       dispatch(fetchCameras());
     }
-  }, [cameras, dispatch]);
+  }, [cameras.cameras, cameras.noneFound, cameras.error, dispatch]);
 
   const handleCheckboxChange = (e) => {
     dispatch(checkboxFilterToggled({

@@ -293,6 +293,44 @@ const queries = {
     variables: { input: input },
   }),
 
+  createDeployment: (input) => ({
+    template: `
+      mutation CreateDeployment($input: CreateDeploymentInput!) {
+        createDeployment(input: $input) {
+          camera {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateDeployment: (input) => ({
+    template: `
+      mutation UpdateDeployment($input: UpdateDeploymentInput!) {
+        updateDeployment(input: $input) {
+          camera {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteDeployment: (input) => ({
+    template: `
+      mutation DeleteDeployment($input: DeleteDeploymentInput!) {
+        deleteDeployment(input: $input) {
+          camera {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
 };
 
 export default queries;

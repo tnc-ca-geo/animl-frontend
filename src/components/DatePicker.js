@@ -85,6 +85,8 @@ const DatePickerWithFormik = ({
         id='startDate'
         small={true}
         hideKeyboardShortcutsPanel={true}
+        enableOutsideDays={true}
+        isOutsideRange={() => false}
       />
     </StyledDateRangePicker>
   );
