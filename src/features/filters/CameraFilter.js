@@ -7,13 +7,14 @@ import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 
 const CameraSection = styled.div({
-  fontFamily: '$mono',
+  // fontFamily: '$mono',
   fontSize: '$3',
+  borderBottom: '$1 solid $gray400',
 });
 
 const DeploymentCheckboxWrapper = styled.div({
   marginBottom: '$2',
-  marginLeft: '$4',
+  marginLeft: '$5',
 });
 
 

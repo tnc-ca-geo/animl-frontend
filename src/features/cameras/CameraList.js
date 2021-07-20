@@ -52,27 +52,21 @@ const DeploymentItem = styled.div({
 });
 
 const AddDeploymentButton = (props) => {
-  const { handleAddDepButtonClick, cameraId } = props;
-  console.log('cameraId: ', cameraId);
+  const { handleSaveDepClick, cameraId } = props;
   return (
     <IconButton
       variant='ghost'
       size='small'
-      onClick={() => handleAddDepButtonClick(cameraId)}
+      onClick={() => handleSaveDepClick({cameraId})}
     >
       <FontAwesomeIcon icon={['fas', 'plus']}/>
     </IconButton>
   )
 };
 
-const CameraList = ({ cameras, handleAddDepButtonClick }) => {
-  // const cameras = useSelector(selectCameras);
-  const dispatch = useDispatch();
-
-  const handleButtonClick = () => {
-
-  };
-  console.log('cameras: ', cameras)
+const CameraList = ({ cameras, handleSaveDepClick }) => {
+  const handleButtonClick = () => {};
+  console.log('cameras: ', cameras);
   const format = (date) => moment(date, EXIF).format('MM-DD-YY');
 
   return (
@@ -85,7 +79,7 @@ const CameraList = ({ cameras, handleAddDepButtonClick }) => {
             expandedDefault={true}
             headerButtons={
               <AddDeploymentButton
-                handleAddDepButtonClick={handleAddDepButtonClick}
+                handleSaveDepClick={handleSaveDepClick}
                 cameraId={cam._id}
               />
             }
@@ -102,7 +96,11 @@ const CameraList = ({ cameras, handleAddDepButtonClick }) => {
                   <IconButton
                     variant='ghost'
                     size='small'
-                    onClick={handleButtonClick}
+                    onClick={() => handleSaveDepClick({
+                      cameraId: cam._id,
+                      deployment: dep,
+                    })}
+                    disabled={dep.editable === false}
                   >
                     <FontAwesomeIcon icon={['fas', 'pen']}/>
                   </IconButton>
@@ -110,6 +108,7 @@ const CameraList = ({ cameras, handleAddDepButtonClick }) => {
                     variant='ghost'
                     size='small'
                     onClick={handleButtonClick}
+                    disabled={dep.editable === false}
                   >
                     <FontAwesomeIcon icon={['fas', 'times']}/>
                   </IconButton>

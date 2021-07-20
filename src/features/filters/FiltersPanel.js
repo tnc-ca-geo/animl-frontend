@@ -24,7 +24,9 @@ const StyledFiltersPanel = styled.div({
   borderRight: '$1 solid $gray400',
   flexGrow: '0',
   flexShrink: '0',
-  flexBasis: '300px', 
+  flexBasis: '300px',
+  height: 'calc(100vh - 56px)',
+  overflowY: 'scroll',
 });
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {

@@ -62,11 +62,35 @@ const newDeploymentSchema = Yup.object().shape({
   }).required(),
 });
 
-const AddDeploymentForm = ({ cameraId, handleClose }) => {
-  const [saveMode, setSaveMode] = useState();
+const initialValsCreate = {
+  name: '',
+  description: '',
+  latitude: '',
+  longitude: '',
+  startDate: null,
+  editable: true,
+};
+
+const SaveDeploymentForm = ({ cameraId, deployment, handleClose }) => {
+  const mode = deployment ? 'updateDeployment' : 'createDeployment';
+  const [saveMode, setSaveMode] = useState(mode);
   const [queuedForClose, setQueuedForClose ] = useState(false);
   const camerasLoading = useSelector(selectCamerasLoading);
   const dispatch = useDispatch();
+  const initialValues = saveMode === 'createDeployment' 
+    ? initialValsCreate
+    : {
+        name: deployment.name,
+        description: deployment.description,
+        latitude: deployment.location.geometry.coordinates[1],
+        longitude: deployment.location.geometry.coordinates[0],
+        startDate: deployment.startDate,
+        editable: deployment.editable,
+      };
+  
+  console.log('deployment: ', deployment)
+
+  console.log('initial form vals:', initialValues)
 
   // TODO: extract into hook?
   useEffect(() => {
@@ -75,27 +99,56 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
     }
   }, [queuedForClose, camerasLoading, handleClose])
 
-  const handleSaveModeSelection = (mode) => {
-    setSaveMode(mode);
+  // useEffect(() => {
+  //   const mode = deployment ? 'updateDeployment' : 'createDeployment';
+  //   setSaveMode(mode);
+  // }, [deployment])
+
+  const createLocation = (lat, lon) => ({
+    _id: new ObjectID().toString(),
+    geometry: { type: 'Point', coordinates: [lon, lat]}
+  });
+
+  const diff = (formVals, deployment) => {
+    let diffs = {};
+    if (formVals.name !== deployment.name) {
+      diffs.name = formVals.name;
+    }
+    else if (formVals.description !== deployment.description) {
+      diffs.description = formVals.description;
+    }
+    else if (formVals.startDate !== deployment.startDate) {
+      diffs.startDate = formVals.startDate;
+    }
+    else if ((formVals.latitude !== deployment.latitude) ||
+             (formVals.longitude !== deployment.longitude)) {
+      diffs.location = createLocation(formVals.latitude, formVals.longitude);
+    }
+    return diffs;
   };
 
-  const handleAddDeploymentSubmit = (formVals) => {
+  const handleSaveDeploymentSubmit = (operation, formVals) => {
     console.log('form submitted with values: ', formVals);
-    const lon = parseFloat(formVals.longitude);
-    const lat = parseFloat(formVals.latitude);
-    dispatch(editDeployments('createDeployment', {
-      cameraId,
-      deployment: {
-        _id: new ObjectID().toString(),
-        name: formVals.name,
-        description: formVals.description,
-        location: {
-          _id: new ObjectID().toString(),
-          geometry: { type: 'Point', coordinates: [lon, lat] },
-        },
-        startDate: formVals.startDate,
-      }
-    }));
+    formVals.longitude = parseFloat(formVals.longitude);
+    formVals.latitude = parseFloat(formVals.latitude);
+    const payload = operation === 'updateDeployment'
+      ? {
+          cameraId,
+          deploymentId: deployment._id,
+          diffs: diff(formVals, deployment),
+        }
+      : {
+          cameraId,
+          deployment: {
+            _id: new ObjectID().toString(),
+            name: formVals.name,
+            description: formVals.description,
+            location: createLocation(formVals.latitude, formVals.longitude),
+            startDate: formVals.startDate,
+          }
+        };
+
+    dispatch(editDeployments(operation, payload));
     setQueuedForClose(true);
   };
 
@@ -106,21 +159,20 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
           <PulseSpinner />
         </SpinnerOverlay>
       }
-      <FormHeader>Add deployment to camera {cameraId}</FormHeader>
+      <FormHeader>
+        {(saveMode === 'createDeployment')
+          ? <span>Add deployment to camera {cameraId}</span>
+          : <span>Updated deployment {deployment.name} on camera {cameraId}</span>
+        }
+      </FormHeader>
       <FormWrapper>
         <Formik
-          initialValues={{
-            name: '',
-            description: '',
-            latitude: '',
-            longitude: '',
-            startDate: null,
-            editable: true,
-          }}
+          initialValues={initialValues}
           validationSchema={newDeploymentSchema}
           onSubmit={(values) => {
-            handleAddDeploymentSubmit(values);
-          }}              >
+            handleSaveDeploymentSubmit(saveMode, values);
+          }}
+        >
           {({ errors, touched, isValid, dirty }) => (
             <Form>
               <FieldRow>
@@ -216,5 +268,5 @@ const AddDeploymentForm = ({ cameraId, handleClose }) => {
   );
 };
 
-export default AddDeploymentForm;
+export default SaveDeploymentForm;
 

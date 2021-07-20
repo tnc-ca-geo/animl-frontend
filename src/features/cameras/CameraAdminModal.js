@@ -4,7 +4,7 @@ import { styled } from '../../theme/stitches.config';
 import moment from 'moment';
 import { selectCameras } from './camerasSlice';
 import CameraList from './CameraList';
-import AddDeploymentForm from './AddDeploymentForm';
+import SaveDeploymentForm from './SaveDeploymentForm';
 import Accordion from '../../components/Accordion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
@@ -17,31 +17,33 @@ import {
 
 const CameraAdminModal = () => {
   const cameras = useSelector(selectCameras);
-  const [ showAddDeploymentForm, setShowAddDeploymentForm ] = useState(false);
+  const [ showSaveDeploymentForm, setShowSaveDeploymentForm ] = useState(false);
   const [ cameraSelected, setCameraSelected ] = useState();
+  const [ deploymentSelected, setDeploymentSelected ] = useState();
 
 
-  const handleAddDepButtonClick = (cameraId) => {
-    setShowAddDeploymentForm(true);
-    console.log('cameraId: ', cameraId)
-    setCameraSelected(cameraId)
+  const handleSaveDepClick = ({ cameraId, deployment }) => {
+    setShowSaveDeploymentForm(true);
+    setCameraSelected(cameraId);
+    setDeploymentSelected(deployment);
   };
 
   const handleDiscardDeploymentClick = () => {
-    setShowAddDeploymentForm(false);
+    setShowSaveDeploymentForm(false);
   };
 
   return (
     <div>
       {cameras.cameras.length
-        ? showAddDeploymentForm
-          ? <AddDeploymentForm
+        ? showSaveDeploymentForm
+          ? <SaveDeploymentForm
               cameraId={cameraSelected}
+              deployment={deploymentSelected}
               handleClose={handleDiscardDeploymentClick}
             />
           : <CameraList
               cameras={cameras}
-              handleAddDepButtonClick={handleAddDepButtonClick}
+              handleSaveDepClick={handleSaveDepClick}
             />
         : <SpinnerOverlay>
             <PulseSpinner />
