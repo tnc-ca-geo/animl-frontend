@@ -16,7 +16,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware()
       .concat(diffFiltersMiddleware)
-      .concat(normalizeDatesMiddleware)
+      // .concat(normalizeDatesMiddleware)
       .concat(setSelectedViewMiddleware)
       // .concat(imagesMiddleware)
       .concat(reviewMiddleware)

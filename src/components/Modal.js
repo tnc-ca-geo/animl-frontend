@@ -25,10 +25,11 @@ const ModalContainer = styled.div({
       sm: {
         width: '30%',
         // height: '30%',
+        minWidth: '430px',
       },
       md: {
         width: '50%',
-        height: '50%',
+        // height: '50%',
       },
       lg: {
         width: '95%',

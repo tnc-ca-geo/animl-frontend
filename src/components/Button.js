@@ -27,7 +27,7 @@ const Button = styled('button', {
   color: '$loContrast',
   backgroundColor: '$hiContrast',
   border: '$1 solid $hiContrast',
-  borderRadius: '$2',
+  borderRadius: '$1',
   height: '$5',
   fontWeight: '$3',
   textTransform: 'uppercase',

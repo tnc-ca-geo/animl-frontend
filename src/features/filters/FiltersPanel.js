@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
+import { fetchCameras } from '../cameras/camerasSlice';
 import {
-  fetchCameras,
   fetchLabels,
   selectActiveFilters,
   selectAvailCameras,
@@ -11,6 +11,7 @@ import {
 import PanelHeader from '../../components/PanelHeader';
 import Accordion from '../../components/Accordion';
 import CameraFilter from './CameraFilter';
+import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 
@@ -23,7 +24,9 @@ const StyledFiltersPanel = styled.div({
   borderRight: '$1 solid $gray400',
   flexGrow: '0',
   flexShrink: '0',
-  flexBasis: '300px', 
+  flexBasis: '300px',
+  height: 'calc(100vh - 56px)',
+  overflowY: 'scroll',
 });
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {
@@ -33,11 +36,11 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!availCameras.ids.length &&
-        !availCameras.noneFound && 
-        !availCameras.error) {
-      dispatch(fetchCameras());
-    }
+    // if (!availCameras.ids.length &&
+    //     !availCameras.noneFound && 
+    //     !availCameras.error) {
+    //   dispatch(fetchCameras());
+    // }
     if (!availLabels.categories.length && 
         !availLabels.noneFound && 
         !availLabels.error) {
@@ -69,6 +72,12 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
           availLabels={availLabels}
           activeLabels={activeFilters.labels}
         />
+      </Accordion>
+      <Accordion
+        label='Review'
+        expandedDefault={true}
+      >
+        <ReviewFilter/>
       </Accordion>
       <Accordion
         label='Date Created'

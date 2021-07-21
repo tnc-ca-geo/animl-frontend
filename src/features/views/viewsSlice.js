@@ -23,6 +23,7 @@ export const viewsSlice = createSlice({
     },
 
     getViewsSuccess: (state, { payload }) => {
+      // console.log('getViewsSuccess: ', JSON.stringify(payload, undefined, 2))
       state.isLoading = false;
       state.error = null;
       const viewsInState = state.views.map((view) => view._id);
@@ -69,7 +70,6 @@ export const viewsSlice = createSlice({
 
     setSelectedView: (state, { payload }) => {
       if (payload.dirty) {
-        console.log('selected view changed: ', payload);
         state.views.forEach((view) => {
           view.selected = view._id === payload.view._id;
         });
@@ -114,13 +114,11 @@ export const {
 // fetchViews thunk
 export const fetchViews = () => async dispatch => {
   try {
-    
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
    
     if(token){
       dispatch(getViewsStart());  
-      console.log("Trying to get views");
       const views = await call('getViews');
       dispatch(getViewsSuccess(views));
     }
@@ -131,6 +129,7 @@ export const fetchViews = () => async dispatch => {
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?
+// or take the more consolodated approach in editLabels thunk (imagesSlice.js)
 export const editView = (operation, payload) => {
   return async (dispatch, getState) => {
     try {

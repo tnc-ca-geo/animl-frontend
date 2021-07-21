@@ -7,7 +7,7 @@ import {
   dateFilterChanged,
 } from './filtersSlice';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
-import { DATE_FORMAT_EXIF as DFE } from '../../config';
+import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const selectorMap = {
   'created': selectDateCreatedFilter,
@@ -19,15 +19,15 @@ const DateFilter = ({ type }) => {
   const dispatch = useDispatch();
 
   const handleDatesChange = ({ startDate, endDate }) => {
-    startDate = startDate ? startDate.format(DFE) : null;
-    endDate = endDate ? endDate.format(DFE) : null;
+    startDate = startDate ? startDate.format(EXIF) : null;
+    endDate = endDate ? endDate.format(EXIF) : null;
     dispatch(dateFilterChanged({ startDate, endDate, type }));    
   };
 
   return (
     <DateRangePickerWrapper
-      sdate={start ? moment(start, DFE) : null}
-      edate={end ? moment(end, DFE) : null}
+      sdate={start ? moment(start, EXIF) : null}
+      edate={end ? moment(end, EXIF) : null}
       handleDatesChange={handleDatesChange}
     />
   );

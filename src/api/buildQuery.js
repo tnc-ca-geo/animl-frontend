@@ -1,3 +1,5 @@
+// TODO: Prune fields we're not using
+
 const viewFields = `
   _id
   name
@@ -5,11 +7,13 @@ const viewFields = `
   editable
   filters {
     cameras
+    deployments
     labels
     createdStart
     createdEnd
     addedStart
     addedEnd
+    reviewed
   }
   automationRules {
     _id
@@ -22,6 +26,26 @@ const viewFields = `
       type
       alertRecipient
       model
+    }
+  }
+`
+
+const cameraFields = `
+  _id
+  make
+  deployments {
+    _id
+    name
+    description
+    startDate
+    editable
+    location {
+      _id
+      geometry {
+        type
+        coordinates
+      }
+      name
     }
   }
 `
@@ -58,6 +82,7 @@ const imageFields = `
   cameraSn
   make
   originalFileName
+  deployment
   objects {
     ${objectFields}
   }`;
@@ -148,7 +173,7 @@ const queries = {
     template: `
       {
         cameras {
-          _id
+          ${cameraFields}
         }
       }
     `,
@@ -268,6 +293,44 @@ const queries = {
     variables: { input: input },
   }),
 
+  createDeployment: (input) => ({
+    template: `
+      mutation CreateDeployment($input: CreateDeploymentInput!) {
+        createDeployment(input: $input) {
+          camera {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateDeployment: (input) => ({
+    template: `
+      mutation UpdateDeployment($input: UpdateDeploymentInput!) {
+        updateDeployment(input: $input) {
+          camera {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteDeployment: (input) => ({
+    template: `
+      mutation DeleteDeployment($input: DeleteDeploymentInput!) {
+        deleteDeployment(input: $input) {
+          camera {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
 };
 
 export default queries;

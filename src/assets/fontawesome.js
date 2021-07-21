@@ -22,6 +22,8 @@ import {
   faLock,
   faUnlock,
   faCheck,
+  faCamera,
+  faPen,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -47,4 +49,6 @@ library.add(
   faLock,
   faUnlock,
   faCheck,
+  faCamera,
+  faPen,
 );

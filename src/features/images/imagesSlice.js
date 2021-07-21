@@ -31,7 +31,7 @@ export const imagesSlice = createSlice({
 
     clearImages: (state) => { state.images = []; },
 
-    getImagesStart: (state) => { state.pisLoading = true; },
+    getImagesStart: (state) => { state.isLoading = true; },
 
     getImagesFailure: (state, { payload }) => {
       state.isLoading = false;
@@ -145,37 +145,36 @@ export const fetchImages = (filters, page = 'current') => {
 
 // updateObjects thunk
 
-// TODO: right now we're taking a brute force approach: if there are any 
-// edits detected to an image's objects array, we send the whole array back to
-// the API replace the obejcts array that was in the image's DB record with 
-// the one the user had edited on the front end. 
-// This works but is crude and requires us to request ALL fields from the 
-// objects from the DB in the first place: if we forget to request a field and 
-// then edit & save the object that field/value will be lost forever. Not great.
-// It's risky b/c we need to (1) remember to request all object fields, which 
-// makes it hard to maintain and defeats purpose of graphQL, and we also need to 
-// (2) keep the object perfectly intact w/ no modification on the front end 
-// other than intended edits. 
-// We should move to a more granular approach to diffing changes and just 
-// requesting that the object's modified fields be updated instead. 
+// // TODO: right now we're taking a brute force approach: if there are any 
+// // edits detected to an image's objects array, we send the whole array back to
+// // the API replace the obejcts array that was in the image's DB record with 
+// // the one the user had edited on the front end. 
+// // This works but is crude and requires us to request ALL fields from the 
+// // objects from the DB in the first place: if we forget to request a field and 
+// // then edit & save the object that field/value will be lost forever. Not great.
+// // It's risky b/c we need to (1) remember to request all object fields, which 
+// // makes it hard to maintain and defeats purpose of graphQL, and we also need to 
+// // (2) keep the object perfectly intact w/ no modification on the front end 
+// // other than intended edits. 
+// // We should move to a more granular approach to diffing changes and just 
+// // requesting that the object's modified fields be updated instead. 
 
-export const updateObjects = (payload) => async dispatch => {
-  try {
-    const currUser = await Auth.currentAuthenticatedUser();
-    const token = currUser.getSignInUserSession().getIdToken().getJwtToken();
-    if (token) {
-      dispatch(updateObjectsStart());
-      let res = await call('updateObjects', payload);
-      dispatch(updateObjectsSuccess(res));
-    }
-  } catch (err) {
-    dispatch(updateObjectsFailure(err.toString()))
-  }
-};
+// export const updateObjects = (payload) => async dispatch => {
+//   try {
+//     const currUser = await Auth.currentAuthenticatedUser();
+//     const token = currUser.getSignInUserSession().getIdToken().getJwtToken();
+//     if (token) {
+//       dispatch(updateObjectsStart());
+//       let res = await call('updateObjects', payload);
+//       dispatch(updateObjectsSuccess(res));
+//     }
+//   } catch (err) {
+//     dispatch(updateObjectsFailure(err.toString()))
+//   }
+// };
   
 
 // editLabel thunk
-// TODO: maybe break this up into discrete thunks?
 export const editLabel = (operation, entity, payload) => {
   return async (dispatch, getState) => {
     try {
@@ -185,42 +184,13 @@ export const editLabel = (operation, entity, payload) => {
         throw new Error(err);
       }
       dispatch(editLabelStart());
+      // TODO: do we really need to pass in the operation and entity separately?
+      // why not just do one string, e.g.: 'createObject'
       const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
-      console.log('request: ', req);
       const res = await call(req, payload);
-      console.log('res: ', res);
       const mutation = Object.keys(res)[0];
       const image = res[mutation].image;
       dispatch(editLabelSuccess(image));
-
-      // switch (operation) {
-      //   case 'create': {
-      //     const res = entity === 'object'
-      //       ? await call('createObject', payload)
-      //       : await call('createLabel', payload);
-      //     console.log('res: ', res);
-      //     dispatch(editLabelSuccess(res));
-      //     break;
-      //   }
-      //   case 'update': {
-      //     const res = entity === 'object'
-      //       ? await call('updateObject', payload)
-      //       : await call('updateLabel', payload);
-      //     dispatch(editLabelSuccess(res));
-      //     break;
-      //   }
-      //   case 'delete': {
-      //     const res = entity === 'object'
-      //       ? await call('deleteObject', payload)
-      //       : await call('deleteLabel', payload); // do we need delete label?
-      //     dispatch(editLabelSuccess(res));
-      //     break;
-      //   }
-      //   default: {
-      //     const err = 'An operation (create, update, or delete) is required';
-      //     throw new Error(err);
-      //   }
-      // }
 
     } catch (err) {
       console.log(`error attempting to ${operation} ${entity}: ${err.toString()}`);

@@ -153,12 +153,8 @@ const makeRows = (workingImages, focusIndex) => {
       imageIndex={imageIndex}
       focusIndex={focusIndex}
     />;
-    let needsReview = 'Yes'; 
-    image.objects.forEach((obj) => {
-      if (obj.locked) {
-        needsReview = 'No';
-      }
-    });
+    const hasUnlockedObj = image.objects.some((obj) => obj.locked === false);
+    const needsReview = hasUnlockedObj ? 'Yes' : 'No';
 
     return {
       thumbnail,

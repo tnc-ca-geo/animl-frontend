@@ -34,8 +34,8 @@ const StyledCheckbox = styled.div({
   display: 'inline-block',
   width: '14px',
   height: '14px',
-  borderRadius: '3px',
-  border: '1px solid',
+  borderRadius: '$1',
+  border: '$1 solid',
   transition: 'all 150ms',
 
   ':hover': {
@@ -48,6 +48,12 @@ const StyledCheckbox = styled.div({
     },
   },
 
+  background: '$loContrast',
+  borderColor: '$gray500',
+  [`& ${SVGIcon}`]: {
+    visibility: 'hidden',
+  },
+
   variants: {
     checked: {
       true: {
@@ -55,13 +61,6 @@ const StyledCheckbox = styled.div({
         borderColor: '$hiContrast',
         [`& ${SVGIcon}`]: {
           visibility: 'visible',
-        },
-      },
-      false: {
-        background: '$gray200',
-        borderColor: '$gray400',
-        [`& ${SVGIcon}`]: {
-          visibility: 'hidden',
         },
       },
     },

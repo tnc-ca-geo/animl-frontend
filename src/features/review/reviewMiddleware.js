@@ -257,14 +257,18 @@ export const reviewMiddleware = store => next => action => {
     }));
 
     // update object
-    // TODO: figure out why don't we unlock if an object if it becomes invalidated
-    // and make sure if we handle that somehow on the front end the backend is doing the same
-    if (action.payload.validated === true) {
+    const allLabelsInvalidated = object.labels.every((lbl) => (
+      lbl.validation && lbl.validation.validated === false
+    ));
+    if (action.payload.validated ||
+        (!action.payload.validated && allLabelsInvalidated))  {
       store.dispatch(editLabel('update', 'object', {
         imageId: image._id,
         objectId: object._id,
         diffs: { locked: true },
       }));
+    }
+    else if (action.payload.validated === false && allLabelsInvalidated) {
     }
   }
 

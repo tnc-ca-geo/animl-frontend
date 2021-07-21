@@ -1,11 +1,22 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { labelAdded } from '../review/reviewSlice';
+import {
+  getCamerasStart,
+  getCamerasFailure,
+  getCamerasSuccess,
+} from '../cameras/camerasSlice';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
 
 const initialState = {
   availFilters: {
     cameras: {
+      ids: [],
+      isLoading: false,
+      noneFound: false,
+      error: null,
+    },
+    deployments: {
       ids: [],
       isLoading: false,
       noneFound: false,
@@ -20,11 +31,13 @@ const initialState = {
   },
   activeFilters: {
     cameras: null,
+    deployments: null,
     labels: null,
     createdStart: null,
     createdEnd: null,
     addedStart: null,
-    addedEnd: null
+    addedEnd: null,
+    reviewed: null,
   },
 };
 
@@ -32,29 +45,6 @@ export const filtersSlice = createSlice({
   name: 'filters',
   initialState,
   reducers: {
-
-    getCamerasStart: (state) => {
-      state.availFilters.cameras.isLoading = true;
-    },
-
-    getCamerasFailure: (state, { payload }) => {
-      state.availFilters.cameras.isLoading = false;
-      state.availFilters.cameras.error = payload;
-    },
-
-    getCamerasSuccess: (state, { payload }) => {
-      state.availFilters.cameras.isLoading = false;
-      state.availFilters.cameras.error = null;
-      const camsInState = state.availFilters.cameras.ids;
-      payload.cameras.forEach((camera) => {
-        if (!camsInState.includes(camera._id)) {
-          state.availFilters.cameras.ids.push(camera._id);
-        }
-      });
-      if (payload.cameras.length === 0) {
-        state.availFilters.cameras.noneFound = true;
-      }
-    },
 
     getLabelsStart: (state) => { state.availFilters.labels.isLoading = true; },
 
@@ -64,8 +54,6 @@ export const filtersSlice = createSlice({
     },
 
     getLabelsSuccess: (state, { payload }) => {
-      // TODO: the getLabels and getCameras reducers (start, failure, success) 
-      // could be generalized and consolodated
       state.availFilters.labels.isLoading = false;
       state.availFilters.labels.error = null;
       payload.labels.categories.forEach((cat) => {
@@ -79,6 +67,7 @@ export const filtersSlice = createSlice({
     },
 
     checkboxFilterToggled: (state, { payload }) => {
+      console.log('checkBoxFilterToggled() - payload: ', payload)
       const activeFil = state.activeFilters[payload.filter];
       const availFil = state.availFilters[payload.filter][payload.key];
       if (activeFil === null) {
@@ -101,6 +90,13 @@ export const filtersSlice = createSlice({
       }
     },
 
+    reviewFilterToggled: (state, { payload }) => {
+      const reviewedFilter = state.activeFilters[payload.type];
+      state.activeFilters[payload.type] = reviewedFilter === null 
+        ? false 
+        : null;
+    },
+
     dateFilterChanged: (state, { payload }) => {
       state.activeFilters[payload.type + 'Start'] = payload.startDate;
       state.activeFilters[payload.type + 'End'] = payload.endDate;
@@ -111,39 +107,68 @@ export const filtersSlice = createSlice({
     },
 
   },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(getCamerasStart, (state, { payload }) => {
+        state.availFilters.cameras.isLoading = true;
+        state.availFilters.deployments.isLoading = true;
+      })          
+      .addCase(getCamerasFailure, (state, { payload }) => {
+        state.availFilters.cameras.isLoading = false;
+        state.availFilters.cameras.error = payload;
+  
+        state.availFilters.deployments.isLoading = false;
+        state.availFilters.deployments.error = payload;
+      })      
+      .addCase(getCamerasSuccess, (state, { payload }) => {
+        // update deployment filters state
+        state.availFilters.deployments.isLoading = false;
+        state.availFilters.deployments.error = null;
+        const depsInState = state.availFilters.deployments.ids;
+        const newDeployments = payload.reduce((acc, camera) => {
+          for (const dep of camera.deployments) {
+            acc.push(dep);
+          }
+          return acc;
+        },[]);
+        
+        for (const dep of newDeployments) {
+          if (!depsInState.includes(dep._id)) {
+            state.availFilters.deployments.ids.push(dep._id);
+          }
+        }
+        
+        // update camera filters state
+        state.availFilters.cameras.isLoading = false;
+        state.availFilters.cameras.error = null;
+        const camsInState = state.availFilters.cameras.ids;
+        for (const camera of payload) {
+          if (!camsInState.includes(camera._id)) {
+            state.availFilters.cameras.ids.push(camera._id);
+          }
+        }
+        if (payload.length === 0) {
+          state.availFilters.cameras.noneFound = true;
+        }
+      });
+  }
 });
 
 // export actions from slice
 export const {
-  getCamerasStart,
-  getCamerasSuccess,
-  getCamerasFailure,
   getLabelsStart,
   getLabelsSuccess,
   getLabelsFailure,
   getModelsSuccess,
   checkboxFilterToggled,
+  reviewFilterToggled,
   dateFilterChanged,
   setActiveFilters,
 } = filtersSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 
 // https://redux-toolkit.js.org/api/createAsyncThunk
-
-// fetchCameras thunk
-export const fetchCameras = () => async dispatch => {
-  try {
-    const currentUser = await Auth.currentAuthenticatedUser();
-    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    if(token){
-      dispatch(getCamerasStart());
-      const cameras = await call('getCameras');
-      dispatch(getCamerasSuccess(cameras));
-    }
-  } catch (err) {
-    dispatch(getCamerasFailure(err.toString()));
-  }
-};
 
 // fetchLabels thunk
 export const fetchLabels = () => async dispatch => {
@@ -164,6 +189,7 @@ export const fetchLabels = () => async dispatch => {
 export const selectActiveFilters = state => state.filters.activeFilters;
 export const selectAvailCameras = state => state.filters.availFilters.cameras;
 export const selectAvailLabels = state => state.filters.availFilters.labels;
+export const selectReviewed = state => state.filters.activeFilters.reviewed;
 export const selectDateAddedFilter = state => ({
   start: state.filters.activeFilters.addedStart,
   end: state.filters.activeFilters.addedEnd,

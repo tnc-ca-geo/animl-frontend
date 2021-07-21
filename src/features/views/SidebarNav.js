@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { selectCameras } from '../cameras/camerasSlice';
 import { selectSelectedView } from './viewsSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
+import CameraAdminModal from '../cameras/CameraAdminModal';
 import AutomationRulesForm from './AutomationRulesForm';
 import SaveViewForm from './SaveViewForm';
 import DeleteViewForm from './DeleteViewForm';
@@ -30,6 +31,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState();
   const selectedView = useSelector(selectSelectedView);
+  const cameras = useSelector(selectCameras);
 
   const handleModalToggle = (content) => {
     setModalOpen(!modalOpen);
@@ -53,7 +55,32 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
       <MenuButton
         variant='ghost'
+        disabled={!cameras.cameras.length}
+        state={modalOpen && (modalContent === 'camera-admin-modal') 
+          ? 'active' 
+          : ''
+        }
+        onClick={() => handleModalToggle('camera-admin-modal')}
+      >
+        <FontAwesomeIcon icon={['fas', 'camera']} />
+      </MenuButton>
+      {(modalOpen && (modalContent === 'camera-admin-modal')) &&
+        <Modal 
+          handleClose={handleModalToggle}
+          title='Manage Cameras'
+          size='md'
+        >
+          <CameraAdminModal/>
+        </Modal>
+      }
+
+      <MenuButton
+        variant='ghost'
         disabled={!selectedView}
+        state={modalOpen && (modalContent === 'automation-rules-form') 
+          ? 'active' 
+          : ''
+        }
         onClick={() => handleModalToggle('automation-rules-form')}
       >
         <FontAwesomeIcon icon={['fas', 'robot']} />
@@ -70,14 +97,11 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
       <MenuButton
         variant='ghost'
-        css={{ 
-          '@keyframes rotate': {
-            'to': {
-              transform: 'rotate(360deg)'
-            }
-          },
-          animation: 'rotate 1s infinite linear',
-         }}
+        disabled={!selectedView}
+        state={modalOpen && (modalContent === 'save-view-form') 
+          ? 'active' 
+          : ''
+        }
         onClick={() => handleModalToggle('save-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'save']} />
@@ -94,7 +118,11 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       
       <MenuButton
         variant='ghost'
-        disabled={selectedView && !selectedView.editable}
+        disabled={!selectedView || !selectedView.editable}
+        state={modalOpen && (modalContent === 'delete-view-form') 
+          ? 'active' 
+          : ''
+        }
         onClick={() => handleModalToggle('delete-view-form')}
       >
         <FontAwesomeIcon icon={['fas', 'trash-alt']} />
