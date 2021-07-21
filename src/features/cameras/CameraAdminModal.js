@@ -5,6 +5,7 @@ import moment from 'moment';
 import { selectCameras } from './camerasSlice';
 import CameraList from './CameraList';
 import SaveDeploymentForm from './SaveDeploymentForm';
+import DeleteDeploymentForm from './DeleteDeploymentForm';
 import Accordion from '../../components/Accordion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
@@ -17,34 +18,47 @@ import {
 
 const CameraAdminModal = () => {
   const cameras = useSelector(selectCameras);
-  const [ showSaveDeploymentForm, setShowSaveDeploymentForm ] = useState(false);
+  const [ showSaveDepForm, setShowSaveDepForm ] = useState(false);
+  const [ showDeleteDeptForm, setShowDeleteDepForm ] = useState(false);
   const [ cameraSelected, setCameraSelected ] = useState();
   const [ deploymentSelected, setDeploymentSelected ] = useState();
 
 
   const handleSaveDepClick = ({ cameraId, deployment }) => {
-    setShowSaveDeploymentForm(true);
+    setShowSaveDepForm(true);
     setCameraSelected(cameraId);
     setDeploymentSelected(deployment);
   };
 
-  const handleDiscardDeploymentClick = () => {
-    setShowSaveDeploymentForm(false);
-  };
+  const handleDeleteDepClick = ({ cameraId, deployment }) => {
+    setShowDeleteDepForm(true);
+    setCameraSelected(cameraId);
+    setDeploymentSelected(deployment);
+  }
+
+  const handleCancelEditClick = () => setShowSaveDepForm(false);
+  const handleCancelDeleteClick = () => setShowDeleteDepForm(false);
 
   return (
     <div>
       {cameras.cameras.length
-        ? showSaveDeploymentForm
+        ? showSaveDepForm
           ? <SaveDeploymentForm
               cameraId={cameraSelected}
               deployment={deploymentSelected}
-              handleClose={handleDiscardDeploymentClick}
+              handleClose={handleCancelEditClick}
             />
-          : <CameraList
-              cameras={cameras}
-              handleSaveDepClick={handleSaveDepClick}
-            />
+          : showDeleteDeptForm
+            ? <DeleteDeploymentForm 
+                cameraId={cameraSelected}
+                deployment={deploymentSelected}
+                handleClose={handleCancelDeleteClick}
+              />
+            : <CameraList
+                cameras={cameras}
+                handleSaveDepClick={handleSaveDepClick}
+                handleDeleteDepClick={handleDeleteDepClick}
+              />
         : <SpinnerOverlay>
             <PulseSpinner />
           </SpinnerOverlay>

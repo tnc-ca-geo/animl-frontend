@@ -64,9 +64,7 @@ const AddDeploymentButton = (props) => {
   )
 };
 
-const CameraList = ({ cameras, handleSaveDepClick }) => {
-  const handleButtonClick = () => {};
-  console.log('cameras: ', cameras);
+const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const format = (date) => moment(date, EXIF).format('MM-DD-YY');
 
   return (
@@ -107,7 +105,10 @@ const CameraList = ({ cameras, handleSaveDepClick }) => {
                   <IconButton
                     variant='ghost'
                     size='small'
-                    onClick={handleButtonClick}
+                    onClick={() => handleDeleteDepClick({
+                      cameraId: cam._id,
+                      deployment: dep,
+                    })}
                     disabled={dep.editable === false}
                   >
                     <FontAwesomeIcon icon={['fas', 'times']}/>

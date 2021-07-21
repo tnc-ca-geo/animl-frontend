@@ -25,7 +25,7 @@ const FormHeader = styled.div({
   textAlign: 'center'
 });
 
-const ViewName = styled.span({
+const DepName = styled.span({
   fontWeight: '$5',
 });
 
@@ -38,110 +38,28 @@ const Row = styled.div({
   }
 });
 
-const newDeploymentSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('A name is required'),
-  description: Yup.string()
-    .min(2, 'Too Short!')
-    .max(500, 'Too Long!'),
-  longitude: Yup.number().test(
-    'is-decimal',
-    'Coordinates must be in decimal degrees',
-    value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
-  ),
-  latitude: Yup.number().test(
-    'is-decimal',
-    'Coordinates must be in decimal degrees',
-    value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/), 
-  ),
-  startDate: Yup.date().transform((value, originalValue) => {
-    value = moment(originalValue, EXIF);
-    return value.isValid() ? value.toDate() : new Date('');
-  }).required(),
+const deleteDeploymentSchema = Yup.object().shape({
+  cameraId: Yup.string().required('A camera ID is required'),
+  deploymentId: Yup.string().required('A deployment ID is required'),
 });
 
-const initialValsCreate = {
-  name: '',
-  description: '',
-  latitude: '',
-  longitude: '',
-  startDate: null,
-  editable: true,
-};
-
-const SaveDeploymentForm = ({ cameraId, deployment, handleClose }) => {
-  const mode = deployment ? 'updateDeployment' : 'createDeployment';
-  const [saveMode, setSaveMode] = useState(mode);
+const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   const [queuedForClose, setQueuedForClose ] = useState(false);
   const camerasLoading = useSelector(selectCamerasLoading);
   const dispatch = useDispatch();
-  const initialValues = saveMode === 'createDeployment' 
-    ? initialValsCreate
-    : {
-        name: deployment.name,
-        description: deployment.description,
-        latitude: deployment.location.geometry.coordinates[1],
-        longitude: deployment.location.geometry.coordinates[0],
-        startDate: deployment.startDate,
-        editable: deployment.editable,
-      };
 
   // TODO: extract into hook?
   useEffect(() => {
     if (queuedForClose && !camerasLoading) {
       handleClose();
     }
-  }, [queuedForClose, camerasLoading, handleClose])
+  }, [queuedForClose, camerasLoading, handleClose]);
 
-  const createLocation = (lat, lon) => ({
-    _id: new ObjectID().toString(),
-    geometry: { type: 'Point', coordinates: [lon, lat]}
-  });
-
-  const diff = (formVals, deployment) => {
-    let diffs = {};
-    if (formVals.name !== deployment.name) {
-      diffs.name = formVals.name;
-    }
-    else if (formVals.description !== deployment.description) {
-      diffs.description = formVals.description;
-    }
-    else if (formVals.startDate !== deployment.startDate) {
-      diffs.startDate = formVals.startDate;
-    }
-    else if ((formVals.latitude !== deployment.latitude) ||
-             (formVals.longitude !== deployment.longitude)) {
-      diffs.location = createLocation(formVals.latitude, formVals.longitude);
-    }
-    return diffs;
-  };
-
-  const handleSaveDeploymentSubmit = (operation, formVals) => {
-    formVals.longitude = parseFloat(formVals.longitude);
-    formVals.latitude = parseFloat(formVals.latitude);
-    const payload = operation === 'updateDeployment'
-      ? {
-          cameraId,
-          deploymentId: deployment._id,
-          diffs: diff(formVals, deployment),
-        }
-      : {
-          cameraId,
-          deployment: {
-            _id: new ObjectID().toString(),
-            name: formVals.name,
-            description: formVals.description,
-            location: createLocation(formVals.latitude, formVals.longitude),
-            startDate: formVals.startDate,
-          }
-        };
-
-    dispatch(editDeployments(operation, payload));
+  const handleDeleteDeploymentSubmit = (formVals) => {
+    dispatch(editDeployments('deleteDeployment', formVals));
     setQueuedForClose(true);
   };
-
+  
   return (
     <div>
       {camerasLoading &&
@@ -149,13 +67,47 @@ const SaveDeploymentForm = ({ cameraId, deployment, handleClose }) => {
           <PulseSpinner />
         </SpinnerOverlay>
       }
-      <FormHeader>
-        {(saveMode === 'createDeployment')
-          ? <span>Add deployment to camera {cameraId}</span>
-          : <span>Updated deployment {deployment.name} on camera {cameraId}</span>
-        }
-      </FormHeader>
       <FormWrapper>
+        <Formik
+          initialValues={{ cameraId: cameraId, deploymentId: deployment._id }}
+          validationSchema={deleteDeploymentSchema}
+          onSubmit={(values) => {
+            console.log('onSubmit')
+            handleDeleteDeploymentSubmit(values)}
+          }
+        >
+          {({ errors, touched }) => (
+            <Form>
+              <HelperText>
+                Are you sure you'd like to delete 
+                the <DepName>{deployment.name}</DepName> deployment?
+              </HelperText>
+              <Field
+                name='cameraId'
+                type='hidden'
+              />
+              <Field
+                name='deploymentId'
+                type='hidden'
+              />
+              <ButtonRow>
+                <Button
+                  type='button'
+                  size='large'
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
+                <Button type='submit' size='large'>
+                  Delete deployment
+                </Button>
+              </ButtonRow>
+            </Form>
+          )}
+        </Formik>
+      </FormWrapper>
+
+      {/*<FormWrapper>
         <Formik
           initialValues={initialValues}
           validationSchema={newDeploymentSchema}
@@ -252,11 +204,11 @@ const SaveDeploymentForm = ({ cameraId, deployment, handleClose }) => {
             </Form>
           )}
         </Formik>
-      </FormWrapper>
+      </FormWrapper>*/}
     </div>
 
   );
 };
 
-export default SaveDeploymentForm;
+export default DeleteDeploymentForm;
 

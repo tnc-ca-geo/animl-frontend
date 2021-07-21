@@ -18,7 +18,7 @@ const ViewName = styled.span({
 });
 
 const deleteViewSchema = Yup.object().shape({
-  _id: Yup.string().required('A name is required'),
+  _id: Yup.string().required('A view ID is required'),
 });
 
 const DeleteViewForm = ({ handleClose }) => {
