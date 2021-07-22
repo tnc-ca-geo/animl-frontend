@@ -50,8 +50,9 @@ export const camerasSlice = createSlice({
     editDeploymentsSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      let camera = state.cameras.find((camera) => camera._id === payload._id);
-      camera.deployments = payload.deployments;
+      const editedCam = payload.camera;
+      let camera = state.cameras.find((camera) => camera._id === editedCam._id);
+      camera.deployments = editedCam.deployments;
     },
 
   },
@@ -98,7 +99,11 @@ export const editDeployments = (operation, payload) => {
       const res = await call(operation, payload);
       let camera = res[operation].camera;
       camera = enrichCameras([camera])[0];
-      dispatch(editDeploymentsSuccess(camera));
+      dispatch(editDeploymentsSuccess({
+        camera,
+        operation,
+        reqPayload: payload 
+      }));
     } catch (err) {
       console.log(`error attempting to ${operation}: ${err.toString()}`);
       dispatch(editDeploymentsFailure(err.toString()));

@@ -4,6 +4,7 @@ import {
   getCamerasStart,
   getCamerasFailure,
   getCamerasSuccess,
+  editDeploymentsSuccess,
 } from '../cameras/camerasSlice';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
@@ -67,14 +68,31 @@ export const filtersSlice = createSlice({
     },
 
     checkboxFilterToggled: (state, { payload }) => {
-      console.log('checkBoxFilterToggled() - payload: ', payload)
+      // console.log('checkBoxFilterToggled() - payload: ', payload)
       const activeFil = state.activeFilters[payload.filter];
+      // console.group('currently active filters: ');
+      // // just for debugging: 
+      // if (activeFil !== null) {
+      //   activeFil.forEach((fil) => console.log(fil))
+      // }
+      // else {
+      //   console.log('active filters are null (all selected)')
+      // }
+      // console.groupEnd();
       const availFil = state.availFilters[payload.filter][payload.key];
+
+      // console.group('avail filters: ');
+      // availFil.forEach((fil) => console.log(fil))
+      // console.groupEnd()
+
       if (activeFil === null) {
+        // console.log('activeFil === null, so toggling one filter means user intends to unselect it')
+
         // null = all filters are selected, so toggling one = unselecting it
         state.activeFilters[payload.filter] = availFil.filter((f) => {
           return f !== payload.val;
         });
+        // console.log('new active filters: ', state.activeFilters[payload.filter]);
       }
       else {
         // add/remove item from active filters
@@ -87,6 +105,8 @@ export const filtersSlice = createSlice({
         if (availCount === activeCount) {
           state.activeFilters[payload.filter] = null;
         }
+        // console.log('new active filters: ', state.activeFilters[payload.filter]);
+
       }
     },
 
@@ -151,7 +171,43 @@ export const filtersSlice = createSlice({
         if (payload.length === 0) {
           state.availFilters.cameras.noneFound = true;
         }
-      });
+      })
+      .addCase(editDeploymentsSuccess, (state, { payload }) => {
+        // update deployment filters state 
+        const { camera, operation, reqPayload } = payload;
+        state.availFilters.deployments.isLoading = false;
+        state.availFilters.deployments.error = null;
+        const availDepFilters = state.availFilters.deployments.ids;
+        const activeDepFilters = state.activeFilters.deployments;
+
+        switch (operation) {
+          case 'createDeployment': {
+            // add new dep to available and active deployment filters
+            const newDepId = reqPayload.deployment._id;
+            if (!availDepFilters.includes(newDepId)) {
+              state.availFilters.deployments.ids.push(newDepId);
+            }
+            if (!activeDepFilters.includes(newDepId)) {
+              state.activeFilters.deployments.push(newDepId);
+            }
+            break;
+          }
+          case 'deleteDeployment': {
+            // remove deleted dep from available and active deployment filters
+            state.availFilters.deployments.ids = availDepFilters.filter((id) => (
+              id !== reqPayload.deploymentId
+            ));
+            state.activeFilters.deployments = activeDepFilters !== null
+              ? activeDepFilters.filter((id) => id !== reqPayload.deploymentId)
+              : null;
+            break;
+          }
+          default: {
+            const err = 'An operation is required';
+            throw new Error(err);
+          }
+        }
+      })
   }
 });
 
