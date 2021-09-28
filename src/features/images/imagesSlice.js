@@ -1,11 +1,12 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { push } from 'connected-react-router';
+import moment from 'moment';
 import { call } from '../../api';
 import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
-
+import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const initialState = {
   images: [],
@@ -183,7 +184,7 @@ export const fetchImageContext = (imgId) => {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
-        
+
         dispatch(getImagesStart());        
         let focusedImg = await call('getImage', { imgId });
         if (!focusedImg.image) {
@@ -191,14 +192,16 @@ export const fetchImageContext = (imgId) => {
           throw new Error(err);
         }
 
-        // res = enrichImages(res); // might not need this to build query?
-        // TODO: experiement with subtracting -5 mins from createdStart
+        // Fetch all images from image's camera with a createdStart date of 
+        // 5 mins before dateTimeOriginal of image-to-focus
+        const dto = focusedImg.image.dateTimeOriginal;
+        const startDate = moment(dto, EXIF).subtract(5, 'minutes').format(EXIF);
         const filters = {
           addedEnd: null,
           addedStart: null,
           cameras: [focusedImg.image.cameraSn],
           createdEnd: null,
-          createdStart: focusedImg.image.dateTimeOriginal, // e.g. "2021:03:01 12:00:00"
+          createdStart: startDate,
           deployments: null,
           labels: null,
           reviewed: null
