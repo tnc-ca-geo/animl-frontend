@@ -1,5 +1,6 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
+import { push } from 'connected-react-router';
 import { call } from '../../api';
 import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
@@ -182,11 +183,13 @@ export const fetchImageContext = (imgId) => {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
-        // fetch single image
+        
         dispatch(getImagesStart());        
         let focusedImg = await call('getImage', { imgId });
-        // TODO: handle error/empty response
-        console.log('found image to focus: ', focusedImg)
+        if (!focusedImg.image) {
+          const err = `Failed to find an image with Id: ${imgId}`;
+          throw new Error(err);
+        }
 
         // res = enrichImages(res); // might not need this to build query?
         // TODO: experiement with subtracting -5 mins from createdStart
@@ -203,7 +206,9 @@ export const fetchImageContext = (imgId) => {
         dispatch(setActiveFilters(filters));
       }
     } catch (err) {
-      dispatch(getImagesFailure(err.toString()))
+      dispatch(getImagesFailure(err.toString()));
+      dispatch(preFocusImageEnd());
+      dispatch(push('/')); // remove URL query string 
     }
   };
 };
