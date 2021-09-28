@@ -1,7 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichImages } from './utils';
+import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 
 
@@ -10,6 +11,7 @@ const initialState = {
   isLoading: false,
   isUpdatingObjects: false,
   isEditingLabel: false,
+  preFocusImage: null,
   error: null,
   visibleRows: [], // don't really need this anymore?
   pageInfo: {
@@ -39,7 +41,6 @@ export const imagesSlice = createSlice({
     },
 
     getImagesSuccess: (state, { payload }) => {
-      console.log('get images success from images slice: ', payload)
       state.isLoading = false;
       state.error = null;
 
@@ -52,6 +53,12 @@ export const imagesSlice = createSlice({
 
       state.images = state.images.concat(payload.images.images);
     },
+
+    preFocusImageStart: (state, { payload }) => {
+      state.preFocusImage = payload;
+    },
+
+    preFocusImageEnd: (state) => { state.preFocusImage = null; },
 
     sortChanged: (state, { payload }) => {
       if (!payload.length) {
@@ -83,7 +90,6 @@ export const imagesSlice = createSlice({
       state.error = null;
       const imageId = payload.updateObjects.image._id;
       const newObjects = payload.updateObjects.image.objects;
-      console.log('successfully updated objects: ', payload);
       const image = state.images.find(img => img._id === imageId);
       image.objects = newObjects;
     },
@@ -110,6 +116,8 @@ export const {
   getImagesStart,
   getImagesSuccess,
   getImagesFailure,
+  preFocusImageStart,
+  preFocusImageEnd,
   sortChanged,
   visibleRowsChanged,
   updateObjectsStart,
@@ -128,13 +136,12 @@ export const fetchImages = (filters, page = 'current') => {
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
         dispatch(getImagesStart());
+        const pageInfo = getState().images.pageInfo;
+        let res = await call('getImages', { filters, pageInfo, page });
+        res = enrichImages(res);
         if (page !== 'next') {
           dispatch(clearImages());
         }
-        const pageInfo = getState().images.pageInfo;
-      
-        let res = await call('getImages', { filters, pageInfo, page });
-        res = enrichImages(res);
         dispatch(getImagesSuccess(res));
       }
     } catch (err) {
@@ -142,37 +149,6 @@ export const fetchImages = (filters, page = 'current') => {
     }
   };
 };
-
-// updateObjects thunk
-
-// // TODO: right now we're taking a brute force approach: if there are any 
-// // edits detected to an image's objects array, we send the whole array back to
-// // the API replace the obejcts array that was in the image's DB record with 
-// // the one the user had edited on the front end. 
-// // This works but is crude and requires us to request ALL fields from the 
-// // objects from the DB in the first place: if we forget to request a field and 
-// // then edit & save the object that field/value will be lost forever. Not great.
-// // It's risky b/c we need to (1) remember to request all object fields, which 
-// // makes it hard to maintain and defeats purpose of graphQL, and we also need to 
-// // (2) keep the object perfectly intact w/ no modification on the front end 
-// // other than intended edits. 
-// // We should move to a more granular approach to diffing changes and just 
-// // requesting that the object's modified fields be updated instead. 
-
-// export const updateObjects = (payload) => async dispatch => {
-//   try {
-//     const currUser = await Auth.currentAuthenticatedUser();
-//     const token = currUser.getSignInUserSession().getIdToken().getJwtToken();
-//     if (token) {
-//       dispatch(updateObjectsStart());
-//       let res = await call('updateObjects', payload);
-//       dispatch(updateObjectsSuccess(res));
-//     }
-//   } catch (err) {
-//     dispatch(updateObjectsFailure(err.toString()))
-//   }
-// };
-  
 
 // editLabel thunk
 export const editLabel = (operation, entity, payload) => {
@@ -199,6 +175,39 @@ export const editLabel = (operation, entity, payload) => {
   };
 };
 
+// fetchImageContext thunk - retrun an image along with adjacent images
+export const fetchImageContext = (imgId) => {
+  return async (dispatch, getState) => {
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      if (token) {
+        // fetch single image
+        dispatch(getImagesStart());        
+        let focusedImg = await call('getImage', { imgId });
+        // TODO: handle error/empty response
+        console.log('found image to focus: ', focusedImg)
+
+        // res = enrichImages(res); // might not need this to build query?
+        // TODO: experiement with subtracting -5 mins from createdStart
+        const filters = {
+          addedEnd: null,
+          addedStart: null,
+          cameras: [focusedImg.image.cameraSn],
+          createdEnd: null,
+          createdStart: focusedImg.image.dateTimeOriginal, // e.g. "2021:03:01 12:00:00"
+          deployments: null,
+          labels: null,
+          reviewed: null
+        };
+        dispatch(setActiveFilters(filters));
+      }
+    } catch (err) {
+      dispatch(getImagesFailure(err.toString()))
+    }
+  };
+};
+
 // The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
@@ -213,5 +222,9 @@ export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectIsLoading = state => state.images.isLoading;
 export const selectVisibleRows = state => state.images.visibleRows;
+export const selectPreFocusImage= state => state.images.preFocusImage;
+
+// TODO: find a different place for this?
+export const selectRouterLocation = state => state.router.location;
 
 export default imagesSlice.reducer;

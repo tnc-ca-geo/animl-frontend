@@ -85,7 +85,6 @@ const Loupe = () => {
   const workingImages = useSelector(selectWorkingImages);
   const [ image, setImage ] = useState();
   useEffect(() => {
-    console.log('new focusIndex: ', focusIndex);
     setImage(workingImages[focusIndex.image]);
   }, [ workingImages, focusIndex ]);
 

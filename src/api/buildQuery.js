@@ -144,9 +144,24 @@ const queries = {
     variables: { input: input },
   }),
 
+  getImage: ({ imgId }) => {
+    return {
+      template: `
+        query GetImage($input: QueryImageInput!) {
+          image(input: $input) {
+            ${imageFields}
+          }
+        }
+      `,
+      variables: {
+        input: { _id: imgId }
+      }
+    }
+  },
+
   getImages: ({ filters, pageInfo, page }) => ({
     template: `
-      query GetImages($input: QueryImageInput!) {
+      query GetImages($input: QueryImagesInput!) {
         images(input: $input) {
           images {
             ${imageFields}

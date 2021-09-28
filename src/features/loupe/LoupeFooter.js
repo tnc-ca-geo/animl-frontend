@@ -125,7 +125,6 @@ const LoupeFooter = ({ image }) => {
       const object = image.objects[focusIndex.object];
       if (reviewMode && object) {
         if (e.code === 'ArrowRight' || e.code === 'Enter') {
-          console.log('arrow right / enter handler firing')
           if (!object.locked) {
             dispatch(labelValidated({
               userId: username,

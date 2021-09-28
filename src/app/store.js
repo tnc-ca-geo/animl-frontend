@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
+import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from './rootReducer';
+import { preFocusImageMiddleware } from '../features/images/imagesMiddleware';
 import { 
-  diffFiltersMiddleware,
-  normalizeDatesMiddleware,
   setSelectedViewMiddleware,
-} from '../features/views/viewsMiddlewares';
-import { imagesMiddleware } from '../features/images/imagesMiddlewares';
+  diffFiltersMiddleware
+} from '../features/views/viewsMiddleware';
 import { reviewMiddleware } from '../features/review/reviewMiddleware';
 
 export const history = createBrowserHistory();
@@ -15,10 +15,10 @@ const store = configureStore({
   reducer: createRootReducer(history),
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware()
+      .concat(routerMiddleware(history))
+      .concat(preFocusImageMiddleware)
       .concat(diffFiltersMiddleware)
-      // .concat(normalizeDatesMiddleware)
       .concat(setSelectedViewMiddleware)
-      // .concat(imagesMiddleware)
       .concat(reviewMiddleware)
   ),
 });

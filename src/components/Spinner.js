@@ -56,7 +56,7 @@ const CircleDot = styled('div', {
     display: 'block',
     width: '15%',
     height: '15%',
-    backgroundColor: '$gray400',
+    backgroundColor: '$hiContrast',
     borderRadius: '100%',
     animation:  `${circleAnimation} 1.2s infinite ease-in-out both`,
   },

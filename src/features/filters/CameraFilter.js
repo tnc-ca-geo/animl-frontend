@@ -49,7 +49,7 @@ const CameraFilter = ({ availCams, activeCams }) => {
     <div>
       {cameras.cameras.map((camera) => {
         const checked = activeCams === null || activeCams.includes(camera._id);
-        
+
         return (
           <CameraSection key={camera._id}>
 
@@ -69,6 +69,7 @@ const CameraFilter = ({ availCams, activeCams }) => {
             {camera.deployments.map((deployment) => {
               const checked = activeDeps === null || 
                               activeDeps.includes(deployment._id);
+                              
               return (
                 <DeploymentCheckboxWrapper key={deployment._id}>
                   <label>

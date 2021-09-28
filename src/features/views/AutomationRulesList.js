@@ -76,10 +76,6 @@ const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
     dispatch(editView('update', payload));
   };
 
-  useEffect(() => {
-    console.log('views loading: ', viewsLoading)
-  }, [viewsLoading])
-
   return (
     <div>
       {viewsLoading &&

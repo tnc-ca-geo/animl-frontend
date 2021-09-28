@@ -84,8 +84,6 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
           const firstValidatedLabel = object.labels.find((label) => (
             label.validation && label.validation.validated
           ));
-          // console.log('object.labels: ', object.labels)
-          // console.log(firstValidatedLabel);
           labels = firstValidatedLabel ? [firstValidatedLabel] : [];
         }
         else {

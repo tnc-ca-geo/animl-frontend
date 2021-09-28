@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useEffectAfterMount } from '../../app/utils'
 import { styled } from '../../theme/stitches.config.js';
 import { selectWorkingImages } from '../review/reviewSlice';
 import {
@@ -12,6 +13,18 @@ import {
 } from './imagesSlice';
 import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
+
+const ImagesTableLoadingOverlay = styled.div({
+  flexGrow: '1',
+  backgroundColor: '$hiContrast',
+  opacity: '0.1',
+  display: 'flex',
+  flexDirection: 'column',
+  height: 'calc(100% - 56px)',
+  position: 'absolute',
+  width: '100%',  // TODO: how to absolute position and use flex grow
+  zIndex: '$3',
+});
 
 const StyledImagesPanel = styled.div({
   // display: 'grid',
@@ -31,7 +44,7 @@ const ImagesPanel = () => {
   const isLoading = useSelector(selectIsLoading);
   const dispatch = useDispatch();
   
-  useEffect(() => {
+  useEffectAfterMount(() => {
     dispatch(fetchImages(filters));
   }, [filters, paginatedField, sortAscending, dispatch]);
 

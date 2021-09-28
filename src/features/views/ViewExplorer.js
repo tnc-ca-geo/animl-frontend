@@ -51,19 +51,6 @@ export function ViewExplorer() {
       {loupeOpen &&
         <Loupe />
       }
-      {/*
-      <ViewExplorerBody>
-        {filtersPanelOpen && 
-          <FiltersPanel 
-            toggleFiltersPanel={toggleFiltersPanel}
-          />
-        }
-        <ImagesPanel />
-        {loupeOpen &&
-          <Loupe />
-        }
-      </ViewExplorerBody>
-      */}
     </ViewExplorerWrapper>
   );
 };

@@ -96,9 +96,6 @@ export const reviewSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    // TODO: can we use extra reducers instead of middleware in a lot of places?
-    // extraReducers are for handling actions not created by this slice
-    // https://redux-toolkit.js.org/api/createslice/#extrareducers
     builder
       .addCase(getImagesSuccess, (state, { payload }) => {
         const newImages = payload.images.images;

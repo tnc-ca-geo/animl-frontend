@@ -71,10 +71,7 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
         <Formik
           initialValues={{ cameraId: cameraId, deploymentId: deployment._id }}
           validationSchema={deleteDeploymentSchema}
-          onSubmit={(values) => {
-            console.log('onSubmit')
-            handleDeleteDeploymentSubmit(values)}
-          }
+          onSubmit={(values) => { handleDeleteDeploymentSubmit(values)}}
         >
           {({ errors, touched }) => (
             <Form>

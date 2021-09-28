@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   sortChanged,
   // visibleRowsChanged,
+  selectIsLoading,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
@@ -22,7 +23,7 @@ import { setFocus, selectFocusIndex } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -167,6 +168,7 @@ const makeRows = (workingImages, focusIndex) => {
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
@@ -389,9 +391,9 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   return (
     <TableContainer>
-      {workingImages.length === 0 &&
+      {isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <CircleSpinner />
         </SpinnerOverlay>
       }
       {workingImages.length > 0 &&

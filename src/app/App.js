@@ -2,10 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import globalStyles from '../theme/globalStyles';
 import { styled, css } from '../theme/stitches.config.js';
-import {
-  Switch,
-  Route
-} from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import CounterPage from '../pages/CounterPage';
 import HomePage from '../pages/HomePage';

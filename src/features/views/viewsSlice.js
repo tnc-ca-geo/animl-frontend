@@ -23,13 +23,13 @@ export const viewsSlice = createSlice({
     },
 
     getViewsSuccess: (state, { payload }) => {
-      // console.log('getViewsSuccess: ', JSON.stringify(payload, undefined, 2))
       state.isLoading = false;
       state.error = null;
       const viewsInState = state.views.map((view) => view._id);
       payload.views.forEach((view) => {
         if (!viewsInState.includes(view._id)) {
-          view.selected = view.name === 'All images';
+          const defaultViewName = 'All images';
+          view.selected = view.name === defaultViewName;
           state.views.push(view);
         }
       });
@@ -69,11 +69,9 @@ export const viewsSlice = createSlice({
     },
 
     setSelectedView: (state, { payload }) => {
-      if (payload.dirty) {
-        state.views.forEach((view) => {
-          view.selected = view._id === payload.view._id;
-        });
-      }
+      state.views.forEach((view) => {
+        view.selected = view._id === payload.view._id;
+      });
     },
 
     setUnsavedChanges: (state, { payload }) => {

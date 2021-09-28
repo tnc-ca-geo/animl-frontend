@@ -11,6 +11,7 @@ import {
   setSelectedView,
   selectSelectedView,
   selectUnsavedViewChanges,
+  selectViewsLoading,
  } from './viewsSlice';
 
 const ViewMenuItem = styled('li', {
@@ -105,36 +106,29 @@ const StyledViewSelector = styled.div({
 const ViewSelector = () => {
   const views = useSelector(selectViews);
   const selectedView = useSelector(selectSelectedView);
+  const viewsAreLoading = useSelector(selectViewsLoading)
   const filtersReady = useSelector(selectFiltersReady);
   const unsavedChanges = useSelector(selectUnsavedViewChanges);
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!views.views.length) {
+    if (!views.views.length && !viewsAreLoading) {
       dispatch(fetchViews());
     }
-  }, [views, dispatch]);
+  }, [views, viewsAreLoading, dispatch]);
 
   useEffect(() => {
     if (filtersReady && selectedView) {
-      dispatch(setSelectedView({view: selectedView}));
+      dispatch(setSelectedView({ view: selectedView }));
     }
   }, [selectedView, filtersReady, dispatch]);
 
   useEffect(() => {
-    const handleWindowClick = () => {
-      console.log('window click handler view selector firing')
-      setExpanded(false);
-    }
-    if (expanded) {
-      console.log('adding view selector window click handler')
-      window.addEventListener('click', handleWindowClick);
-    } else {
-      console.log('removing view selector window click handler')
-
-      window.removeEventListener('click', handleWindowClick)
-    }
+    const handleWindowClick = () => { setExpanded(false) };
+    expanded 
+      ? window.addEventListener('click', handleWindowClick)
+      : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
   }, [expanded, setExpanded]);
 
@@ -145,7 +139,7 @@ const ViewSelector = () => {
   const handleViewMenuItemClick = (e) => {
     const _id = e.target.dataset.viewId;
     const newSelectedView = views.views.filter((view) => view._id === _id)[0];
-    dispatch(setSelectedView({view: newSelectedView}));
+    dispatch(setSelectedView({ view: newSelectedView }));
   }
 
   return (
