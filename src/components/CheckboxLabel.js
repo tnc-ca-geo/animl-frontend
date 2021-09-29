@@ -8,11 +8,18 @@ export const CheckboxLabel = styled('span', {
   '&:hover': {
     cursor: 'pointer',
   },
+
   variants: {
     checked: {
       true: {
         color: '$hiContrast',
       },
     },
+    active: {
+      false: {
+        color: '$gray600',
+      },
+    },
   },
+
 });

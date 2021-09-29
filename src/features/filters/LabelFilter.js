@@ -30,10 +30,16 @@ const LabelFilter = ({ availLabels, activeLabels }) => {
             <label>
               <Checkbox
                 checked={checked}
+                active={checked}
                 data-category={cat}
                 onChange={handleCheckboxChange}
               />
-              <CheckboxLabel checked={checked}>{cat}</CheckboxLabel>
+              <CheckboxLabel
+                checked={checked}
+                active={checked}
+              >
+                {cat}
+              </CheckboxLabel>
             </label>
           </CheckboxWrapper>
         )

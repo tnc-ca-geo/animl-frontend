@@ -12,6 +12,7 @@ const CheckboxWrapper = styled('div', {
 const ReviewFilter = () => {
   const dispatch = useDispatch();
   const reviewed = useSelector(selectReviewed);
+  const includeReviewed = reviewed === null || reviewed;
 
   const handleCheckboxChange = (e) => {
     const objFilter = e.target.dataset.objFilter;
@@ -23,12 +24,14 @@ const ReviewFilter = () => {
       <CheckboxWrapper>
         <label>
           <Checkbox
-            checked={reviewed === null || reviewed}
+            checked={includeReviewed}
+            active={includeReviewed}
             data-obj-filter={'reviewed'}
             onChange={handleCheckboxChange}
           />
           <CheckboxLabel
-            checked={reviewed === null || reviewed}
+            checked={includeReviewed}
+            active={includeReviewed}
           >
             reviewed images
           </CheckboxLabel>

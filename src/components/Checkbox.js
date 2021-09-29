@@ -49,7 +49,7 @@ const StyledCheckbox = styled('div', {
   },
 
   background: '$loContrast',
-  borderColor: '$gray500',
+  borderColor: '$gray600',
   [`& ${SVGIcon}`]: {
     visibility: 'hidden',
   },
@@ -57,23 +57,31 @@ const StyledCheckbox = styled('div', {
   variants: {
     checked: {
       true: {
-        background: '$hiContrast',
-        borderColor: '$hiContrast',
+        // background: '$hiContrast',
+        // borderColor: '$hiContrast',
+        background: '$gray600',
         [`& ${SVGIcon}`]: {
           visibility: 'visible',
         },
       },
     },
+
+    active: {
+      true: {
+        background: '$hiContrast',
+        borderColor: '$hiContrast',
+      }
+    }
   },
 });
 
 // adapted from:
 // https://medium.com/@colebemis/building-a-checkbox-component-with-react-and-styled-components-8d3aa1d826dd
 
-const Checkbox = ({ className, checked, ...props }) => (
+const Checkbox = ({ className, checked, active, ...props }) => (
   <CheckboxContainer className={className}>
     <HiddenCheckbox type='checkbox' checked={checked} {...props} />
-    <StyledCheckbox checked={checked}>
+    <StyledCheckbox checked={checked} active={active}>
       <SVGIcon viewBox="0 0 24 24">
         <polyline points="20 4 9 15 4 10" />
       </SVGIcon>

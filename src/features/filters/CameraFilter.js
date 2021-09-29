@@ -47,7 +47,8 @@ const CameraFilter = ({ availCams, activeCams }) => {
   return (
     <div>
       {cameras.cameras.map((camera) => {
-        const checked = activeCams === null || activeCams.includes(camera._id);
+        const camChecked = activeCams === null || 
+                           activeCams.includes(camera._id);
 
         return (
           <CameraSection key={camera._id}>
@@ -55,31 +56,43 @@ const CameraFilter = ({ availCams, activeCams }) => {
             <CheckboxWrapper key={camera._id}>
               <label>
                 <Checkbox
-                  checked={checked}
+                  checked={camChecked}
+                  active={camChecked}
                   data-filter={'cameras'}
                   data-key={'ids'}
                   data-sn={camera._id}
                   onChange={handleCheckboxChange}
                 />
-                <CheckboxLabel checked={checked}>{camera._id}</CheckboxLabel>
+                <CheckboxLabel
+                  checked={camChecked}
+                  active={camChecked}
+                >
+                  {camera._id}
+                </CheckboxLabel>
               </label>
             </CheckboxWrapper>
 
             {camera.deployments.map((deployment) => {
-              const checked = activeDeps === null || 
-                              activeDeps.includes(deployment._id);
+              const depChecked = activeDeps === null || 
+                                 activeDeps.includes(deployment._id);
                               
               return (
                 <DeploymentCheckboxWrapper key={deployment._id}>
                   <label>
                     <Checkbox
-                      checked={checked}
+                      checked={depChecked}
+                      active={(depChecked && camChecked)}
                       data-filter={'deployments'}
                       data-key={'ids'}
                       data-sn={deployment._id}
                       onChange={handleCheckboxChange}
                     />
-                    <CheckboxLabel checked={checked}>{deployment.name}</CheckboxLabel>
+                    <CheckboxLabel
+                      checked={depChecked}
+                      active={(depChecked && camChecked)}
+                    >
+                      {deployment.name}
+                    </CheckboxLabel>
                   </label>
                 </DeploymentCheckboxWrapper>
               )
