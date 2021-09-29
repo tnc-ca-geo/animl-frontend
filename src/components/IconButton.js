@@ -1,6 +1,6 @@
 import { styled } from '../theme/stitches.config';
 
-const IconButton = styled.button({
+const IconButton = styled('button', {
   // Reset
   alignItems: 'center',
   appearance: 'none',
@@ -18,10 +18,10 @@ const IconButton = styled.button({
   userSelect: 'none',
   WebkitTapHighlightColor: 'transparent',
   color: '$hiContrast',
-  '::before': {
+  '&::before': {
     boxSizing: 'border-box',
   },
-  '::after': {
+  '&::after': {
     boxSizing: 'border-box',
   },
 
@@ -32,14 +32,14 @@ const IconButton = styled.button({
   height: '$5',
   width: '$5',
   transition: 'all 40ms linear',
-  ':hover': {
+  '&:hover': {
     borderColor: '$gray700',
     cursor: 'pointer',
   },
-  ':active': {
+  '&:active': {
     backgroundColor: '$gray100',
   },
-  ':disabled': {
+  '&:disabled': {
     pointerEvents: 'none',
     backgroundColor: 'transparent',
     color: '$gray500',
@@ -64,19 +64,19 @@ const IconButton = styled.button({
       ghost: {
         backgroundColor: 'transparent',
         borderWidth: '0',
-        ':hover': {
+        '&:hover': {
           backgroundColor: '$gray300',
         },
-        ':active': {
+        '&:active': {
           backgroundColor: '$gray400',
         },
       },
       raised: {
         boxShadow: '0 16px 32px hsl(206deg 12% 5% / 25%), 0 3px 5px hsl(0deg 0% 0% / 10%)',
-        ':hover': {
+        '&:hover': {
           boxShadow: '0 16px 32px hsl(206deg 12% 5% / 25%), 0 3px 5px hsl(0deg 0% 0% / 10%)',
         },
-        ':active': {
+        '&:active': {
           backgroundColor: '$gray300',
         },
       },
@@ -85,20 +85,20 @@ const IconButton = styled.button({
       active: {
         backgroundColor: '$gray300',
         color: '$blue500',
-        ':hover': {
+        '&:hover': {
           // boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
         },
-        ':active': {
+        '&:active': {
           backgroundColor: '$gray300',
         },
       },
       waiting: {
         backgroundColor: '$gray300',
         boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
-        ':hover': {
+        '&:hover': {
           boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
         },
-        ':active': {
+        '&:active': {
           backgroundColor: '$gray300',
         },
       },

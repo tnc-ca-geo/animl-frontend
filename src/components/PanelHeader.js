@@ -3,17 +3,17 @@ import { styled } from '../theme/stitches.config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from './IconButton';
 
-const PanelTitle = styled.span({
+const PanelTitle = styled('span', {
   // marginLeft: '$2',
 });
 
-const StyledHeader = styled.div({
+const StyledHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '$0 $2 $0 $3',
   height: '$7',
-  borderBottom: '$1 solid $gray400',
+  borderBottom: '1px solid $gray400',
   fontWeight: '$5',
   color: '$hiContrast',
 });

@@ -8,7 +8,7 @@ const StyledSelect = styled(Select, {
   '.react-select__control': {
     padding: '$1 0',
     boxSizing: 'border-box',
-    border: '$1 solid',
+    border: '1px solid',
     borderColor: '$gray400',
     borderRadius: '$1',
     cursor: 'pointer',
@@ -24,7 +24,7 @@ const StyledSelect = styled(Select, {
     transition: 'all 0.2s ease',
     boxShadow: '0 0 0 3px $blue200',
     borderColor: '$blue500',
-    ':hover': {
+    '&:hover': {
       boxShadow: '0 0 0 3px $blue200',
       borderColor: '$blue500',
     },

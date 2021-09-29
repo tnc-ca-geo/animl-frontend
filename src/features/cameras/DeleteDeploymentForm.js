@@ -20,20 +20,20 @@ import {
 import DatePickerWithFormik from '../../components/DatePicker';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
-const FormHeader = styled.div({
+const FormHeader = styled('div', {
   fontWeight: '$3',
   textAlign: 'center'
 });
 
-const DepName = styled.span({
+const DepName = styled('span', {
   fontWeight: '$5',
 });
 
-const Row = styled.div({
+const Row = styled('div', {
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
-  ':not(:last-child)': {
+  '&:not(:last-child)': {
     marginBottom: '$5',
   }
 });

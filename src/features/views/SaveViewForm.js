@@ -28,7 +28,7 @@ const SaveModeTab = styled(Button, {
   color: '$hiContrast',
   backgroundColor: '$loContrast',
   margin: '$0 $2',
-  ':hover': {
+  '&:hover': {
     backgroundColor: '$gray300',
     cursor: 'pointer',
   },
@@ -38,7 +38,7 @@ const SaveModeTab = styled(Button, {
         backgroundColor: '$blue200',
         borderColor: '$blue500',
         color: '$blue500',
-        ':hover': {
+        '&:hover': {
           backgroundColor: '$blue200',
           cursor: 'default',
         },
@@ -47,15 +47,15 @@ const SaveModeTab = styled(Button, {
   }
 });
 
-const ViewName = styled.span({
+const ViewName = styled('span', {
   fontWeight: '$5',
 });
 
-const Row = styled.div({
+const Row = styled('div', {
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
-  ':not(:last-child)': {
+  '&:not(:last-child)': {
     marginBottom: '$5',
   }
 });

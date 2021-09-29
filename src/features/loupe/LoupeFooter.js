@@ -18,7 +18,7 @@ import {
   selectReviewMode 
 } from './loupeSlice';
 
-const IndexDisplay = styled.div({
+const IndexDisplay = styled('div', {
   fontFamily: '$mono',
   fontSize: '$3',
   fontWeight: '$1',
@@ -42,7 +42,7 @@ const IndexUnit = styled('span', {
   fontSize: '$2',
 });
 
-const ProgressBar = styled.div({
+const ProgressBar = styled('div', {
   height: '$1',
   width: '100%',
   backgroundColor: '$gray300',
@@ -50,7 +50,7 @@ const ProgressBar = styled.div({
   borderRadius: '$2',
 });
 
-const ProgressIndicator = styled.span({
+const ProgressIndicator = styled('span', {
   backgroundColor: '$blue600',
   height: '$1',
   position: 'absolute',
@@ -58,19 +58,19 @@ const ProgressIndicator = styled.span({
   borderRadius: '$2',
 });
 
-const ProgressDisplay = styled.div({
+const ProgressDisplay = styled('div', {
   display: 'flex',
   alignItems: 'center',
   width: '100%',
   padding: '$0 $2 $0 $3',
 });
 
-const IncrementControls = styled.div({
+const IncrementControls = styled('div', {
   display: 'flex',
   padding: '$0 $2 $0 $1',
 });
 
-const StyledLoupeFooter = styled.div({
+const StyledLoupeFooter = styled('div', {
   display: 'flex',
   alignItems: 'center',
   position: 'absolute',
@@ -78,7 +78,7 @@ const StyledLoupeFooter = styled.div({
   width: '100%',
   // padding: '$0 $2 $0 $3',
   height: '$7',
-  borderTop: '$1 solid $gray400',
+  borderTop: '1px solid $gray400',
   fontWeight: '$5',
   color: '$hiContrast',
 });

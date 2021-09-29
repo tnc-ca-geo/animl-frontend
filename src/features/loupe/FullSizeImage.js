@@ -20,7 +20,7 @@ const MarkEmptyButton = styled(Button, {
   backgroundColor: '$loContrast',
   color: '$hiContrast',
   zIndex: '$3',
-  ':hover': {
+  '&:hover': {
     color: '$hiContrast',
     backgroundColor: '$gray400',
     cursor: 'pointer',
@@ -36,14 +36,14 @@ const AddObjectButton = styled(Button, {
   // backgroundColor: '$loContrast',
   // color: '$hiContrast',
   zIndex: '$3',
-  ':hover': {
+  '&:hover': {
     color: '$hiContrast',
     backgroundColor: '$gray400',
     cursor: 'pointer',
   },
 });
 
-const EditObjectButtons = styled.div({
+const EditObjectButtons = styled('div', {
   position: 'absolute',
   bottom: 1,
   right: -1,
@@ -55,7 +55,7 @@ const FullImage = styled(Image, {
   height: 'auto',
 });
 
-const ImageWrapper = styled.div({
+const ImageWrapper = styled('div', {
   // border: '2px solid tomato',
   position: 'relative',
   maxWidth: '940px',

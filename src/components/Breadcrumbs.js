@@ -1,11 +1,11 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config.js';
 
-const Crumb = styled.span({
+const Crumb = styled('span', {
   paddingRight: '$4',
 });
 
-const BreadcrumbContainer = styled.div({
+const BreadcrumbContainer = styled('div', {
   boxSizing: 'border-box',
   display: 'flex',
   fontSize: '$4',

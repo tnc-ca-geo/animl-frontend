@@ -35,28 +35,28 @@ import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
   //   overflowY: 'hidden',
   // },
 
-const TableContainer = styled.div({
+const TableContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
   position: 'relative',
 });
 
-const Table = styled.div({
+const Table = styled('div', {
   height: '100%',
   maxWidth: '100%',
   display: 'inline-block',
   borderSpacing: '$0',
 });
 
-const TableRow = styled.div({
+const TableRow = styled('div', {
   backgroundColor: '$gray200',
-  ':hover': {
+  '&:hover': {
     backgroundColor: '$gray300',
     cursor: 'pointer',
     boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
   },
-  ':last-child': {
+  '&:last-child': {
     '.td': {
       borderBottom: '0',
     },
@@ -72,7 +72,7 @@ const TableRow = styled.div({
   }
 });
 
-const TableCell = styled.div({
+const TableCell = styled('div', {
   margin: '$0',
   padding: '$2 $3',
   textAlign: 'left',
@@ -84,14 +84,14 @@ const TableCell = styled.div({
     width: '0.0000000001%',
   },
   borderRight: '0',
-  ':last-child': {
+  '&:last-child': {
     borderRight: '0',
   }
 });
 
 const HeaderCell = styled(TableCell, {
   backgroundColor: '$gray200',
-  ':hover': {
+  '&:hover': {
     cursor: 'auto',
   },
 });
@@ -111,7 +111,7 @@ const DataCell = styled(TableCell, {
   }
 });
 
-const TableHeader = styled.div({
+const TableHeader = styled('div', {
   paddingTop: '$2',
   paddingBottom: '$2',
   'svg': {

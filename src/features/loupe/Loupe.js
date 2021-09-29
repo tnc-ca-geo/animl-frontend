@@ -15,20 +15,20 @@ import ReviewSettingsForm from './ReviewSettingsForm';
 import FullSizeImage from './FullSizeImage';
 import LoupeFooter from './LoupeFooter';
 
-const ItemValue = styled.div({
+const ItemValue = styled('div', {
   fontSize: '$3',
   fontFamily: '$roboto',
   color: '$hiContrast',
 });
 
-const ItemLabel = styled.div({
+const ItemLabel = styled('div', {
   fontSize: '$2',
   color: '$gray600',
   fontFamily: '$mono',
   marginBottom: '$1',
 });
 
-const StyledItem = styled.div({
+const StyledItem = styled('div', {
   marginBottom: '$3',
   marginRight: '$5',
   textAlign: 'center',
@@ -41,25 +41,25 @@ const Item = ({label, value}) => (
   </StyledItem>
 );
 
-const MetadataList = styled.div({
+const MetadataList = styled('div', {
   display: 'flex',
   flexWrap: 'wrap',
 });
 
-const MetadataPane = styled.div({
+const MetadataPane = styled('div', {
   paddingTop: '$3',
   // marginBottom: '$6',
   display: 'flex',
   justifyContent: 'center',
 });
 
-const ImagePane = styled.div({
+const ImagePane = styled('div', {
   display: 'flex',
   justifyContent: 'center',
   // maxWidth: '900px',
 });
 
-const LoupeBody = styled.div({
+const LoupeBody = styled('div', {
   flexGrow: 1,
   display: 'grid',
   margin: '$3',
@@ -69,12 +69,12 @@ const LoupeHeader = styled(PanelHeader, {
   flexDirection: 'row-reverse',
 })
 
-const StyledLoupe = styled.div({
+const StyledLoupe = styled('div', {
   boxSizing: 'border-box',
   flexGrow: '1',
   position: 'relative',
   backgroundColor: '$loContrast',
-  borderLeft: '$1 solid $gray400',
+  borderLeft: '1px solid $gray400',
 });
 
 const Loupe = () => {

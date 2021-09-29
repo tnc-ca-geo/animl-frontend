@@ -42,10 +42,10 @@ const DragHandle = styled('div', {
   margin: '$3',
   width: 'calc(100% - 32px)', // stitches bug w/ parsing variables in calc
   height: 'calc(100% - 32px)',
-  ':hover': {
+  '&:hover': {
     cursor: 'grab',
   },
-  ':user-select': {
+  '&:user-select': {
     cursor: 'grabbing',
   }
 });

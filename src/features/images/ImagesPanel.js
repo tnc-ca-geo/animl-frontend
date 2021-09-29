@@ -14,7 +14,7 @@ import {
 import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
 
-const ImagesTableLoadingOverlay = styled.div({
+const ImagesTableLoadingOverlay = styled('div', {
   flexGrow: '1',
   backgroundColor: '$hiContrast',
   opacity: '0.1',
@@ -26,7 +26,7 @@ const ImagesTableLoadingOverlay = styled.div({
   zIndex: '$3',
 });
 
-const StyledImagesPanel = styled.div({
+const StyledImagesPanel = styled('div', {
   // display: 'grid',
   // gridTemplateRows: 'auto 1fr auto',
   // gridTemplateColumns: '100%',

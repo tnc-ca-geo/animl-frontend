@@ -2,11 +2,11 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 import PanelHeader from './PanelHeader';
 
-const ModalBody = styled.div({
+const ModalBody = styled('div', {
   margin: '$3',
 });
 
-const ModalContainer = styled.div({
+const ModalContainer = styled('div', {
   zIndex: '$3',
   position: 'fixed',    
   top: '150px',
@@ -16,7 +16,7 @@ const ModalContainer = styled.div({
   flexDirection: 'column',
   borderRadius: '$2',
   backgroundColor: '$loContrast',
-  border: '$1 solid $gray400',
+  border: '1px solid $gray400',
   boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
    rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
 
@@ -39,7 +39,7 @@ const ModalContainer = styled.div({
   }
 });
 
-const ModalWrapper = styled.div({
+const ModalWrapper = styled('div', {
   zIndex: '$1',
   position: 'fixed',
   top: '$0',

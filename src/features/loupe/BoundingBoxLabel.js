@@ -85,7 +85,7 @@ const LabelButton = styled('button', {
   border: '2px solid',
   // borderBottom: '1px solid',
   borderLeft: '1px solid',
-  ':hover': {
+  '&:hover': {
     cursor: 'pointer',
   },
 });
@@ -105,7 +105,7 @@ const CategorySelector = styled(CreatableSelect, {
     boxSizing: 'border-box',
     // height: '24px',
     minHeight: 'unset',
-    border: '$1 solid',
+    border: '1px solid',
     borderColor: '$gray400',
     borderRadius: '0',
     cursor: 'pointer',
@@ -124,7 +124,7 @@ const CategorySelector = styled(CreatableSelect, {
     transition: 'all 0.2s ease',
     boxShadow: '0 0 0 3px $blue200',
     borderColor: '$blue500',
-    ':hover': {
+    '&:hover': {
       boxShadow: '0 0 0 3px $blue200',
       borderColor: '$blue500',
     },
@@ -300,7 +300,7 @@ const BoundingBoxLabel = (props) => {
                   color: '$loContrast',
                   backgroundColor: labelColor.primary,
                   borderColor: labelColor.primary,
-                  ':hover': {
+                  '&:hover': {
                     backgroundColor: '$loContrast',
                     color: '$hiContrast',
                   }
@@ -314,7 +314,7 @@ const BoundingBoxLabel = (props) => {
                     backgroundColor: '#E04040',
                     color: '$loContrast',
                     borderColor: labelColor.primary,
-                    ':hover': {
+                    '&:hover': {
                       color: '#E04040',
                       backgroundColor: '$loContrast',
                       borderColor: labelColor.primary,
@@ -329,7 +329,7 @@ const BoundingBoxLabel = (props) => {
                     backgroundColor: '#00C797',
                     color: '$loContrast',
                     borderColor: labelColor.primary,
-                    ':hover': {
+                    '&:hover': {
                       color: '#00C797',
                       backgroundColor: '$loContrast',
                       borderColor: labelColor.primary,

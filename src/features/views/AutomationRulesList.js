@@ -14,10 +14,10 @@ const Rule = styled('li', {
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '$3 0',
-  borderBottom: '$1 solid $gray300',
+  borderBottom: '1px solid $gray300',
 });
 
-const RuleTitle = styled.div({
+const RuleTitle = styled('div', {
   fontWeight: '$4',
 });
 
@@ -27,7 +27,7 @@ const RulesList = styled('ul', {
   marginTop: '0',
 });
 
-const StyledRuleDescription = styled.div({
+const StyledRuleDescription = styled('div', {
   fontSize: '$3',
   p: {
     color: '$gray600',

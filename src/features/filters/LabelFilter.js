@@ -5,7 +5,7 @@ import { checkboxFilterToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 
-const CheckboxWrapper = styled.div({
+const CheckboxWrapper = styled('div', {
   marginBottom: '$2',
 });
 

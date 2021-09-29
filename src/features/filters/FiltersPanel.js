@@ -15,13 +15,13 @@ import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 
-// const Label = styled.span({
+// const Label = styled('span', {
 //   // marginLeft: '$2',
 // });
 
-const StyledFiltersPanel = styled.div({
+const StyledFiltersPanel = styled('div', {
   position: 'relative',
-  borderRight: '$1 solid $gray400',
+  borderRight: '1px solid $gray400',
   flexGrow: '0',
   flexShrink: '0',
   flexBasis: '300px',

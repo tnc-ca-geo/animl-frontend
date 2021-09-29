@@ -20,18 +20,18 @@ import logo from '../assets/animl-logo.svg';
 
 Amplify.configure(awsconfig);
 
-const LoginScreen = styled.div({
+const LoginScreen = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center'
 });
 
-const Logo = styled.div({
+const Logo = styled('div', {
   position: 'absolute',
   top: '100px',
 });
 
-const AppContainer = styled.div({
+const AppContainer = styled('div', {
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
   gridTemplateColumns: '100%',
@@ -42,6 +42,7 @@ const App = () => {
   const authState = useSelector(selectUserAuthState);
   const user = useSelector(selectUserUsername);
   const dispatch = useDispatch();
+  globalStyles();
 
   useEffect(() => {
     return onAuthUIStateChange((nextAuthState, authData) => {

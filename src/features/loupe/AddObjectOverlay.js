@@ -31,7 +31,7 @@ const TempBoundingBox = styled('div', {
   border: '2px solid #00C797'
 });
 
-const Overlay = styled.div({
+const Overlay = styled('div', {
   position: 'absolute',
   width: '100%',
   height: '100%',

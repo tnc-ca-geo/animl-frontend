@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, css } from '../theme/stitches.config.js';
+import { styled, keyframes } from '../theme/stitches.config.js';
 
-const pulse = css.keyframes({
+const pulse = keyframes({
   '0%': {
     transform: 'scale(0)',
   },
@@ -20,7 +20,7 @@ const PulseCircle = styled('div', {
   // width: '40px',
   // height: '40px',
   // backgroundColor: 'wheat',
-  // ':hover': {
+  // '&:hover': {
   //   animation: `${rotate} 1s infinite linear`,
   // },
 });
@@ -29,7 +29,7 @@ export const PulseSpinner = () => (
   <PulseCircle className='spinner' />
 )
 
-const circleAnimation = css.keyframes({
+const circleAnimation = keyframes({
   '0%, 80%, 100%': {
     transform: 'scale(0)',
   },
@@ -51,7 +51,7 @@ const CircleDot = styled('div', {
   left: '0',
   top: '0',
   
-  '::before': {
+  '&::before': {
     content: "''",
     display: 'block',
     width: '15%',
@@ -61,28 +61,28 @@ const CircleDot = styled('div', {
     animation:  `${circleAnimation} 1.2s infinite ease-in-out both`,
   },
 
-  ':nth-child(1)': { transform: 'rotate(30deg)' },
-  ':nth-child(2)': { transform: 'rotate(60deg)' },
-  ':nth-child(3)': { transform: 'rotate(90deg)' },
-  ':nth-child(4)': { transform: 'rotate(120deg)' },
-  ':nth-child(5)': { transform: 'rotate(150deg)' },
-  ':nth-child(6)': { transform: 'rotate(180deg)' },
-  ':nth-child(7)': { transform: 'rotate(210deg)' },
-  ':nth-child(8)': { transform: 'rotate(240deg)' },
-  ':nth-child(9)': { transform: 'rotate(270deg)' },
-  ':nth-child(10)': { transform: 'rotate(300deg)' },
-  ':nth-child(11)': { transform: 'rotate(330deg)' },
-  ':nth-child(1):before': { animationDelay: '-1.1s' },
-  ':nth-child(2):before': { animationDelay: '-1s' },
-  ':nth-child(3):before': { animationDelay: '-0.9s' },
-  ':nth-child(4):before': { animationDelay: '-0.8s' },
-  ':nth-child(5):before': { animationDelay: '-0.7s' },
-  ':nth-child(6):before': { animationDelay: '-0.6s' },
-  ':nth-child(7):before': { animationDelay: '-0.5s' },
-  ':nth-child(8):before': { animationDelay: '-0.4s' },
-  ':nth-child(9):before': { animationDelay: '-0.3s' },
-  ':nth-child(10):before': { animationDelay: '-0.2s' },
-  ':nth-child(11):before': { animationDelay: '-0.1s' },
+  '&:nth-child(1)': { transform: 'rotate(30deg)' },
+  '&:nth-child(2)': { transform: 'rotate(60deg)' },
+  '&:nth-child(3)': { transform: 'rotate(90deg)' },
+  '&:nth-child(4)': { transform: 'rotate(120deg)' },
+  '&:nth-child(5)': { transform: 'rotate(150deg)' },
+  '&:nth-child(6)': { transform: 'rotate(180deg)' },
+  '&:nth-child(7)': { transform: 'rotate(210deg)' },
+  '&:nth-child(8)': { transform: 'rotate(240deg)' },
+  '&:nth-child(9)': { transform: 'rotate(270deg)' },
+  '&:nth-child(10)': { transform: 'rotate(300deg)' },
+  '&:nth-child(11)': { transform: 'rotate(330deg)' },
+  '&:nth-child(1):before': { animationDelay: '-1.1s' },
+  '&:nth-child(2):before': { animationDelay: '-1s' },
+  '&:nth-child(3):before': { animationDelay: '-0.9s' },
+  '&:nth-child(4):before': { animationDelay: '-0.8s' },
+  '&:nth-child(5):before': { animationDelay: '-0.7s' },
+  '&:nth-child(6):before': { animationDelay: '-0.6s' },
+  '&:nth-child(7):before': { animationDelay: '-0.5s' },
+  '&:nth-child(8):before': { animationDelay: '-0.4s' },
+  '&:nth-child(9):before': { animationDelay: '-0.3s' },
+  '&:nth-child(10):before': { animationDelay: '-0.2s' },
+  '&:nth-child(11):before': { animationDelay: '-0.1s' },
 });
 
 export const CircleSpinner = () => (

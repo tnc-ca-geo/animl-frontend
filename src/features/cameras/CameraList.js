@@ -13,41 +13,41 @@ import {
   DATE_FORMAT_EXIF as EXIF,
 } from '../../config';
 
-const StyledCameraList = styled.div({
-  border: '$1 solid $gray400',
+const StyledCameraList = styled('div', {
+  border: '1px solid $gray400',
   borderBottom: 'none',
 });
 
-const DepButtons = styled.div({
+const DepButtons = styled('div', {
 
 });
 
-const DateDash = styled.span({
+const DateDash = styled('span', {
   paddingLeft: '15px',
   paddingRight: '15px',
 })
 
-const Date = styled.span({
+const Date = styled('span', {
   width: '80px',
 })
 
-const DepDates = styled.div({
+const DepDates = styled('div', {
   display: 'flex',
   alignItems: 'center',
 });
 
-const DepName = styled.div({
+const DepName = styled('div', {
   display: 'flex',
   alignItems: 'center',
 });
 
-const DeploymentItem = styled.div({
+const DeploymentItem = styled('div', {
   paddingTop: '$2',
   paddingBottom: '$2',
   display: 'flex',
   justifyContent: 'space-between',
-  ':not(:last-child)': {
-    borderBottom: '$1 solid $gray400',
+  '&:not(:last-child)': {
+    borderBottom: '1px solid $gray400',
   }
 });
 

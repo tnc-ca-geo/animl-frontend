@@ -18,7 +18,7 @@ const ViewMenuItem = styled('li', {
   color: '$hiContrast',
   padding: '$2 $3',
   fontWeight: '$2',
-  ':hover': {
+  '&:hover': {
     color: '$blue500',
     backgroundColor: '$blue200',
   },
@@ -33,14 +33,14 @@ const ViewMenuItem = styled('li', {
   }
 });
 
-const ViewMenu = styled.div({
+const ViewMenu = styled('div', {
   position: 'absolute',
   zIndex: '$2',
   width: '250px',
   left: '$0',
   top: '$5',
   background: '$loContrast',
-  border: '$1 solid $gray400',
+  border: '1px solid $gray400',
   boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
    rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
   ul: {
@@ -50,16 +50,16 @@ const ViewMenu = styled.div({
   }
 });
 
-const Crumb = styled.span({
+const Crumb = styled('span', {
   color: '$hiContrast',
   paddingRight: '$2',
-  ':last-child': {
+  '&:last-child': {
     paddingRight: '$1',
   },
-  ':not(:first-child)': {
+  '&:not(:first-child)': {
     paddingLeft: '$2',
   },
-  ':hover': {
+  '&:hover': {
     borderColor: '$gray700',
     cursor: 'pointer',
   },
@@ -68,7 +68,7 @@ const Crumb = styled.span({
     edited: {
       true: {
         color: '$gray500',
-        '::after': {
+        '&::after': {
           // bug with stitches pseudo elements:
           // https://github.com/modulz/stitches/issues/313
           content: "' *'",
@@ -83,19 +83,19 @@ const SelectedViewCrumb = styled(Crumb, {
   fontWeight: '$4',
 });
 
-const Breadcrumbs = styled.div({
+const Breadcrumbs = styled('div', {
   fontSize: '$4',
   fontWeight: '$2',
   color: '$gray600',
 });
 
-const ViewNavigation = styled.div({
+const ViewNavigation = styled('div', {
   boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
 })
 
-const StyledViewSelector = styled.div({
+const StyledViewSelector = styled('div', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',

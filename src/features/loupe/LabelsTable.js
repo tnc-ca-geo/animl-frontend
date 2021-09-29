@@ -2,13 +2,13 @@ import React, { useMemo } from 'react';
 import { styled } from '../../theme/stitches.config';
 import { useTable } from 'react-table';
 
-const LabelPill = styled.span({
+const LabelPill = styled('span', {
   backgroundColor: '$gray300',
   padding: '$1 $2',
   borderRadius: '4px',
 });
 
-const Styles = styled.div({
+const Styles = styled('div', {
   display: 'block',
   maxWidth: '100%',
 
@@ -26,7 +26,7 @@ const Styles = styled.div({
     'tbody': {
       'tr': {
         backgroundColor: '$loContrast',
-        ':hover': {
+        '&:hover': {
           backgroundColor: '$gray300',
           cursor: 'pointer',
         },
@@ -35,7 +35,7 @@ const Styles = styled.div({
     'tr': {
       'td': {
         fontFamily: '$mono',
-        ':last-child': {
+        '&:last-child': {
           borderRight: '0',
         }
       }
@@ -51,7 +51,7 @@ const Styles = styled.div({
       '&.collapse': {
         width: '0.0000000001%',
       },
-      ':last-child': {
+      '&:last-child': {
         borderRight: '0',
       },
     },
@@ -61,7 +61,7 @@ const Styles = styled.div({
   }
 });
 
-const TableHeader = styled.div({
+const TableHeader = styled('div', {
   fontSize: '$2',
   fontWeight: '$3',
   color: '$gray500',

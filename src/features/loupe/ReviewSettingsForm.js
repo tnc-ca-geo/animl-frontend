@@ -5,25 +5,25 @@ import { iterationOptionsChanged, selectIterationOptions } from './loupeSlice';
 import Modal from '../../components/Modal';
 import Checkbox from '../../components/Checkbox';
 
-const CheckboxLabel = styled.span({
+const CheckboxLabel = styled('span', {
   marginLeft: '$2',
   fontWeight: '$3',
   fontSize: '$3',
   color: '$hiContrast',
-  ':hover': {
+  '&:hover': {
     cursor: 'pointer',
   },
 });
 
-const CheckboxWrapper = styled.div({
+const CheckboxWrapper = styled('div', {
   marginBottom: '$1',
 });
 
-const Options = styled.div({
+const Options = styled('div', {
   marginTop: '$4',
 });
 
-const StyledReviewSettings = styled.div({
+const StyledReviewSettings = styled('div', {
   fontFamily: 'roboto',
   fontSize: '$3',
   fontWeight: '$3',

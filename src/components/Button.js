@@ -16,28 +16,28 @@ const Button = styled('button', {
   textDecoration: 'none',
   userSelect: 'none',
   WebkitTapHighlightColor: 'transparent',
-  '::before': {
+  '&::before': {
     boxSizing: 'border-box',
   },
-  '::after': {
+  '&::after': {
     boxSizing: 'border-box',
   },
 
   // Custom
   color: '$loContrast',
   backgroundColor: '$hiContrast',
-  border: '$1 solid $hiContrast',
+  border: '1px solid $hiContrast',
   borderRadius: '$1',
   height: '$5',
   fontWeight: '$3',
   textTransform: 'uppercase',
   transition: 'all 40ms linear',
-  ':hover': {
+  '&:hover': {
     color: '$hiContrast',
     backgroundColor: '$gray300',
     cursor: 'pointer',
   },
-  ':disabled': {
+  '&:disabled': {
     pointerEvents: 'none',
     backgroundColor: 'transparent',
     color: '$gray500',
@@ -55,7 +55,7 @@ const Button = styled('button', {
     // border: '$1 $hiContrast solid',
     // backgroundColor: '$hiContrast',
     // color: '$loContrast',
-    // ':hover': {
+    // '&:hover': {
     //   backgroundColor: '$gray300',
     //   color: '$hiContrast',
     // }
@@ -79,7 +79,7 @@ const Button = styled('button', {
       true: {
         backgroundColor: '$hiContrast',
         color: '$loContrast',
-        ':hover': {
+        '&:hover': {
           backgroundColor: '$hiContrast',
           color: '$loContrast',
         }

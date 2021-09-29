@@ -9,11 +9,11 @@ import FiltersPanel from '../filters/FiltersPanel';
 import ImagesPanel from '../images/ImagesPanel';
 import Loupe from '../loupe/Loupe';
 
-const ViewExplorerWrapper = styled.div({
+const ViewExplorerWrapper = styled('div', {
   display: 'flex',
 });
 
-// const ViewExplorerBody = styled.div({
+// const ViewExplorerBody = styled('div', {
 //   display: 'flex',
 //   flexGrow: 1,
 // });

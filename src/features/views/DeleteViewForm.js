@@ -13,7 +13,7 @@ import { FormWrapper, ButtonRow, HelperText } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
-const ViewName = styled.span({
+const ViewName = styled('span', {
   fontWeight: '$5',
 });
 

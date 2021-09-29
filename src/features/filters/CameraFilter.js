@@ -6,18 +6,18 @@ import { fetchCameras, selectCameras } from '../cameras/camerasSlice';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 
-const CameraSection = styled.div({
+const CameraSection = styled('div', {
   // fontFamily: '$mono',
   fontSize: '$3',
 });
 
-const DeploymentCheckboxWrapper = styled.div({
+const DeploymentCheckboxWrapper = styled('div', {
   marginBottom: '$2',
   marginLeft: '$5',
 });
 
 
-const CheckboxWrapper = styled.div({
+const CheckboxWrapper = styled('div', {
   marginBottom: '$2',
   marginLeft: '$2',
 });

@@ -9,18 +9,18 @@ const textInput = {
   color: '$gray700',
   padding: '$3',
   boxSizing: 'border-box',
-  border: '$1 solid',
+  border: '1px solid',
   borderColor: '$gray400',
   borderRadius: '$1',
   transition: 'all 0.2s ease',
-  ':focus': {
+  '&:focus': {
     outline: 'none',
     boxShadow: '0 0 0 3px $blue200',
     borderColor: '$blue500',
   }
 };
 
-const StyledFormWrapper = styled.div({
+const StyledFormWrapper = styled('div', {
   display: 'block',
   width: '100%',
   label: {
@@ -51,7 +51,7 @@ export const FormWrapper = ({ children }) => (
   </StyledFormWrapper>
 );
 
-export const FieldRow = styled.div({
+export const FieldRow = styled('div', {
   paddingBottom: '$3',
   display: 'flex',
 });
@@ -60,27 +60,27 @@ export const ButtonRow = styled(FieldRow, {
   justifyContent: 'flex-end',
   button: {
     marginRight: '$3',
-    ':last-child': {
+    '&:last-child': {
       marginRight: '0',
     },
   }
 });
 
-export const FormFieldWrapper = styled.div({
+export const FormFieldWrapper = styled('div', {
   flexGrow: '1',
   marginBottom: '$3',
   marginLeft: '$3',
-  ':first-child': {
+  '&:first-child': {
     marginLeft: '0',
   }
 });
 
-export const FormError = styled.div({
+export const FormError = styled('div', {
   color: '$warning',
   fontSize: '$3',
   marginTop: '$2',
 });
 
-export const HelperText = styled.div({
+export const HelperText = styled('div', {
   padding: '$2 $3 $3 $3',
 });

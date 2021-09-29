@@ -3,21 +3,21 @@ import { styled } from '../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from './IconButton';
 
-const AccordionBody = styled.div({
+const AccordionBody = styled('div', {
   padding: '$2 $3',
-  borderBottom: '$1 solid $gray400',
+  borderBottom: '1px solid $gray400',
   backgroundColor: '$gray200',
   fontFamily: '$mono',
 });
 
-const AccordionHeader = styled.div({
+const AccordionHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   fontWeight: '$3',
   fontFamily: '$roboto',
   height: '$7',
-  borderBottom: '$1 solid $gray400',
+  borderBottom: '1px solid $gray400',
   padding: '$0 $2 $0 $3',
   pointerEvents: 'auto',
   '&:hover': {

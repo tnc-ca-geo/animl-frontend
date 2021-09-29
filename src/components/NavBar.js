@@ -17,24 +17,24 @@ const Logo = styled(Link, {
   paddingLeft: '$1',
 });
 
-const NavLinks = styled.div({
+const NavLinks = styled('div', {
   display: 'flex',
 });
 
-const ViewSelectorWrapper = styled.div({
+const ViewSelectorWrapper = styled('div', {
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
-})
+});
 
-const StyledNav = styled.nav({
+const StyledNav = styled('nav', {
   boxSizing: 'border-box',
   width: '100%',
   height: '$8',
   display: 'flex',
   alignItems: 'center',
   padding: '$0 $3',
-  borderBottom: '$1 solid $gray400',
+  borderBottom: '1px solid $gray400',
   backgroundColor: '$loContrast',
 });
 

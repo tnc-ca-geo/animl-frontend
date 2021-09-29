@@ -1,12 +1,12 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config';
 
-const CheckboxContainer = styled.div({
+const CheckboxContainer = styled('div', {
   display: 'inline-block',
   verticalAlign: 'middle',
 });
 
-const SVGIcon = styled.svg({
+const SVGIcon = styled('svg', {
   position: 'absolute',
   top: '1px',
   fill: 'none',
@@ -16,7 +16,7 @@ const SVGIcon = styled.svg({
 
 // Hide checkbox visually but remain accessible to screen readers.
 // Source: https://polished.js.org/docs/#hidevisually
-const HiddenCheckbox = styled.input({
+const HiddenCheckbox = styled('input', {
   border: '0',
   clip: 'rect(0 0 0 0)',
   clippath: 'inset(50%)',
@@ -29,21 +29,21 @@ const HiddenCheckbox = styled.input({
   width: '1px',
 });
 
-const StyledCheckbox = styled.div({
+const StyledCheckbox = styled('div', {
   position: 'relative',
   display: 'inline-block',
   width: '14px',
   height: '14px',
   borderRadius: '$1',
-  border: '$1 solid',
+  border: '1px solid',
   transition: 'all 150ms',
 
-  ':hover': {
+  '&:hover': {
     cursor: 'pointer',
   },
 
   [`& ${HiddenCheckbox}`]: {
-    ':focus': {
+    '&:focus': {
       boxShadow: '0 0 0 3px #B7F5FF',
     },
   },

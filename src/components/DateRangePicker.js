@@ -6,7 +6,7 @@ import 'react-dates/lib/css/_datepicker.css';
 import { styled } from '../theme/stitches.config';
 
 // TODO: clean uop date range picker styling
-const StyledDateRangePicker = styled.div({
+const StyledDateRangePicker = styled('div', {
   '.DateInput_input': {
     color: '$hiContrast',
     fontFamily: '$mono',
@@ -33,12 +33,12 @@ const StyledDateRangePicker = styled.div({
   '.CalendarDay__selected_span': {
     background: '$blue200',
     color: '$hiContrast',
-    border: '$1 solid $gray400',
+    border: '1px solid $gray400',
   },
   '.CalendarDay__selected': {
     background: '$blue600',
     color: '$loContrast',
-    border: '$1 solid $blue600',
+    border: '1px solid $blue600',
   },
   '.CalendarDay__selected_span:hover': {
     background: '$blue400',
@@ -47,7 +47,7 @@ const StyledDateRangePicker = styled.div({
   '.CalendarDay__selected:hover': {
     background: '$blue400',
     color: '$loContrast',
-    border: '$1 solid $blue200',
+    border: '1px solid $blue200',
   },
   '.CalendarDay__hovered_span': {
     background: '$gray200',
