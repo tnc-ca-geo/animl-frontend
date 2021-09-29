@@ -223,8 +223,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       accessor: 'cameraSn',
     },
     {
-      Header: 'Camera make',
-      accessor: 'make',
+      Header: 'Deployment',
+      accessor: 'deploymentName',
       disableSortBy: true,
     },
   ], []);

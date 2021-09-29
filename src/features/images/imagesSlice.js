@@ -140,7 +140,8 @@ export const fetchImages = (filters, page = 'current') => {
         dispatch(getImagesStart());
         const pageInfo = getState().images.pageInfo;
         let res = await call('getImages', { filters, pageInfo, page });
-        res = enrichImages(res);
+        const cameras = getState().cameras.cameras;
+        res = enrichImages(res, cameras);
         if (page !== 'next') {
           dispatch(clearImages());
         }
