@@ -64,7 +64,7 @@ const StyledResizableBox = styled(ResizableBox, {
         // borderColor: '$blue500',  
       },  
       false: {
-        opacity: '0.25',
+        opacity: '0.75',
       },
     }
   }

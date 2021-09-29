@@ -56,7 +56,7 @@ const StyledBoundingBoxLabel = styled('div', {
         opacity: '1',
       },
       false: {
-        opacity: '0.5',
+        opacity: '0.75',
       }
     }
   }

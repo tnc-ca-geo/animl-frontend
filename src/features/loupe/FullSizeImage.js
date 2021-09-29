@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useGlobalEvent, useThrottledFn } from 'beautiful-react-hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
@@ -63,44 +63,17 @@ const ImageWrapper = styled('div', {
 
 const FullSizeImage = ({ image, focusIndex }) => {
   const isAddingObject = useSelector(selectIsAddingObject);
-  const onWindowResize = useGlobalEvent('resize');
+  const containerEl = useRef(null);
+  const dims = useResizeObserver(containerEl);
   const dispatch = useDispatch();
 
   // track image loading state
+  // NOTE: currently not using this. Consider removing
   const [ imgLoaded, setImgLoaded ] = useState(false);
   useEffect(() => {
     setImgLoaded(false);
   }, [ image ]);
   const handleImgLoaded = () => setImgLoaded(true);
-
-  // track window width
-  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth);
-  const onWindowResizeHandler = useThrottledFn(() => {
-    setWindowWidth(window.innerWidth);
-  }, 100);
-  onWindowResize(onWindowResizeHandler);
-
-  // track image position and dimensions
-  const containerEl = useRef(null);
-  const [ width, setWidth ] = useState();
-  const [ height, setHeight ] = useState();
-  const [ top, setTop ] = useState();
-  const [ left, setLeft ] = useState();
-  useEffect(() => {
-    const container = containerEl.current.getBoundingClientRect();
-    if (width !== container.width) {
-      setWidth(container.width)
-    }
-    if (height !== container.height) { 
-      setHeight(container.height);
-    }
-    if (top !== container.top) {
-      setTop(container.top);
-    }
-    if (left !== container.left) {
-      setLeft(container.left);
-    }
-  }, [ windowWidth, width, height, top, left, imgLoaded ]);
 
   // get image's objects
   const workingImages = useSelector(selectWorkingImages);
@@ -136,15 +109,15 @@ const FullSizeImage = ({ image, focusIndex }) => {
     <ImageWrapper ref={containerEl}>
       {isAddingObject &&
         <AddObjectOverlay
-          imageDimensions={{ top, left, width, height }}
+          imageDimensions={dims}
           focusIndex={focusIndex}
         />
       }
       {filteredObjects && filteredObjects.map((object, i) => (
         <BoundingBox
           key={object._id}
-          imageWidth={width}
-          imageHeight={height}
+          imageWidth={dims.width}
+          imageHeight={dims.height}
           object={object}
           objectIndex={currImgObjects.indexOf(object)}
           focusIndex={focusIndex}
