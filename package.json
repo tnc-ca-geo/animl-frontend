@@ -18,6 +18,7 @@
     "aws-amplify": "^4.0.3",
     "bson": "^4.2.3",
     "connected-react-router": "^6.9.1",
+    "env-cmd": "^10.1.0",
     "formik": "^2.2.6",
     "graphql": "^15.3.0",
     "graphql-request": "^3.1.0",
@@ -46,6 +47,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:staging": "env-cmd -f .env.staging npm run build",
     "deploy-dev": "sls client deploy --no-confirm --stage dev",
     "deploy-prod": "sls client deploy --no-confirm --stage prod",
     "test": "react-scripts test",
