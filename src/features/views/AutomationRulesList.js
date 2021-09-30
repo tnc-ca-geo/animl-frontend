@@ -51,7 +51,7 @@ const RuleDescription = ({ rule, models }) => {
         }
         {rule.action.type === 'run-inference'
           ? `submit the image to ${model.name} ${model.version} for inference.`
-          : `send an alert to ${rule.action.alertRecipient}.`
+          : `send an alert to ${rule.action.alertRecipients.join(', ')}.`
         }
       </p>
     </StyledRuleDescription>

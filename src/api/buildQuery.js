@@ -24,7 +24,7 @@ const viewFields = `
     }
     action {
       type
-      alertRecipient
+      alertRecipients
       model
     }
   }

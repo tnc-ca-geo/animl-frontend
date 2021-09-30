@@ -89,7 +89,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         <Modal 
           handleClose={handleModalToggle}
           title='Automation Rules'
-          size='sm'
+          size='md'
         >
           <AutomationRulesForm/>
         </Modal>

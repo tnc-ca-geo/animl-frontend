@@ -53,9 +53,28 @@ const addRuleSchema = Yup.object().shape({
         value: Yup.string().required('You must specify a model'),
       }),
     }),
-    alertRecipient: Yup.string().when('type.value', {
+    alertRecipients: Yup.string().when('type.value', {
       is: (val) => val === 'send-alert',
-      then: Yup.string().email('Email adderess is invalid').required('You must specify a recipient'),
+      then: Yup.string()
+        // .email('Email adderess is invalid')
+        .test(
+          'email-list-test',
+          'One or more email addresses were invalid', 
+          function(value) {
+            if (value) {
+              let schema = Yup.string().email();
+              const emails = value.replace(/\s/g, '').split(',');
+              let pass = true;
+              emails.forEach((email) => {
+                if (!schema.isValidSync(email)) { pass = false }
+              });
+              return pass;
+            }
+            else {
+              return false;
+            }
+          })
+        .required('One or more email addresses were invalid'),
     }),
   }),
 });
@@ -64,6 +83,7 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
   const dispatch = useDispatch();
 
   const handleSaveRulesSubmit = ({name, event, action}) => {
+    console.log('handleSaveRuleSubmit firing with action: ', action)
     const newRule = {
       name,
       event: {
@@ -73,7 +93,9 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
       action: {
         type: action.type.value,
         ...(action.model && { model: action.model.value }),
-        ...(action.alertRecipient && { alertRecipient: action.alertRecipient }),
+        ...(action.alertRecipients && { 
+          alertRecipients: action.alertRecipients.replace(/\s/g, '').split(',')
+        }),
       },
     };
     const rules = view.automationRules.concat(newRule);
@@ -191,16 +213,20 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
                 </FormFieldWrapper>
               )}
               {values.action.type.value === 'send-alert' && (
-                <FormFieldWrapper css={{ minWidth: '270px' }}>
-                  <label htmlFor='action-alert-recipient'>To</label>
+                <FormFieldWrapper css={{ minWidth: '300px' }}>
+                  <label htmlFor='action-alert-recipients'>To</label>
                   <Field
-                    name='action.alertRecipient'
-                    id='action-alert-recipient'
-                    value={values.action.alertRecipient ? values.action.alertRecipient : ''}
+                    name='action.alertRecipients'
+                    id='action-alert-recipients'
+                    value={values.action.alertRecipients 
+                      ? values.action.alertRecipients 
+                      : ''
+                    }
+                    placeholder='Comma-separated list of email addresses...'
                   />
                   <ErrorMessage
                     component={FormError}
-                    name='action.alertRecipient'
+                    name='action.alertRecipients'
                   />
                 </FormFieldWrapper>
               )}
