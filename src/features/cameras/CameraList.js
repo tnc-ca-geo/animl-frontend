@@ -74,7 +74,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
           <Accordion
             key={cam._id}
             label={cam._id}
-            expandedDefault={true}
+            expandedDefault={false}
             headerButtons={
               <AddDeploymentButton
                 handleSaveDepClick={handleSaveDepClick}

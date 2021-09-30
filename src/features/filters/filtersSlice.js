@@ -159,15 +159,19 @@ export const filtersSlice = createSlice({
         state.availFilters.deployments.error = null;
         const availDepFilters = state.availFilters.deployments.ids;
         const activeDepFilters = state.activeFilters.deployments;
-
         switch (operation) {
           case 'createDeployment': {
-            // add new dep to available and active deployment filters
+            // add new dep to available deployment filters
             const newDepId = reqPayload.deployment._id;
-            if (!availDepFilters.includes(newDepId)) {
+            if (!availDepFilters) {
+              state.availFilters.deployments.ids = [newDepId];
+            }
+            else if (!availDepFilters.includes(newDepId)) {
               state.availFilters.deployments.ids.push(newDepId);
             }
-            if (!activeDepFilters.includes(newDepId)) {
+            // and active deployment filters
+            if (activeDepFilters && 
+                !activeDepFilters.includes(newDepId)) {
               state.activeFilters.deployments.push(newDepId);
             }
             break;

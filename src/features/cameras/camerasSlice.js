@@ -48,6 +48,7 @@ export const camerasSlice = createSlice({
     },
 
     editDeploymentsSuccess: (state, { payload }) => {
+      console.log('edidDeploymentSuccess');
       state.isLoading = false;
       state.error = null;
       const editedCam = payload.camera;
