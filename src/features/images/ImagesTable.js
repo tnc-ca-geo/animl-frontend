@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
 import { FixedSizeList as List } from 'react-window';
@@ -283,17 +284,14 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [focusIndex.image]);
 
-  useEffect(() => {
+  useEffectAfterMount(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
     // to clear the infinite list's cache. This effect will run on mount too;
     // there's no need to reset in that case.
-    if (hasMountedRef.current) {
-      dispatch(sortChanged(sortBy));
-      if (infiniteLoaderRef.current) {
-        infiniteLoaderRef.current.resetloadMoreItemsCache();
-      }
+    dispatch(sortChanged(sortBy));
+    if (infiniteLoaderRef.current) {
+      infiniteLoaderRef.current.resetloadMoreItemsCache();
     }
-    hasMountedRef.current = true;
   }, [sortBy, dispatch]);
 
   useEffect(() => {

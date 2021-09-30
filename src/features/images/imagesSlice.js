@@ -19,7 +19,7 @@ const initialState = {
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[1],
     paginatedField: 'dateTimeOriginal',
-    sortAscending: false,
+    sortAscending: true,
     previous: null,
     hasPrevious: null,
     next: null,
