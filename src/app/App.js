@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import globalStyles from '../theme/globalStyles';
-import { styled, css } from '../theme/stitches.config.js';
+import { styled } from '../theme/stitches.config.js';
 import { Switch, Route } from 'react-router-dom';
 import NavBar from '../components/NavBar';
-import CounterPage from '../pages/CounterPage';
 import HomePage from '../pages/HomePage';
 import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
@@ -39,10 +38,10 @@ const AppContainer = styled('div', {
 });
 
 const App = () => {
+  globalStyles();
   const authState = useSelector(selectUserAuthState);
   const user = useSelector(selectUserUsername);
   const dispatch = useDispatch();
-  globalStyles();
 
   useEffect(() => {
     return onAuthUIStateChange((nextAuthState, authData) => {
@@ -60,9 +59,6 @@ const App = () => {
     <AppContainer>
       <NavBar />
       <Switch>
-        <Route path="/counter">
-          <CounterPage />
-        </Route>
         <Route path="/">
           <HomePage />
         </Route>

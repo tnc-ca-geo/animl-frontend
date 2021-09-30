@@ -9,6 +9,9 @@ import { CheckboxLabel } from '../../components/CheckboxLabel';
 const CameraSection = styled('div', {
   // fontFamily: '$mono',
   fontSize: '$3',
+  // '&:nth-child(odd)': {
+  //   backgroundColor: '$loContrast',
+  // }
 });
 
 const DeploymentCheckboxWrapper = styled('div', {
