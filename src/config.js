@@ -1,5 +1,7 @@
 export const DATE_FORMAT_EXIF = 'YYYY:MM:DD hh:mm:ss';
 export const DATE_FORMAT_READABLE = 'MMM D, YYYY hh:mm:ss';
+export const DATE_FORMAT_READABLE_SHORT = 'MMM D, YYYY';
+
 
 console.log('process.env: ', process.env);
 const stage = process.env.REACT_APP_STAGE || process.env.NODE_ENV;

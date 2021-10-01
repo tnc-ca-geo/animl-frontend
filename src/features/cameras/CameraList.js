@@ -9,7 +9,7 @@ import Button from '../../components/Button';
 import IconButton from '../../components/IconButton';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 import {
-  DATE_FORMAT_READABLE as DFR,
+  DATE_FORMAT_READABLE_SHORT as DFRS,
   DATE_FORMAT_EXIF as EXIF,
 } from '../../config';
 
@@ -23,25 +23,44 @@ const DepButtons = styled('div', {
 });
 
 const DateDash = styled('span', {
-  paddingLeft: '15px',
-  paddingRight: '15px',
+  paddingLeft: '$2',
+  paddingRight: '$2',
 })
 
 const Date = styled('span', {
-  width: '80px',
-})
+  width: '120px',
+
+  variants: {
+    type: {
+      start: {
+        textAlign: 'right',
+      },
+      end: {
+        textAlign: 'left',
+      }
+    }
+  }
+});
+
+const Bookend = styled('span', {
+  fontStyle: 'italic',
+  color: '$gray600',
+});
 
 const DepDates = styled('div', {
   display: 'flex',
   alignItems: 'center',
+  // width: '210px',
 });
 
 const DepName = styled('div', {
   display: 'flex',
   alignItems: 'center',
+  width: '150px',
 });
 
 const DeploymentItem = styled('div', {
+  fontSize: '$3',
   paddingTop: '$2',
   paddingBottom: '$2',
   display: 'flex',
@@ -65,7 +84,7 @@ const AddDeploymentButton = (props) => {
 };
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
-  const format = (date) => moment(date, EXIF).format('MM-DD-YY');
+  const format = (date) => moment(date, EXIF).format(DFRS);
 
   return (
     <div>
@@ -86,9 +105,17 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               <DeploymentItem key={dep._id}> 
                 <DepName>{dep.name}</DepName>
                 <DepDates>
-                  <Date>{dep.startDate && format(dep.startDate)}</Date>
+                  <Date type='start'>{
+                    dep.startDate 
+                      ? format(dep.startDate) 
+                      : <Bookend>dawn of time</Bookend>
+                  }</Date>
                   <DateDash>-</DateDash>
-                  <Date>{dep.endDate && format(dep.endDate)}</Date>
+                  <Date type='end'>{
+                    dep.endDate 
+                    ? format(dep.endDate) 
+                    : <Bookend>today</Bookend>
+                  }</Date>
                 </DepDates>
                 <DepButtons>
                   <IconButton
