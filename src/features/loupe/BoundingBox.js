@@ -242,7 +242,7 @@ const BoundingBox = (props) => {
     <Draggable
       bounds='parent'
       handle='.drag-handle'
-      position={{x: left, y: top}}
+      position={{x: left + 1, y: top - 1}}
       onDrag={onDrag}
       onStop={onDragEnd}
       disabled={object.locked}

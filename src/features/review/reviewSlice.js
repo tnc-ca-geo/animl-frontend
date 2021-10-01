@@ -89,8 +89,10 @@ export const reviewSlice = createSlice({
     },
 
     markedEmpty: (state, { payload }) => {
-      const image = state.workingImages[payload.imageIndex];
-      image.objects.push(payload.newObject);
+      if (payload.newObject) {
+        const image = state.workingImages[payload.imageIndex];
+        image.objects.push(payload.newObject);
+      }
     },
 
   },

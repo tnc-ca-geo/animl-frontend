@@ -24,6 +24,7 @@ import {
   selectIterationOptions,
 } from '../loupe/loupeSlice';
 import { selectUserUsername } from '../user/userSlice';
+import { executeSync } from 'graphql';
 
 
 // we could also clone the label and append the original index to it as a prop
@@ -362,29 +363,57 @@ export const reviewMiddleware = store => next => action => {
     const userId = selectUserUsername(store.getState());
     const workingImages = selectWorkingImages(store.getState());
     const image = workingImages[imageIndex];
-    const newObject = {
-      _id: new ObjectID().toString(),
-      bbox: [0,0,1,1],
-      locked: true,
-      labels: [{
+
+    // Ceck if image has any objects with an unvalidated empty label. 
+    let existingEmptyIndexes = [];
+    image.objects.forEach((obj, i) => {
+      const emptyLblIndex = obj.labels.findIndex((lbl) => (
+        lbl.category === 'empty' && !lbl.validated
+      ));
+      if (emptyLblIndex >= 0) {
+        existingEmptyIndexes.push({
+          image: imageIndex,
+          object: i,
+          label: emptyLblIndex
+        });
+      }
+    })
+
+    // If so, validate it
+    if (existingEmptyIndexes.length > 0) {
+      existingEmptyIndexes.forEach((emptyIndex) => {
+        const payload = { userId, index: emptyIndex, validated: true };
+        store.dispatch(labelValidated(payload));
+      });
+      next(action);
+    }
+    // else, create new empty object
+    else {
+      const newObject = {
         _id: new ObjectID().toString(),
-        category: 'empty',
         bbox: [0,0,1,1],
-        validation: {
-          validated: true,
-          userId: userId
-        },  
-        type: 'manual',
-        conf: 1,
-        userId: action.payload.userId
-      }],
-    };
-    action.payload.newObject = newObject;
-    next(action);
-    store.dispatch(editLabel('create', 'object', {
-      imageId: image._id,
-      object: newObject,
-    }));
+        locked: true,
+        labels: [{
+          _id: new ObjectID().toString(),
+          category: 'empty',
+          bbox: [0,0,1,1],
+          validation: {
+            validated: true,
+            userId: userId
+          },  
+          type: 'manual',
+          conf: 1,
+          userId: action.payload.userId
+        }],
+      };
+      action.payload.newObject = newObject;
+
+      next(action);
+      store.dispatch(editLabel('create', 'object', {
+        imageId: image._id,
+        object: newObject,
+      }));
+    }
   }
 
   else {
