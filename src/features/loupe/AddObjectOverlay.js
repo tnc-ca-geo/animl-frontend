@@ -39,7 +39,7 @@ const Overlay = styled('div', {
 });
 
 const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
-  const { top, left, width, height } = imageDimensions;
+  const { width, height, top, left } = imageDimensions;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
   const defaultBBox = { top: 0, left: 0, width: 0, height: 0 };
