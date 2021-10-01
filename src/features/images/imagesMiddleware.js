@@ -17,7 +17,7 @@ export const preFocusImageMiddleware = store => next => action => {
     if (imgId) {
       const workingImages = selectWorkingImages(store.getState());
       const imgIndex = workingImages.findIndex((img) => img._id === imgId);
-      store.dispatch(setFocus({ image: imgIndex }));
+      store.dispatch(setFocus({ index: { image: imgIndex }, type: 'auto'}));
       store.dispatch(toggleOpenLoupe(true));
       store.dispatch(preFocusImageEnd());
       store.dispatch(push('/')); // remove URL query string 

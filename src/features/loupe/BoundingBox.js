@@ -227,11 +227,12 @@ const BoundingBox = (props) => {
   };
 
   const handleBBoxClick = () => {
-    dispatch(setFocus({
+    const newIndex = {
       image: focusIndex.image,
       object: objectIndex,
       label: labelIndex,
-    }));
+    };
+    dispatch(setFocus({ index: newIndex, type: 'manual' }));
   }
 
   const [ showLabelButtons, setShowLabelButtons ] = useState(false);

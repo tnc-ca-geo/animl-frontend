@@ -20,7 +20,11 @@ import {
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
-import { setFocus, selectFocusIndex } from '../review/reviewSlice';
+import {
+  setFocus,
+  selectFocusIndex,
+  selectFocusChangeType
+} from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
@@ -53,9 +57,9 @@ const Table = styled('div', {
 const TableRow = styled('div', {
   backgroundColor: '$gray200',
   '&:hover': {
-    backgroundColor: '$gray300',
+    // backgroundColor: '$gray300',
     cursor: 'pointer',
-    boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
+    // boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
   },
   '&:last-child': {
     '.td': {
@@ -100,13 +104,14 @@ const HeaderCell = styled(TableCell, {
 const DataCell = styled(TableCell, {
   backgroundColor: '$loContrast',
   margin: '0px',
-  marginBottom: '2px',
+  // marginBottom: '2px',
   display: 'flex',
   alignItems: 'center',
+  borderBottom: '1px solid $gray300',
   variants: {
     selected: {
       true: {
-        // backgroundColor: '$gray300',
+        backgroundColor: '$gray200',
       }
     }
   }
@@ -276,13 +281,14 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   //   dispatch(visibleRowsChanged(visibleRows))
   // }, [dispatch, visibleRows]);
 
+  const focusChangeType = useSelector(selectFocusChangeType);
   useEffect(() => {
-    if (focusIndex.image) {
+    if (focusIndex.image && focusChangeType === 'auto') {
       // TODO: make auto scrolling smooth:
       // https://github.com/bvaughn/react-window/issues/16
-      listRef.current.scrollToItem(focusIndex.image, 'smart');
+      listRef.current.scrollToItem(focusIndex.image, 'center');
     }
-  }, [focusIndex.image]);
+  }, [focusIndex.image, focusChangeType]);
 
   useEffectAfterMount(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
@@ -304,7 +310,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   }, [isLoupeOpen, columnsToHide]);
 
   const handleRowClick = useCallback((id) => {
-    dispatch(setFocus({ image: Number(id), object: null, label: null }));
+    const newIndex = { image: Number(id), object: null, label: null }
+    dispatch(setFocus({ index: newIndex, type: 'manual'}));
     dispatch(toggleOpenLoupe(true));
   }, [dispatch]);
 

@@ -181,7 +181,7 @@ export const reviewMiddleware = store => next => action => {
       diffs: { locked: true },
     }));
 
-    store.dispatch(setFocus({ label: 0 }));
+    store.dispatch(setFocus({ index: { label: 0 }, type: 'auto' }));
     store.dispatch(addLabelEnd());
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) {
@@ -306,7 +306,7 @@ export const reviewMiddleware = store => next => action => {
     // are only 20 images loaded, all of them only have locked objects, and
     // the skipLockedObjects option is on), it won't return a valid newFocusIndex. 
     const newFocusIndex = findNextLabel(delta, workingImages, focusIndex, options);
-    store.dispatch(setFocus(newFocusIndex));
+    store.dispatch(setFocus({ index: newFocusIndex, type: 'auto' }));
   }
 
   /* 
@@ -319,10 +319,16 @@ export const reviewMiddleware = store => next => action => {
     const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     if (delta === 'decrement' && focusIndex.image > 0) {
-      store.dispatch(setFocus({ image: focusIndex.image - 1 }));
+      store.dispatch(setFocus({ 
+        index: { image: focusIndex.image - 1 },
+        type: 'auto' 
+      }));
     }
     else if (delta === 'increment' && focusIndex.image <= workingImages.length) {
-      store.dispatch(setFocus({ image: focusIndex.image + 1 }));
+      store.dispatch(setFocus({
+        index: { image: focusIndex.image + 1 }, 
+        type: 'auto' 
+      }));
     }
   }
 
@@ -348,7 +354,7 @@ export const reviewMiddleware = store => next => action => {
     };
     action.payload.newObject = newObject;
     next(action);
-    store.dispatch(setFocus({ object: 0 }));
+    store.dispatch(setFocus({ index: { object: 0 }, type: 'auto' }));
     store.dispatch(addLabelStart());
     store.dispatch(editLabel('create', 'object', createObjectPayload));
   }

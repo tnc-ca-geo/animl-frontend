@@ -64,11 +64,8 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
     e.stopPropagation();
-    dispatch(setFocus({
-      image: imageIndex,
-      object: objIndex,
-      label: lblIndex 
-    }));
+    const newIndex = { image: imageIndex, object: objIndex, label: lblIndex };
+    dispatch(setFocus({ index: newIndex, type: 'manual' }));
     dispatch(toggleOpenLoupe(true));
   };
 

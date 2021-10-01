@@ -14,6 +14,7 @@ const initialState = {
     object: null,
     label: null,
   },
+  focusChangeType: null,
   updatingObjects: false,
   error: null,
 };
@@ -25,7 +26,8 @@ export const reviewSlice = createSlice({
 
     setFocus: (state, { payload }) => {
       console.log('reviewSlice.setFocus(): ', payload);
-      state.focusIndex = { ...state.focusIndex, ...payload };
+      state.focusIndex = { ...state.focusIndex, ...payload.index };
+      state.focusChangeType = payload.type;
     },
 
     bboxUpdated: (state, { payload }) => {
@@ -138,6 +140,7 @@ export const incrementImage = createAction('loupe/incrementImage');
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
 export const selectWorkingImages = state => state.review.present.workingImages;
 export const selectFocusIndex = state => state.review.present.focusIndex;
+export const selectFocusChangeType = state => state.review.present.focusChangeType;
 
 export default undoable(reviewSlice.reducer, { 
   filter: excludeAction(objectAdded.toString()) 

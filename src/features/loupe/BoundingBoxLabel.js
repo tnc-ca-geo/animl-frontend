@@ -216,7 +216,7 @@ const BoundingBoxLabel = (props) => {
   const handleCategoryClick = (e) => {
     e.stopPropagation();
     if (!object.locked && !catSelectorOpen) {
-      dispatch(setFocus(index));
+      dispatch(setFocus({ index, type: 'manual' }));
       dispatch(addLabelStart());
     }
   };
