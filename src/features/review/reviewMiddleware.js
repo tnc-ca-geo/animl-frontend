@@ -318,13 +318,17 @@ export const reviewMiddleware = store => next => action => {
     const delta = action.payload;
     const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
+    console.log(`${delta}ing with focusIndex: `, focusIndex)
+    console.log(`and workingImages.length: ${workingImages.length}`)
+
     if (delta === 'decrement' && focusIndex.image > 0) {
       store.dispatch(setFocus({ 
         index: { image: focusIndex.image - 1 },
         type: 'auto' 
       }));
     }
-    else if (delta === 'increment' && focusIndex.image <= workingImages.length) {
+    else if (delta === 'increment' &&
+             focusIndex.image < workingImages.length - 1) {
       store.dispatch(setFocus({
         index: { image: focusIndex.image + 1 }, 
         type: 'auto' 
