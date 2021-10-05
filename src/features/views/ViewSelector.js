@@ -119,10 +119,12 @@ const ViewSelector = () => {
   }, [views, viewsAreLoading, dispatch]);
 
   useEffect(() => {
-    if (filtersReady && selectedView) {
+    // Wait for filters and views to get loaded before setting selected view,
+    // and don't override user's filter selections if there are unsaved chagnes
+    if (filtersReady && selectedView && !unsavedChanges) {
       dispatch(setSelectedView({ view: selectedView }));
     }
-  }, [selectedView, filtersReady, dispatch]);
+  }, [selectedView, filtersReady, unsavedChanges, dispatch]);
 
   useEffect(() => {
     const handleWindowClick = () => { setExpanded(false) };

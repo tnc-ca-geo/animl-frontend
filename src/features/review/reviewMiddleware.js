@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { ObjectID } from 'bson';
 import { selectAvailLabels, fetchLabels } from '../filters/filtersSlice';
-import { selectImages, editLabel } from '../images/imagesSlice';
+import { editLabel } from '../images/imagesSlice';
 import {
   setFocus,
   bboxUpdated,
@@ -24,8 +24,6 @@ import {
   selectIterationOptions,
 } from '../loupe/loupeSlice';
 import { selectUserUsername } from '../user/userSlice';
-import { executeSync } from 'graphql';
-
 
 // we could also clone the label and append the original index to it as a prop
 // and return that if it helps make this function more generalizable 
