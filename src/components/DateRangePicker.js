@@ -4,6 +4,7 @@ import moment from 'moment';
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import { styled } from '../theme/stitches.config';
+import { DATE_FORMAT_EXIF as EXIF } from '../config';
 
 // TODO: clean uop date range picker styling
 const StyledDateRangePicker = styled('div', {
@@ -69,13 +70,22 @@ const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
         startDateId='startDate'
         endDate={edate}
         endDateId='endDate'
-        onDatesChange={handleDatesChange}
+        onDatesChange={(dates) => {
+          for (const key of Object.keys(dates)) {
+            if (dates[key]) {
+              dates[key] = moment(dates[key]).startOf('day');
+              dates[key] = dates[key].format(EXIF);
+            }
+          }
+          handleDatesChange(dates);
+        }}
         focusedInput={focusedInput}
         onFocusChange={focusedInput => setFocusedInput(focusedInput)}
         showClearDates={true}
         small={true}
         hideKeyboardShortcutsPanel={true}
         isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
+        // withPortal={true}
       />
     </StyledDateRangePicker>
   );

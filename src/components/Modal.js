@@ -16,7 +16,7 @@ const ModalContainer = styled('div', {
   flexDirection: 'column',
   borderRadius: '$2',
   backgroundColor: '$loContrast',
-  border: '1px solid $gray400',
+  // border: '1px solid $gray400',
   boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
    rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
 

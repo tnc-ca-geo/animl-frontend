@@ -98,6 +98,7 @@ export const filtersSlice = createSlice({
     },
 
     dateFilterChanged: (state, { payload }) => {
+      console.log('dateFilterChanged: ', payload)
       state.activeFilters[payload.type + 'Start'] = payload.startDate;
       state.activeFilters[payload.type + 'End'] = payload.endDate;
     },

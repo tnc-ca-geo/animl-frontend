@@ -1,4 +1,4 @@
-export const DATE_FORMAT_EXIF = 'YYYY:MM:DD hh:mm:ss';
+export const DATE_FORMAT_EXIF = 'YYYY:MM:DD HH:mm:ss';
 export const DATE_FORMAT_READABLE = 'MMM D, YYYY hh:mm:ss';
 export const DATE_FORMAT_READABLE_SHORT = 'MMM D, YYYY';
 

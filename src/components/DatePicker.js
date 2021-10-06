@@ -77,8 +77,9 @@ const DatePickerWithFormik = ({
       <SingleDatePicker
         date={values.startDate ? moment(values.startDate, EXIF) : null}
         onDateChange={(date) => {
-          const formattedDate = moment(date).format(EXIF);
-          setFieldValue('startDate', formattedDate);
+          date = moment(date).startOf('day');
+          date = date.format(EXIF);
+          setFieldValue('startDate', date);
         }}
         focused={focusedInput}
         onFocusChange={({focused}) => setFocusedInput(focused)}

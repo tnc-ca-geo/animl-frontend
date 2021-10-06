@@ -19,8 +19,6 @@ const DateFilter = ({ type }) => {
   const dispatch = useDispatch();
 
   const handleDatesChange = ({ startDate, endDate }) => {
-    startDate = startDate ? startDate.format(EXIF) : null;
-    endDate = endDate ? endDate.format(EXIF) : null;
     dispatch(dateFilterChanged({ startDate, endDate, type }));    
   };
 
