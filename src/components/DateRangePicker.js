@@ -1,93 +1,63 @@
 import 'react-dates/initialize';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import moment from 'moment';
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import { styled } from '../theme/stitches.config';
 import { DATE_FORMAT_EXIF as EXIF } from '../config';
 
-// TODO: clean uop date range picker styling
-const StyledDateRangePicker = styled('div', {
-  '.DateInput_input': {
-    color: '$hiContrast',
-    fontFamily: '$mono',
-    fontWeight: '$2',
-  },
-  '.DateInput__small': {
-    width: '109px',
-  },
-  '.DateInput_input__focused': {
-    borderBottomColor: '$blue600',
-  },
-  '.DateRangePickerInput_clearDates_default:focus': {
-    backgroundColor: '$gray300',
-  },
-  '.DateRangePickerInput_clearDates_default:hover': {
-    backgroundColor: '$gray200',
-  },
-  '.CalendarDay__default': {
-    border: 'none',
-  },
-  '.CalendarDay__blocked_out_of_range': {
-    border: 'none',
-  },
-  '.CalendarDay__selected_span': {
-    background: '$blue200',
-    color: '$hiContrast',
-    border: '1px solid $gray400',
-  },
-  '.CalendarDay__selected': {
-    background: '$blue600',
-    color: '$loContrast',
-    border: '1px solid $blue600',
-  },
-  '.CalendarDay__selected_span:hover': {
-    background: '$blue400',
-    color: '$loContrast',
-  },
-  '.CalendarDay__selected:hover': {
-    background: '$blue400',
-    color: '$loContrast',
-    border: '1px solid $blue200',
-  },
-  '.CalendarDay__hovered_span': {
-    background: '$gray200',
-    color: '$hiContrast',
-    borderLeft: 'none',
-    borderRight: 'none',
-    borderTop: '$2 solid $loContrast',
-    borderBottom: '$2 solid $loContrast',
-  },
-});
+// NOTE: Date Picker style overrides are in theme/globalStyles.js
+// Had to override them there b/c the actual Date Picker element gets 
+// appended to the body (and thus you can't dump style overrides in a 
+// wrapper element)
 
 const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
-  const [focusedInput, setFocusedInput] = useState(null); // what does this do?
+  const [focusedInput, setFocusedInput] = useState(null);
+
+  const [openDirection, setOpenDirection] = useState('down')
+  const containerEl = useRef(null);
+  const determineOpenDirection = () => {
+    const viewportEquator = window.innerHeight / 2;
+    const rect = containerEl.current.getBoundingClientRect();
+    const elVerticalCenter = rect.top + rect.height / 2;
+    const openDirection = elVerticalCenter > viewportEquator ? 'up' : 'down';
+    setOpenDirection(openDirection);
+  };
+
+  const onDatesChange = (dates) => {
+    for (const key of Object.keys(dates)) {
+      if (dates[key]) {
+        dates[key] = moment(dates[key]).startOf('day');
+        dates[key] = dates[key].format(EXIF);
+      }
+    }
+    handleDatesChange(dates);
+  };
+
+  const onFocusChange = (focusedInput) => {
+    determineOpenDirection();
+    setFocusedInput(focusedInput);
+  };
 
   return (
-    <StyledDateRangePicker>
+    <div ref={containerEl}>
       <DateRangePicker
         startDate={sdate}
         startDateId='startDate'
         endDate={edate}
         endDateId='endDate'
-        onDatesChange={(dates) => {
-          for (const key of Object.keys(dates)) {
-            if (dates[key]) {
-              dates[key] = moment(dates[key]).startOf('day');
-              dates[key] = dates[key].format(EXIF);
-            }
-          }
-          handleDatesChange(dates);
-        }}
+        onDatesChange={onDatesChange}
         focusedInput={focusedInput}
-        onFocusChange={focusedInput => setFocusedInput(focusedInput)}
+        onFocusChange={onFocusChange}
         showClearDates={true}
         small={true}
         hideKeyboardShortcutsPanel={true}
         isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
-        // withPortal={true}
+        block={true}
+        appendToBody={true}
+        openDirection={openDirection}
       />
-    </StyledDateRangePicker>
+    </div>
   );
 };
 

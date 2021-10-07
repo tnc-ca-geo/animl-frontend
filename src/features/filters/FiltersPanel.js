@@ -19,14 +19,19 @@ import LabelFilter from './LabelFilter';
 //   // marginLeft: '$2',
 // });
 
+const PanelBody = styled('div', {
+  height: '100%',
+  overflowY: 'scroll',
+});
+
 const StyledFiltersPanel = styled('div', {
   position: 'relative',
   borderRight: '1px solid $gray400',
   flexGrow: '0',
   flexShrink: '0',
-  flexBasis: '300px',
+  flexBasis: '310px',
   height: 'calc(100vh - 56px)',
-  overflowY: 'scroll',
+  overflowY: 'hidden',
 });
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {
@@ -50,42 +55,44 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
         handlePanelClose={toggleFiltersPanel}
       >
       </PanelHeader>
-      <Accordion
-        label='Cameras'
-        expandedDefault={true}
-      >
-        <CameraFilter
-          availCams={availCameras}
-          activeCams={activeFilters.cameras}
-        />
-      </Accordion>
-      <Accordion
-        label='Labels'
-        expandedDefault={true}
-      >
-        <LabelFilter
-          availLabels={availLabels}
-          activeLabels={activeFilters.labels}
-        />
-      </Accordion>
-      <Accordion
-        label='Review'
-        expandedDefault={true}
-      >
-        <ReviewFilter/>
-      </Accordion>
-      <Accordion
-        label='Date Created'
-        expandedDefault={false}
-      >
-        <DateFilter type='created'/>
-      </Accordion>
-      <Accordion
-        label='Date Added'
-        expandedDefault={false}
-      >
-        <DateFilter type='added'/>
-      </Accordion>
+      <PanelBody>
+        <Accordion
+          label='Cameras'
+          expandedDefault={true}
+        >
+          <CameraFilter
+            availCams={availCameras}
+            activeCams={activeFilters.cameras}
+          />
+        </Accordion>
+        <Accordion
+          label='Labels'
+          expandedDefault={true}
+        >
+          <LabelFilter
+            availLabels={availLabels}
+            activeLabels={activeFilters.labels}
+          />
+        </Accordion>
+        <Accordion
+          label='Review'
+          expandedDefault={true}
+        >
+          <ReviewFilter/>
+        </Accordion>
+        <Accordion
+          label='Date Created'
+          expandedDefault={false}
+        >
+          <DateFilter type='created'/>
+        </Accordion>
+        <Accordion
+          label='Date Added'
+          expandedDefault={false}
+        >
+          <DateFilter type='added'/>
+        </Accordion>
+      </PanelBody>
     </StyledFiltersPanel>
   );
 }
