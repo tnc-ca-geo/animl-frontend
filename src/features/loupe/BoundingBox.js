@@ -54,17 +54,18 @@ const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
   position: 'absolute !important;',
   border: '2px solid #345EFF',
+  // zIndex: '$2',
   variants: {
     selected: {
       true: {
         zIndex: '$3',
-        opacity: '1',
+        // opacity: '1',
         // outline: 'none',
         // boxShadow: '0 0 0 3px $blue200',
         // borderColor: '$blue500',  
       },  
       false: {
-        opacity: '0.75',
+        // opacity: '0.85',
       },
     }
   }

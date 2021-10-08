@@ -7,7 +7,7 @@ import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 
 const Deployments = styled('div', {
-  marginLeft: '$3',
+  marginLeft: '$2',
   borderLeft: '1px solid $gray400',
 });
 
@@ -26,7 +26,7 @@ const DeploymentCheckboxWrapper = styled('div', {
 
 const CheckboxWrapper = styled('div', {
   marginBottom: '$2',
-  marginLeft: '$2',
+  // marginLeft: '$2',
 });
 
 const CameraFilter = ({ availCams, activeCams }) => {
@@ -74,7 +74,7 @@ const CameraFilter = ({ availCams, activeCams }) => {
                   checked={camChecked}
                   active={camChecked}
                 >
-                  {camera._id}
+                  {camera.make} - {camera._id}
                 </CheckboxLabel>
               </label>
             </CheckboxWrapper>

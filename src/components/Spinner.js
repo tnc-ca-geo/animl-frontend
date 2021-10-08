@@ -109,7 +109,7 @@ export const SpinnerOverlay = styled('div', {
   height: '100%',
   left: '0',
   top: '0',
-  zIndex: '$3',
+  zIndex: '$2',
 
   '.spinner': {
     position: 'absolute',

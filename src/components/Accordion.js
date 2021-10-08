@@ -10,15 +10,19 @@ const AccordionBody = styled('div', {
   fontFamily: '$mono',
 });
 
+const ExpandButton = styled('div', {
+  paddingRight: '$2',
+})
+
 const AccordionHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  // justifyContent: 'space-between',
   fontWeight: '$3',
-  fontFamily: '$roboto',
+  fontFamily: '$sourceSansPro',
   height: '$7',
   borderBottom: '1px solid $gray400',
-  padding: '$0 $2 $0 $3',
+  padding: '$0 $2 $0 $2',
   pointerEvents: 'auto',
   '&:hover': {
     cursor: 'pointer',
@@ -35,15 +39,15 @@ const Accordion = ({ children, expandedDefault, label, headerButtons }) => {
   return (
     <div>
       <AccordionHeader onClick={handleAccordionHeaderClick}>
-        {label}
-        <div>
-          {headerButtons}
+        <ExpandButton>
           <IconButton variant='ghost'>
             <FontAwesomeIcon icon={ 
-              expanded ? ['fas', 'angle-up'] : ['fas', 'angle-down']
+              expanded ? ['fas', 'angle-down'] : ['fas', 'angle-right']
             }/>
           </IconButton>
-        </div>
+        </ExpandButton>
+        {label}
+        {headerButtons}
       </AccordionHeader>
       {expanded && (
         <AccordionBody>

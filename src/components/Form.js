@@ -5,7 +5,7 @@ const textInput = {
   display: 'inherit',
   width: '100%',
   fontSize: '$3',
-  fontFamily: '$roboto',
+  fontFamily: '$sourceSansPro',
   color: '$gray700',
   padding: '$3',
   boxSizing: 'border-box',

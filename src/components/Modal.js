@@ -7,7 +7,7 @@ const ModalBody = styled('div', {
 });
 
 const ModalContainer = styled('div', {
-  zIndex: '$3',
+  zIndex: '$4',
   position: 'fixed',    
   top: '150px',
   left: '50%',

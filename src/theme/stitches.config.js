@@ -79,9 +79,10 @@ export const {
       5: '20px',
     },
     fonts: {
+      sourceSansPro: `Source Sans Pro`, 
       roboto: `Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, 
         Helvetica Neue, sans-serif`,
-      mono: 'Roboto Mono, Courier New, monospace',
+      mono: 'IBM Plex Mono, Roboto Mono, Courier New, monospace',
     },
     fontWeights: {
       1: '300',
@@ -108,6 +109,8 @@ export const {
       2: '200',
       3: '300',
       4: '400',
+      5: '500',
+      6: '600',
     },
     // transitions: {},
   },

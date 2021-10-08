@@ -14,17 +14,17 @@ import {
 import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
 
-const ImagesTableLoadingOverlay = styled('div', {
-  flexGrow: '1',
-  backgroundColor: '$hiContrast',
-  opacity: '0.1',
-  display: 'flex',
-  flexDirection: 'column',
-  height: 'calc(100% - 56px)',
-  position: 'absolute',
-  width: '100%',  // TODO: how to absolute position and use flex grow
-  zIndex: '$3',
-});
+// const ImagesTableLoadingOverlay = styled('div', {
+//   flexGrow: '1',
+//   backgroundColor: '$hiContrast',
+//   opacity: '0.1',
+//   display: 'flex',
+//   flexDirection: 'column',
+//   height: 'calc(100% - 56px)',
+//   position: 'absolute',
+//   width: '100%',  // TODO: how to absolute position and use flex grow
+//   zIndex: '$2',
+// });
 
 const StyledImagesPanel = styled('div', {
   // display: 'grid',

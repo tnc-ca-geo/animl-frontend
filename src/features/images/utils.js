@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {
+  DATE_FORMAT_READABLE_SHORT as DFRS,
   DATE_FORMAT_READABLE as DFR,
   DATE_FORMAT_EXIF as EXIF,
   IMAGES_URL, 
@@ -18,7 +19,7 @@ const enrichImages = (res, cameras) => {
     img.thumbUrl = IMAGES_URL + 'small/' + img._id + '-small.' + ext;
 
     img.dateTimeOriginal = moment(img.dateTimeOriginal, EXIF).format(DFR);
-    img.dateAdded = moment(img.dateAdded, EXIF).format(DFR);
+    img.dateAdded = moment(img.dateAdded, EXIF).format(DFRS);
   }
   return res;
 };

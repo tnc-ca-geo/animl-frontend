@@ -11,6 +11,7 @@ import Loupe from '../loupe/Loupe';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
+  // zIndex: '$1',
 });
 
 // const ViewExplorerBody = styled('div', {

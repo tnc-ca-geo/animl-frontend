@@ -36,6 +36,7 @@ const StyledNav = styled('nav', {
   padding: '$0 $3',
   borderBottom: '1px solid $gray400',
   backgroundColor: '$loContrast',
+  // zIndex: '$2',
 });
 
 

@@ -24,7 +24,7 @@ const Options = styled('div', {
 });
 
 const StyledReviewSettings = styled('div', {
-  fontFamily: 'roboto',
+  fontFamily: '$sourceSansPro',
   fontSize: '$3',
   fontWeight: '$3',
   color: '$gray600',

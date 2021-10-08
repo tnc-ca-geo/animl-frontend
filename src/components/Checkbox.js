@@ -64,13 +64,19 @@ const StyledCheckbox = styled('div', {
           visibility: 'visible',
         },
       },
+      false: {
+        '&:hover': {
+          background: '$gray300',
+        },
+      }
     },
 
     active: {
       true: {
         background: '$hiContrast',
         borderColor: '$hiContrast',
-      }
+      },
+
     }
   },
 });

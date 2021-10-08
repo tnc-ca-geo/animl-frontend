@@ -35,7 +35,7 @@ const ViewMenuItem = styled('li', {
 
 const ViewMenu = styled('div', {
   position: 'absolute',
-  zIndex: '$2',
+  zIndex: '$5',
   width: '250px',
   left: '$0',
   top: '$5',
@@ -101,6 +101,7 @@ const StyledViewSelector = styled('div', {
   justifyContent: 'space-between',
   padding: '$0 $4',
   backgroundColor: '$loContrast',
+  // zIndex: '$5',
 });
 
 const ViewSelector = () => {

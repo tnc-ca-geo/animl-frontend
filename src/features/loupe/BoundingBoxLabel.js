@@ -19,15 +19,14 @@ import {
 } from './loupeSlice';
 
 const StyledBoundingBoxLabel = styled('div', {
-  backgroundColor: '#345EFF',
-  color: '$loContrast',
+  // backgroundColor: '#345EFF',
   fontFamily: '$mono',
   fontSize: '$2',
   position: 'absolute',
   display: 'flex',
   alignItems: 'center',
   width: 'max-content',
-  zIndex: '$4',
+  zIndex: '$3',
   variants: {
     verticalPos: {
       top: {
@@ -53,10 +52,11 @@ const StyledBoundingBoxLabel = styled('div', {
     },
     selected: {
       true: {
-        opacity: '1',
+        // opacity: '1',
+        zIndex: '$4',
       },
       false: {
-        opacity: '0.75',
+        // opacity: '1',
       }
     }
   }
@@ -74,7 +74,6 @@ const LabelDisplay = styled('div', {
   display: 'flex',
   alignItems: 'center',
   padding: '$1 $2',
-
 });
 
 const LabelButton = styled('button', {
@@ -101,6 +100,7 @@ const CategorySelector = styled(CreatableSelect, {
   fontFamily: '$mono',
   fontSize: '$2',
   fontWeight: '$1',
+  zIndex: '$5',
   '.react-select__control': {
     boxSizing: 'border-box',
     // height: '24px',

@@ -15,7 +15,7 @@ const StyledSelect = styled(Select, {
   },
   '.react-select__value-container': {
     fontSize: '$3',
-    fontFamily: '$roboto',
+    fontFamily: '$sourceSansPro',
     color: '$gray700',
     height: '40px',
     paddingLeft: '$3'

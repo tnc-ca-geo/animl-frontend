@@ -7,10 +7,25 @@ const PanelTitle = styled('span', {
   // marginLeft: '$2',
 });
 
+const ClosePanelButton = styled(IconButton, {
+  position: 'absolute',
+  margin: '0 $2 0 $2',
+  variants: {
+    position: {
+      left: {
+        left: 0,
+      },
+      right: {
+        right: 0,
+      }
+    }
+  }
+})
+
 const StyledHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  // justifyContent: 'space-between',
   padding: '$0 $2 $0 $3',
   height: '$7',
   borderBottom: '1px solid $gray400',
@@ -18,21 +33,22 @@ const StyledHeader = styled('div', {
   color: '$hiContrast',
 });
 
-const PanelHeader = ({ children, title, handlePanelClose, className }) => (
-  <StyledHeader className={className}>
-    {title &&
+const PanelHeader = (props) => (
+  <StyledHeader className={props.className}>
+    {props.title &&
       <PanelTitle>
-        {title}
+        {props.title}
       </PanelTitle>
     }
-    { children }
-    <IconButton
+    { props.children }
+    <ClosePanelButton
+      position={props.closeButtonPosition ? props.closeButtonPosition : 'right'}
       variant='ghost'
-      onClick={handlePanelClose}>
+      onClick={props.handlePanelClose}>
       <FontAwesomeIcon 
         icon={['fas', 'times']}
       />
-    </IconButton>
+    </ClosePanelButton>
   </StyledHeader>
 );
 

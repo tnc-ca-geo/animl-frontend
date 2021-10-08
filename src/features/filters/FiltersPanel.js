@@ -20,8 +20,10 @@ import LabelFilter from './LabelFilter';
 // });
 
 const PanelBody = styled('div', {
-  height: '100%',
+  height: 'calc(100% - $7 - 1px)',
   overflowY: 'scroll',
+  position: 'absolute',
+  width: '100%',
 });
 
 const StyledFiltersPanel = styled('div', {
@@ -30,7 +32,7 @@ const StyledFiltersPanel = styled('div', {
   flexGrow: '0',
   flexShrink: '0',
   flexBasis: '310px',
-  height: 'calc(100vh - 56px)',
+  height: 'calc(100vh - $8)',
   overflowY: 'hidden',
 });
 

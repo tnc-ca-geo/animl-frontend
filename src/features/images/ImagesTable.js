@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
@@ -52,12 +53,13 @@ const Table = styled('div', {
   maxWidth: '100%',
   display: 'inline-block',
   borderSpacing: '$0',
+  backgroundColor: '$gray200',
 });
 
 const TableRow = styled('div', {
-  backgroundColor: '$gray200',
+  backgroundColor: 'white',
   '&:hover': {
-    // backgroundColor: '$gray300',
+    backgroundColor: '$gray200',
     cursor: 'pointer',
     // boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
   },
@@ -79,7 +81,7 @@ const TableRow = styled('div', {
 
 const TableCell = styled('div', {
   margin: '$0',
-  padding: '$2 $3',
+  padding: '$0',
   textAlign: 'left',
   // The secret sauce
   // Each cell should grow equally
@@ -91,27 +93,40 @@ const TableCell = styled('div', {
   borderRight: '0',
   '&:last-child': {
     borderRight: '0',
-  }
+  },
+  '&:first-child': {
+    paddingLeft: '$3',
+  },
 });
 
 const HeaderCell = styled(TableCell, {
   backgroundColor: '$gray200',
+  borderBottom: '1px solid $gray400',
   '&:hover': {
     cursor: 'auto',
+    color: '$hiContrast',
   },
 });
 
 const DataCell = styled(TableCell, {
-  backgroundColor: '$loContrast',
   margin: '0px',
-  // marginBottom: '2px',
   display: 'flex',
   alignItems: 'center',
-  borderBottom: '1px solid $gray300',
+  fontSize: '$3',
+  // backgroundColor: '$loContrast',
+
+  borderBottom: '1px solid $gray400',
+  // borderTop: '3px solid $gray200',
+  // borderBottom: '3px solid $gray200',
+
   variants: {
     selected: {
       true: {
         backgroundColor: '$gray200',
+        // '&:first-child': {
+        //   borderLeft: '4px solid $blue500',
+        //   paddingLeft: '12px',
+        // },
       }
     }
   }
@@ -120,6 +135,8 @@ const DataCell = styled(TableCell, {
 const TableHeader = styled('div', {
   paddingTop: '$2',
   paddingBottom: '$2',
+  backgroundColor: '$gray200',
+  fontSize: '$3',
   'svg': {
     marginLeft: '$3',
     'path': {
@@ -137,19 +154,16 @@ const TableHeader = styled('div', {
         'svg path': { fill: '$gray600' },
       },
     },
+    cansort: {
+      true: {
+        '&:hover': {
+          color: '$hiContrast',
+          'svg path': { fill: '$hiContrast' },
+        }
+      }
+    }
   },
 });
-
-// TODO: move somewhere else
-const scrollbarWidth = () => {
-  // thanks too https://davidwalsh.name/detect-scrollbar-width
-  const scrollDiv = document.createElement('div');
-  scrollDiv.setAttribute('style', 'width: 100px; height: 100px; overflow: scroll; position:absolute; top:-9999px;');
-  document.body.appendChild(scrollDiv);
-  const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-  document.body.removeChild(scrollDiv);
-  return scrollbarWidth;
-};
 
 const makeRows = (workingImages, focusIndex) => {
   return workingImages.map((image, imageIndex) => {
@@ -179,7 +193,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const focusIndex = useSelector(selectFocusIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
-  const scrollBarSize = useMemo(() => scrollbarWidth(), []);
+  const scrollBarSize = useScrollbarSize();
   // const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
@@ -199,7 +213,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   const columns = useMemo(() => [
     {
-      Header: '',
       accessor: 'thumbnail',
       disableSortBy: true,
       width: '155',
@@ -209,7 +222,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       Header: 'Labels',
       accessor: 'labelPills',
       disableSortBy: true,
-      width: '275',
+      width: '260',
     },
     {
       Header: 'Date created',
@@ -238,7 +251,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const columnsToHide = useMemo(() => (
     columns.reduce((acc, curr) => {
       const id = curr.accessor;
-      if (id !== 'thumbnail' && id !== 'labelPills') {
+      if (id !== 'thumbnail' && 
+          id !== 'labelPills') {
         acc.push(id)
       }
       return acc;
@@ -362,7 +376,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
             <List
               height={height - 51}
               itemCount={imagesCount}
-              itemSize={108}
+              itemSize={91}
               onItemsRendered={({
                 overscanStartIndex,
                 overscanStopIndex,
@@ -404,7 +418,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       {workingImages.length > 0 &&
         <Table {...getTableProps()}>
           <div
-            style={{ height: '51px', width: `calc(100% - ${scrollBarSize}px)` }}
+            style={{ width: `calc(100% - ${scrollBarSize.width}px)` }}
           >
             {headerGroups.map(headerGroup => (
               <TableRow

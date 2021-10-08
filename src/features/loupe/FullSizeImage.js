@@ -45,9 +45,10 @@ const AddObjectButton = styled(Button, {
 
 const EditObjectButtons = styled('div', {
   position: 'absolute',
-  bottom: 1,
+  bottom: -39,
   right: -1,
   display: 'flex',
+  zIndex: '$3',
 });
 
 const FullImage = styled(Image, {

@@ -17,20 +17,20 @@ import LoupeFooter from './LoupeFooter';
 
 const ItemValue = styled('div', {
   fontSize: '$3',
-  fontFamily: '$roboto',
+  fontFamily: '$sourceSansPro',
   color: '$hiContrast',
 });
 
 const ItemLabel = styled('div', {
-  fontSize: '$2',
+  fontSize: '$1',
   color: '$gray600',
   fontFamily: '$mono',
   marginBottom: '$1',
 });
 
 const StyledItem = styled('div', {
-  marginBottom: '$3',
-  marginRight: '$5',
+  // marginBottom: '$3',
+  marginLeft: '$5',
   textAlign: 'center',
 });
 
@@ -47,10 +47,12 @@ const MetadataList = styled('div', {
 });
 
 const MetadataPane = styled('div', {
-  paddingTop: '$3',
+  // paddingTop: '$3',
   // marginBottom: '$6',
   display: 'flex',
   justifyContent: 'center',
+  paddingRight: '$2',
+  fontWeight: '$2',
 });
 
 const ImagePane = styled('div', {
@@ -67,6 +69,7 @@ const LoupeBody = styled('div', {
 
 const LoupeHeader = styled(PanelHeader, {
   flexDirection: 'row-reverse',
+  justifyContent: 'center',
 })
 
 const StyledLoupe = styled('div', {
@@ -105,8 +108,21 @@ const Loupe = () => {
 
   return (
     <StyledLoupe>
-      <LoupeHeader handlePanelClose={handleCloseLoupe}>
-        <div>
+      <LoupeHeader
+        handlePanelClose={handleCloseLoupe}
+        closeButtonPosition='left'
+      >
+        {image && 
+          <MetadataPane>
+            <MetadataList>
+              <Item label='Date created' value={image.dateTimeOriginal}/>
+              <Item label='Camera' value={image.cameraSn}/>
+              <Item label='Deployment' value={image.deploymentName}/>
+              <Item label='File name' value={image.originalFileName}/>
+            </MetadataList>
+          </MetadataPane>
+        }
+        {/*<div>
           Label review
           <IconButton
             variant='ghost'
@@ -129,7 +145,7 @@ const Loupe = () => {
               handleClose={handleToggleReviewSettings}
             />
           }
-        </div>
+        </div>*/}
       </LoupeHeader>
       <LoupeBody>
         {image &&
@@ -140,14 +156,6 @@ const Loupe = () => {
                 focusIndex={focusIndex}
               />
             </ImagePane>
-            <MetadataPane>
-              <MetadataList>
-                <Item label='Date created' value={image.dateTimeOriginal}/>
-                <Item label='Camera' value={image.cameraSn}/>
-                <Item label='Deployment' value={image.deploymentName}/>
-                <Item label='File name' value={image.originalFileName}/>
-              </MetadataList>
-            </MetadataPane>
           </div>
         }
       </LoupeBody>

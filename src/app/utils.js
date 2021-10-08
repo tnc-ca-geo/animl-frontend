@@ -49,4 +49,4 @@ export const useResizeObserver = (ref) => {
   }, [width]);
 
   return { width, height, top, left };
-}
+};
