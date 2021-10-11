@@ -418,7 +418,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       {workingImages.length > 0 &&
         <Table {...getTableProps()}>
           <div
-            style={{ width: `calc(100% - ${scrollBarSize.width}px)` }}
+            style={{ height: '33px', width: `calc(100% - ${scrollBarSize.width}px)` }}
           >
             {headerGroups.map(headerGroup => (
               <TableRow

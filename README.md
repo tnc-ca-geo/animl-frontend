@@ -57,6 +57,15 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `npm run build:staging`
+
+Builds the app for deployment to the staging environment.<br />
+It will request backend resources that are also in their respective staging environments.
+
+### `npm run deploy-dev` &  `npm run deploy-prod` 
+
+Builds the app for deployment and deploys it to dev/production environment.<br />
+
 ### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**

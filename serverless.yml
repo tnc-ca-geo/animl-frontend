@@ -93,36 +93,19 @@ provider:
 #     timeout: 120
 
 # resources:
+#   Conditions:
+#     IsDev: !Equals ["dev", "${opt:stage, self:provider.stage, 'dev'}"]
+
 #   Resources:
-#     apiKey:
-#       Type: AWS::SecretsManager::Secret
+
+#     # SSM Param - Frontend URL
+#     SSMParameterFrontendUrl:
+#       Type: AWS::SSM::Parameter
 #       Properties:
-#         Description: API Key that will allow access for the APIs
-#         GenerateSecretString:
-#             GenerateStringKey: apikey
-#             SecretStringTemplate: '{"user": "api"}'
-#         Name: api-key
-#     inferenceQueue:
-#       Type: AWS::SQS::Queue
-#       Properties:
-#         QueueName: inferenceQueue-${self:provider.stage}
-#         RedrivePolicy:
-#           deadLetterTargetArn:
-#             "Fn::GetAtt":
-#               - inferenceDeadLetterQueue
-#               - Arn
-#           maxReceiveCount: 5
-#     inferenceDeadLetterQueue:
-#       Type: "AWS::SQS::Queue"
-#       Properties:
-#         QueueName: inferenceDLQ-${self:provider.stage}
-#         MessageRetentionPeriod: 1209600 # 14 days in seconds
-#     # secretParam:
-#     #   Type: "AWS::SSM::Parameter"
-#     #   Properties:
-#     #     Name: animl-api-key
-#     #     Value: !Sub '{{resolve:secretsmanager:api-key:SecretString:apikey}}'
-#     #     Type: String
+#         Description: Animl Frontend url
+#         Name: /fronend/url-${opt:stage, self:provider.stage, 'dev'}
+#         Type: String
+#         Value: !If [IsDev, 'animl-staging.camera', 'animl.camera']
 
 custom:
   client:
