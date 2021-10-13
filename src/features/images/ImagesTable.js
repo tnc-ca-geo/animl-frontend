@@ -374,7 +374,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              height={height - 51}
+              height={height - 33}
               itemCount={imagesCount}
               itemSize={91}
               onItemsRendered={({
