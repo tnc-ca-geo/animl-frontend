@@ -70,7 +70,7 @@ const LoupeBody = styled('div', {
 const LoupeHeader = styled(PanelHeader, {
   flexDirection: 'row-reverse',
   justifyContent: 'center',
-})
+});
 
 const StyledLoupe = styled('div', {
   boxSizing: 'border-box',

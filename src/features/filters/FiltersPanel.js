@@ -15,13 +15,15 @@ import CameraFilter from './CameraFilter';
 import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
+import FiltersPanelFooter from './FiltersPanelFooter';
+
 
 // const Label = styled('span', {
 //   // marginLeft: '$2',
 // });
 
 const PanelBody = styled('div', {
-  height: 'calc(100% - $7 - 1px)',
+  height: 'calc(100% - $7 - $7)', // 2x $7's to account for header + footer
   overflowY: 'scroll',
   position: 'absolute',
   width: '100%',
@@ -83,6 +85,7 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
           <DateFilter type='added'/>
         </Accordion>
       </PanelBody>
+      <FiltersPanelFooter />
     </StyledFiltersPanel>
   );
 }
