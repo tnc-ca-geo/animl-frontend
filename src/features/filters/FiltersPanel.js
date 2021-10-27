@@ -10,6 +10,7 @@ import {
  } from './filtersSlice';
 import PanelHeader from '../../components/PanelHeader';
 import Accordion from '../../components/Accordion';
+import BulkSelect from './BulkSelect';
 import CameraFilter from './CameraFilter';
 import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
@@ -58,40 +59,27 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
       >
       </PanelHeader>
       <PanelBody>
-        <Accordion
-          label='Cameras'
-          expandedDefault={true}
-        >
+        <Accordion label='Cameras' expandedDefault={true}>
+          <BulkSelect filterIds={['cameras', 'deployments']} />
           <CameraFilter
             availCams={availCameras}
             activeCams={activeFilters.cameras}
           />
         </Accordion>
-        <Accordion
-          label='Labels'
-          expandedDefault={true}
-        >
+        <Accordion label='Labels' expandedDefault={true}>
+          <BulkSelect filterIds={['labels']} />
           <LabelFilter
             availLabels={availLabels}
             activeLabels={activeFilters.labels}
           />
         </Accordion>
-        <Accordion
-          label='Review'
-          expandedDefault={true}
-        >
+        <Accordion label='Review' expandedDefault={true}>
           <ReviewFilter/>
         </Accordion>
-        <Accordion
-          label='Date Created'
-          expandedDefault={false}
-        >
+        <Accordion label='Date Created' expandedDefault={false}>
           <DateFilter type='created'/>
         </Accordion>
-        <Accordion
-          label='Date Added'
-          expandedDefault={false}
-        >
+        <Accordion label='Date Added' expandedDefault={false}>
           <DateFilter type='added'/>
         </Accordion>
       </PanelBody>

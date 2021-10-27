@@ -14,12 +14,29 @@ export const CheckboxLabel = styled('span', {
       true: {
         color: '$hiContrast',
       },
+      false: {
+        color: '$gray600',
+      },
     },
     active: {
+      true: {
+        color: '$hiContrast',
+      },
       false: {
         color: '$gray600',
       },
     },
   },
+
+  compoundVariants: [
+    {
+      checked: true,
+      active: false,
+      css: {
+        color: '$gray600',
+      },
+    },
+  ],
+
 
 });

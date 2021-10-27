@@ -36,10 +36,11 @@ const StyledCheckbox = styled('div', {
   height: '14px',
   borderRadius: '$1',
   border: '1px solid',
-  transition: 'all 150ms',
+  // transition: 'all 150ms',
 
   '&:hover': {
     cursor: 'pointer',
+    background: '$gray300',
   },
 
   [`& ${HiddenCheckbox}`]: {
@@ -50,49 +51,96 @@ const StyledCheckbox = styled('div', {
 
   background: '$loContrast',
   borderColor: '$gray600',
-  [`& ${SVGIcon}`]: {
-    visibility: 'hidden',
+
+  // for some reason you need to have variants defined here (even if empty)
+  // if you want to use compountVarients
+  variants: {
+    checked: {},
+    active: {},
+    indeterminate: {},
   },
 
-  variants: {
-    checked: {
-      true: {
-        // background: '$hiContrast',
-        // borderColor: '$hiContrast',
-        background: '$gray600',
-        [`& ${SVGIcon}`]: {
-          visibility: 'visible',
-        },
+  compoundVariants: [
+    {
+      checked: false,
+      indeterminate: false,
+      css: {
+        background: '$loContrast',
+        borderColor: '$gray600',
       },
-      false: {
-        '&:hover': {
-          background: '$gray300',
-        },
-      }
     },
-
-    active: {
-      true: {
+    {
+      checked: true,
+      active: true,
+      css: {
         background: '$hiContrast',
         borderColor: '$hiContrast',
+        '&:hover': {
+          background: '$hiContrast',
+        },
       },
+    },
+    {
+      checked: true,
+      active: false,
+      css: {
+        background: '$gray600',
+        borderColor: '$gray600',
+        '&:hover': {
+          background: '$gray600',
+        },
+      },
+    },
+    {
+      indeterminate: true,
+      active: true,
+      css: {
+        background: '$hiContrast',
+        borderColor: '$hiContrast',
+        '&:hover': {
+          background: '$hiContrast',
+        },
+      },
+    },
+    {
+      indeterminate: true,
+      active: false,
+      css: {
+        background: '$gray600',
+        borderColor: '$gray600',
+        '&:hover': {
+          background: '$gray600',
+        },
+      },
+    },
 
-    }
-  },
+  ],
 });
 
 // adapted from:
 // https://medium.com/@colebemis/building-a-checkbox-component-with-react-and-styled-components-8d3aa1d826dd
 
-const Checkbox = ({ className, checked, active, ...props }) => (
+const Checkbox = ({ className, checked, active, indeterminate, ...props }) => (
   <CheckboxContainer className={className}>
     <HiddenCheckbox type='checkbox' checked={checked} {...props} />
-    <StyledCheckbox checked={checked} active={active}>
-      <SVGIcon viewBox="0 0 24 24">
-        <polyline points="20 4 9 15 4 10" />
-      </SVGIcon>
+    <StyledCheckbox
+      checked={checked}
+      active={active}
+      indeterminate={indeterminate}
+    >
+      {checked && 
+        <SVGIcon viewBox="0 0 24 24">
+          <polyline points="20 4 9 15 4 10" />
+        </SVGIcon> 
+      }
+      {indeterminate && 
+        <SVGIcon viewBox="0 0 24 24">
+          <line x1="4" y1="10" x2="20" y2="10" />
+        </SVGIcon> 
+      }
     </StyledCheckbox>
   </CheckboxContainer>
 );
+
 
 export default Checkbox;

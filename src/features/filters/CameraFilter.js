@@ -59,7 +59,6 @@ const CameraFilter = ({ availCams, activeCams }) => {
 
         return (
           <CameraSection key={camera._id}>
-
             <CheckboxWrapper key={camera._id}>
               <label>
                 <Checkbox
@@ -70,10 +69,7 @@ const CameraFilter = ({ availCams, activeCams }) => {
                   data-sn={camera._id}
                   onChange={handleCheckboxChange}
                 />
-                <CheckboxLabel
-                  checked={camChecked}
-                  active={camChecked}
-                >
+                <CheckboxLabel checked={camChecked} active={camChecked}>
                   {camera.make} - {camera._id}
                 </CheckboxLabel>
               </label>
@@ -81,8 +77,7 @@ const CameraFilter = ({ availCams, activeCams }) => {
             <Deployments>
               {camera.deployments.map((deployment) => {
                 const depChecked = activeDeps === null || 
-                                  activeDeps.includes(deployment._id);
-                                
+                                   activeDeps.includes(deployment._id);
                 return (
                   <DeploymentCheckboxWrapper key={deployment._id}>
                     <label>

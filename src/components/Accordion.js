@@ -4,10 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from './IconButton';
 
 const AccordionBody = styled('div', {
-  padding: '$2 $3',
+  // padding: '$2 $3',
   borderBottom: '1px solid $gray400',
   backgroundColor: '$gray200',
   fontFamily: '$mono',
+  '& > div': {
+    padding: '$2 $3'
+  }
 });
 
 const ExpandButton = styled('div', {

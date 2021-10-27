@@ -107,6 +107,14 @@ export const filtersSlice = createSlice({
       state.activeFilters = payload;
     },
 
+    bulkSelectToggled: (state, { payload }) => {
+      for (const filtId of payload.filterIds) {
+        state.activeFilters[filtId] = (payload.currState === 'noneSelected')
+          ? null  // select all
+          : [];   // unselect all
+      }
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -206,6 +214,7 @@ export const {
   reviewFilterToggled,
   dateFilterChanged,
   setActiveFilters,
+  bulkSelectToggled,
 } = filtersSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 
@@ -228,6 +237,7 @@ export const fetchLabels = () => async dispatch => {
 
 // Selectors
 export const selectActiveFilters = state => state.filters.activeFilters;
+export const selectAvailFilters = state => state.filters.availFilters;
 export const selectAvailCameras = state => state.filters.availFilters.cameras;
 export const selectAvailLabels = state => state.filters.availFilters.labels;
 export const selectReviewed = state => state.filters.activeFilters.reviewed;
