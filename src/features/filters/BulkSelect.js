@@ -8,6 +8,11 @@ import { CheckboxLabel } from '../../components/CheckboxLabel';
 const StyledBulkSelect = styled('div', {
   backgroundColor: '$gray300',
   fontWeight: '$5',
+  fontFamily: '$sourceSansPro',
+  'label': {
+    display: 'flex',
+  },
+  textTransform: 'uppercase',
 });
 
 const BulkSelect = ({ filterIds }) => {
@@ -60,23 +65,21 @@ const BulkSelect = ({ filterIds }) => {
 
   return (
     <StyledBulkSelect>
-      <div>
-        <label>
-          <Checkbox
-            checked={stateMap[checkboxState].checked}
-            active={stateMap[checkboxState].active}
-            indeterminate={stateMap[checkboxState].indeterminate}
-            onChange={handleCheckboxChange}
-          />
-          <CheckboxLabel
-            checked={stateMap[checkboxState].checked}
-            active={stateMap[checkboxState].active}
-          >
-            {stateMap[checkboxState].label}
-          </CheckboxLabel>
-        </label>
-      </div>
-
+      <label>
+        <Checkbox
+          checked={stateMap[checkboxState].checked}
+          active={stateMap[checkboxState].active}
+          indeterminate={stateMap[checkboxState].indeterminate}
+          onChange={handleCheckboxChange}
+        />
+        <CheckboxLabel
+          checked={stateMap[checkboxState].checked}
+          active={stateMap[checkboxState].active}
+          css={{fontFamily: '$sourceSansPro'}}
+        >
+          {stateMap[checkboxState].label}
+        </CheckboxLabel>
+      </label>
     </StyledBulkSelect>
   );
 };

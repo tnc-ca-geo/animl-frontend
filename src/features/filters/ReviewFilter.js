@@ -4,10 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reviewFilterToggled, selectReviewed } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
-
-const CheckboxWrapper = styled('div', {
-  marginBottom: '$1',
-});
+import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 
 const ReviewFilter = () => {
   const dispatch = useDispatch();

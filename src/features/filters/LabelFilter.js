@@ -4,10 +4,7 @@ import { useDispatch } from 'react-redux'
 import { checkboxFilterToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
-
-const CheckboxWrapper = styled('div', {
-  marginBottom: '$2',
-});
+import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 
 const LabelFilter = ({ availLabels, activeLabels }) => {
   const dispatch = useDispatch();

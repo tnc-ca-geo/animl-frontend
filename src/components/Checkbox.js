@@ -2,8 +2,9 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 
 const CheckboxContainer = styled('div', {
-  display: 'inline-block',
-  verticalAlign: 'middle',
+  display: 'flex',
+  // display: 'inline-block',
+  // verticalAlign: 'middle',
 });
 
 const SVGIcon = styled('svg', {

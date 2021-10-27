@@ -5,6 +5,7 @@ import { checkboxFilterToggled, selectActiveFilters } from './filtersSlice';
 import { fetchCameras, selectCameras } from '../cameras/camerasSlice';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
+import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 
 const Deployments = styled('div', {
   marginLeft: '$2',
@@ -19,14 +20,8 @@ const CameraSection = styled('div', {
   // }
 });
 
-const DeploymentCheckboxWrapper = styled('div', {
-  marginBottom: '$2',
+const DeploymentCheckboxWrapper = styled(CheckboxWrapper, {
   marginLeft: '$3',
-});
-
-const CheckboxWrapper = styled('div', {
-  marginBottom: '$2',
-  // marginLeft: '$2',
 });
 
 const CameraFilter = ({ availCams, activeCams }) => {
