@@ -239,6 +239,7 @@ export const fetchLabels = () => async dispatch => {
 export const selectActiveFilters = state => state.filters.activeFilters;
 export const selectAvailFilters = state => state.filters.availFilters;
 export const selectAvailCameras = state => state.filters.availFilters.cameras;
+export const selectAvailDeployments = state => state.filters.availFilters.deployments;
 export const selectAvailLabels = state => state.filters.availFilters.labels;
 export const selectReviewed = state => state.filters.activeFilters.reviewed;
 export const selectDateAddedFilter = state => ({

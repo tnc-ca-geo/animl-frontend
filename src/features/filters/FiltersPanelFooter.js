@@ -53,7 +53,7 @@ const FiltersPanelFooter = () => {
   return (
     <StyledFiltersPanelFooter>
       <ImagesCount>
-        <span>{imagesCount}</span> matching images
+        <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images
       </ImagesCount>
       <RefreshButton>
         <IconButton

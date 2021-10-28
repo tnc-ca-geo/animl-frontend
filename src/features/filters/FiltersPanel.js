@@ -9,9 +9,7 @@ import {
   selectAvailLabels,
  } from './filtersSlice';
 import PanelHeader from '../../components/PanelHeader';
-import Accordion from '../../components/Accordion';
-import BulkSelect from './BulkSelect';
-import CameraFilter from './CameraFilter';
+import DeploymentFilter from './DeploymentFilter';
 import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
@@ -61,29 +59,17 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
       >
       </PanelHeader>
       <PanelBody>
-        <Accordion label='Cameras' expandedDefault={true}>
-          <BulkSelect filterIds={['cameras', 'deployments']} />
-          <CameraFilter
-            availCams={availCameras}
-            activeCams={activeFilters.cameras}
-          />
-        </Accordion>
-        <Accordion label='Labels' expandedDefault={true}>
-          <BulkSelect filterIds={['labels']} />
-          <LabelFilter
-            availLabels={availLabels}
-            activeLabels={activeFilters.labels}
-          />
-        </Accordion>
-        <Accordion label='Review' expandedDefault={true}>
-          <ReviewFilter/>
-        </Accordion>
-        <Accordion label='Date Created' expandedDefault={false}>
-          <DateFilter type='created'/>
-        </Accordion>
-        <Accordion label='Date Added' expandedDefault={false}>
-          <DateFilter type='added'/>
-        </Accordion>
+        <DeploymentFilter
+          availCams={availCameras}
+          activeCams={activeFilters.cameras}
+        />
+        <LabelFilter
+          availLabels={availLabels}
+          activeLabels={activeFilters.labels}
+        />
+        <ReviewFilter/>
+        <DateFilter type='created'/>
+        <DateFilter type='added'/>
       </PanelBody>
       <FiltersPanelFooter />
     </StyledFiltersPanel>

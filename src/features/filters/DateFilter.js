@@ -6,6 +6,7 @@ import {
   selectDateAddedFilter,
   dateFilterChanged,
 } from './filtersSlice';
+import Accordion from '../../components/Accordion';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
@@ -23,11 +24,16 @@ const DateFilter = ({ type }) => {
   };
 
   return (
-    <DateRangePickerWrapper
-      sdate={start ? moment(start, EXIF) : null}
-      edate={end ? moment(end, EXIF) : null}
-      handleDatesChange={handleDatesChange}
-    />
+    <Accordion
+      label={'Date ' + type}
+      expandedDefault={false}
+    >
+      <DateRangePickerWrapper
+        sdate={start ? moment(start, EXIF) : null}
+        edate={end ? moment(end, EXIF) : null}
+        handleDatesChange={handleDatesChange}
+      />
+    </Accordion>
   );
 };
 
