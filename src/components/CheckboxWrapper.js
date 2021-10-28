@@ -5,5 +5,6 @@ export const CheckboxWrapper = styled('div', {
   paddingBottom: '$2',
   'label': {
     display: 'flex',
+    alignItems: 'center',
   }
 });

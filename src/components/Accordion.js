@@ -13,7 +13,7 @@ const SelectedCount = styled('span', {
 });
 
 const Label = styled('span', {
-  marginRight: '$3',
+  marginRight: '$4',
 });
 
 const AccordionBody = styled('div', {

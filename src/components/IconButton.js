@@ -47,6 +47,14 @@ const IconButton = styled('button', {
 
   variants: {
     size: {
+      small: {
+        height: '$4',
+        width: '$4',
+      },
+      med: {
+        height: '$5',
+        width: '$5',
+      },
       large: {
         height: '$6',
         width: '$6',

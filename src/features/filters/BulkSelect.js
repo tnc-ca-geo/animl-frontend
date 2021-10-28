@@ -6,13 +6,14 @@ import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 
 const StyledBulkSelect = styled('div', {
-  backgroundColor: '$gray300',
+  backgroundColor: '$loContrast',
   fontWeight: '$5',
   fontFamily: '$sourceSansPro',
   'label': {
     display: 'flex',
   },
   textTransform: 'uppercase',
+  borderBottom: '1px solid $gray400',
 });
 
 const BulkSelect = ({ filterIds }) => {
