@@ -50,3 +50,8 @@ export const useResizeObserver = (ref) => {
 
   return { width, height, top, left };
 };
+
+// truncate string and add ellipsis
+export const truncateString = (str, n) => (
+  (str.length > n) ? `${str.substring(0, n)}...` : str
+);

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { 
-  checkboxFilterToggled,
-} from './filtersSlice';
+import { truncateString } from '../../app/utils';
+import { checkboxFilterToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
@@ -63,8 +62,9 @@ const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
         depName = dep.name;
       }
     }
-    setMostRecentActiveDep(depName); // TODO: truncate name if too long
-
+    depName = truncateString(depName, 16);
+    setMostRecentActiveDep(depName);
+    
     // get active deplployment count
     let actDepCount = camera.deployments.length;
     if (activeDeps !== null) {
@@ -96,8 +96,8 @@ const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
             showLabel={false}
           />
           <CheckboxLabel checked={camChecked} active={camChecked}>
-            <CameraId>{camera._id}</CameraId> - 
-            <ActiveDepLabel> {mostRecentActiveDep}</ActiveDepLabel>
+            <CameraId>{camera._id}</CameraId>
+            <ActiveDepLabel>{` - ${mostRecentActiveDep}`}</ActiveDepLabel>
             <AdditionalActiveDepCount>
               {activeDepCount - 1 > 0 
                   ? `, +${activeDepCount - 1}`
