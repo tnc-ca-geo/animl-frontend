@@ -45,9 +45,7 @@ const DeploymentFilter = ({ availCams, activeCams }) => {
           <CameraSection 
             key={camera._id}
             camera={camera}
-            activeCams={activeCams}
             activeDeps={activeDeps}
-            availDeps={availDeps}
           />
         ))}
       </div>

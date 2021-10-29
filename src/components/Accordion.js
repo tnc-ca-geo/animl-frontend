@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from './IconButton';
 
 const SelectedCount = styled('span', {
-  background: '#003bd73d',  // TODO: come up with system for semi-opaque color tokens 
+  background: '#003bd71f',  // TODO: come up with system for semi-opaque color tokens 
   fontSize: '$2',
   fontWeight: '$5',
   color: '$blue500',
-  padding: '$1 $2',
+  padding: '2px $2',
   borderRadius: '$2',
 });
 

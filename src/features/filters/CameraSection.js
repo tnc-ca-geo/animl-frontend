@@ -45,12 +45,10 @@ const StyledCameraSection = styled('div', {
   fontSize: '$3',
 });
 
-const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
-  const camChecked = activeCams === null || activeCams.includes(camera._id);
+const CameraSection = ({ camera, activeDeps }) => {
   const [expanded, setExpanded] = useState(false);
   const [mostRecentActiveDep, setMostRecentActiveDep] = useState();
   const [activeDepCount, setActiveDepCount] = useState();
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -73,7 +71,6 @@ const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
       )).length;
     }
     setActiveDepCount(actDepCount);
-
   }, [ camera, activeDeps ])
 
   const handleCheckboxChange = (e) => {
@@ -95,7 +92,8 @@ const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
             filterIds={camera.deployments.map((dep) => dep._id)}
             showLabel={false}
           />
-          <CheckboxLabel checked={camChecked} active={camChecked}>
+          <CheckboxLabel
+            active={activeDepCount > 0}>
             <CameraId>{camera._id}</CameraId>
             <ActiveDepLabel>{` - ${mostRecentActiveDep}`}</ActiveDepLabel>
             <AdditionalActiveDepCount>
@@ -127,7 +125,7 @@ const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
                 <label>
                   <Checkbox
                     checked={depChecked}
-                    active={(depChecked && camChecked)}
+                    active={depChecked}
                     data-filter={'deployments'}
                     data-key={'ids'}
                     data-sn={deployment._id}
@@ -135,7 +133,7 @@ const CameraSection = ({ camera, activeCams, activeDeps, availDeps }) => {
                   />
                   <CheckboxLabel
                     checked={depChecked}
-                    active={(depChecked && camChecked)}
+                    active={depChecked}
                   >
                     {deployment.name}
                   </CheckboxLabel>
