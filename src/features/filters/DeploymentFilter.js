@@ -2,13 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { 
-  checkboxFilterToggled,
   selectActiveFilters,
   selectAvailDeployments,
 } from './filtersSlice';
 import { fetchCameras, selectCameras } from '../cameras/camerasSlice';
 import Accordion from '../../components/Accordion';
-import BulkSelect from './BulkSelect';
+import BulkSelectCheckbox from './BulkSelectCheckbox';
 import CameraSection from './CameraSection';
 
 
@@ -36,7 +35,11 @@ const DeploymentFilter = ({ availCams, activeCams }) => {
       selectedCount={selectedDepCount}
       expandedDefault={false}
     >
-      <BulkSelect filterIds={['cameras', 'deployments']} />
+      <BulkSelectCheckbox
+        filterCat='deployments'
+        filterIds={availDeps.ids}
+        showLabel={true}
+      />
       <div>
         {cameras.cameras.map((camera) => (
           <CameraSection 
@@ -44,6 +47,7 @@ const DeploymentFilter = ({ availCams, activeCams }) => {
             camera={camera}
             activeCams={activeCams}
             activeDeps={activeDeps}
+            availDeps={availDeps}
           />
         ))}
       </div>

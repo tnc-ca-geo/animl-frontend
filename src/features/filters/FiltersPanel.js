@@ -32,7 +32,7 @@ const StyledFiltersPanel = styled('div', {
   borderRight: '1px solid $gray400',
   flexGrow: '0',
   flexShrink: '0',
-  flexBasis: '310px',
+  flexBasis: '330px',
   height: 'calc(100vh - $8)',
   overflowY: 'hidden',
 });

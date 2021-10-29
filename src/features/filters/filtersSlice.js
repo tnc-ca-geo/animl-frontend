@@ -108,11 +108,49 @@ export const filtersSlice = createSlice({
     },
 
     bulkSelectToggled: (state, { payload }) => {
-      for (const filtId of payload.filterIds) {
-        state.activeFilters[filtId] = (payload.currState === 'noneSelected')
-          ? null  // select all
-          : [];   // unselect all
+      console.log('bulkSelectToggled: ', payload)
+      // clicking checkbox dispatches action to 
+      // (a) add all managed ids to active filters, or
+      // (b) remove all managed ids from active filters
+
+      const managedIds = payload.filterIds;
+      const activeFilters = state.activeFilters[payload.filterCat];
+      // this is an issue b/c labels doesnt use ids it uses categories. 
+      // TODO: review why we use 'categories' instead of ids for label filters
+      const availFilters = payload.filterCat === 'labels' 
+        ? state.availFilters[payload.filterCat].categories
+        : state.availFilters[payload.filterCat].ids;
+
+      if (payload.currState === 'noneSelected') {
+        // none are currently selected, so select all (add all to activeFilters)
+        console.log('none are currently selected, so select all')
+        managedIds.forEach((managedId) => {
+          if ((activeFilters && !activeFilters.includes(managedId))) {
+            state.activeFilters[payload.filterCat].push(managedId);
+          }
+        });
       }
+      else {
+        // some or all managed ids are selected, so unselect all, i.e, 
+        // return an array of all available filters, minus the managed filters
+        console.log(' some or all managed ids are selected, so unselect all')
+        
+        let newFilters;
+        if (activeFilters === null) {
+          newFilters = availFilters.filter((availId) => (
+            !managedIds.includes(availId)
+          ));
+        }
+        else {
+          for (const managedId of managedIds) {
+            const i = activeFilters.indexOf(managedId);
+            if (i > -1) activeFilters.splice(i, 1);
+            newFilters = activeFilters;
+          }
+        }
+        state.activeFilters[payload.filterCat] = newFilters;
+      }
+
     },
 
   },

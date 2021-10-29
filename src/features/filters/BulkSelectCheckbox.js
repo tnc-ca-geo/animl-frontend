@@ -5,7 +5,7 @@ import { selectActiveFilters, bulkSelectToggled } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 
-const StyledBulkSelect = styled('div', {
+const StyledBulkSelectCheckbox = styled('div', {
   backgroundColor: '$loContrast',
   fontWeight: '$5',
   fontFamily: '$sourceSansPro',
@@ -16,7 +16,7 @@ const StyledBulkSelect = styled('div', {
   borderBottom: '1px solid $gray400',
 });
 
-const BulkSelect = ({ filterIds }) => {
+const BulkSelectCheckbox = ({ filterCat, filterIds, showLabel }) => {
   const activeFilters = useSelector(selectActiveFilters);
   const [ checkboxState, setCheckboxState ] = useState('someSelected');
   const dispatch = useDispatch();
@@ -43,29 +43,35 @@ const BulkSelect = ({ filterIds }) => {
   };
 
   useEffect(() => {
-    const allFiltersSelected = (val) => val === null;
-    const noFiltersSelected = (val) => val && val.length === 0;
-    const controlledFilts = filterIds.map((filt) => activeFilters[filt]);
-    if (controlledFilts.every(allFiltersSelected)) {
+    const allSelected = (idsToCheck, activeIds) => (
+      (activeIds && idsToCheck.every((id) => activeIds.includes(id))) ||
+      activeIds === null
+    );
+    const noneSelected = (idsToCheck, activeIds) => (
+      activeIds && idsToCheck.every((id) => !activeIds.includes(id))
+    );
+
+    if (allSelected(filterIds, activeFilters[filterCat])) {
       setCheckboxState('allSelected');
     }
-    else if (controlledFilts.every(noFiltersSelected)) {
+    else if (noneSelected(filterIds, activeFilters[filterCat])) {
       setCheckboxState('noneSelected');
     }
     else {
       setCheckboxState('someSelected');
     }
-  }, [ filterIds, activeFilters ]);
+  }, [ activeFilters, filterCat, filterIds ]);
 
   const handleCheckboxChange = (e) => {
     dispatch(bulkSelectToggled({
-      filterIds,
       currState: checkboxState,
+      filterCat,
+      filterIds,
     }));
   };
 
   return (
-    <StyledBulkSelect>
+    <StyledBulkSelectCheckbox>
       <label>
         <Checkbox
           checked={stateMap[checkboxState].checked}
@@ -73,17 +79,19 @@ const BulkSelect = ({ filterIds }) => {
           indeterminate={stateMap[checkboxState].indeterminate}
           onChange={handleCheckboxChange}
         />
-        <CheckboxLabel
-          checked={stateMap[checkboxState].checked}
-          active={stateMap[checkboxState].active}
-          css={{fontFamily: '$sourceSansPro'}}
-        >
-          {stateMap[checkboxState].label}
-        </CheckboxLabel>
+        {showLabel &&
+          <CheckboxLabel
+            checked={stateMap[checkboxState].checked}
+            active={stateMap[checkboxState].active}
+            css={{fontFamily: '$sourceSansPro'}}
+          >
+            {stateMap[checkboxState].label}
+          </CheckboxLabel>
+        }
       </label>
-    </StyledBulkSelect>
+    </StyledBulkSelectCheckbox>
   );
 };
 
-export default BulkSelect;
+export default BulkSelectCheckbox;
 

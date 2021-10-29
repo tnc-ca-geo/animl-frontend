@@ -3,7 +3,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { useDispatch } from 'react-redux'
 import { checkboxFilterToggled } from './filtersSlice';
 import Accordion from '../../components/Accordion';
-import BulkSelect from './BulkSelect';
+import BulkSelectCheckbox from './BulkSelectCheckbox';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
@@ -26,7 +26,11 @@ const LabelFilter = ({ availLabels, activeLabels }) => {
       selectedCount={activeLabels ? activeLabels.length : availLabels.categories.length}
       expandedDefault={false}
     >
-      <BulkSelect filterIds={['labels']} />
+      <BulkSelectCheckbox
+        filterCat='labels'
+        filterIds={availLabels.categories}
+        showLabel={true}
+      />
         {availLabels.categories.map((cat) => {
           const checked = activeLabels === null || activeLabels.includes(cat);
           return (
