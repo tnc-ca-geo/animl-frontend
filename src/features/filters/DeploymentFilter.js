@@ -37,7 +37,7 @@ const DeploymentFilter = ({ availCams, activeCams }) => {
     >
       <BulkSelectCheckbox
         filterCat='deployments'
-        filterIds={availDeps.ids}
+        managedIds={availDeps.ids}
         showLabel={true}
       />
       <div>

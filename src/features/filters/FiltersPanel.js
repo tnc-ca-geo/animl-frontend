@@ -44,7 +44,7 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!availLabels.categories.length && 
+    if (!availLabels.ids.length && 
         !availLabels.noneFound && 
         !availLabels.error) {
       dispatch(fetchLabels());

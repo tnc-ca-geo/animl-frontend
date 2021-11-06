@@ -76,7 +76,6 @@ const CameraSection = ({ camera, activeDeps }) => {
   const handleCheckboxChange = (e) => {
     dispatch(checkboxFilterToggled({
       filterCat: e.target.dataset.filterCat,
-      key: e.target.dataset.key,
       val: e.target.dataset.sn,
     }));
   };
@@ -89,7 +88,7 @@ const CameraSection = ({ camera, activeDeps }) => {
         <label>
           <BulkSelectCheckbox
             filterCat='deployments'
-            filterIds={camera.deployments.map((dep) => dep._id)}
+            managedIds={camera.deployments.map((dep) => dep._id)}
             showLabel={false}
           />
           <CheckboxLabel
@@ -127,7 +126,6 @@ const CameraSection = ({ camera, activeDeps }) => {
                     checked={depChecked}
                     active={depChecked}
                     data-filter-cat={'deployments'}
-                    data-key={'ids'}
                     data-sn={deployment._id}
                     onChange={handleCheckboxChange}
                   />

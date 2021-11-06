@@ -14,7 +14,6 @@ const LabelFilter = ({ availLabels, activeLabels }) => {
   const handleCheckboxChange = (e) => {
     const payload = {
       filterCat: 'labels',
-      key: 'categories',
       val: e.target.dataset.category,
     };
     dispatch(checkboxFilterToggled(payload));
@@ -23,30 +22,30 @@ const LabelFilter = ({ availLabels, activeLabels }) => {
   return (
     <Accordion
       label='Labels'
-      selectedCount={activeLabels ? activeLabels.length : availLabels.categories.length}
+      selectedCount={activeLabels ? activeLabels.length : availLabels.ids.length}
       expandedDefault={false}
     >
       <BulkSelectCheckbox
         filterCat='labels'
-        filterIds={availLabels.categories}
+        managedIds={availLabels.ids}
         showLabel={true}
       />
-        {availLabels.categories.map((cat) => {
-          const checked = activeLabels === null || activeLabels.includes(cat);
+        {availLabels.ids.map((id) => {
+          const checked = activeLabels === null || activeLabels.includes(id);
           return (
-            <CheckboxWrapper key={cat}>
+            <CheckboxWrapper key={id}>
               <label>
                 <Checkbox
                   checked={checked}
                   active={checked}
-                  data-category={cat}
+                  data-category={id}
                   onChange={handleCheckboxChange}
                 />
                 <CheckboxLabel
                   checked={checked}
                   active={checked}
                 >
-                  {cat}
+                  {id}
                 </CheckboxLabel>
               </label>
             </CheckboxWrapper>

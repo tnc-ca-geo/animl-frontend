@@ -26,7 +26,6 @@ const checkIfValidMD5Hash = (hash) => {
 };
 
 // Track whether active filters match selected view filters
-// TODO: bug here
 export const diffFiltersMiddleware = store => next => action => {
   if (bulkSelectToggled.match(action) ||
       checkboxFilterToggled.match(action) ||
@@ -41,15 +40,6 @@ export const diffFiltersMiddleware = store => next => action => {
     const selectedView = selectSelectedView(store.getState());
 
     if (activeFilters && selectedView) {
-
-      // console.group('diffingFilters')
-      // console.log('activeFilters: ', activeFilters);
-      // console.log('selectedView.filters: ', selectedView.filters);
-      // console.log('is equal: ', _.isEqual(activeFilters, selectedView.filters));
-      // console.groupEnd()
-
-      // isEqual is insufficient b/c a filter === null is the same as 
-      // a filter === [all, available, options]...
       const match = _.isEqual(activeFilters, selectedView.filters);
       store.dispatch(setUnsavedChanges(!match));
     }

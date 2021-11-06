@@ -16,7 +16,7 @@ const StyledBulkSelectCheckbox = styled('div', {
   borderBottom: '1px solid $gray400',
 });
 
-const BulkSelectCheckbox = ({ filterCat, filterIds, showLabel }) => {
+const BulkSelectCheckbox = ({ filterCat, managedIds, showLabel }) => {
   const activeFilters = useSelector(selectActiveFilters);
   const [ checkboxState, setCheckboxState ] = useState('someSelected');
   const dispatch = useDispatch();
@@ -51,22 +51,22 @@ const BulkSelectCheckbox = ({ filterCat, filterIds, showLabel }) => {
       activeIds && idsToCheck.every((id) => !activeIds.includes(id))
     );
 
-    if (allSelected(filterIds, activeFilters[filterCat])) {
+    if (allSelected(managedIds, activeFilters[filterCat])) {
       setCheckboxState('allSelected');
     }
-    else if (noneSelected(filterIds, activeFilters[filterCat])) {
+    else if (noneSelected(managedIds, activeFilters[filterCat])) {
       setCheckboxState('noneSelected');
     }
     else {
       setCheckboxState('someSelected');
     }
-  }, [ activeFilters, filterCat, filterIds ]);
+  }, [ activeFilters, filterCat, managedIds ]);
 
   const handleCheckboxChange = (e) => {
     dispatch(bulkSelectToggled({
       currState: checkboxState,
+      managedIds,
       filterCat,
-      filterIds,
     }));
   };
 

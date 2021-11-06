@@ -32,7 +32,7 @@ const initialState = {
       error: null,
     },
     labels: {
-      categories: [], // TODO: change to 'ids'
+      ids: [],
       isLoading: false,
       noneFound: false,
       error: null,
@@ -66,8 +66,8 @@ export const filtersSlice = createSlice({
       state.availFilters.labels.isLoading = false;
       state.availFilters.labels.error = null;
       payload.labels.categories.forEach((cat) => {
-        if (!state.availFilters.labels.categories.includes(cat)) {
-          state.availFilters.labels.categories.push(cat);
+        if (!state.availFilters.labels.ids.includes(cat)) {
+          state.availFilters.labels.ids.push(cat);
         }
       });
       if (payload.labels.categories.length === 0) {
@@ -76,36 +76,27 @@ export const filtersSlice = createSlice({
     },
 
     checkboxFilterToggled: (state, { payload }) => {
-      const activeFil = state.activeFilters[payload.filterCat];
-      const availFil = state.availFilters[payload.filterCat][payload.key];
-      if (activeFil === null) {
+      const { filterCat, val } = payload;
+      const activeIds = state.activeFilters[filterCat];
+      const availIds = state.availFilters[filterCat].ids;
+
+      if (activeIds === null) {
         // if null, all filters are selected, so toggling one = unselecting it
-        state.activeFilters[payload.filterCat] = availFil.filter((f) => {
-          return f !== payload.val;
+        state.activeFilters[filterCat] = availIds.filter((id) => {
+          return id !== val;
         });
       }
       else {
         // add/remove item from active filters
-        state.activeFilters[payload.filterCat] = activeFil.includes(payload.val)
-          ? activeFil.filter((f) => f !== payload.val)
-          : activeFil.concat([payload.val]);
+        state.activeFilters[filterCat] = activeIds.includes(val)
+          ? activeIds.filter((id) => id !== payload.val)
+          : activeIds.concat([payload.val]);
 
-        // TODO: if all available filters are selected for a filter cat, 
-        // set to null before updating state
-        console.log('checkboxFilterToggled')
         state.activeFilters = normalizeFilters(
           state.activeFilters,
           state.availFilters,
-          [payload.filterCat]
+          [filterCat]
         );
-        
-        // // If all available filters are selected, set to null
-        // const availCount = state.availFilters[payload.filter][payload.key].length;
-        // const activeCount = state.activeFilters[payload.filter].length;
-        // if (availCount === activeCount) {
-        //   state.activeFilters[payload.filter] = null;
-        // }
-
       }
     },
 
@@ -122,56 +113,34 @@ export const filtersSlice = createSlice({
     },
 
     setActiveFilters: (state, { payload }) => {
-      // TODO: if all available filters are selected for a filter cat, 
-      // set to null before updating state
-      
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
       state.activeFilters = normalizedFilters;
     },
 
     bulkSelectToggled: (state, { payload }) => {
-      // clicking bulk select checkbox dispatches action to: 
-      // (a) add all ids managed by the bulk select chekcbox to active filters,
-      // or (b) remove all managed ids from active filters
-
-      // TODO: review why we use 'categories' instead of ids for label filters
-      const filtKey = payload.filterCat === 'labels' ? 'categories' : 'ids';
-      const managedIds = payload.filterIds;
-      const activeIds = state.activeFilters[payload.filterCat];
-      const availIds = state.availFilters[payload.filterCat][filtKey];
-
+      const { currState, filterCat, managedIds } = payload;
+      const activeIds = state.activeFilters[filterCat];
+      const availIds = state.availFilters[filterCat].ids;
       let newActiveIds;
-      if (payload.currState === 'noneSelected') {
-        // none are currently selected, so add all to activeFilters
-        managedIds.forEach((managedId) => {
-          if ((activeIds && !activeIds.includes(managedId))) {
-            activeIds.push(managedId);
-          }
-        });
-        newActiveIds = activeIds;
+
+      if (currState === 'noneSelected') {
+        // none are currently selected, so add all managedIds to activeFilters
+        const idsToAdd = managedIds.filter((id) => !activeIds.includes(id));
+        newActiveIds = activeIds.concat(idsToAdd);
       }
       else {
-        // some or all managed ids are selected, so unselect all: i.e, 
-        // return an array of all available Ids, minus the managed filters
-        if (activeIds === null) {
-          newActiveIds = availIds.filter((availId) => (
-            !managedIds.includes(availId)
-          ));
-        }
-        else {
-          for (const managedId of managedIds) {
-            const i = activeIds.indexOf(managedId);
-            if (i > -1) activeIds.splice(i, 1);
-            newActiveIds = activeIds;
-          }
-        }
+        // some or all managed ids are selected, so unselect all:
+        // i.e, return all available Ids, minus the managed ids
+        newActiveIds = (activeIds === null) 
+          ? availIds.filter((id) => !managedIds.includes(id))
+          : activeIds.filter((id) => !managedIds.includes(id));
       }
 
       state.activeFilters[payload.filterCat] = newActiveIds;
       state.activeFilters = normalizeFilters(
         state.activeFilters,
         state.availFilters,
-        [payload.filterCat]
+        [filterCat]
       );
       
     },

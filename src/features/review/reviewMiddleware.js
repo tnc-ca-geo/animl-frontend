@@ -187,7 +187,7 @@ export const reviewMiddleware = store => next => action => {
     }
 
     const availLabels = selectAvailLabels(store.getState());
-    if (!availLabels.categories.find((cat) => cat === newLabel.category)) {
+    if (!availLabels.ids.find((id) => id === newLabel.category)) {
       console.log('new label detected: ', newLabel.category);
       store.dispatch(fetchLabels());
       // TODO: also dispatch fetchLabels after label invalidations?

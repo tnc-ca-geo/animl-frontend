@@ -174,7 +174,7 @@ const BoundingBoxLabel = (props) => {
     value: category.toLowerCase().replace(/\W/g, ''),
   });
   useEffect(() => {
-    const newOptions = availLabels.categories.map((cat) => createOption(cat));
+    const newOptions = availLabels.ids.map((id) => createOption(id));
     setOptions(newOptions);
   }, [ availLabels ]);
 

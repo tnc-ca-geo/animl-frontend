@@ -1,6 +1,6 @@
 import { createStitches } from '@stitches/react';
 
-// Mapping label categories to colors
+// Mapping label ids/categories to colors
 const labelColorMap = {
   animal: { primary: '#F3CA6C', text: 'hiContrast' },
   fox:    { primary: '#345EFF', text: 'loContrast' },
