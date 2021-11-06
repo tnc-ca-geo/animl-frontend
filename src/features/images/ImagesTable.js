@@ -122,7 +122,7 @@ const DataCell = styled(TableCell, {
   variants: {
     selected: {
       true: {
-        backgroundColor: '$gray200',
+        backgroundColor: '$gray300',
         // '&:first-child': {
         //   borderLeft: '4px solid $blue500',
         //   paddingLeft: '12px',

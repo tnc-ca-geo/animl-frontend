@@ -6,9 +6,11 @@ import {
 } from '../images/imagesSlice';
 import {
   setActiveFilters,
+  bulkSelectToggled,
   checkboxFilterToggled,
   dateFilterChanged,
   reviewFilterToggled,
+  selectAvailFilters,
   selectActiveFilters
 } from '../filters/filtersSlice';
 import {
@@ -24,17 +26,30 @@ const checkIfValidMD5Hash = (hash) => {
 };
 
 // Track whether active filters match selected view filters
+// TODO: bug here
 export const diffFiltersMiddleware = store => next => action => {
-  if (checkboxFilterToggled.match(action) ||
+  if (bulkSelectToggled.match(action) ||
+      checkboxFilterToggled.match(action) ||
       dateFilterChanged.match(action) ||
       reviewFilterToggled.match(action) ||
       setSelectedView.match(action) ||
       saveViewSuccess.match(action)) {
-    
+
     next(action);
+
     const activeFilters = selectActiveFilters(store.getState());
     const selectedView = selectSelectedView(store.getState());
+
     if (activeFilters && selectedView) {
+
+      // console.group('diffingFilters')
+      // console.log('activeFilters: ', activeFilters);
+      // console.log('selectedView.filters: ', selectedView.filters);
+      // console.log('is equal: ', _.isEqual(activeFilters, selectedView.filters));
+      // console.groupEnd()
+
+      // isEqual is insufficient b/c a filter === null is the same as 
+      // a filter === [all, available, options]...
       const match = _.isEqual(activeFilters, selectedView.filters);
       store.dispatch(setUnsavedChanges(!match));
     }
@@ -46,7 +61,7 @@ export const diffFiltersMiddleware = store => next => action => {
 };
 
 // If an image Id has been passed into the URL as a query param, 
-// initialize app  with pre-focused image. 
+// initialize app with pre-focused image. 
 // Otherwise apply selected view's filters to active filters
 export const setSelectedViewMiddleware = store => next => action => {
   if (setSelectedView.match(action)) {

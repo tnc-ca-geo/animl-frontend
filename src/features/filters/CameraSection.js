@@ -75,7 +75,7 @@ const CameraSection = ({ camera, activeDeps }) => {
 
   const handleCheckboxChange = (e) => {
     dispatch(checkboxFilterToggled({
-      filter: e.target.dataset.filter,
+      filterCat: e.target.dataset.filterCat,
       key: e.target.dataset.key,
       val: e.target.dataset.sn,
     }));
@@ -126,7 +126,7 @@ const CameraSection = ({ camera, activeDeps }) => {
                   <Checkbox
                     checked={depChecked}
                     active={depChecked}
-                    data-filter={'deployments'}
+                    data-filter-cat={'deployments'}
                     data-key={'ids'}
                     data-sn={deployment._id}
                     onChange={handleCheckboxChange}

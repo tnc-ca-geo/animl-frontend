@@ -200,7 +200,7 @@ export const fetchImageContext = (imgId) => {
         const filters = {
           addedEnd: null,
           addedStart: null,
-          cameras: [focusedImg.image.cameraSn],
+          cameras: [focusedImg.image.cameraSn], // TODO: does this still work now that we're more deployment filter oriented?
           createdEnd: null,
           createdStart: startDate,
           deployments: null,

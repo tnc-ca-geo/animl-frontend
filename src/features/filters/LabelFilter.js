@@ -13,7 +13,7 @@ const LabelFilter = ({ availLabels, activeLabels }) => {
 
   const handleCheckboxChange = (e) => {
     const payload = {
-      filter: 'labels',
+      filterCat: 'labels',
       key: 'categories',
       val: e.target.dataset.category,
     };
