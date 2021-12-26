@@ -104,6 +104,7 @@ export const imagesSlice = createSlice({
     },
 
     editLabelSuccess: (state, { payload }) => {
+      console.log('editLabelSuccess: ', payload);
       state.isEditingLabel = false;
       state.error = null;
       const image = state.images.find(img => img._id === payload._id);
@@ -163,6 +164,10 @@ export const editLabel = (operation, entity, payload) => {
         throw new Error(err);
       }
       dispatch(editLabelStart());
+      console.group('editLabel()');
+      console.log(`${operation} ${entity}`);
+      console.log(`payload: `, payload);
+      console.groupEnd();
       // TODO: do we really need to pass in the operation and entity separately?
       // why not just do one string, e.g.: 'createObject'
       const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);

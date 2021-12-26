@@ -5,9 +5,9 @@ import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
-import AddObjectOverlay from './AddObjectOverlay';
+import DrawBboxOverlay from './DrawBboxOverlay';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { addObjectStart, selectIsAddingObject} from './loupeSlice';
+import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
 import { selectWorkingImages, markedEmpty } from '../review/reviewSlice';
 import Button from '../../components/Button';
 
@@ -63,7 +63,7 @@ const ImageWrapper = styled('div', {
 });
 
 const FullSizeImage = ({ image, focusIndex }) => {
-  const isAddingObject = useSelector(selectIsAddingObject);
+  const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const containerEl = useRef(null);
   const dims = useResizeObserver(containerEl);
   const dispatch = useDispatch();
@@ -100,7 +100,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
     }
   }, [ currImgObjects ]);
 
-  const handleAddObjectButtonClick = () => dispatch(addObjectStart());
+  const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
   const handleMarkEmptyButtonClick = () => {
     dispatch(markedEmpty({imageIndex: focusIndex.image}));
@@ -108,8 +108,8 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   return (
     <ImageWrapper ref={containerEl}>
-      {isAddingObject &&
-        <AddObjectOverlay
+      {isDrawingBbox &&
+        <DrawBboxOverlay
           imageDimensions={dims}
           focusIndex={focusIndex}
         />

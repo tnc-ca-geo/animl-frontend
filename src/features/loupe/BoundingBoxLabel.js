@@ -188,7 +188,9 @@ const BoundingBoxLabel = (props) => {
   // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
+      console.log('handleWindowClick() - caught click');
       if (object.isBeingAdded) {
+        console.log('handleWindowClick() - object isBeingAdded, so dispatch objectRemoved()')
         dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }))
       }
       dispatch(addLabelEnd());

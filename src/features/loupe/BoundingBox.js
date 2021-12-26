@@ -228,6 +228,7 @@ const BoundingBox = (props) => {
   };
 
   const handleBBoxClick = () => {
+    console.log('BoundingBox.handleBBoxClick()');
     const newIndex = {
       image: focusIndex.image,
       object: objectIndex,

@@ -4,7 +4,7 @@ import { styled } from '../../theme/stitches.config';
 
 import { absToRel } from './BoundingBox';
 import { objectAdded } from '../review/reviewSlice';
-import { addObjectEnd } from './loupeSlice';
+import { drawBboxEnd } from './loupeSlice';
 
 
 const CrossHairHorizontal = styled('div', {
@@ -38,7 +38,7 @@ const Overlay = styled('div', {
   zIndex: '$4',
 });
 
-const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
+const DrawBboxOverlay = ({ imageDimensions, focusIndex }) => {
   const { width, height, top, left } = imageDimensions;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
@@ -76,25 +76,26 @@ const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
   };
 
   const handleMouseUp = () => {
-    // create object  
+    // create bbox  
     // TODO: move this all to middleware?
     // TODO: double check that width & height are same as actual image width/height
     const image = { imageWidth: width, imageHeight: height };
     const bbox = absToRel(tempBBox, image);
     const imageIndex = focusIndex.image;
+    console.log('DrawBboxOverlay.handleMouseUp() - mouse up event')
     dispatch(objectAdded({ bbox, imageIndex }));
     setDrawingBBox(false);
     setTempBBox(defaultBBox);
-    dispatch(addObjectEnd());
+    dispatch(drawBboxEnd());
   };
 
-  // listen for esc keydown and end addObject
+  // listen for esc keydown and end drawBbox
   useEffect(() => {
     // TODO: should be able to use react synthetic onKeyDown events,
     // but couldn't get it working
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
-        dispatch(addObjectEnd());
+        dispatch(drawBboxEnd());
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -127,4 +128,4 @@ const AddObjectOverlay = ({ imageDimensions, focusIndex }) => {
   );
 };
 
-export default AddObjectOverlay;
+export default DrawBboxOverlay;

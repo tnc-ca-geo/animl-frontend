@@ -4,7 +4,7 @@ import { clearImages } from '../images/imagesSlice';
 const initialState = {
   open: false,
   reviewMode: false,
-  isAddingObject: false,
+  isDrawingBbox: false,
   isAddingLabel: false,
   iterationOptions: {
     skipEmptyImages: false,
@@ -26,22 +26,26 @@ export const loupeSlice = createSlice({
       state.reviewMode = !state.reviewMode;
     },
 
-    addObjectStart: (state) => {
-      state.isAddingObject = true;
+    drawBboxStart: (state) => {
+      console.log('loupeSlice.drawBboxStart() - isDrawingBbox === true')
+      state.isDrawingBbox = true;
     },
 
-    addObjectEnd: (state) => {
-      if (state.isAddingObject) {
-        state.isAddingObject = false;
+    drawBboxEnd: (state) => {
+      if (state.isDrawingBbox) {
+        console.log('loupeSlice.drawBboxEnd() - isDrawingBbox === false')
+        state.isDrawingBbox = false;
       }
     },
 
     addLabelStart: (state) => {
+      console.log('loupeSlice.addLabelStart() - isAddingLabel === true')
       state.isAddingLabel = true;
     },
 
     addLabelEnd: (state) => {
       if (state.isAddingLabel) {
+        console.log('loupeSlice.addLabelEnd() - isAddingLabel === false')
         state.isAddingLabel = false;
       }
     },
@@ -64,8 +68,8 @@ export const loupeSlice = createSlice({
 export const {
   toggleOpenLoupe,
   reviewModeToggled,
-  addObjectStart,
-  addObjectEnd,
+  drawBboxStart,
+  drawBboxEnd,
   addLabelStart,
   addLabelEnd,
   iterationOptionsChanged,
@@ -74,7 +78,7 @@ export const {
 // Selectors
 export const selectLoupeOpen = state => state.loupe.open;
 export const selectReviewMode = state => state.loupe.reviewMode;
-export const selectIsAddingObject = state => state.loupe.isAddingObject;
+export const selectIsDrawingBbox = state => state.loupe.isDrawingBbox;
 export const selectIsAddingLabel = state => state.loupe.isAddingLabel;
 export const selectIterationOptions = state => state.loupe.iterationOptions;
 

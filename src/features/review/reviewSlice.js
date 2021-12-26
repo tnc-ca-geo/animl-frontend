@@ -45,9 +45,11 @@ export const reviewSlice = createSlice({
     },
 
     objectRemoved: (state, { payload }) => {
-      console.log('reviewSlice.objectRemoved()');
+      console.group('reviewSlice.objectRemoved()');
+      console.log('payload: ', payload);
       const objects = state.workingImages[payload.imageIndex].objects;
       objects.splice(payload.objectIndex, 1);
+      console.groupEnd();
     },
 
     labelAdded: (state, { payload }) => {
@@ -56,7 +58,7 @@ export const reviewSlice = createSlice({
       const object = state.workingImages[i.image].objects[i.object];
       object.labels.unshift(payload.newLabel);
       object.locked = true;
-      delete object.isBeingAdded
+      delete object.isBeingAdded;
     },
 
     labelValidated: (state, { payload }) => {

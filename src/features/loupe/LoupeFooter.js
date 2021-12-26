@@ -159,7 +159,7 @@ const LoupeFooter = ({ image }) => {
       //   let charCode = String.fromCharCode(e.which).toLowerCase();
       //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
       //     e.stopPropagation();
-      //     dispatch(addObjectStart());
+      //     dispatch(drawBboxStart());
       //   }
       // }
     };

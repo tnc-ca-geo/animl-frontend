@@ -22,6 +22,7 @@ import {
   addLabelEnd,
   selectReviewMode,
   selectIterationOptions,
+  selectIsAddingLabel,
 } from '../loupe/loupeSlice';
 import { selectUserUsername } from '../user/userSlice';
 
@@ -118,34 +119,20 @@ export const reviewMiddleware = store => next => action => {
    * setFocus
    */
 
-  // if (setFocus.match(action)) {
-  //   const lastFocusIndex = selectFocusIndex(store.getState());
-  //   next(action);
-  //   const currFocusIndex = selectFocusIndex(store.getState());
-  //   // If the user has moved away from an image, check for changes & save them
-  //   if (lastFocusIndex.image !== null && 
-  //     lastFocusIndex.image !== currFocusIndex.image) {
-  //     const images = selectImages(store.getState());
-  //     const workingImages = selectWorkingImages(store.getState());
-  //     const lastImage = images[lastFocusIndex.image];
-  //     const lastWorkingImage = workingImages[lastFocusIndex.image];
-      
-  //     // // If the last image was edited, so request updateObjects() mutation.
-  //     // if (!_.isEqual(lastWorkingImage, lastImage)) {
-  //     //   const payload = {
-  //     //     imageId: lastWorkingImage._id,
-  //     //     objects: lastWorkingImage.objects
-  //     //   };
-  //     //   store.dispatch(updateObjects(payload));
-  //     // }
-  //   }
-  // }
+  if (setFocus.match(action)) {
+    console.log('reviewMiddleware.setFocus(): ', action.payload);
+    // prevent any focus change while user isAddingLabel
+    const isAddingLabel = selectIsAddingLabel(store.getState());
+    if (!isAddingLabel) {
+      next(action);
+    }
+  }
 
   /* 
    * labelAdded
    */
 
-  if (labelAdded.match(action)) {
+  else if (labelAdded.match(action)) {
     console.log('reviewMiddleware.labelAdded(): ', action.payload);
     const i = action.payload.index;
     const workingImages = selectWorkingImages(store.getState());
@@ -179,8 +166,9 @@ export const reviewMiddleware = store => next => action => {
       diffs: { locked: true },
     }));
 
-    store.dispatch(setFocus({ index: { label: 0 }, type: 'auto' }));
     store.dispatch(addLabelEnd());
+
+    store.dispatch(setFocus({ index: { label: 0 }, type: 'auto' }));
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) {
       store.dispatch(incrementFocusIndex('increment'));
@@ -217,11 +205,11 @@ export const reviewMiddleware = store => next => action => {
    */
 
   else if (objectRemoved.match(action)) {
-    console.log('reviewMiddleware.objectRemoved()');
+    console.log('reviewMiddleware.objectRemoved(): ', action.payload);
     next(action);
     const { imageIndex, objectIndex } = action.payload;
     const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[imageIndex]
+    const image = workingImages[imageIndex];
     const object = image.objects[objectIndex];
     store.dispatch(editLabel('delete', 'object', {
       imageId: image._id,
@@ -362,7 +350,7 @@ export const reviewMiddleware = store => next => action => {
   }
 
   /* 
-   * objectAdded
+   * markedEmpty
    */
 
   else if (markedEmpty.match(action)) {
