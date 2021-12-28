@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
+import _ from 'lodash';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
@@ -150,7 +151,7 @@ const BoundingBox = (props) => {
     setBbox(object.bbox);
   }, [ object ]);
 
-  const onDrag = (event, {deltaX, deltaY}) => {
+  const onDrag = (event, { deltaX, deltaY }) => {
     const rect = {
       left: left + deltaX,
       top: top + deltaY,
@@ -162,16 +163,21 @@ const BoundingBox = (props) => {
     setBbox(newBbox);
   };
 
-  const onDragEnd = () => {
-    console.log('BoundingBox.onDragEnd()');
-    // TODO: this fires after users just click on a bbox, so lets diff the 
-    // bbox? or prevent dispatching bboxUpdated if it didn't update somehow?
-    dispatch(bboxUpdated({
-      imageIndex: focusIndex.image,
-      objectIndex,
-      bbox,
-    }));
+  const [ lastBbox, setLastBbox ] = useState(object.bbox);
+  const onDragStart = (event, data) => {
+    setLastBbox(bbox);
   }
+  
+  const onDragEnd = () => {
+    if (!_.isEqual(lastBbox, bbox)){ 
+      console.log('BoundingBox.onDragEnd() - bbox moved, request update')
+      dispatch(bboxUpdated({
+        imageIndex: focusIndex.image,
+        objectIndex,
+        bbox,
+      }));
+    }
+  };
 
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
@@ -249,7 +255,8 @@ const BoundingBox = (props) => {
     <Draggable
       bounds='parent'
       handle='.drag-handle'
-      position={{x: left + 1, y: top - 1}}
+      position={{ x: left + 1, y: top - 1 }}
+      onStart={onDragStart}
       onDrag={onDrag}
       onStop={onDragEnd}
       disabled={object.locked}
