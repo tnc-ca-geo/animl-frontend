@@ -125,6 +125,8 @@ export const reviewMiddleware = store => next => action => {
     const isAddingLabel = selectIsAddingLabel(store.getState());
     if (!isAddingLabel) {
       next(action);
+    } else {
+      console.log('currently loupe.isAddingLabel === true, so preventing setFocus')
     }
   }
 
@@ -206,7 +208,6 @@ export const reviewMiddleware = store => next => action => {
 
   else if (objectRemoved.match(action)) {
     console.log('reviewMiddleware.objectRemoved(): ', action.payload);
-    next(action);
     const { imageIndex, objectIndex } = action.payload;
     const workingImages = selectWorkingImages(store.getState());
     const image = workingImages[imageIndex];
@@ -215,6 +216,7 @@ export const reviewMiddleware = store => next => action => {
       imageId: image._id,
       objectId: object._id,
     }));
+    next(action);
   }
 
   /* 

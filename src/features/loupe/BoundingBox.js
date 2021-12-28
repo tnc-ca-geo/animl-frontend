@@ -163,6 +163,9 @@ const BoundingBox = (props) => {
   };
 
   const onDragEnd = () => {
+    console.log('BoundingBox.onDragEnd()');
+    // TODO: this fires after users just click on a bbox, so lets diff the 
+    // bbox? or prevent dispatching bboxUpdated if it didn't update somehow?
     dispatch(bboxUpdated({
       imageIndex: focusIndex.image,
       objectIndex,
@@ -220,6 +223,7 @@ const BoundingBox = (props) => {
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
+    console.log('BoundingBox.onResizeStop()')
     dispatch(bboxUpdated({
       imageIndex: focusIndex.image,
       objectIndex,
