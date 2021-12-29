@@ -8,13 +8,14 @@ import {
   selectAvailCameras,
   selectAvailLabels,
  } from './filtersSlice';
+ import { selectRouterLocation } from '../images/imagesSlice';
 import PanelHeader from '../../components/PanelHeader';
 import DeploymentFilter from './DeploymentFilter';
 import ReviewFilter from './ReviewFilter';
 import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
+import CustomFilter from './CustomFilter.js';
 import FiltersPanelFooter from './FiltersPanelFooter';
-
 
 // const Label = styled('span', {
 //   // marginLeft: '$2',
@@ -41,6 +42,7 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
   const activeFilters = useSelector(selectActiveFilters);
   const availCameras = useSelector(selectAvailCameras);
   const availLabels = useSelector(selectAvailLabels);
+  const router = useSelector(selectRouterLocation);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -50,6 +52,12 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
       dispatch(fetchLabels());
     }
   }, [availCameras, availLabels, dispatch]);
+
+  const [ showCustomFilter, setShowCustomFilter ] = useState(false);
+  useEffect(() => {
+    const showFilt = ('cf' in router.query) && (router.query['cf'] === 'true');
+    setShowCustomFilter(showFilt);
+  }, [ router ]);
 
   return (
     <StyledFiltersPanel>
@@ -70,6 +78,9 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
         <ReviewFilter/>
         <DateFilter type='created'/>
         <DateFilter type='added'/>
+        {showCustomFilter &&
+          <CustomFilter />
+        }
       </PanelBody>
       <FiltersPanelFooter />
     </StyledFiltersPanel>

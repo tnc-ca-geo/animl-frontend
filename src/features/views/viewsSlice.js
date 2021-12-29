@@ -188,15 +188,13 @@ export const fetchModels = () => async dispatch => {
 // Selectors
 export const selectViewsLoading = state => state.views.isLoading;
 export const selectViews = state => state.views;
-export const selectSelectedView = createSelector(
-  [selectViews],
+export const selectSelectedView = createSelector([selectViews],
   (views) => views.views.filter((view) => view.selected)[0]
 );
 export const selectUnsavedViewChanges = state => (
   state.views.unsavedChanges
 );
-export const selectModels = createSelector(
-  [selectViews],
+export const selectModels = createSelector([selectViews],
   (views) => Object.values(views.models)
 );
 

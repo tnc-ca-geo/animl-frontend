@@ -47,6 +47,7 @@ const initialState = {
     addedStart: null,
     addedEnd: null,
     reviewed: null,
+    custom: null,
   },
 };
 
