@@ -3,8 +3,9 @@ import { styled } from '../../theme/stitches.config.js';
 import { useDispatch } from 'react-redux'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import parser from 'mongodb-query-parser';
 import Accordion from '../../components/Accordion';
-import { FormWrapper, FieldRow, ButtonRow } from '../../components/Form';
+import { FormWrapper, FormError, FieldRow, ButtonRow } from '../../components/Form';
 import Button from '../../components/Button';
 
 const StyledFormWrapper = styled(FormWrapper, {
@@ -28,11 +29,24 @@ const CustomFilter = () => {
   // };
 
   const customFilterSchema = Yup.object().shape({
-    filter: Yup.string().required('A view ID is required'),
+    filter: Yup.mixed().test(
+      'is-valid-query',
+      'Must be a valid MongoDB query',
+      value => {
+        const filter = parser.isFilterValid(value);
+        return filter ? true : false;
+      }, 
+    ),
   });
 
   const handleCustomFilterSubmit = (values) => {
-    console.log('applying custom filter: ', values)
+    console.log('applying custom filter: ', values);
+
+    // const filter = parser.isFilterValid(values.filter);
+    // if (filter) {
+
+    // }
+    // console.log('is filter valid: ', filter);
     // dispatch(editView('delete', values));
     // setQueuedForClose(true);
   };
@@ -57,6 +71,7 @@ const CustomFilter = () => {
                     id='filter'
                     component='textarea'
                   />
+                  <ErrorMessage component={FormError} name='filter' />
                 </FieldRow>
                 <StyledButtonRow>
                   <Button type='submit' size='small'>
