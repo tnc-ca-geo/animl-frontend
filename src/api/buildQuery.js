@@ -14,6 +14,7 @@ const viewFields = `
     addedStart
     addedEnd
     reviewed
+    custom
   }
   automationRules {
     _id

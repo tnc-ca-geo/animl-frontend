@@ -1,23 +1,33 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import parser from 'mongodb-query-parser';
+import {
+  customFilterApplied,
+  customFilterRemoved,
+  selectCustomFilter
+} from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import { FormWrapper, FormError, FieldRow, ButtonRow } from '../../components/Form';
 import Button from '../../components/Button';
 
 const StyledFormWrapper = styled(FormWrapper, {
-  display: 'flex',
-  width: '45px'
+  // display: 'flex',
+  // width: '45px'
+});
+
+const StyledFieldRow = styled(FieldRow, {
+  display: 'block',
 });
 
 const StyledButtonRow = styled(ButtonRow, {
   paddingBottom: '$0'
-})
+});
 
 const CustomFilter = () => {
+  const customFilter = useSelector(selectCustomFilter);
   const dispatch = useDispatch();
 
   // const handleCheckboxChange = (e) => {
@@ -39,15 +49,13 @@ const CustomFilter = () => {
     ),
   });
 
+  const handleRemoveButtonClick = () => {
+    dispatch(customFilterRemoved());
+  };
+
   const handleCustomFilterSubmit = (values) => {
-    console.log('applying custom filter: ', values);
-
-    // const filter = parser.isFilterValid(values.filter);
-    // if (filter) {
-
-    // }
-    // console.log('is filter valid: ', filter);
-    // dispatch(editView('delete', values));
+    console.log('applying custom filter: ', values.filter);
+    dispatch(customFilterApplied(values.filter));
     // setQueuedForClose(true);
   };
 
@@ -59,21 +67,30 @@ const CustomFilter = () => {
       <div>
         <StyledFormWrapper>
           <Formik
-            initialValues={{ filter: '' }}
+            enableReinitialize
+            initialValues={{ filter: customFilter || '' }}
             validationSchema={customFilterSchema}
             onSubmit={(values) => handleCustomFilterSubmit(values)}
           >
             {({ errors, touched }) => (
               <Form>
-                <FieldRow>
+                <StyledFieldRow>
                   <Field
                     name='filter'
                     id='filter'
                     component='textarea'
+                    placeholder="{ 'objects.labels': { $size: 0 } }"
                   />
                   <ErrorMessage component={FormError} name='filter' />
-                </FieldRow>
+                </StyledFieldRow>
                 <StyledButtonRow>
+                  <Button
+                    type='button'
+                    size='small'
+                    onClick={handleRemoveButtonClick}
+                  >
+                    Remove
+                  </Button>
                   <Button type='submit' size='small'>
                     Apply
                   </Button>

@@ -210,7 +210,8 @@ export const fetchImageContext = (imgId) => {
           createdStart: startDate,
           deployments: null,
           labels: null,
-          reviewed: null
+          reviewed: null,
+          custom: null,
         };
         dispatch(setActiveFilters(filters));
       }
