@@ -11,7 +11,8 @@ import {
   dateFilterChanged,
   reviewFilterToggled,
   selectAvailFilters,
-  selectActiveFilters
+  selectActiveFilters,
+  customFilterChanged,
 } from '../filters/filtersSlice';
 import {
   setSelectedView,
@@ -31,6 +32,7 @@ export const diffFiltersMiddleware = store => next => action => {
       checkboxFilterToggled.match(action) ||
       dateFilterChanged.match(action) ||
       reviewFilterToggled.match(action) ||
+      customFilterChanged.match(action) ||
       setSelectedView.match(action) ||
       saveViewSuccess.match(action)) {
 

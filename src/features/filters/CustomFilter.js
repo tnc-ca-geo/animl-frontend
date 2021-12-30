@@ -4,11 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import parser from 'mongodb-query-parser';
-import {
-  customFilterApplied,
-  customFilterRemoved,
-  selectCustomFilter
-} from './filtersSlice';
+import { customFilterChanged, selectCustomFilter } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import { FormWrapper, FormError, FieldRow, ButtonRow } from '../../components/Form';
 import Button from '../../components/Button';
@@ -49,13 +45,10 @@ const CustomFilter = () => {
     ),
   });
 
-  const handleRemoveButtonClick = () => {
-    dispatch(customFilterRemoved());
-  };
+  const handleRemoveButtonClick = () => dispatch(customFilterChanged(null));
 
   const handleCustomFilterSubmit = (values) => {
-    console.log('applying custom filter: ', values.filter);
-    dispatch(customFilterApplied(values.filter));
+    dispatch(customFilterChanged(values.filter));
     // setQueuedForClose(true);
   };
 

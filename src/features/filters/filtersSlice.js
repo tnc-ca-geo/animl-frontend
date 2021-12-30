@@ -108,12 +108,10 @@ export const filtersSlice = createSlice({
         : null;
     },
 
-    customFilterApplied: (state, { payload }) => {
+    customFilterChanged: (state, { payload }) => {
       console.log('filtersSlice.customFilterApplied() - ', payload);
       state.activeFilters.custom = payload;
     },
-
-    customFilterRemoved: (state) => { state.activeFilters.custom = null },
 
     dateFilterChanged: (state, { payload }) => {
       state.activeFilters[payload.type + 'Start'] = payload.startDate;
@@ -252,8 +250,7 @@ export const {
   getModelsSuccess,
   checkboxFilterToggled,
   reviewFilterToggled,
-  customFilterApplied,
-  customFilterRemoved,
+  customFilterChanged,
   dateFilterChanged,
   setActiveFilters,
   bulkSelectToggled,
