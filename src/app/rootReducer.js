@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { connectRouter } from 'connected-react-router';
+import { undoHistoryReducer } from 'redux-undo-redo';
 import userSlice from '../features/user/userSlice';
 import filtersReducer from '../features/filters/filtersSlice';
 import imagesReducer from '../features/images/imagesSlice';
@@ -7,7 +8,6 @@ import camerasReducer from '../features/cameras/camerasSlice';
 import reviewReducer from '../features/review/reviewSlice';
 import viewsReducer from '../features/views/viewsSlice';
 import loupeReducer from '../features/loupe/loupeSlice';
-import counterReducer from '../features/counter/counterSlice';
 import projectSlice from '../features/project/projectSlice';
 
 const createRootReducer = (history) => combineReducers({
@@ -20,7 +20,7 @@ const createRootReducer = (history) => combineReducers({
   review: reviewReducer,
   views: viewsReducer,
   loupe: loupeReducer,
-  counter: counterReducer,
+  undoHistory: undoHistoryReducer, 
 });
 
 export default createRootReducer;

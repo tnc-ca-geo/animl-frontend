@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { ActionCreators as UndoActionCreators } from 'redux-undo';
+// import { ActionCreators as UndoActionCreators } from 'redux-undo';
+import { actions as undoActions } from 'redux-undo-redo'
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -148,10 +149,12 @@ const LoupeFooter = ({ image }) => {
 
       // handle ctrl-z/shift-ctrl-z (undo/redo)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
-        dispatch(UndoActionCreators.redo());
+        dispatch(undoActions.redo());
+        // dispatch(UndoActionCreators.redo());
       }
       else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
-        dispatch(UndoActionCreators.undo());
+        dispatch(undoActions.undo());
+        // dispatch(UndoActionCreators.undo());
       }
 
       // // handle ctrl-a (add object)

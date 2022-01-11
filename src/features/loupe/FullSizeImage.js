@@ -80,7 +80,9 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const workingImages = useSelector(selectWorkingImages);
   const [ currImgObjects, setCurrImgObjects ] = useState();
   useEffect(() => {
-    setCurrImgObjects(workingImages[focusIndex.image].objects);
+    if (focusIndex.image !== null) {
+      setCurrImgObjects(workingImages[focusIndex.image].objects);
+    }
   }, [ workingImages, focusIndex.image ]);
 
   // filter image's objects

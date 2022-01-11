@@ -9,7 +9,7 @@ import {
   labelAdded,
   labelValidated,
   objectRemoved,
-  objectLocked,
+  objectManuallyUnlocked,
   setFocus,
 } from '../review/reviewSlice';
 import {
@@ -188,10 +188,8 @@ const BoundingBoxLabel = (props) => {
   // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
-      console.log('handleWindowClick() - caught click');
       if (object.isBeingAdded) {
-        console.log('handleWindowClick() - object isBeingAdded, so dispatch objectRemoved()')
-        dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }))
+        dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }));
       }
       dispatch(addLabelEnd());
     }
@@ -247,7 +245,7 @@ const BoundingBoxLabel = (props) => {
 
   const handleLockButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(objectLocked({ index, locked: false }));
+    dispatch(objectManuallyUnlocked({ index }));
   };
 
   const handleValidationButtonClick = (e, validated) => {

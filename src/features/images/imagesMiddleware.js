@@ -13,7 +13,7 @@ export const preFocusImageMiddleware = store => next => action => {
   if (getImagesSuccess.match(action)) {
 
     next(action);
-    const imgId = selectPreFocusImage(store.getState())
+    const imgId = selectPreFocusImage(store.getState());
     if (imgId) {
       const workingImages = selectWorkingImages(store.getState());
       const imgIndex = workingImages.findIndex((img) => img._id === imgId);

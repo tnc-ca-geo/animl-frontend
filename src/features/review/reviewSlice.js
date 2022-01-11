@@ -1,5 +1,5 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
-import undoable, { excludeAction } from 'redux-undo';
+// import undoable, { excludeAction } from 'redux-undo';
 import {
   getImagesSuccess,
   clearImages,
@@ -40,16 +40,15 @@ export const reviewSlice = createSlice({
     objectAdded: (state, { payload }) => {
       console.log('reviewSlice.objectAdded(): ', payload);
       const objects = state.workingImages[payload.imageIndex].objects;
+      // TODO: double check this is getting properly removed after objectRemoved 
+      // and during undo/redo process 
       payload.newObject.isBeingAdded = true; 
       objects.unshift(payload.newObject);
     },
 
     objectRemoved: (state, { payload }) => {
-      console.group('reviewSlice.objectRemoved()');
-      console.log('payload: ', payload);
       const objects = state.workingImages[payload.imageIndex].objects;
       objects.splice(payload.objectIndex, 1);
-      console.groupEnd();
     },
 
     labelAdded: (state, { payload }) => {
@@ -61,27 +60,38 @@ export const reviewSlice = createSlice({
       delete object.isBeingAdded;
     },
 
-    labelValidated: (state, { payload }) => {
-      console.log('reviewSlice.labelValidated()');
+    labelRemoved: (state, { payload }) => { // only used for undoing labelAdded
+      console.log('reviewSlice.labelRemoved(): ', payload);
       const i = payload.index;
+      const object = state.workingImages[i.image].objects[i.object];
+      object.labels.splice(payload.labelIndex, 1);
+    },
+
+    labelValidated: (state, { payload }) => {
+      console.log('reviewSlice.labelValidated() - ', payload);
+      const i = payload.index;
+      const userId = payload.userId;
       const object = state.workingImages[i.image].objects[i.object];
       const label = object.labels[i.label];
       if (payload.validated === true) {
-        label.validation = {
-          validated: true,
-          userId: payload.userId
-        };
-        object.locked = true;
+        label.validation = { validated: true, userId };
+        // object.locked = true;  // set object.locked in objectLocked reducer (dispatch in middleware)
       }
       else {
-        label.validation = {
-          validated: false,
-          userId: payload.userId
-        };
-        object.locked = object.labels.every((lbl) => (
-          lbl.validation && lbl.validation.validated === false
-        ));
+        label.validation = { validated: false, userId };
+        // object.locked = object.labels.every((lbl) => (
+        //   lbl.validation && lbl.validation.validated === false
+        // ));
       }
+    },
+
+    labelValidationReverted: (state, { payload }) => { // for undoing a validation
+      console.log('reviewSlice.labelValidationReverted() - ', payload);
+      const i = payload.index;
+      const object = state.workingImages[i.image].objects[i.object];
+      const label = object.labels[i.label];
+      label.validation = payload.oldValidation;
+      // object.locked = payload.oldLocked;  // set object.locked in objectLocked reducer (dispatch in middleware)
     },
 
     objectLocked: (state, { payload }) => {
@@ -126,24 +136,30 @@ export const {
   objectAdded,
   objectRemoved,
   labelAdded,
+  labelRemoved,
   labelValidated,
+  labelValidationReverted,
   objectLocked,
   markedEmpty,
 } = reviewSlice.actions;
 
 // Actions only used in middlewares:
-export const incrementFocusIndex = createAction('loupe/incrementFocusIndex');
-export const incrementImage = createAction('loupe/incrementImage');
+export const incrementFocusIndex = createAction('review/incrementFocusIndex');
+export const incrementImage = createAction('review/incrementImage');
+export const objectManuallyUnlocked = createAction('review/objectManuallyUnlocked');
  
 // The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 // You can also use Reselect's createSelector to create memoized selector funcs:
 // https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
-export const selectWorkingImages = state => state.review.present.workingImages;
-export const selectFocusIndex = state => state.review.present.focusIndex;
-export const selectFocusChangeType = state => state.review.present.focusChangeType;
+export const selectWorkingImages = state => state.review.workingImages;
+export const selectFocusIndex = state => state.review.focusIndex;
+export const selectFocusChangeType = state => state.review.focusChangeType;
 
-export default undoable(reviewSlice.reducer, { 
-  filter: excludeAction(objectAdded.toString()) 
-});
+export default reviewSlice.reducer;
+
+// export default undoable(reviewSlice.reducer, { 
+//   filter: excludeAction(objectAdded.toString()) 
+// });
+

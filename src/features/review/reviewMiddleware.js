@@ -9,6 +9,7 @@ import {
   objectAdded,
   objectRemoved,
   objectLocked,
+  objectManuallyUnlocked,
   labelAdded,
   labelValidated,
   markedEmpty,
@@ -16,6 +17,7 @@ import {
   incrementImage,
   selectFocusIndex,
   selectWorkingImages,
+  labelValidationReverted,
 } from './reviewSlice';
 import {
   addLabelStart,
@@ -125,14 +127,14 @@ export const reviewMiddleware = store => next => action => {
     const isAddingLabel = selectIsAddingLabel(store.getState());
     if (!isAddingLabel) {
       next(action);
-    } else {
-      console.log('currently loupe.isAddingLabel === true, so preventing setFocus')
     }
   }
 
   /* 
    * labelAdded
    */
+
+  // TODO: need to create labelRemoved middleware and wire it up in API
 
   else if (labelAdded.match(action)) {
     console.log('reviewMiddleware.labelAdded(): ', action.payload);
@@ -224,42 +226,60 @@ export const reviewMiddleware = store => next => action => {
    */
 
   else if (labelValidated.match(action)) {
-    console.log('reviewMiddleware.labelValidated()');
+    console.log('reviewMiddleware.labelValidated() - ', action);
     next(action);
-    const i = action.payload.index;
+    const { index, validated, userId } = action.payload;
     const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[i.image]
-    const object = image.objects[i.object];
-    const label = object.labels[i.label];
+    const image = workingImages[index.image]
+    const object = image.objects[index.object];
+    const label = object.labels[index.label];
 
     // update label
+    const validation = { validated, userId };
     store.dispatch(editLabel('update', 'label', {
       imageId: image._id,
       objectId: object._id,
       labelId: label._id,
-      diffs: { 
-        validation: {
-          validated: action.payload.validated,
-          userId: action.payload.userId,
-        }
-      },
+      diffs: { validation },
     }));
 
     // update object
     const allLabelsInvalidated = object.labels.every((lbl) => (
       lbl.validation && lbl.validation.validated === false
     ));
-    if (action.payload.validated ||
-        (!action.payload.validated && allLabelsInvalidated))  {
-      store.dispatch(editLabel('update', 'object', {
+    const locked = ((!validated && allLabelsInvalidated) || validated);
+    store.dispatch(objectLocked({ index, locked}));
+    // store.dispatch(editLabel('update', 'object', {
+    //   imageId: image._id,
+    //   objectId: object._id,
+    //   diffs: { locked },
+    // }));
+  }
+
+  /* 
+   * labelValidationReverted
+   */
+
+    else if (labelValidationReverted.match(action)) {
+      console.log('reviewMiddleware.labelValidationReverted() - ', action);
+      next(action);
+      const { index, oldValidation, oldLocked } = action.payload;
+      const workingImages = selectWorkingImages(store.getState());
+      const image = workingImages[index.image];
+      const object = image.objects[index.object];
+      const label = object.labels[index.label];
+  
+      // update label
+      store.dispatch(editLabel('update', 'label', {
         imageId: image._id,
         objectId: object._id,
-        diffs: { locked: true },
+        labelId: label._id,
+        diffs: { validation: oldValidation },
       }));
+  
+      // update object
+      store.dispatch(objectLocked({ index, locked: oldLocked }));
     }
-    else if (action.payload.validated === false && allLabelsInvalidated) {
-    }
-  }
 
   /* 
    * objectLocked
@@ -280,6 +300,19 @@ export const reviewMiddleware = store => next => action => {
     }));
   }
 
+  /* 
+   * objectManuallyUnlocked
+   */
+
+  else if (objectManuallyUnlocked.match(action)) {
+    console.log('reviewMiddleware.objectManuallyUnlocked()');
+    next(action);
+    store.dispatch(objectLocked({
+      index: action.payload.index,
+      locked: false
+    }));
+  }
+  
   /* 
    * incrementFocusIndex
    */
