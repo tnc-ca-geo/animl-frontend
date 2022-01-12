@@ -84,7 +84,7 @@ const BoundingBox = (props) => {
     setObjectFocused((focusIndex.object === objectIndex));
   }, [ focusIndex.object, objectIndex ]);
 
-  // set label
+  // set label - maybe move this to label component too?
   const [ label, setLabel ] = useState();
   useEffect(() => {
     // show first non-invalidated label in array
@@ -100,16 +100,15 @@ const BoundingBox = (props) => {
     setLabel(newLabel);
   }, [ object, focusIndex.label, objectFocused ]);
 
-  // set label color and confidence
+  // set label color and confidence - maybe this belongs in label component?
   const defaultColor = { primary: '$gray300', text: '$hiContrast' };
   const [ labelIndex, setLabelIndex ] = useState(0);
   const [ labelColor, setLabelColor ] = useState(defaultColor);
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
     if (label) {
-      let lblIndex = object.labels.indexOf(label);
-      lblIndex = lblIndex !== -1 ? lblIndex : 0;  // if it's temp label, it won't be found
-      setLabelIndex(lblIndex);
+      // if obj is being added, it won't have a label yet, set labelIndex to 0
+      setLabelIndex(object.labels.length ? object.labels.indexOf(label) : 0);
       setLabelColor(labelColors(label.category));
       setConf(Number.parseFloat(label.conf * 100).toFixed(1));
     }
@@ -172,18 +171,10 @@ const BoundingBox = (props) => {
     // Prevent box from going out of bounds
     const right = imageWidth - size.width - left;  
     const bottom = imageHeight - size.height - top;  
-    if ((handle.indexOf('e') > -1) && (right <= 0)) {
-      setConstraintX(width);
-    }
-    if ((handle.indexOf('w') > -1) && (left <= 0)) {
-      setConstraintX(width);
-    }
-    if ((handle.indexOf('n') > -1) && (top <= 0)) {
-      setConstraintY(height);
-    }
-    if ((handle.indexOf('s') > -1) && (bottom <= 0)) {
-      setConstraintY(height);
-    }
+    if ((handle.indexOf('e') > -1) && (right <= 0)) setConstraintX(width);
+    if ((handle.indexOf('w') > -1) && (left <= 0)) setConstraintX(width);
+    if ((handle.indexOf('n') > -1) && (top <= 0)) setConstraintY(height);
+    if ((handle.indexOf('s') > -1) && (bottom <= 0)) setConstraintY(height);
 
     const rect = { left, top, width: size.width, height: size.height };
     const newBbox = absToRel(rect, { imageWidth, imageHeight });
@@ -250,10 +241,7 @@ const BoundingBox = (props) => {
             horizontalPos={
               ((imageWidth - left - width) < 75) ? 'right' : 'left'
             }
-            // className='drag-handle'
-          >
-          {label.category} {conf}%
-          </BoundingBoxLabel>
+          />
         }
         <DragHandle className='drag-handle'/>
       </StyledResizableBox>

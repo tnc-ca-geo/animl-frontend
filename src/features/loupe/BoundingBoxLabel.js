@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectUserUsername } from '../user/userSlice.js';
 import { selectAvailLabels } from '../filters/filtersSlice';
+import { selectUserUsername } from '../user/userSlice.js';
 import {
   labelAdded,
-  labelValidated,
   objectRemoved,
-  objectManuallyUnlocked,
   setFocus,
 } from '../review/reviewSlice';
 import {
@@ -17,6 +14,7 @@ import {
   addLabelEnd,
   selectIsAddingLabel
 } from './loupeSlice';
+import ValidationButtons from './ValidationButtons.js';
 
 const StyledBoundingBoxLabel = styled('div', {
   // backgroundColor: '#345EFF',
@@ -74,25 +72,6 @@ const LabelDisplay = styled('div', {
   display: 'flex',
   alignItems: 'center',
   padding: '$1 $2',
-});
-
-const LabelButton = styled('button', {
-  padding: '0',
-  width: '26px',
-  height: '24px',
-  borderRadius: '0px',
-  border: '2px solid',
-  // borderBottom: '1px solid',
-  borderLeft: '1px solid',
-  '&:hover': {
-    cursor: 'pointer',
-  },
-});
-
-const LabelButtons = styled('div', {
-  position: 'relative',
-  // right: '0',
-  // top: '0',
 });
 
 const CategorySelector = styled(CreatableSelect, {
@@ -210,7 +189,7 @@ const BoundingBoxLabel = ({
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ selected, dispatch ]);
 
-  const handleCategoryClick = (e) => {
+  const handleLabelClick = (e) => {
     e.stopPropagation();
     if (!object.locked && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
@@ -220,44 +199,22 @@ const BoundingBoxLabel = ({
 
   const handleCategoryChange = (newValue) => {
     if (newValue) {
-      const payload = {
+      dispatch(labelAdded({
         category: newValue.value,
         userId: username,
         index
-      };
-      console.log('handleCategoryChange() - payload: ', payload)
-      console.log('handleCategoryChange() - index: ', index)
-      dispatch(labelAdded(payload));
+      }));
     }
   };
 
   const handleCategoryCreate = (inputValue) => {
     if (inputValue) {
-      const payload = {
+      dispatch(labelAdded({
         category: inputValue,
         userId: username,
         index
-      };
-      console.log('handleCategoryCreate() - payload: ', payload)
-      console.log('handleCategoryCreate() - index: ', index)
-      dispatch(labelAdded(payload));
+      }));
     }
-  };
-
-  const handleLockButtonClick = (e) => {
-    e.stopPropagation();
-    dispatch(objectManuallyUnlocked({ index }));
-  };
-
-  const handleValidationButtonClick = (e, validated) => {
-    e.stopPropagation();
-    const payload = {
-      userId: username,
-      index,
-      validated,
-    };
-    dispatch(labelValidated(payload));
-    setShowLabelButtons(false);
   };
 
   return (
@@ -271,20 +228,20 @@ const BoundingBoxLabel = ({
         color: labelColor.text
       }}
     >
-      <div onClick={handleCategoryClick}>
+      <div onClick={handleLabelClick}>
         {catSelectorOpen
           ? <CategorySelector
               autoFocus
               isClearable
               isSearchable
-              isDisabled={availLabels.isLoading}
-              isLoading={availLabels.isLoading}
-              onChange={handleCategoryChange}
-              onCreateOption={handleCategoryCreate}
-              options={options}
-              value={createOption(label.category)}
               className='react-select'
               classNamePrefix='react-select'
+              isLoading={availLabels.isLoading}
+              isDisabled={availLabels.isLoading}
+              onChange={handleCategoryChange}
+              onCreateOption={handleCategoryCreate}
+              value={createOption(label.category)}
+              options={options}
             />
           : <LabelDisplay>
               <Category>{label.category}</Category>
@@ -293,55 +250,13 @@ const BoundingBoxLabel = ({
         }
       </div>
       {(showLabelButtons && !catSelectorOpen) &&
-        <LabelButtons>
-          {object.locked
-            ? <LabelButton
-                onClick={handleLockButtonClick}
-                css={{
-                  color: '$loContrast',
-                  backgroundColor: labelColor.primary,
-                  borderColor: labelColor.primary,
-                  '&:hover': {
-                    backgroundColor: '$loContrast',
-                    color: '$hiContrast',
-                  }
-              }}>
-                <FontAwesomeIcon icon={['fas', 'unlock']}/>
-              </LabelButton>              
-            : <>
-                <LabelButton
-                  onClick={(e) => handleValidationButtonClick(e, false)}
-                  css={{
-                    backgroundColor: '#E04040',
-                    color: '$loContrast',
-                    borderColor: labelColor.primary,
-                    '&:hover': {
-                      color: '#E04040',
-                      backgroundColor: '$loContrast',
-                      borderColor: labelColor.primary,
-                    }
-                  }}
-                >
-                  <FontAwesomeIcon icon={['fas', 'times']} />
-                </LabelButton>
-                <LabelButton
-                  onClick={(e) => handleValidationButtonClick(e, true)}
-                  css={{
-                    backgroundColor: '#00C797',
-                    color: '$loContrast',
-                    borderColor: labelColor.primary,
-                    '&:hover': {
-                      color: '#00C797',
-                      backgroundColor: '$loContrast',
-                      borderColor: labelColor.primary,
-                    }
-                  }}
-                >
-                  <FontAwesomeIcon icon={['fas', 'check']} />
-                </LabelButton>
-              </>
-            }
-        </LabelButtons>
+        <ValidationButtons 
+          index={index}
+          object={object}
+          labelColor={labelColor}
+          username={username}
+          setShowLabelButtons={setShowLabelButtons}
+        />
       }
     </StyledBoundingBoxLabel>
   );
