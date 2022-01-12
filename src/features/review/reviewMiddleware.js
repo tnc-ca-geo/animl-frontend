@@ -11,6 +11,7 @@ import {
   objectLocked,
   objectManuallyUnlocked,
   labelAdded,
+  labelRemoved,
   labelValidated,
   markedEmpty,
   incrementFocusIndex,
@@ -134,8 +135,6 @@ export const reviewMiddleware = store => next => action => {
    * labelAdded
    */
 
-  // TODO: need to create labelRemoved middleware and wire it up in API
-
   else if (labelAdded.match(action)) {
     console.log('reviewMiddleware.labelAdded(): ', action.payload);
     const i = action.payload.index;
@@ -155,23 +154,22 @@ export const reviewMiddleware = store => next => action => {
       userId: action.payload.userId
     };
 
-    action.payload.newLabel = newLabel;
+    // if we are redoing a previous labelAdded action, 
+    // there will already be a newLabel in the payload 
+    action.payload.newLabel = action.payload.newLabel 
+      ? action.payload.newLabel
+      : newLabel;
+    
     next(action);
 
     store.dispatch(editLabel('create', 'label', {
       imageId: image._id,
       objectId: object._id,
-      labels: [newLabel]
+      labels: [action.payload.newLabel]
     }));
 
-    store.dispatch(editLabel('update', 'object', {
-      imageId: image._id,
-      objectId: object._id,
-      diffs: { locked: true },
-    }));
-
+    store.dispatch(objectLocked({ index: i, locked: true }));
     store.dispatch(addLabelEnd());
-
     store.dispatch(setFocus({ index: { label: 0 }, type: 'auto' }));
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) {
@@ -180,10 +178,37 @@ export const reviewMiddleware = store => next => action => {
 
     const availLabels = selectAvailLabels(store.getState());
     if (!availLabels.ids.find((id) => id === newLabel.category)) {
-      console.log('new label detected: ', newLabel.category);
       store.dispatch(fetchLabels());
       // TODO: also dispatch fetchLabels after label invalidations?
     }
+  }
+
+  /* 
+   * labelRemoved
+   */
+
+  else if (labelRemoved.match(action)) {
+    console.log('reviewMiddleware.labelRemoved(): ', action.payload);
+    const i = action.payload.index;
+    const workingImages = selectWorkingImages(store.getState());
+    const image = workingImages[i.image]
+    const object = image.objects[i.object];
+    const label = object.labels[i.label];
+
+    next(action);
+
+    store.dispatch(editLabel('delete', 'label', {
+      imageId: image._id,
+      objectId: object._id,
+      labelId: label._id,
+    }));
+
+    // TODO: unlock/lock object?
+    store.dispatch(objectLocked({ index: i, locked: false }));
+    // TODO: increment focus? 
+    // store.dispatch(incrementFocusIndex('increment'));
+    // TODO: fetchLabels again? 
+    // store.dispatch(fetchLabels());
   }
 
   /* 

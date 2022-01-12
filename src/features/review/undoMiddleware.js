@@ -2,6 +2,7 @@ import { createUndoMiddleware } from 'redux-undo-redo';
 import {
   setFocus,
   bboxUpdated,
+  labelAdded,
   objectAdded,
   objectRemoved,
   objectLocked,
@@ -10,6 +11,7 @@ import {
   labelValidationReverted,
   selectWorkingImages,
   selectFocusIndex,
+  labelRemoved,
 } from './reviewSlice';
 
 export const undoMiddleware = createUndoMiddleware({
@@ -77,6 +79,12 @@ export const undoMiddleware = createUndoMiddleware({
     // },
 
     // labelAdded
+    [labelAdded.toString()]: {
+      action: (action) => {
+        console.log("reverting labelAdded with action: ", action);
+        return labelRemoved({ index: action.payload.index });
+      },
+    },
 
     // labelValidated
     [labelValidated.toString()]: {
@@ -112,6 +120,6 @@ export const undoMiddleware = createUndoMiddleware({
     },
 
     // markedEmpty
-    
+
   }
 });

@@ -1,5 +1,4 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import { labelAdded } from '../review/reviewSlice';
 import {
   getCamerasStart,
   getCamerasFailure,
