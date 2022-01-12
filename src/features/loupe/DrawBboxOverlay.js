@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-
-import { absToRel } from './BoundingBox';
+import { absToRel } from '../../app/utils';
 import { objectAdded } from '../review/reviewSlice';
 import { drawBboxEnd } from './loupeSlice';
 

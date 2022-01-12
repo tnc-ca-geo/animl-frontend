@@ -145,26 +145,20 @@ const CategorySelector = styled(CreatableSelect, {
   }
 });
 
-const BoundingBoxLabel = (props) => {
-  const {
-    focusIndex,
-    objectIndex,
-    labelIndex,
-    object,
-    label,
-    labelColor,
-    conf,
-    selected,
-    showLabelButtons,
-    setShowLabelButtons 
-  } = props;
+const BoundingBoxLabel = ({
+  index,
+  object,
+  label,
+  labelColor,
+  conf,
+  selected,
+  showLabelButtons,
+  setShowLabelButtons,
+  verticalPos,
+  horizontalPos, 
+}) => {
   const username = useSelector(selectUserUsername);
   const dispatch = useDispatch();
-  const index = {
-    image: focusIndex.image,  
-    object: objectIndex,
-    label: labelIndex
-  };
 
   // update selctor options when new labels become available
   const [ options, setOptions ] = useState();
@@ -189,7 +183,10 @@ const BoundingBoxLabel = (props) => {
   useEffect(() => {
     const handleWindowClick = (e) => {
       if (object.isBeingAdded) {
-        dispatch(objectRemoved({ imageIndex: focusIndex.image, objectIndex }));
+        dispatch(objectRemoved({
+          imageIndex: index.image,
+          objectIndex: index.object 
+        }));
       }
       dispatch(addLabelEnd());
     }
@@ -197,7 +194,7 @@ const BoundingBoxLabel = (props) => {
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
-  }, [ addingLabel, object, objectIndex, focusIndex, dispatch ]);
+  }, [ addingLabel, object, index, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -228,6 +225,8 @@ const BoundingBoxLabel = (props) => {
         userId: username,
         index
       };
+      console.log('handleCategoryChange() - payload: ', payload)
+      console.log('handleCategoryChange() - index: ', index)
       dispatch(labelAdded(payload));
     }
   };
@@ -239,6 +238,8 @@ const BoundingBoxLabel = (props) => {
         userId: username,
         index
       };
+      console.log('handleCategoryCreate() - payload: ', payload)
+      console.log('handleCategoryCreate() - index: ', index)
       dispatch(labelAdded(payload));
     }
   };
@@ -261,8 +262,8 @@ const BoundingBoxLabel = (props) => {
 
   return (
     <StyledBoundingBoxLabel
-      verticalPos={props.verticalPos}
-      horizontalPos={props.horizontalPos}
+      verticalPos={verticalPos}
+      horizontalPos={horizontalPos}
       catSelectorOpen={catSelectorOpen}
       selected={selected}
       css={{

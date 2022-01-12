@@ -12,9 +12,6 @@ import { selectWorkingImages, markedEmpty } from '../review/reviewSlice';
 import Button from '../../components/Button';
 
 const MarkEmptyButton = styled(Button, {
-  // position: 'absolute',
-  // bottom: 1,
-  // right: -75,
   border: 'none',
   borderRadius: '$0',
   backgroundColor: '$loContrast',
@@ -28,13 +25,8 @@ const MarkEmptyButton = styled(Button, {
 });
 
 const AddObjectButton = styled(Button, {
-  // position: 'absolute',
-  // bottom: 1,
-  // right: -1,
   border: 'none',
   borderRadius: '$0',
-  // backgroundColor: '$loContrast',
-  // color: '$hiContrast',
   zIndex: '$3',
   '&:hover': {
     color: '$hiContrast',
@@ -45,8 +37,8 @@ const AddObjectButton = styled(Button, {
 
 const EditObjectButtons = styled('div', {
   position: 'absolute',
-  bottom: -39,
-  right: -1,
+  bottom: '-40',
+  right: '0',
   display: 'flex',
   zIndex: '$3',
 });
@@ -57,7 +49,6 @@ const FullImage = styled(Image, {
 });
 
 const ImageWrapper = styled('div', {
-  // border: '2px solid tomato',
   position: 'relative',
   maxWidth: '940px',
 });
@@ -68,6 +59,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const dims = useResizeObserver(containerEl);
   const dispatch = useDispatch();
 
+  /*
   // track image loading state
   // NOTE: currently not using this. Consider removing
   const [ imgLoaded, setImgLoaded ] = useState(false);
@@ -75,13 +67,15 @@ const FullSizeImage = ({ image, focusIndex }) => {
     setImgLoaded(false);
   }, [ image ]);
   const handleImgLoaded = () => setImgLoaded(true);
+  */
 
   // get image's objects
   const workingImages = useSelector(selectWorkingImages);
   const [ currImgObjects, setCurrImgObjects ] = useState();
   useEffect(() => {
     if (focusIndex.image !== null) {
-      setCurrImgObjects(workingImages[focusIndex.image].objects);
+      const objects = workingImages[focusIndex.image].objects;
+      setCurrImgObjects(objects);
     }
   }, [ workingImages, focusIndex.image ]);
 
@@ -90,9 +84,9 @@ const FullSizeImage = ({ image, focusIndex }) => {
   useEffect(() => {
     if (currImgObjects) {
       const objectsToRender = currImgObjects.reduce((acc, object, i) => {
-        const hasNonInvalidatedLabels = object.labels.some((label) => {
-          return label.validation === null || label.validation.validated;
-        });
+        const hasNonInvalidatedLabels = object.labels.some((label) => (
+          label.validation === null || label.validation.validated
+        ));
         if (hasNonInvalidatedLabels || object.isBeingAdded) {
           acc.push(object);
         }
@@ -105,16 +99,13 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
   const handleMarkEmptyButtonClick = () => {
-    dispatch(markedEmpty({imageIndex: focusIndex.image}));
+    dispatch(markedEmpty({ imageIndex: focusIndex.image }));
   };
 
   return (
     <ImageWrapper ref={containerEl}>
       {isDrawingBbox &&
-        <DrawBboxOverlay
-          imageDimensions={dims}
-          focusIndex={focusIndex}
-        />
+        <DrawBboxOverlay imageDimensions={dims} focusIndex={focusIndex} />
       }
       {filteredObjects && filteredObjects.map((object, i) => (
         <BoundingBox
@@ -131,21 +122,13 @@ const FullSizeImage = ({ image, focusIndex }) => {
           <CircleSpinner />
         </SpinnerOverlay>
       }*/}
-      <FullImage src={image.url} onLoad={handleImgLoaded}/>
+      <FullImage src={image.url} /*onLoad={handleImgLoaded}*//>
       <EditObjectButtons>
-        <MarkEmptyButton
-          onClick={handleMarkEmptyButtonClick}
-          size='large'
-        >
-            <FontAwesomeIcon icon={['fas', 'times']} />
-            Mark empty
+        <MarkEmptyButton onClick={handleMarkEmptyButtonClick} size='large' >
+          <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
         </MarkEmptyButton>
-        <AddObjectButton
-          onClick={handleAddObjectButtonClick}
-          size='large'
-        >
-          <FontAwesomeIcon icon={['fas', 'plus']} />
-          Add object
+        <AddObjectButton onClick={handleAddObjectButtonClick} size='large' >
+          <FontAwesomeIcon icon={['fas', 'plus']} /> Add object
         </AddObjectButton>
       </EditObjectButtons>
     </ImageWrapper>

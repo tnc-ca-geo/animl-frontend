@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { ResizeObserver } from '@juggle/resize-observer'
 
-// Hook for skiping the useEffect run on a component's initial render
-// From: https://stackoverflow.com/questions/53179075/with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render 
+/*
+ * Hook for skiping the useEffect run on a component's initial render
+ * From: https://stackoverflow.com/questions/53179075/with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render 
+ */
 export function useEffectAfterMount(fn, inputs) {
   const didMountRef = useRef(false);
   useEffect(() => {
@@ -13,7 +15,9 @@ export function useEffectAfterMount(fn, inputs) {
   }, inputs);
 };
 
-// Hook for watching resize events
+/*
+ * Hook for watching resize events
+ */ 
 export const useResizeObserver = (ref) => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -51,7 +55,35 @@ export const useResizeObserver = (ref) => {
   return { width, height, top, left };
 };
 
-// truncate string and add ellipsis
+/*
+ * truncate string and add ellipsis
+ */ 
 export const truncateString = (str, n) => (
   (str.length > n) ? `${str.substring(0, n)}...` : str
 );
+
+/*
+ * convert bbox in absolute vals ([left, top, width, height])
+ * to relative values ([ymin, xmin, ymax, xmax])
+ */
+export const absToRel = (rect, image) => {
+  const { left, top, width, height } = rect;
+  const { imageWidth, imageHeight } = image;
+  const ymin = Math.round(top) / imageHeight;
+  const xmin = Math.round(left) / imageWidth;
+  const ymax = (Math.round(top) + Math.round(height)) / imageHeight;
+  const xmax = (Math.round(left) + Math.round(width)) / imageWidth;
+  return [ymin, xmin, ymax, xmax];
+};
+
+/*
+ * convert bbox in relative vals ([ymin, xmin, ymax, xmax])
+ * to absolute values ([left, top, width, height])
+ */
+export const relToAbs = (bbox, imageWidth, imageHeight) => {
+  const left = bbox[1] * imageWidth;
+  const top = bbox[0] * imageHeight;
+  const width = (bbox[3] - bbox[1]) * imageWidth;
+  const height = (bbox[2] - bbox[0]) * imageHeight;
+  return { left, top, width, height };
+};

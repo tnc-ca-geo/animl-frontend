@@ -7,6 +7,7 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { bboxUpdated, setFocus } from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
+import { absToRel, relToAbs } from '../../app/utils';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -72,33 +73,6 @@ const StyledResizableBox = styled(ResizableBox, {
   }
 });
 
-/*
- * megadetector returns bboxes as [ymin, xmin, ymax, xmax] in relative values
- * so we are using that format in state
- */
-
-// convert [left, top, width, height] in absolute values to 
-// [ymin, xmin, ymax, xmax] in relative values
-export const absToRel = (rect, image) => {
-  const { left, top, width, height } = rect;
-  const { imageWidth, imageHeight } = image;
-  const ymin = Math.round(top) / imageHeight;
-  const xmin = Math.round(left) / imageWidth;
-  const ymax = (Math.round(top) + Math.round(height)) / imageHeight;
-  const xmax = (Math.round(left) + Math.round(width)) / imageWidth;
-  return [ymin, xmin, ymax, xmax];
-};
-
-// convert [ymin, xmin, ymax, xmax] in relative values to 
-// [left, top, width, height] in absolute values
-const relToAbs = (bbox, imageWidth, imageHeight) => {
-  const left = bbox[1] * imageWidth;
-  const top = bbox[0] * imageHeight;
-  const width = (bbox[3] - bbox[1]) * imageWidth;
-  const height = (bbox[2] - bbox[0]) * imageHeight;
-  return { left, top, width, height };
-};
-
 const BoundingBox = (props) => {
   const { imageWidth, imageHeight, object, objectIndex, focusIndex } = props;
   const handleRef = useRef(null);
@@ -113,20 +87,15 @@ const BoundingBox = (props) => {
   // set label
   const [ label, setLabel ] = useState();
   useEffect(() => {
-    let newLabel;
-    if (object.isBeingAdded) {
-      // if the object is brand new, set temporary label
+    // show first non-invalidated label in array
+    let newLabel = object.labels.find((label) => (
+      label.validation === null || label.validation.validated 
+    ));
+    if (object.isBeingAdded) { // unless object is being added
       newLabel = { category: '', conf: 0, index: 0 };
     }
-    else if (objectFocused && focusIndex.label) {
-      // else if object is focused, show currently focused label
+    else if (objectFocused && focusIndex.label) { // or obj & label are focused
       newLabel = object.labels[focusIndex.label];
-    }
-    else {
-      // else show first non-invalidated label in array
-      newLabel = object.labels.find((label) => (
-        label.validation === null || label.validation.validated 
-      ));
     }
     setLabel(newLabel);
   }, [ object, focusIndex.label, objectFocused ]);
@@ -138,11 +107,23 @@ const BoundingBox = (props) => {
   const [ conf, setConf ] = useState(100);
   useEffect(() => {
     if (label) {
-      setLabelIndex(object.labels.indexOf(label))
+      let lblIndex = object.labels.indexOf(label);
+      lblIndex = lblIndex !== -1 ? lblIndex : 0;  // if it's temp label, it won't be found
+      setLabelIndex(lblIndex);
       setLabelColor(labelColors(label.category));
       setConf(Number.parseFloat(label.conf * 100).toFixed(1));
     }
-  }, [ label, object, objectFocused ]);  // weird behavior here if defaultColor is in dependency array
+  }, [ label, object ]);
+
+  // set index
+  const [ index, setIndex ] = useState();
+  useEffect(() => {
+    setIndex({
+      image: focusIndex.image,
+      object: objectIndex,
+      label: labelIndex
+    });
+  }, [ focusIndex, objectIndex, labelIndex]);
   
   // track bbox
   const [ bbox, setBbox ] = useState(object.bbox);
@@ -152,14 +133,8 @@ const BoundingBox = (props) => {
   }, [ object ]);
 
   const onDrag = (event, { deltaX, deltaY }) => {
-    const rect = {
-      left: left + deltaX,
-      top: top + deltaY,
-      width,
-      height,
-    };
-    const image = { imageWidth, imageHeight };
-    const newBbox = absToRel(rect, image);
+    const rect = { left: left + deltaX, top: top + deltaY, width, height };
+    const newBbox = absToRel(rect, { imageWidth, imageHeight });
     setBbox(newBbox);
   };
 
@@ -170,10 +145,9 @@ const BoundingBox = (props) => {
   
   const onDragEnd = () => {
     if (!_.isEqual(lastBbox, bbox)){ 
-      console.log('BoundingBox.onDragEnd() - bbox moved, request update')
       dispatch(bboxUpdated({
-        imageIndex: focusIndex.image,
-        objectIndex,
+        imageIndex: index.image,
+        objectIndex: index.object,
         bbox,
       }));
     }
@@ -182,8 +156,8 @@ const BoundingBox = (props) => {
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
   const onResize = (event, { size, handle }) => {
-      // drags from left or top handles need require repositioning the box.
-      // bottom & right can be left alone
+    // drags from left or top handles need require repositioning the box.
+    // bottom & right can be left alone
     if (['n', 'w', 'ne', 'nw', 'sw'].includes(handle)) {
       if (handle.indexOf('n') > -1) {
         const deltaHeight = size.height - height;
@@ -194,42 +168,31 @@ const BoundingBox = (props) => {
         left -= deltaWidth;
       }
     }
+
     // Prevent box from going out of bounds
-    if (handle.indexOf('e') > -1) {
-      const right = imageWidth - size.width - left;  
-      if (right <= 0) {
-        setConstraintX(width);
-      }
+    const right = imageWidth - size.width - left;  
+    const bottom = imageHeight - size.height - top;  
+    if ((handle.indexOf('e') > -1) && (right <= 0)) {
+      setConstraintX(width);
     }
-    if (handle.indexOf('w') > -1) {
-      if (left <= 0) {
-        setConstraintX(width);
-      }
+    if ((handle.indexOf('w') > -1) && (left <= 0)) {
+      setConstraintX(width);
     }
-    if (handle.indexOf('n') > -1) {
-      if (top <= 0) {
-        setConstraintY(height);
-      }
+    if ((handle.indexOf('n') > -1) && (top <= 0)) {
+      setConstraintY(height);
     }
-    if (handle.indexOf('s') > -1) {
-      const bottom = imageHeight - size.height - top;  
-      if (bottom <= 0) {
-        setConstraintY(height);
-      }
+    if ((handle.indexOf('s') > -1) && (bottom <= 0)) {
+      setConstraintY(height);
     }
-    
-    width = size.width;
-    height = size.height;
-    const rect = {left, top, width, height};
-    const image = { imageWidth, imageHeight };
-    const newBbox = absToRel(rect, image);
+
+    const rect = { left, top, width: size.width, height: size.height };
+    const newBbox = absToRel(rect, { imageWidth, imageHeight });
     setBbox(newBbox);
   };
 
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
-    console.log('BoundingBox.onResizeStop()')
     dispatch(bboxUpdated({
       imageIndex: focusIndex.image,
       objectIndex,
@@ -237,15 +200,7 @@ const BoundingBox = (props) => {
     }));
   };
 
-  const handleBBoxClick = () => {
-    console.log('BoundingBox.handleBBoxClick()');
-    const newIndex = {
-      image: focusIndex.image,
-      object: objectIndex,
-      label: labelIndex,
-    };
-    dispatch(setFocus({ index: newIndex, type: 'manual' }));
-  }
+  const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
   const [ showLabelButtons, setShowLabelButtons ] = useState(false);
   const handleBBoxHover = () => setShowLabelButtons(true);
@@ -283,11 +238,7 @@ const BoundingBox = (props) => {
       >
         {label &&
           <BoundingBoxLabel
-            verticalPos={(top > 30) ? 'top' : 'bottom'}
-            horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left' }
-            focusIndex={focusIndex}
-            objectIndex={objectIndex}
-            labelIndex={labelIndex}
+            index={index}
             object={object}
             label={label}
             labelColor={labelColor}
@@ -295,6 +246,10 @@ const BoundingBox = (props) => {
             selected={objectFocused}
             showLabelButtons={showLabelButtons}
             setShowLabelButtons={setShowLabelButtons}
+            verticalPos={(top > 30) ? 'top' : 'bottom'}
+            horizontalPos={
+              ((imageWidth - left - width) < 75) ? 'right' : 'left'
+            }
             // className='drag-handle'
           >
           {label.category} {conf}%

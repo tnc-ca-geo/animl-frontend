@@ -45,38 +45,36 @@ export const undoMiddleware = createUndoMiddleware({
       }
     },
 
-    // // objectAdded
-    // [objectAdded.toString()]: {
-    //   action: (action, { img }) => {
-    //     console.log('reverting objectAdded with action: ', action);
-    //     const objectIndex = img.objects.findIndex((obj) => (
-    //       obj._id.toString() === action.payload.newObject._id.toString()
-    //     ));
-    //     console.log('object index with action: ', objectIndex);
-    //     return objectRemoved({
-    //       imageIndex: action.payload.imageIndex,
-    //       objectIndex
-    //     });
-    //   },
-    //   createArgs: (state, action) => { 
-    //     const workingImages = selectWorkingImages(state);
-    //     return { img: workingImages[action.payload.imageIndex] };
-    //   }
-    // },
+    // objectAdded
+    [objectAdded.toString()]: {
+      action: (action, { img }) => {
+        console.log('reverting objectAdded with action: ', action);
+        const { imageIndex } = action.payload;
+        const objectIndex = img.objects.findIndex((obj) => (
+          obj._id.toString() === action.payload.newObject._id.toString()
+        ));
+        console.log('object index with action: ', objectIndex);
+        return objectRemoved({ imageIndex, objectIndex });
+      },
+      createArgs: (state, action) => { 
+        const workingImages = selectWorkingImages(state);
+        return { img: workingImages[action.payload.imageIndex] };
+      }
+    },
 
-    // // objectRemoved
-    // [objectRemoved.toString()]: {
-    //   action: (action, { bbox }) => {
-    //     console.log('reverting objectRemoved with action: ', action);
-    //     return objectAdded({ bbox, imageIndex: action.payload.imageIndex });
-    //   },
-    //   createArgs: (state, action) => { 
-    //     const workingImages = selectWorkingImages(state);
-    //     const img = workingImages[action.payload.imageIndex];
-    //     const object = img.objects[action.payload.objectIndex];
-    //     return { bbox: object.bbox };
-    //   }
-    // },
+    // objectRemoved
+    [objectRemoved.toString()]: {
+      action: (action, { bbox }) => {
+        console.log('reverting objectRemoved with action: ', action);
+        return objectAdded({ bbox, imageIndex: action.payload.imageIndex });
+      },
+      createArgs: (state, action) => { 
+        const workingImages = selectWorkingImages(state);
+        const img = workingImages[action.payload.imageIndex];
+        const object = img.objects[action.payload.objectIndex];
+        return { bbox: object.bbox };
+      }
+    },
 
     // labelAdded
     [labelAdded.toString()]: {
