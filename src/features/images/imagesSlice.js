@@ -164,8 +164,7 @@ export const editLabel = (operation, entity, payload) => {
         throw new Error(err);
       }
       dispatch(editLabelStart());
-      console.group('editLabel()');
-      console.log(`${operation} ${entity}`);
+      console.group(`editLabel() - ${operation} ${entity}`);
       console.log(`payload: `, payload);
       console.groupEnd();
       // TODO: do we really need to pass in the operation and entity separately?

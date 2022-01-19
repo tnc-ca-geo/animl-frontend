@@ -18,6 +18,7 @@ import {
   selectIsAddingLabel,
   selectReviewMode 
 } from './loupeSlice';
+import { validateSDL } from 'graphql/validation/validate';
 
 const IndexDisplay = styled('div', {
   fontFamily: '$mono',
@@ -103,10 +104,7 @@ const LoupeFooter = ({ image }) => {
   const username = useSelector(selectUserUsername);
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (!image || isAddingLabel) {
-        return;
-      }
-
+      if (!image || isAddingLabel) return;
       let charCode = String.fromCharCode(e.which).toLowerCase();
 
       // key listeners for increment/decrement
@@ -122,30 +120,26 @@ const LoupeFooter = ({ image }) => {
           : dispatch(incrementImage(delta));
       }
 
-      // handle return, left/right arrows (invalidate/validate)
-      const object = image.objects[focusIndex.object];
-      if (reviewMode && object) {
-        if (e.code === 'ArrowRight' || e.code === 'Enter') {
-          if (!object.locked) {
-            dispatch(labelValidated({
-              userId: username,
-              index: focusIndex,
-              validated: true,
-            }));
-          }
-          dispatch(incrementFocusIndex('increment'));
-        }
-        if (e.code === 'ArrowLeft') {
-          if (!object.locked) {
-            dispatch(labelValidated({
-              userId: username,
-              index: focusIndex,
-              validated: false,
-            }));  
-          }
-          dispatch(incrementFocusIndex('increment'));
-        }
-      }
+      // TODO: review this. it looks like it could be buggy (in reviewMode)
+
+      // // handle return, left/right arrows (invalidate/validate)
+      // const object = image.objects[focusIndex.object];
+      // if (reviewMode && object && !object.locked && focusIndex.label) {
+      //   const label = object[focusIndex.label];
+      //   let validated;
+      //   if (e.code === 'ArrowRight' || e.code === 'Enter') validated = true;
+      //   if (e.code === 'ArrowLeft') validated = false;
+      //   if (typeof variable == 'boolean') {
+      //     dispatch(labelValidated({
+      //       userId: username,
+      //       imageId: image._id,
+      //       objectId: object._id,
+      //       labelId: label._id,
+      //       validated,
+      //     }));
+      //     dispatch(incrementFocusIndex('increment'));
+      //   }
+      // }
 
       // handle ctrl-z/shift-ctrl-z (undo/redo)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {

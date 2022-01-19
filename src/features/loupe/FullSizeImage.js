@@ -8,7 +8,8 @@ import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
-import { selectWorkingImages, markedEmpty } from '../review/reviewSlice';
+import { selectWorkingImages, labelValidated, markedEmpty } from '../review/reviewSlice';
+import { selectUserUsername } from '../user/userSlice';
 import Button from '../../components/Button';
 
 const MarkEmptyButton = styled(Button, {
@@ -54,6 +55,7 @@ const ImageWrapper = styled('div', {
 });
 
 const FullSizeImage = ({ image, focusIndex }) => {
+  const userId = useSelector(selectUserUsername);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const containerEl = useRef(null);
   const dims = useResizeObserver(containerEl);
@@ -73,48 +75,89 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const workingImages = useSelector(selectWorkingImages);
   const [ currImgObjects, setCurrImgObjects ] = useState();
   useEffect(() => {
-    if (focusIndex.image !== null) {
-      const objects = workingImages[focusIndex.image].objects;
-      setCurrImgObjects(objects);
-    }
+    if (focusIndex.image === null) return;
+    const objects = workingImages[focusIndex.image].objects;
+    setCurrImgObjects(objects);    
   }, [ workingImages, focusIndex.image ]);
 
-  // filter image's objects
-  const [ filteredObjects, setFilteredObjects ] = useState();
+  // prep objects to render
+  const [ objectsToRender, setObjectsToRender ] = useState();
+  const [ tempObject, setTempObject ] = useState(null);
   useEffect(() => {
-    if (currImgObjects) {
-      const objectsToRender = currImgObjects.reduce((acc, object, i) => {
-        const hasNonInvalidatedLabels = object.labels.some((label) => (
-          label.validation === null || label.validation.validated
-        ));
-        if (hasNonInvalidatedLabels || object.isBeingAdded) {
-          acc.push(object);
-        }
-        return acc;
-      }, []);
-      setFilteredObjects(objectsToRender);
-    }
+    let objects = [];
+    if (!currImgObjects) return;
+    const filteredObjects = currImgObjects.filter((obj) => (
+      obj.labels.some((lbl) => (
+        lbl.validation === null || lbl.validation.validated
+      ))
+    ));
+    objects = objects.concat(filteredObjects);
+  
+    if (tempObject) objects.push(tempObject);
+    // I think we also need to set focus to this object, but it doesn't yet exist...
+    // will that cause issues?
+    // and we need to dispatch addLabelStart(); so loupeSlice.isAddingLabel === true
+    setObjectsToRender(objects);
+  }, [ currImgObjects, tempObject ]);
+
+  const [ hasEmpties, setHasEmpties ] = useState(false);
+  useEffect(() => {
+    if (!currImgObjects) return;
+    const emptyLbls = currImgObjects.reduce((acc, curr) => {
+      return acc.concat(curr.labels.filter((lbl) => (
+        lbl.category === 'empty' && !lbl.validated
+      )));
+    }, []);
+    setHasEmpties(emptyLbls.length > 0);
   }, [ currImgObjects ]);
+
+  const handleMarkEmptyButtonClick = () => {
+    if (hasEmpties) {
+      console.log('image already has empty labels, so validating them');
+      currImgObjects.forEach((obj) => {
+        obj.labels.filter((lbl) => (
+          lbl.category === 'empty' && !lbl.validated
+        )).forEach((lbl) => {
+          dispatch(labelValidated({
+            imageId: image._id,
+            objectId: obj._id,
+            labelId: lbl._id,
+            userId,
+            validated: true
+          }));
+        });
+      });
+    } else {
+      dispatch(markedEmpty({ imageId: image._id, userId }));
+    }
+
+  };
 
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
-  const handleMarkEmptyButtonClick = () => {
-    dispatch(markedEmpty({ imageIndex: focusIndex.image }));
-  };
 
   return (
     <ImageWrapper ref={containerEl}>
       {isDrawingBbox &&
-        <DrawBboxOverlay imageDimensions={dims} focusIndex={focusIndex} />
+        <DrawBboxOverlay
+          imageId={image._id}
+          imageDimensions={dims}
+          setTempObject={setTempObject}
+        />
       }
-      {filteredObjects && filteredObjects.map((object, i) => (
+      {objectsToRender && objectsToRender.map((object, i) => (
         <BoundingBox
           key={object._id}
+          imageId={image._id}
           imageWidth={dims.width}
           imageHeight={dims.height}
           object={object}
-          objectIndex={currImgObjects.indexOf(object)}
+          objectIndex={!object.isBeingAdded 
+            ? currImgObjects.indexOf(object) 
+            : null
+          }
           focusIndex={focusIndex}
+          setTempObject={setTempObject}
         />
       ))}
       {/*{!imgLoaded &&

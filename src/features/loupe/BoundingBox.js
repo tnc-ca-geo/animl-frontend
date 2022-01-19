@@ -73,18 +73,26 @@ const StyledResizableBox = styled(ResizableBox, {
   }
 });
 
-const BoundingBox = (props) => {
-  const { imageWidth, imageHeight, object, objectIndex, focusIndex } = props;
+const BoundingBox = ({ 
+  imageId,
+  imageWidth,
+  imageHeight,
+  object,
+  objectIndex,
+  focusIndex,
+  setTempObject
+}) => {
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
   // track whether the object is focused
   const [ objectFocused, setObjectFocused ] = useState();
   useEffect(() => {
-    setObjectFocused((focusIndex.object === objectIndex));
-  }, [ focusIndex.object, objectIndex ]);
+    const focused = object.isBeingAdded || focusIndex.object === objectIndex;
+    setObjectFocused(focused);
+  }, [ object.isBeingAdded, focusIndex.object, objectIndex ]);
 
-  // set label - maybe move this to label component too?
+  // set label - maybe move this to label component?
   const [ label, setLabel ] = useState();
   useEffect(() => {
     // show first non-invalidated label in array
@@ -92,7 +100,7 @@ const BoundingBox = (props) => {
       label.validation === null || label.validation.validated 
     ));
     if (object.isBeingAdded) { // unless object is being added
-      newLabel = { category: '', conf: 0, index: 0 };
+      newLabel = { category: '', conf: 0, index: 0 }; // TODO: might need to actually create proper temp label w/ id here
     }
     else if (objectFocused && focusIndex.label) { // or obj & label are focused
       newLabel = object.labels[focusIndex.label];
@@ -108,7 +116,9 @@ const BoundingBox = (props) => {
   useEffect(() => {
     if (label) {
       // if obj is being added, it won't have a label yet, set labelIndex to 0
-      setLabelIndex(object.labels.length ? object.labels.indexOf(label) : 0);
+      let lblIdx = object.labels.indexOf(label);
+      lblIdx = (lblIdx !== -1) ? lblIdx : 0;
+      setLabelIndex(lblIdx);
       setLabelColor(labelColors(label.category));
       setConf(Number.parseFloat(label.conf * 100).toFixed(1));
     }
@@ -119,8 +129,8 @@ const BoundingBox = (props) => {
   useEffect(() => {
     setIndex({
       image: focusIndex.image,
-      object: objectIndex,
-      label: labelIndex
+      object: objectIndex,  // will be null if object.isBeingAdded
+      label: labelIndex // will be 0 if object.isBeingAdded
     });
   }, [ focusIndex, objectIndex, labelIndex]);
   
@@ -144,11 +154,7 @@ const BoundingBox = (props) => {
   
   const onDragEnd = () => {
     if (!_.isEqual(lastBbox, bbox)){ 
-      dispatch(bboxUpdated({
-        imageIndex: index.image,
-        objectIndex: index.object,
-        bbox,
-      }));
+      dispatch(bboxUpdated({ imageId, objectId: object._id, bbox }));
     }
   };
 
@@ -184,24 +190,20 @@ const BoundingBox = (props) => {
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
-    dispatch(bboxUpdated({
-      imageIndex: focusIndex.image,
-      objectIndex,
-      bbox,
-    }));
+    dispatch(bboxUpdated({ imageId, objectId: object._id, bbox }));
   };
-
-  const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
   const [ showLabelButtons, setShowLabelButtons ] = useState(false);
   const handleBBoxHover = () => setShowLabelButtons(true);
   const handleBBoxMouseLeave = () => setShowLabelButtons(false);
+  const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
   return (
     <Draggable
       bounds='parent'
       handle='.drag-handle'
-      position={{ x: left + 1, y: top - 1 }}
+      // position={{ x: left + 1, y: top - 1 }}
+      position={{ x: left, y: top }}
       onStart={onDragStart}
       onDrag={onDrag}
       onStop={onDragEnd}
@@ -229,6 +231,7 @@ const BoundingBox = (props) => {
       >
         {label &&
           <BoundingBoxLabel
+            imageId={imageId}
             index={index}
             object={object}
             label={label}
@@ -237,6 +240,7 @@ const BoundingBox = (props) => {
             selected={objectFocused}
             showLabelButtons={showLabelButtons}
             setShowLabelButtons={setShowLabelButtons}
+            setTempObject={setTempObject}
             verticalPos={(top > 30) ? 'top' : 'bottom'}
             horizontalPos={
               ((imageWidth - left - width) < 75) ? 'right' : 'left'

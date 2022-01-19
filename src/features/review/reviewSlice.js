@@ -1,5 +1,6 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
 // import undoable, { excludeAction } from 'redux-undo';
+import { findImage, findObject, findLabel } from '../../app/utils';
 import {
   getImagesSuccess,
   clearImages,
@@ -31,80 +32,91 @@ export const reviewSlice = createSlice({
     },
 
     bboxUpdated: (state, { payload }) => {
-      console.log('reviewSlice.bboxUpdated()');
-      const { imageIndex, objectIndex } = payload;
-      const object = state.workingImages[imageIndex].objects[objectIndex];
+      console.log('reviewSlice.bboxUpdated() - ', payload);
+      const { imageId, objectId } = payload;
+      const object = findObject(state.workingImages, imageId, objectId);
       object.bbox = payload.bbox;
     },
 
     objectAdded: (state, { payload }) => {
       console.log('reviewSlice.objectAdded(): ', payload);
-      const objects = state.workingImages[payload.imageIndex].objects;
+      const image = findImage(state.workingImages, payload.imageId);
       // TODO: double check this is getting properly removed after objectRemoved 
       // and during undo/redo process 
       payload.newObject.isBeingAdded = true; 
-      objects.unshift(payload.newObject);
+      image.objects.unshift(payload.newObject);
     },
 
     objectRemoved: (state, { payload }) => {
-      const objects = state.workingImages[payload.imageIndex].objects;
-      objects.splice(payload.objectIndex, 1);
+      console.log('reviewSlice.objectRemoved(): ', payload);
+      const image = findImage(state.workingImages, payload.imageId);
+      const objectIndex = image.objects.findIndex((obj) => (
+        obj._id.toString() === payload.objectId.toString()
+      ));
+      image.objects.splice(objectIndex, 1);
     },
 
     labelAdded: (state, { payload }) => {
       console.log('reviewSlice.labelAdded(): ', payload);
-      const i = payload.index;
-      const object = state.workingImages[i.image].objects[i.object];
-      object.labels.unshift(payload.newLabel);
-      object.locked = true;
-      delete object.isBeingAdded;
+      const { imageId, objectId, objIsBeingAdded, newObject, newLabel } = payload;
+      const image = findImage(state.workingImages, imageId);
+      if (objIsBeingAdded && newObject) {
+        image.objects.unshift(newObject);
+      }
+      else {
+        const object = image.objects.find((obj) => (
+          obj._id.toString() === objectId.toString()
+        ));
+        object.labels.unshift(newLabel);
+      }
     },
 
     labelRemoved: (state, { payload }) => { // only used for undoing labelAdded
       console.log('reviewSlice.labelRemoved(): ', payload);
-      const i = payload.index;
-      const object = state.workingImages[i.image].objects[i.object];
-      object.labels.splice(payload.labelIndex, 1);
+      const { imageId, objectId, newLabel } = payload;
+      const image = findImage(state.workingImages, imageId);
+      const object = image.objects.find((obj) => (
+        obj._id.toString() === objectId.toString()
+      ));
+      const labelIndex = object.labels.findIndex((lbl) => (
+        lbl._id.toString() === newLabel._id.toString()
+      ))
+      object.labels.splice(labelIndex, 1);
+
+      // remove object if there aren't any labels left 
+      if (!object.labels.length) {
+        const objectIndex = image.objects.findIndex((obj) => (
+          obj._id.toString() === objectId.toString()
+        ));
+        image.objects.splice(objectIndex, 1);
+      }
     },
 
     labelValidated: (state, { payload }) => {
       console.log('reviewSlice.labelValidated() - ', payload);
-      const i = payload.index;
-      const userId = payload.userId;
-      const object = state.workingImages[i.image].objects[i.object];
-      const label = object.labels[i.label];
-      if (payload.validated === true) {
-        label.validation = { validated: true, userId };
-        // object.locked = true;  // set object.locked in objectLocked reducer (dispatch in middleware)
-      }
-      else {
-        label.validation = { validated: false, userId };
-        // object.locked = object.labels.every((lbl) => (
-        //   lbl.validation && lbl.validation.validated === false
-        // ));
-      }
+      const { userId, imageId, objectId, labelId, validated } = payload;
+      const label = findLabel(state.workingImages, imageId, objectId, labelId);
+      console.log('reviewSlice.labelValidated() - found label', label);
+      label.validation = { validated, userId };
     },
 
     labelValidationReverted: (state, { payload }) => { // for undoing a validation
       console.log('reviewSlice.labelValidationReverted() - ', payload);
-      const i = payload.index;
-      const object = state.workingImages[i.image].objects[i.object];
-      const label = object.labels[i.label];
+      const { imageId, objectId, labelId } = payload;
+      const label = findLabel(state.workingImages, imageId, objectId, labelId);
       label.validation = payload.oldValidation;
-      // object.locked = payload.oldLocked;  // set object.locked in objectLocked reducer (dispatch in middleware)
     },
 
     objectLocked: (state, { payload }) => {
       console.log('reviewSlice.objectLocked()');
-      const i = payload.index;
-      const object = state.workingImages[i.image].objects[i.object];
-      // update object
+      const { imageId, objectId } = payload;
+      const object = findObject(state.workingImages, imageId, objectId);
       object.locked = payload.locked;
     },
 
     markedEmpty: (state, { payload }) => {
       if (payload.newObject) {
-        const image = state.workingImages[payload.imageIndex];
+        const image = findImage(state.workingImages, payload.imageId);
         image.objects.push(payload.newObject);
       }
     },
@@ -147,6 +159,7 @@ export const {
 export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
 export const objectManuallyUnlocked = createAction('review/objectManuallyUnlocked');
+export const markedEmptyReverted = createAction('review/markedEmptyReverted');
  
 // The functions below are selectors and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -158,8 +171,4 @@ export const selectFocusIndex = state => state.review.focusIndex;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 
 export default reviewSlice.reducer;
-
-// export default undoable(reviewSlice.reducer, { 
-//   filter: excludeAction(objectAdded.toString()) 
-// });
 

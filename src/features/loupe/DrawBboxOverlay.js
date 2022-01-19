@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { ObjectID } from 'bson';
 import { styled } from '../../theme/stitches.config';
 import { absToRel } from '../../app/utils';
-import { objectAdded } from '../review/reviewSlice';
-import { drawBboxEnd } from './loupeSlice';
+// import { objectAdded } from '../review/reviewSlice';
+import { drawBboxEnd, addLabelStart } from './loupeSlice';
 
 
 const CrossHairHorizontal = styled('div', {
@@ -37,7 +38,7 @@ const Overlay = styled('div', {
   zIndex: '$4',
 });
 
-const DrawBboxOverlay = ({ imageDimensions, focusIndex }) => {
+const DrawBboxOverlay = ({ imageId, imageDimensions, setTempObject }) => {
   const { width, height, top, left } = imageDimensions;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
@@ -80,12 +81,19 @@ const DrawBboxOverlay = ({ imageDimensions, focusIndex }) => {
     // TODO: double check that width & height are same as actual image width/height
     const image = { imageWidth: width, imageHeight: height };
     const bbox = absToRel(tempBBox, image);
-    const imageIndex = focusIndex.image;
-    console.log('DrawBboxOverlay.handleMouseUp() - mouse up event')
-    dispatch(objectAdded({ bbox, imageIndex }));
+    // dispatch(objectAdded({ bbox, imageId }));
+    const newObject = {
+      _id: new ObjectID().toString(),
+      isBeingAdded: true, // we probably need something like this (or temp)
+      bbox: bbox,
+      locked: false,
+      labels: [],
+    };
+    setTempObject(newObject);
     setDrawingBBox(false);
     setTempBBox(defaultBBox);
     dispatch(drawBboxEnd());
+    dispatch(addLabelStart())
   };
 
   // listen for esc keydown and end drawBbox

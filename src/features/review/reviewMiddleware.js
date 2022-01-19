@@ -14,6 +14,7 @@ import {
   labelRemoved,
   labelValidated,
   markedEmpty,
+  markedEmptyReverted,
   incrementFocusIndex,
   incrementImage,
   selectFocusIndex,
@@ -27,7 +28,8 @@ import {
   selectIterationOptions,
   selectIsAddingLabel,
 } from '../loupe/loupeSlice';
-import { selectUserUsername } from '../user/userSlice';
+// import { selectUserUsername } from '../user/userSlice';
+import { findObject } from '../../app/utils';
 
 // we could also clone the label and append the original index to it as a prop
 // and return that if it helps make this function more generalizable 
@@ -137,47 +139,56 @@ export const reviewMiddleware = store => next => action => {
 
   else if (labelAdded.match(action)) {
     console.log('reviewMiddleware.labelAdded(): ', action.payload);
-    const i = action.payload.index;
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[i.image]
-    const object = image.objects[i.object];
-    const newLabel = {
+    const {  objIsBeingAdded, imageId, objectId, bbox, userId, category, newObject, newLabel } = action.payload;
+
+    const label = {
       _id: new ObjectID().toString(),
-      category: action.payload.category,
-      bbox: object.bbox,
-      validation: {
-        validated: true,
-        userId: action.payload.userId
-      },  
+      category,
+      bbox,
+      validation: { validated: true, userId },  
       type: 'manual',
       conf: 1,
-      userId: action.payload.userId
+      userId: userId
     };
-
     // if we are redoing a previous labelAdded action, 
     // there will already be a newLabel in the payload 
-    action.payload.newLabel = action.payload.newLabel 
-      ? action.payload.newLabel
-      : newLabel;
-    
+    // action.payload.newLabel = newLabel || label;     // <- i think that would work
+    action.payload.newLabel = newLabel ? newLabel : label;
+
+    if (objIsBeingAdded) {
+      const object = {
+        _id: objectId,
+        bbox: action.payload.bbox,
+        locked: true,
+        labels: [action.payload.newLabel],
+      };
+      action.payload.newObject = newObject ? newObject : object;
+    }
+
     next(action);
 
-    store.dispatch(editLabel('create', 'label', {
-      imageId: image._id,
-      objectId: object._id,
-      labels: [action.payload.newLabel]
-    }));
+    if (objIsBeingAdded) {
+      store.dispatch(editLabel('create', 'object', {
+        object: action.payload.newObject,
+        imageId,
+      }));
+    }
+    else {
+      store.dispatch(editLabel('create', 'label', {
+        labels: [action.payload.newLabel],
+        imageId,
+        objectId,
+      }));
+      store.dispatch(objectLocked({ imageId, objectId, locked: true }));
+    }
 
-    store.dispatch(objectLocked({ index: i, locked: true }));
     store.dispatch(addLabelEnd());
     store.dispatch(setFocus({ index: { label: 0 }, type: 'auto' }));
     const reviewMode = selectReviewMode(store.getState());
-    if (reviewMode) {
-      store.dispatch(incrementFocusIndex('increment'));
-    }
+    if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
 
     const availLabels = selectAvailLabels(store.getState());
-    if (!availLabels.ids.find((id) => id === newLabel.category)) {
+    if (!availLabels.ids.find((id) => id === action.payload.newLabel.category)) {
       store.dispatch(fetchLabels());
       // TODO: also dispatch fetchLabels after label invalidations?
     }
@@ -189,22 +200,25 @@ export const reviewMiddleware = store => next => action => {
 
   else if (labelRemoved.match(action)) {
     console.log('reviewMiddleware.labelRemoved(): ', action.payload);
-    const i = action.payload.index;
+    const { imageId, objectId, newLabel } = action.payload;
+
+    // remove object if there's only one label left
     const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[i.image]
-    const object = image.objects[i.object];
-    const label = object.labels[i.label];
+    const object = findObject(workingImages, imageId, objectId);
+    if (object.labels.length <= 1) {
+      store.dispatch(editLabel('delete', 'object', { imageId, objectId }));
+    }
+    else {
+      store.dispatch(editLabel('delete', 'label', {
+        imageId,
+        objectId,
+        labelId: newLabel._id,
+      }));
+      store.dispatch(objectLocked({ imageId, objectId, locked: false }));
+    }
 
     next(action);
-
-    store.dispatch(editLabel('delete', 'label', {
-      imageId: image._id,
-      objectId: object._id,
-      labelId: label._id,
-    }));
-
-    // TODO: unlock/lock object?
-    store.dispatch(objectLocked({ index: i, locked: false }));
+  
     // TODO: increment focus? 
     // store.dispatch(incrementFocusIndex('increment'));
     // TODO: fetchLabels again? 
@@ -218,13 +232,10 @@ export const reviewMiddleware = store => next => action => {
   else if (bboxUpdated.match(action)) {
     console.log('reviewMiddleware.bboxUpdated()');
     next(action);
-    const { imageIndex, objectIndex, bbox } = action.payload;
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[imageIndex]
-    const object = image.objects[objectIndex];
+    const { imageId, objectId, bbox } = action.payload;
     store.dispatch(editLabel('update', 'object', {
-      imageId: image._id,
-      objectId: object._id,
+      imageId,
+      objectId,
       diffs: { bbox },
     }));
   }
@@ -235,14 +246,8 @@ export const reviewMiddleware = store => next => action => {
 
   else if (objectRemoved.match(action)) {
     console.log('reviewMiddleware.objectRemoved(): ', action.payload);
-    const { imageIndex, objectIndex } = action.payload;
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[imageIndex];
-    const object = image.objects[objectIndex];
-    store.dispatch(editLabel('delete', 'object', {
-      imageId: image._id,
-      objectId: object._id,
-    }));
+    const { imageId, objectId } = action.payload;
+    store.dispatch(editLabel('delete', 'object', { imageId, objectId }));
     next(action);
   }
 
@@ -253,27 +258,31 @@ export const reviewMiddleware = store => next => action => {
   else if (labelValidated.match(action)) {
     console.log('reviewMiddleware.labelValidated() - ', action);
     next(action);
-    const { index, validated, userId } = action.payload;
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[index.image]
-    const object = image.objects[index.object];
-    const label = object.labels[index.label];
+    const {
+      userId,
+      imageId,
+      objectId,
+      labelId,
+      validated,
+    } = action.payload;
 
     // update label
     const validation = { validated, userId };
     store.dispatch(editLabel('update', 'label', {
-      imageId: image._id,
-      objectId: object._id,
-      labelId: label._id,
+      imageId,
+      objectId,
+      labelId,
       diffs: { validation },
     }));
 
     // update object
+    const workingImages = selectWorkingImages(store.getState());
+    const object = findObject(workingImages, imageId, objectId);
     const allLabelsInvalidated = object.labels.every((lbl) => (
       lbl.validation && lbl.validation.validated === false
     ));
     const locked = ((!validated && allLabelsInvalidated) || validated);
-    store.dispatch(objectLocked({ index, locked}));
+    store.dispatch(objectLocked({ imageId, objectId, locked}));
     // store.dispatch(editLabel('update', 'object', {
     //   imageId: image._id,
     //   objectId: object._id,
@@ -285,43 +294,35 @@ export const reviewMiddleware = store => next => action => {
    * labelValidationReverted
    */
 
-    else if (labelValidationReverted.match(action)) {
-      console.log('reviewMiddleware.labelValidationReverted() - ', action);
-      next(action);
-      const { index, oldValidation, oldLocked } = action.payload;
-      const workingImages = selectWorkingImages(store.getState());
-      const image = workingImages[index.image];
-      const object = image.objects[index.object];
-      const label = object.labels[index.label];
-  
-      // update label
-      store.dispatch(editLabel('update', 'label', {
-        imageId: image._id,
-        objectId: object._id,
-        labelId: label._id,
-        diffs: { validation: oldValidation },
-      }));
-  
-      // update object
-      store.dispatch(objectLocked({ index, locked: oldLocked }));
-    }
+  else if (labelValidationReverted.match(action)) {
+    console.log('reviewMiddleware.labelValidationReverted() - ', action);
+    next(action);
+    const { imageId, objectId, labelId, oldValidation, oldLocked } = action.payload;
+
+    // update label
+    store.dispatch(editLabel('update', 'label', {
+      imageId,
+      objectId,
+      labelId,
+      diffs: { validation: oldValidation },
+    }));
+
+    // update object
+    store.dispatch(objectLocked({ imageId, objectId, locked: oldLocked }));
+  }
 
   /* 
    * objectLocked
    */
 
   else if (objectLocked.match(action)) {
-    console.log('reviewMiddleware.objectLocked()');
-
+    console.log('reviewMiddleware.objectLocked() - ', action.payload);
     next(action);
-    const i = action.payload.index;
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[i.image]
-    const object = image.objects[i.object];
+    const { imageId, objectId, locked } = action.payload;
     store.dispatch(editLabel('update', 'object', {
-      imageId: image._id,
-      objectId: object._id,
-      diffs: { locked: action.payload.locked },
+      imageId,
+      objectId,
+      diffs: { locked },
     }));
   }
 
@@ -332,10 +333,8 @@ export const reviewMiddleware = store => next => action => {
   else if (objectManuallyUnlocked.match(action)) {
     console.log('reviewMiddleware.objectManuallyUnlocked()');
     next(action);
-    store.dispatch(objectLocked({
-      index: action.payload.index,
-      locked: false
-    }));
+    const { imageId, objectId } = action.payload;
+    store.dispatch(objectLocked({ imageId, objectId, locked: false }));
   }
   
   /* 
@@ -382,25 +381,30 @@ export const reviewMiddleware = store => next => action => {
     }
   }
 
-
   /* 
    * objectAdded
    */
 
+  // NOTE: now that we are creating new objects from within labelAdded middlware, 
+  // this is no longer used. However, markedEmpty is now really just adding 
+  // and empty object. Consider consolidating? 
   else if (objectAdded.match(action)) {
     console.log('reviewMiddleware.objectAdded(): ', action.payload);
-    const { imageIndex, bbox } = action.payload;
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[imageIndex];
-    const newObject = {
-      _id: new ObjectID().toString(),
-      bbox: bbox,
-      locked: false,
-      labels: [],
-    };
+    const { imageId, bbox } = action.payload;
+    // TODO: double check this is working as intended
+    // if we are redoing a previous objectAdded action, 
+    // there will already be a newObject in the payload 
+    const newObject =  action.payload.newObject 
+      ?  action.payload.newObject
+      : {
+          _id: new ObjectID().toString(),
+          bbox: bbox,
+          locked: false,
+          labels: [],
+        };
     const createObjectPayload = {
-      imageId: image._id,
       object: Object.assign({}, newObject),
+      imageId,
     };
     action.payload.newObject = newObject;
     next(action);
@@ -415,60 +419,39 @@ export const reviewMiddleware = store => next => action => {
 
   else if (markedEmpty.match(action)) {
     console.log('reviewMiddleware.markedEmpty(): ', action.payload);
-    const { imageIndex } = action.payload;
-    const userId = selectUserUsername(store.getState());
-    const workingImages = selectWorkingImages(store.getState());
-    const image = workingImages[imageIndex];
+    const { imageId, userId } = action.payload;
 
-    // Ceck if image has any objects with an unvalidated empty label. 
-    let existingEmptyIndexes = [];
-    image.objects.forEach((obj, i) => {
-      const emptyLblIndex = obj.labels.findIndex((lbl) => (
-        lbl.category === 'empty' && !lbl.validated
-      ));
-      if (emptyLblIndex >= 0) {
-        existingEmptyIndexes.push({
-          image: imageIndex,
-          object: i,
-          label: emptyLblIndex
-        });
-      }
-    })
-
-    // If so, validate it
-    if (existingEmptyIndexes.length > 0) {
-      existingEmptyIndexes.forEach((emptyIndex) => {
-        const payload = { userId, index: emptyIndex, validated: true };
-        store.dispatch(labelValidated(payload));
-      });
-      next(action);
-    }
-    // else, create new empty object
-    else {
-      const newObject = {
+    action.payload.newObject = action.payload.newObject || {
+      _id: new ObjectID().toString(),
+      bbox: [0,0,1,1],
+      locked: true,
+      labels: [{
         _id: new ObjectID().toString(),
+        category: 'empty',
         bbox: [0,0,1,1],
-        locked: true,
-        labels: [{
-          _id: new ObjectID().toString(),
-          category: 'empty',
-          bbox: [0,0,1,1],
-          validation: {
-            validated: true,
-            userId: userId
-          },  
-          type: 'manual',
-          conf: 1,
-          userId: action.payload.userId
-        }],
-      };
-      action.payload.newObject = newObject;
+        validation: { validated: true, userId },  
+        type: 'manual',
+        conf: 1,
+        userId
+      }],
+    };
 
-      next(action);
-      store.dispatch(editLabel('create', 'object', {
-        imageId: image._id,
-        object: newObject,
-      }));
+    next(action);
+    store.dispatch(editLabel('create', 'object', {
+      object: action.payload.newObject,
+      imageId,
+    }));
+  }
+
+  /* 
+   * markedEmpty
+   */
+
+  else if (markedEmptyReverted.match(action)) {
+    console.log('reviewMiddleware.markedEmptyReverted(): ', action.payload);
+    const { imageId, newObject } = action.payload;
+    if (newObject) {
+      store.dispatch(objectRemoved({ imageId, objectId: newObject._id }));
     }
   }
 

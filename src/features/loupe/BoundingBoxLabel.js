@@ -15,6 +15,7 @@ import {
   selectIsAddingLabel
 } from './loupeSlice';
 import ValidationButtons from './ValidationButtons.js';
+import { truncate } from 'lodash';
 
 const StyledBoundingBoxLabel = styled('div', {
   // backgroundColor: '#345EFF',
@@ -125,6 +126,7 @@ const CategorySelector = styled(CreatableSelect, {
 });
 
 const BoundingBoxLabel = ({
+  imageId,
   index,
   object,
   label,
@@ -133,6 +135,7 @@ const BoundingBoxLabel = ({
   selected,
   showLabelButtons,
   setShowLabelButtons,
+  setTempObject,
   verticalPos,
   horizontalPos, 
 }) => {
@@ -155,17 +158,16 @@ const BoundingBoxLabel = ({
   const addingLabel = useSelector(selectIsAddingLabel);
   const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
   useEffect(() => {
-    setCatSelectorOpen((addingLabel && selected))
+    setCatSelectorOpen((addingLabel && selected));
   }, [ addingLabel, selected ]);
-  
+
   // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
       if (object.isBeingAdded) {
-        dispatch(objectRemoved({
-          imageIndex: index.image,
-          objectIndex: index.object 
-        }));
+        // TODO: remove temp object
+        // dispatch(objectRemoved({ imageId, objectId: object._id }));
+        setTempObject(null);
       }
       dispatch(addLabelEnd());
     }
@@ -173,7 +175,7 @@ const BoundingBoxLabel = ({
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
-  }, [ addingLabel, object, index, dispatch ]);
+  }, [ addingLabel, imageId, object, setTempObject, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -199,20 +201,28 @@ const BoundingBoxLabel = ({
 
   const handleCategoryChange = (newValue) => {
     if (newValue) {
+      setTempObject(null);
       dispatch(labelAdded({
+        objIsBeingAdded: object.isBeingAdded,
         category: newValue.value,
         userId: username,
-        index
+        bbox: object.bbox,
+        objectId: object._id,
+        imageId,
       }));
     }
   };
 
   const handleCategoryCreate = (inputValue) => {
     if (inputValue) {
+      setTempObject(null);
       dispatch(labelAdded({
+        objIsBeingAdded: object.isBeingAdded,
         category: inputValue,
         userId: username,
-        index
+        bbox: object.bbox,
+        objectId: object._id,
+        imageId,
       }));
     }
   };
@@ -251,8 +261,9 @@ const BoundingBoxLabel = ({
       </div>
       {(showLabelButtons && !catSelectorOpen) &&
         <ValidationButtons 
-          index={index}
+          imageId={imageId}
           object={object}
+          label={label}
           labelColor={labelColor}
           username={username}
           setShowLabelButtons={setShowLabelButtons}

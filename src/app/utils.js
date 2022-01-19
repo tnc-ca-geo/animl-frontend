@@ -55,6 +55,37 @@ export const useResizeObserver = (ref) => {
   return { width, height, top, left };
 };
 
+
+// TODO: these should be selectors actually...
+/*
+ * find an image objects from array of images
+ */ 
+export const findImage = (images, imageId) => (
+  images.find((img) => (
+    img._id.toString() === imageId.toString()
+  ))
+);
+
+/*
+ * find specific object from array of images
+ */ 
+export const findObject = (images, imageId, objectId) => {
+  const image = findImage(images, imageId);
+  return image.objects.find((obj) => (
+    obj._id.toString() === objectId.toString()
+  ));
+};
+
+/*
+ * find specific object from array of images
+ */ 
+export const findLabel = (images, imageId, objectId, labelId) => {
+  const object = findObject(images, imageId, objectId);
+  return object.labels.find((lbl) => (
+    lbl._id.toString() === labelId.toString()
+  ));
+};
+
 /*
  * truncate string and add ellipsis
  */ 
