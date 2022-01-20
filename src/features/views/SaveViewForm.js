@@ -94,9 +94,7 @@ const SaveViewForm = ({ handleClose }) => {
     const payload = (operation === 'update')
       ? {
           _id: selectedView._id,
-          diffs: {
-            filters: formVals.filters,
-          }
+          diffs: { filters: formVals.filters }
         }
       : formVals;
     dispatch(editView(operation, payload));

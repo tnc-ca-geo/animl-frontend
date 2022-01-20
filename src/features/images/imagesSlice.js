@@ -90,9 +90,9 @@ export const imagesSlice = createSlice({
     updateObjectsSuccess: (state, { payload }) => {
       state.isUpdatingObjects = false;
       state.error = null;
-      const imageId = payload.updateObjects.image._id;
+      const imgId = payload.updateObjects.image._id;
       const newObjects = payload.updateObjects.image.objects;
-      const image = state.images.find(img => img._id === imageId);
+      const image = state.images.find(img => img._id === imgId);
       image.objects = newObjects;
     },
 
@@ -104,7 +104,7 @@ export const imagesSlice = createSlice({
     },
 
     editLabelSuccess: (state, { payload }) => {
-      console.log('editLabelSuccess: ', payload);
+      // console.log('editLabelSuccess: ', payload);
       state.isEditingLabel = false;
       state.error = null;
       const image = state.images.find(img => img._id === payload._id);
@@ -164,7 +164,7 @@ export const editLabel = (operation, entity, payload) => {
         throw new Error(err);
       }
       dispatch(editLabelStart());
-      console.group(`editLabel() - ${operation} ${entity}`);
+      console.groupCollapsed(`editLabel() - ${operation} ${entity}`);
       console.log(`payload: `, payload);
       console.groupEnd();
       // TODO: do we really need to pass in the operation and entity separately?
@@ -173,6 +173,7 @@ export const editLabel = (operation, entity, payload) => {
       const res = await call(req, payload);
       const mutation = Object.keys(res)[0];
       const image = res[mutation].image;
+      console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
       dispatch(editLabelSuccess(image));
 
     } catch (err) {
@@ -222,11 +223,6 @@ export const fetchImageContext = (imgId) => {
   };
 };
 
-// The functions below are selectors and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state) => state.counter.value)`
-// You can also use Reselect's createSelector to create memoized selector funcs:
-// https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;

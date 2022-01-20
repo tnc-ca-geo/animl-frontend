@@ -1,4 +1,4 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
@@ -63,9 +63,7 @@ export const viewsSlice = createSlice({
     deleteViewSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      state.views = state.views.filter((view) => {
-        return view._id !== payload;
-      });
+      state.views = state.views.filter((view) => view._id !== payload);
     },
 
     setSelectedView: (state, { payload }) => {
@@ -151,9 +149,7 @@ export const editView = (operation, payload) => {
           const res = await call('deleteView', payload);
           const deletedViewId = res.deleteView.viewId;
           const views = getState().views.views;
-          const defaultView = views.filter((view) => {
-            return view.name === 'All images';
-          })[0];
+          const defaultView = views.find((view) => view.name === 'All images');
           dispatch(setSelectedView({ view: defaultView })); 
           dispatch(deleteViewSuccess(deletedViewId));
           break;
@@ -187,15 +183,11 @@ export const fetchModels = () => async dispatch => {
 
 // Selectors
 export const selectViewsLoading = state => state.views.isLoading;
+export const selectUnsavedViewChanges = state => state.views.unsavedChanges;
 export const selectViews = state => state.views;
-export const selectSelectedView = createSelector([selectViews],
-  (views) => views.views.filter((view) => view.selected)[0]
-);
-export const selectUnsavedViewChanges = state => (
-  state.views.unsavedChanges
-);
-export const selectModels = createSelector([selectViews],
-  (views) => Object.values(views.models)
+export const selectModels = state => Object.values(state.views.views.models);
+export const selectSelectedView = state => (
+  state.views.views.find((view) => view.selected)
 );
 
 export default viewsSlice.reducer;

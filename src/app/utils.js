@@ -56,34 +56,27 @@ export const useResizeObserver = (ref) => {
 };
 
 
-// TODO: these should be selectors actually...
 /*
  * find an image objects from array of images
  */ 
-export const findImage = (images, imageId) => (
-  images.find((img) => (
-    img._id.toString() === imageId.toString()
-  ))
+export const findImage = (images, imgId) => (
+  images.find((img) => img._id === imgId)
 );
 
 /*
  * find specific object from array of images
  */ 
-export const findObject = (images, imageId, objectId) => {
-  const image = findImage(images, imageId);
-  return image.objects.find((obj) => (
-    obj._id.toString() === objectId.toString()
-  ));
+export const findObject = (images, imgId, objId) => {
+  const image = findImage(images, imgId);
+  return image.objects.find((obj) => obj._id === objId);
 };
 
 /*
  * find specific object from array of images
  */ 
-export const findLabel = (images, imageId, objectId, labelId) => {
-  const object = findObject(images, imageId, objectId);
-  return object.labels.find((lbl) => (
-    lbl._id.toString() === labelId.toString()
-  ));
+export const findLabel = (images, imgId, objId, lblId) => {
+  const object = findObject(images, imgId, objId);
+  return object.labels.find((lbl) => lbl._id === lblId);
 };
 
 /*
@@ -97,9 +90,9 @@ export const truncateString = (str, n) => (
  * convert bbox in absolute vals ([left, top, width, height])
  * to relative values ([ymin, xmin, ymax, xmax])
  */
-export const absToRel = (rect, image) => {
+export const absToRel = (rect, imageDims) => {
   const { left, top, width, height } = rect;
-  const { imageWidth, imageHeight } = image;
+  const { imageWidth, imageHeight } = imageDims;
   const ymin = Math.round(top) / imageHeight;
   const xmin = Math.round(left) / imageWidth;
   const ymax = (Math.round(top) + Math.round(height)) / imageHeight;

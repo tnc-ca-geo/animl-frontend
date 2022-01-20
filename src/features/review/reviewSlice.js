@@ -33,90 +33,84 @@ export const reviewSlice = createSlice({
 
     bboxUpdated: (state, { payload }) => {
       console.log('reviewSlice.bboxUpdated() - ', payload);
-      const { imageId, objectId } = payload;
-      const object = findObject(state.workingImages, imageId, objectId);
+      const { imgId, objId } = payload;
+      const object = findObject(state.workingImages, imgId, objId);
       object.bbox = payload.bbox;
     },
 
     objectAdded: (state, { payload }) => {
       console.log('reviewSlice.objectAdded(): ', payload);
-      const image = findImage(state.workingImages, payload.imageId);
+      const image = findImage(state.workingImages, payload.imgId);
       // TODO: double check this is getting properly removed after objectRemoved 
       // and during undo/redo process 
-      payload.newObject.isBeingAdded = true; 
+      payload.newObject.isTemp = true; 
       image.objects.unshift(payload.newObject);
     },
 
     objectRemoved: (state, { payload }) => {
       console.log('reviewSlice.objectRemoved(): ', payload);
-      const image = findImage(state.workingImages, payload.imageId);
+      const image = findImage(state.workingImages, payload.imgId);
       const objectIndex = image.objects.findIndex((obj) => (
-        obj._id.toString() === payload.objectId.toString()
+        obj._id === payload.objId
       ));
       image.objects.splice(objectIndex, 1);
     },
 
     labelAdded: (state, { payload }) => {
       console.log('reviewSlice.labelAdded(): ', payload);
-      const { imageId, objectId, objIsBeingAdded, newObject, newLabel } = payload;
-      const image = findImage(state.workingImages, imageId);
-      if (objIsBeingAdded && newObject) {
+      const { imgId, objId, objIsTemp, newObject, newLabel } = payload;
+      const image = findImage(state.workingImages, imgId);
+      if (objIsTemp && newObject) {
         image.objects.unshift(newObject);
       }
       else {
-        const object = image.objects.find((obj) => (
-          obj._id.toString() === objectId.toString()
-        ));
+        const object = image.objects.find((obj) => obj._id === objId);
         object.labels.unshift(newLabel);
       }
     },
 
     labelRemoved: (state, { payload }) => { // only used for undoing labelAdded
       console.log('reviewSlice.labelRemoved(): ', payload);
-      const { imageId, objectId, newLabel } = payload;
-      const image = findImage(state.workingImages, imageId);
-      const object = image.objects.find((obj) => (
-        obj._id.toString() === objectId.toString()
-      ));
+      const { imgId, objId, newLabel } = payload;
+      const image = findImage(state.workingImages, imgId);
+      const object = image.objects.find((obj) => obj._id === objId);
       const labelIndex = object.labels.findIndex((lbl) => (
-        lbl._id.toString() === newLabel._id.toString()
-      ))
+        lbl._id === newLabel._id
+      ));
       object.labels.splice(labelIndex, 1);
 
       // remove object if there aren't any labels left 
       if (!object.labels.length) {
-        const objectIndex = image.objects.findIndex((obj) => (
-          obj._id.toString() === objectId.toString()
-        ));
+        console.log('INFO: no more labels on object, so removing it');
+        const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
         image.objects.splice(objectIndex, 1);
       }
     },
 
     labelValidated: (state, { payload }) => {
       console.log('reviewSlice.labelValidated() - ', payload);
-      const { userId, imageId, objectId, labelId, validated } = payload;
-      const label = findLabel(state.workingImages, imageId, objectId, labelId);
-      console.log('reviewSlice.labelValidated() - found label', label);
+      const { userId, imgId, objId, lblId, validated } = payload;
+      const label = findLabel(state.workingImages, imgId, objId, lblId);
       label.validation = { validated, userId };
     },
 
     labelValidationReverted: (state, { payload }) => { // for undoing a validation
       console.log('reviewSlice.labelValidationReverted() - ', payload);
-      const { imageId, objectId, labelId } = payload;
-      const label = findLabel(state.workingImages, imageId, objectId, labelId);
+      const { imgId, objId, lblId } = payload;
+      const label = findLabel(state.workingImages, imgId, objId, lblId);
       label.validation = payload.oldValidation;
     },
 
     objectLocked: (state, { payload }) => {
       console.log('reviewSlice.objectLocked()');
-      const { imageId, objectId } = payload;
-      const object = findObject(state.workingImages, imageId, objectId);
+      const { imgId, objId } = payload;
+      const object = findObject(state.workingImages, imgId, objId);
       object.locked = payload.locked;
     },
 
     markedEmpty: (state, { payload }) => {
       if (payload.newObject) {
-        const image = findImage(state.workingImages, payload.imageId);
+        const image = findImage(state.workingImages, payload.imgId);
         image.objects.push(payload.newObject);
       }
     },
@@ -133,9 +127,9 @@ export const reviewSlice = createSlice({
         state.workingImages = [];
       })
       .addCase(updateObjectsSuccess, (state, { payload }) => {
-        const imageId = payload.updateObjects.image._id;
+        const imgId = payload.updateObjects.image._id;
         const newObjects = payload.updateObjects.image.objects;
-        const image = state.workingImages.find(img => img._id === imageId);
+        const image = state.workingImages.find(img => img._id === imgId);
         image.objects = newObjects;
       });
   },
@@ -160,12 +154,7 @@ export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
 export const objectManuallyUnlocked = createAction('review/objectManuallyUnlocked');
 export const markedEmptyReverted = createAction('review/markedEmptyReverted');
- 
-// The functions below are selectors and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state) => state.counter.value)`
-// You can also use Reselect's createSelector to create memoized selector funcs:
-// https://redux-toolkit.js.org/tutorials/intermediate-tutorial#optimizing-todo-filtering
+
 export const selectWorkingImages = state => state.review.workingImages;
 export const selectFocusIndex = state => state.review.focusIndex;
 export const selectFocusChangeType = state => state.review.focusChangeType;

@@ -141,7 +141,7 @@ const ViewSelector = () => {
 
   const handleViewMenuItemClick = (e) => {
     const _id = e.target.dataset.viewId;
-    const newSelectedView = views.views.filter((view) => view._id === _id)[0];
+    const newSelectedView = views.views.find((view) => view._id === _id);
     dispatch(setSelectedView({ view: newSelectedView }));
   }
 

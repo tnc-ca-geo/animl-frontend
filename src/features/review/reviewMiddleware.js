@@ -128,9 +128,8 @@ export const reviewMiddleware = store => next => action => {
     console.log('reviewMiddleware.setFocus(): ', action.payload);
     // prevent any focus change while user isAddingLabel
     const isAddingLabel = selectIsAddingLabel(store.getState());
-    if (!isAddingLabel) {
-      next(action);
-    }
+    if (isAddingLabel) console.log('NOTE: preventing focus change b/c isAddingLabel === true');
+    if (!isAddingLabel) next(action);
   }
 
   /* 
@@ -139,7 +138,8 @@ export const reviewMiddleware = store => next => action => {
 
   else if (labelAdded.match(action)) {
     console.log('reviewMiddleware.labelAdded(): ', action.payload);
-    const {  objIsBeingAdded, imageId, objectId, bbox, userId, category, newObject, newLabel } = action.payload;
+    const { newLabel, bbox, userId, category } = action.payload;
+    const { objIsTemp, imgId, objId, newObject } = action.payload;
 
     const label = {
       _id: new ObjectID().toString(),
@@ -152,34 +152,35 @@ export const reviewMiddleware = store => next => action => {
     };
     // if we are redoing a previous labelAdded action, 
     // there will already be a newLabel in the payload 
-    // action.payload.newLabel = newLabel || label;     // <- i think that would work
-    action.payload.newLabel = newLabel ? newLabel : label;
+    action.payload.newLabel = newLabel || label;
 
-    if (objIsBeingAdded) {
+    if (objIsTemp) {
       const object = {
-        _id: objectId,
-        bbox: action.payload.bbox,
+        _id: objId,
+        bbox,
         locked: true,
         labels: [action.payload.newLabel],
       };
-      action.payload.newObject = newObject ? newObject : object;
+      action.payload.newObject = newObject || object;
     }
 
     next(action);
 
-    if (objIsBeingAdded) {
+    if (objIsTemp) {
+      console.log('NOTE: object isTemp, so creating object + label');
       store.dispatch(editLabel('create', 'object', {
         object: action.payload.newObject,
-        imageId,
+        imageId: imgId,
       }));
     }
     else {
+      console.log('NOTE: object exists, so just creating label');
       store.dispatch(editLabel('create', 'label', {
         labels: [action.payload.newLabel],
-        imageId,
-        objectId,
+        imageId: imgId,
+        objectId: objId,
       }));
-      store.dispatch(objectLocked({ imageId, objectId, locked: true }));
+      store.dispatch(objectLocked({ imgId, objId, locked: true }));
     }
 
     store.dispatch(addLabelEnd());
@@ -187,11 +188,16 @@ export const reviewMiddleware = store => next => action => {
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
 
+    // BUG: This seems to be firing correctly, but not returning the newly
+    // created category. Might be a timing issue (new label hasn't been saved
+    // before fetchLabels() returns
     const availLabels = selectAvailLabels(store.getState());
-    if (!availLabels.ids.find((id) => id === action.payload.newLabel.category)) {
-      store.dispatch(fetchLabels());
-      // TODO: also dispatch fetchLabels after label invalidations?
-    }
+    const newCategoryAdded = !availLabels.ids.includes(
+      action.payload.newLabel.category
+    );
+    if (newCategoryAdded) console.log('NOTE: new category detected, so fetching labels')  
+    if (newCategoryAdded) store.dispatch(fetchLabels());  
+    // TODO: also dispatch fetchLabels after label invalidations?
   }
 
   /* 
@@ -200,21 +206,24 @@ export const reviewMiddleware = store => next => action => {
 
   else if (labelRemoved.match(action)) {
     console.log('reviewMiddleware.labelRemoved(): ', action.payload);
-    const { imageId, objectId, newLabel } = action.payload;
+    const { imgId, objId, newLabel } = action.payload;
 
     // remove object if there's only one label left
     const workingImages = selectWorkingImages(store.getState());
-    const object = findObject(workingImages, imageId, objectId);
+    const object = findObject(workingImages, imgId, objId);
     if (object.labels.length <= 1) {
-      store.dispatch(editLabel('delete', 'object', { imageId, objectId }));
+      store.dispatch(editLabel('delete', 'object', {
+        imageId: imgId,
+        objectId: objId,
+      }));
     }
     else {
       store.dispatch(editLabel('delete', 'label', {
-        imageId,
-        objectId,
+        imageId: imgId,
+        objectId: objId,
         labelId: newLabel._id,
       }));
-      store.dispatch(objectLocked({ imageId, objectId, locked: false }));
+      store.dispatch(objectLocked({ imgId, objId, locked: false }));
     }
 
     next(action);
@@ -232,10 +241,10 @@ export const reviewMiddleware = store => next => action => {
   else if (bboxUpdated.match(action)) {
     console.log('reviewMiddleware.bboxUpdated()');
     next(action);
-    const { imageId, objectId, bbox } = action.payload;
+    const { imgId, objId, bbox } = action.payload;
     store.dispatch(editLabel('update', 'object', {
-      imageId,
-      objectId,
+      imageId: imgId,
+      objectId: objId,
       diffs: { bbox },
     }));
   }
@@ -246,8 +255,11 @@ export const reviewMiddleware = store => next => action => {
 
   else if (objectRemoved.match(action)) {
     console.log('reviewMiddleware.objectRemoved(): ', action.payload);
-    const { imageId, objectId } = action.payload;
-    store.dispatch(editLabel('delete', 'object', { imageId, objectId }));
+    const { imgId, objId } = action.payload;
+    store.dispatch(editLabel('delete', 'object', {
+      imageId: imgId,
+      objectId: objId,
+    }));
     next(action);
   }
 
@@ -258,36 +270,25 @@ export const reviewMiddleware = store => next => action => {
   else if (labelValidated.match(action)) {
     console.log('reviewMiddleware.labelValidated() - ', action);
     next(action);
-    const {
-      userId,
-      imageId,
-      objectId,
-      labelId,
-      validated,
-    } = action.payload;
+    const { userId, imgId, objId, lblId, validated } = action.payload;
 
     // update label
     const validation = { validated, userId };
     store.dispatch(editLabel('update', 'label', {
-      imageId,
-      objectId,
-      labelId,
+      imageId: imgId,
+      objectId: objId,
+      labelId: lblId,
       diffs: { validation },
     }));
 
     // update object
     const workingImages = selectWorkingImages(store.getState());
-    const object = findObject(workingImages, imageId, objectId);
+    const object = findObject(workingImages, imgId, objId);
     const allLabelsInvalidated = object.labels.every((lbl) => (
       lbl.validation && lbl.validation.validated === false
     ));
     const locked = ((!validated && allLabelsInvalidated) || validated);
-    store.dispatch(objectLocked({ imageId, objectId, locked}));
-    // store.dispatch(editLabel('update', 'object', {
-    //   imageId: image._id,
-    //   objectId: object._id,
-    //   diffs: { locked },
-    // }));
+    store.dispatch(objectLocked({ imgId, objId, locked}));
   }
 
   /* 
@@ -297,18 +298,18 @@ export const reviewMiddleware = store => next => action => {
   else if (labelValidationReverted.match(action)) {
     console.log('reviewMiddleware.labelValidationReverted() - ', action);
     next(action);
-    const { imageId, objectId, labelId, oldValidation, oldLocked } = action.payload;
+    const { imgId, objId, lblId, oldValidation, oldLocked } = action.payload;
 
     // update label
     store.dispatch(editLabel('update', 'label', {
-      imageId,
-      objectId,
-      labelId,
+      imageId: imgId,
+      objectId: objId,
+      labelId: lblId,
       diffs: { validation: oldValidation },
     }));
 
     // update object
-    store.dispatch(objectLocked({ imageId, objectId, locked: oldLocked }));
+    store.dispatch(objectLocked({ imgId, objId, locked: oldLocked }));
   }
 
   /* 
@@ -318,10 +319,10 @@ export const reviewMiddleware = store => next => action => {
   else if (objectLocked.match(action)) {
     console.log('reviewMiddleware.objectLocked() - ', action.payload);
     next(action);
-    const { imageId, objectId, locked } = action.payload;
+    const { imgId, objId, locked } = action.payload;
     store.dispatch(editLabel('update', 'object', {
-      imageId,
-      objectId,
+      imageId: imgId,
+      objectId: objId,
       diffs: { locked },
     }));
   }
@@ -333,8 +334,8 @@ export const reviewMiddleware = store => next => action => {
   else if (objectManuallyUnlocked.match(action)) {
     console.log('reviewMiddleware.objectManuallyUnlocked()');
     next(action);
-    const { imageId, objectId } = action.payload;
-    store.dispatch(objectLocked({ imageId, objectId, locked: false }));
+    const { imgId, objId } = action.payload;
+    store.dispatch(objectLocked({ imgId, objId, locked: false }));
   }
   
   /* 
@@ -364,7 +365,6 @@ export const reviewMiddleware = store => next => action => {
     const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
     console.log(`${delta}ing with focusIndex: `, focusIndex)
-    console.log(`and workingImages.length: ${workingImages.length}`)
 
     if (delta === 'decrement' && focusIndex.image > 0) {
       store.dispatch(setFocus({ 
@@ -390,7 +390,7 @@ export const reviewMiddleware = store => next => action => {
   // and empty object. Consider consolidating? 
   else if (objectAdded.match(action)) {
     console.log('reviewMiddleware.objectAdded(): ', action.payload);
-    const { imageId, bbox } = action.payload;
+    const { imgId, bbox } = action.payload;
     // TODO: double check this is working as intended
     // if we are redoing a previous objectAdded action, 
     // there will already be a newObject in the payload 
@@ -404,7 +404,7 @@ export const reviewMiddleware = store => next => action => {
         };
     const createObjectPayload = {
       object: Object.assign({}, newObject),
-      imageId,
+      imageId: imgId,
     };
     action.payload.newObject = newObject;
     next(action);
@@ -419,7 +419,7 @@ export const reviewMiddleware = store => next => action => {
 
   else if (markedEmpty.match(action)) {
     console.log('reviewMiddleware.markedEmpty(): ', action.payload);
-    const { imageId, userId } = action.payload;
+    const { imgId, userId } = action.payload;
 
     action.payload.newObject = action.payload.newObject || {
       _id: new ObjectID().toString(),
@@ -439,7 +439,7 @@ export const reviewMiddleware = store => next => action => {
     next(action);
     store.dispatch(editLabel('create', 'object', {
       object: action.payload.newObject,
-      imageId,
+      imageId: imgId,
     }));
   }
 
@@ -449,9 +449,9 @@ export const reviewMiddleware = store => next => action => {
 
   else if (markedEmptyReverted.match(action)) {
     console.log('reviewMiddleware.markedEmptyReverted(): ', action.payload);
-    const { imageId, newObject } = action.payload;
+    const { imgId, newObject } = action.payload;
     if (newObject) {
-      store.dispatch(objectRemoved({ imageId, objectId: newObject._id }));
+      store.dispatch(objectRemoved({ imgId, objId: newObject._id }));
     }
   }
 

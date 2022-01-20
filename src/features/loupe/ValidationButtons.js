@@ -21,7 +21,7 @@ const StyledValidationButtons = styled('div', {
 });
 
 const ValidationButtons = ({
-  imageId,
+  imgId,
   object,
   label,
   labelColor,
@@ -32,16 +32,16 @@ const ValidationButtons = ({
 
   const handleLockButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(objectManuallyUnlocked({ imageId, objectId: object._id }));
+    dispatch(objectManuallyUnlocked({ imgId, objId: object._id }));
   };
 
   const handleValidationButtonClick = (e, validated) => {
     e.stopPropagation();
     dispatch(labelValidated({
       userId: username,
-      imageId,
-      objectId: object._id,
-      labelId: label._id,
+      imgId,
+      objId: object._id,
+      lblId: label._id,
       validated,
     }));
     setShowLabelButtons(false);

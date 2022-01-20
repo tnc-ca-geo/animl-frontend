@@ -133,7 +133,7 @@ const LoupeFooter = ({ image }) => {
       //     dispatch(labelValidated({
       //       userId: username,
       //       imageId: image._id,
-      //       objectId: object._id,
+      //       objId: object._id,
       //       labelId: label._id,
       //       validated,
       //     }));

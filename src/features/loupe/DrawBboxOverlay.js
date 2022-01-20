@@ -38,7 +38,7 @@ const Overlay = styled('div', {
   zIndex: '$4',
 });
 
-const DrawBboxOverlay = ({ imageId, imageDimensions, setTempObject }) => {
+const DrawBboxOverlay = ({ imageDimensions, setTempObject }) => {
   const { width, height, top, left } = imageDimensions;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
@@ -76,15 +76,12 @@ const DrawBboxOverlay = ({ imageId, imageDimensions, setTempObject }) => {
   };
 
   const handleMouseUp = () => {
-    // create bbox  
-    // TODO: move this all to middleware?
-    // TODO: double check that width & height are same as actual image width/height
-    const image = { imageWidth: width, imageHeight: height };
-    const bbox = absToRel(tempBBox, image);
-    // dispatch(objectAdded({ bbox, imageId }));
+    // create bbox
+    const imageDims = { imageWidth: width, imageHeight: height };
+    const bbox = absToRel(tempBBox, imageDims);
     const newObject = {
       _id: new ObjectID().toString(),
-      isBeingAdded: true, // we probably need something like this (or temp)
+      isTemp: true,
       bbox: bbox,
       locked: false,
       labels: [],
@@ -97,15 +94,13 @@ const DrawBboxOverlay = ({ imageId, imageDimensions, setTempObject }) => {
   };
 
   // listen for esc keydown and end drawBbox
+  // TODO: should be able to use react synthetic onKeyDown events,
+  // but couldn't get it working
   useEffect(() => {
-    // TODO: should be able to use react synthetic onKeyDown events,
-    // but couldn't get it working
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
-        dispatch(drawBboxEnd());
-      }
+      if (e.key === "Escape") dispatch(drawBboxEnd());
     }
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ dispatch ]);
 

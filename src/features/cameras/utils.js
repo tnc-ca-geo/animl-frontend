@@ -7,7 +7,7 @@ const enrichCameras = (cameras) => {
     const deployments = camera.deployments;
 
     // Sort chronologically
-    let defaultDep = deployments.filter((dep) => dep.name === 'default')[0];
+    let defaultDep = deployments.find((dep) => dep.name === 'default');
     let chronDeps = _.cloneDeep(deployments);
     chronDeps = chronDeps.filter((dep) => dep.startDate);
     chronDeps.sort((a, b) => {

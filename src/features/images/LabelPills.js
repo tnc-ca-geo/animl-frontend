@@ -75,7 +75,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
 
         // TODO: find a cleaner way to do this. Maybe make it a hook?
         // We also need filtered objects in FullSizeImage component...
-        // and reviewMiddleware 
+        // and reviewMiddleware so consider encapsulating 
         let labels;
         if (object.locked) {
           const firstValidatedLabel = object.labels.find((label) => (

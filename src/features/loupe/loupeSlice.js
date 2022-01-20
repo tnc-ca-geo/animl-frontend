@@ -18,36 +18,20 @@ export const loupeSlice = createSlice({
   initialState,
   reducers: {
 
-    toggleOpenLoupe: (state, { payload }) => {
-      state.open = payload;
-    },
+    toggleOpenLoupe: (state, { payload }) => { state.open = payload; },
 
-    reviewModeToggled: (state) => {
-      state.reviewMode = !state.reviewMode;
-    },
+    reviewModeToggled: (state) => { state.reviewMode = !state.reviewMode; },
 
-    drawBboxStart: (state) => {
-      console.log('loupeSlice.drawBboxStart() - isDrawingBbox === true')
-      state.isDrawingBbox = true;
-    },
+    drawBboxStart: (state) => { state.isDrawingBbox = true; },
 
     drawBboxEnd: (state) => {
-      if (state.isDrawingBbox) {
-        console.log('loupeSlice.drawBboxEnd() - isDrawingBbox === false')
-        state.isDrawingBbox = false;
-      }
+      if (state.isDrawingBbox) state.isDrawingBbox = false;
     },
 
-    addLabelStart: (state) => {
-      console.log('loupeSlice.addLabelStart() - isAddingLabel === true')
-      state.isAddingLabel = true;
-    },
+    addLabelStart: (state) => { state.isAddingLabel = true; },
 
     addLabelEnd: (state) => {
-      if (state.isAddingLabel) {
-        console.log('loupeSlice.addLabelEnd() - isAddingLabel === false')
-        state.isAddingLabel = false;
-      }
+      if (state.isAddingLabel) state.isAddingLabel = false;
     },
 
     iterationOptionsChanged: (state, { payload }) => {
@@ -58,9 +42,7 @@ export const loupeSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(clearImages, (state) => {
-        state.open = false;
-      });
+      .addCase(clearImages, (state) => { state.open = false; });
   }
 
 });

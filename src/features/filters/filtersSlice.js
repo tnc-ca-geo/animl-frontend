@@ -292,14 +292,8 @@ export const selectDateCreatedFilter = state => ({
 export const selectFiltersReady = createSelector(
   [selectAvailCameras, selectAvailLabels],
   (cameras, labels) => {
-    let ready = true;
     const fetchedFilters = [cameras, labels];
-    fetchedFilters.forEach(filter => {
-      if (filter.isLoading || filter.error) {
-        ready = false;
-      };
-    })
-    return ready;
+    return !fetchedFilters.some(filter => filter.isLoading || filter.error);
   }
 );
 

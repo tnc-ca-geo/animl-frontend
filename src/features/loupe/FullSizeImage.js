@@ -71,88 +71,64 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const handleImgLoaded = () => setImgLoaded(true);
   */
 
-  // get image's objects
   const workingImages = useSelector(selectWorkingImages);
-  const [ currImgObjects, setCurrImgObjects ] = useState();
-  useEffect(() => {
-    if (focusIndex.image === null) return;
-    const objects = workingImages[focusIndex.image].objects;
-    setCurrImgObjects(objects);    
-  }, [ workingImages, focusIndex.image ]);
-
-  // prep objects to render
-  const [ objectsToRender, setObjectsToRender ] = useState();
+  const currImgObjects = workingImages[focusIndex.image].objects;
   const [ tempObject, setTempObject ] = useState(null);
-  useEffect(() => {
-    let objects = [];
-    if (!currImgObjects) return;
-    const filteredObjects = currImgObjects.filter((obj) => (
-      obj.labels.some((lbl) => (
-        lbl.validation === null || lbl.validation.validated
-      ))
-    ));
-    objects = objects.concat(filteredObjects);
-  
-    if (tempObject) objects.push(tempObject);
-    // I think we also need to set focus to this object, but it doesn't yet exist...
-    // will that cause issues?
-    // and we need to dispatch addLabelStart(); so loupeSlice.isAddingLabel === true
-    setObjectsToRender(objects);
-  }, [ currImgObjects, tempObject ]);
+  let objectsToRender = currImgObjects.filter((obj) => (
+    obj.labels.some((lbl) => (
+      lbl.validation === null || lbl.validation.validated
+    ))
+  ));
+  if (tempObject) {
+    objectsToRender.push(tempObject);
+  }
 
-  const [ hasEmpties, setHasEmpties ] = useState(false);
-  useEffect(() => {
-    if (!currImgObjects) return;
-    const emptyLbls = currImgObjects.reduce((acc, curr) => {
-      return acc.concat(curr.labels.filter((lbl) => (
-        lbl.category === 'empty' && !lbl.validated
-      )));
-    }, []);
-    setHasEmpties(emptyLbls.length > 0);
-  }, [ currImgObjects ]);
+  // track whether the image has objects with empty, unvalidated labels
+  const emptyLabels = currImgObjects.reduce((acc, curr) => {
+    return acc.concat(curr.labels.filter((lbl) => (
+      lbl.category === 'empty' && !lbl.validated
+    )));
+  }, []);
 
   const handleMarkEmptyButtonClick = () => {
-    if (hasEmpties) {
-      console.log('image already has empty labels, so validating them');
+    console.log('FullSizeImage - Mark empty button clicked');
+    if (emptyLabels.length > 0) {
+      console.log('NOTE: found objects with empty, unvalidated labels, so validating them');
       currImgObjects.forEach((obj) => {
-        obj.labels.filter((lbl) => (
-          lbl.category === 'empty' && !lbl.validated
-        )).forEach((lbl) => {
-          dispatch(labelValidated({
-            imageId: image._id,
-            objectId: obj._id,
-            labelId: lbl._id,
-            userId,
-            validated: true
-          }));
+        obj.labels
+          .filter((lbl) => (lbl.category === 'empty' && !lbl.validated))
+          .forEach((lbl) => {
+            dispatch(labelValidated({
+              imgId: image._id,
+              objId: obj._id,
+              lblId: lbl._id,
+              userId,
+              validated: true
+            }));
         });
       });
-    } else {
-      dispatch(markedEmpty({ imageId: image._id, userId }));
     }
-
+    else {
+      console.log('NOTE: NO objects found with empty, unvalidated labels, so creating empty obj');
+      dispatch(markedEmpty({ imgId: image._id, userId }));
+    }
   };
 
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
-
   return (
     <ImageWrapper ref={containerEl}>
       {isDrawingBbox &&
-        <DrawBboxOverlay
-          imageId={image._id}
-          imageDimensions={dims}
-          setTempObject={setTempObject}
-        />
+        <DrawBboxOverlay imageDimensions={dims} setTempObject={setTempObject} />
       }
       {objectsToRender && objectsToRender.map((object, i) => (
         <BoundingBox
           key={object._id}
-          imageId={image._id}
+          imgId={image._id}
           imageWidth={dims.width}
           imageHeight={dims.height}
           object={object}
-          objectIndex={!object.isBeingAdded 
+          objectIndex={!object.isTemp 
             ? currImgObjects.indexOf(object) 
             : null
           }

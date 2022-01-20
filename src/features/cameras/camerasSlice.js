@@ -76,7 +76,6 @@ export const {
 export const fetchCameras = () => async dispatch => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
-    console.log('currentUser: ', currentUser)
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if(token){
       dispatch(getCamerasStart());

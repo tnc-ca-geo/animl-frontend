@@ -126,7 +126,7 @@ const CategorySelector = styled(CreatableSelect, {
 });
 
 const BoundingBoxLabel = ({
-  imageId,
+  imgId,
   index,
   object,
   label,
@@ -164,9 +164,9 @@ const BoundingBoxLabel = ({
   // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
-      if (object.isBeingAdded) {
+      if (object.isTemp) {
         // TODO: remove temp object
-        // dispatch(objectRemoved({ imageId, objectId: object._id }));
+        // dispatch(objectRemoved({ imgId, objId: object._id }));
         setTempObject(null);
       }
       dispatch(addLabelEnd());
@@ -175,7 +175,7 @@ const BoundingBoxLabel = ({
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
-  }, [ addingLabel, imageId, object, setTempObject, dispatch ]);
+  }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -203,12 +203,12 @@ const BoundingBoxLabel = ({
     if (newValue) {
       setTempObject(null);
       dispatch(labelAdded({
-        objIsBeingAdded: object.isBeingAdded,
+        objIsTemp: object.isTemp,
         category: newValue.value,
         userId: username,
         bbox: object.bbox,
-        objectId: object._id,
-        imageId,
+        objId: object._id,
+        imgId,
       }));
     }
   };
@@ -217,12 +217,12 @@ const BoundingBoxLabel = ({
     if (inputValue) {
       setTempObject(null);
       dispatch(labelAdded({
-        objIsBeingAdded: object.isBeingAdded,
+        objIsTemp: object.isTemp,
         category: inputValue,
         userId: username,
         bbox: object.bbox,
-        objectId: object._id,
-        imageId,
+        objId: object._id,
+        imgId,
       }));
     }
   };
@@ -261,7 +261,7 @@ const BoundingBoxLabel = ({
       </div>
       {(showLabelButtons && !catSelectorOpen) &&
         <ValidationButtons 
-          imageId={imageId}
+          imgId={imgId}
           object={object}
           label={label}
           labelColor={labelColor}

@@ -74,7 +74,7 @@ const StyledResizableBox = styled(ResizableBox, {
 });
 
 const BoundingBox = ({ 
-  imageId,
+  imgId,
   imageWidth,
   imageHeight,
   object,
@@ -88,9 +88,9 @@ const BoundingBox = ({
   // track whether the object is focused
   const [ objectFocused, setObjectFocused ] = useState();
   useEffect(() => {
-    const focused = object.isBeingAdded || focusIndex.object === objectIndex;
+    const focused = object.isTemp || focusIndex.object === objectIndex;
     setObjectFocused(focused);
-  }, [ object.isBeingAdded, focusIndex.object, objectIndex ]);
+  }, [ object.isTemp, focusIndex.object, objectIndex ]);
 
   // set label - maybe move this to label component?
   const [ label, setLabel ] = useState();
@@ -99,7 +99,7 @@ const BoundingBox = ({
     let newLabel = object.labels.find((label) => (
       label.validation === null || label.validation.validated 
     ));
-    if (object.isBeingAdded) { // unless object is being added
+    if (object.isTemp) { // unless object is being added
       newLabel = { category: '', conf: 0, index: 0 }; // TODO: might need to actually create proper temp label w/ id here
     }
     else if (objectFocused && focusIndex.label) { // or obj & label are focused
@@ -129,8 +129,8 @@ const BoundingBox = ({
   useEffect(() => {
     setIndex({
       image: focusIndex.image,
-      object: objectIndex,  // will be null if object.isBeingAdded
-      label: labelIndex // will be 0 if object.isBeingAdded
+      object: objectIndex,  // will be null if object.isTemp
+      label: labelIndex // will be 0 if object.isTemp
     });
   }, [ focusIndex, objectIndex, labelIndex]);
   
@@ -154,7 +154,7 @@ const BoundingBox = ({
   
   const onDragEnd = () => {
     if (!_.isEqual(lastBbox, bbox)){ 
-      dispatch(bboxUpdated({ imageId, objectId: object._id, bbox }));
+      dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
     }
   };
 
@@ -190,7 +190,7 @@ const BoundingBox = ({
   const onResizeStop = () => {
     setConstraintX(Infinity);
     setConstraintY(Infinity);
-    dispatch(bboxUpdated({ imageId, objectId: object._id, bbox }));
+    dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
   };
 
   const [ showLabelButtons, setShowLabelButtons ] = useState(false);
@@ -231,7 +231,7 @@ const BoundingBox = ({
       >
         {label &&
           <BoundingBoxLabel
-            imageId={imageId}
+            imgId={imgId}
             index={index}
             object={object}
             label={label}
