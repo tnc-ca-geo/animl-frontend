@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { ObjectID } from 'bson';
 import { styled } from '../../theme/stitches.config';
 import { absToRel } from '../../app/utils';
-// import { objectAdded } from '../review/reviewSlice';
+import { setFocus } from '../review/reviewSlice';
 import { drawBboxEnd, addLabelStart } from './loupeSlice';
 
 
@@ -89,6 +89,7 @@ const DrawBboxOverlay = ({ imageDimensions, setTempObject }) => {
     setTempObject(newObject);
     setDrawingBBox(false);
     setTempBBox(defaultBBox);
+    dispatch(setFocus({ index: { object: null }, type: 'auto' }));
     dispatch(drawBboxEnd());
     dispatch(addLabelStart())
   };

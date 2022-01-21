@@ -133,6 +133,63 @@ export const reviewMiddleware = store => next => action => {
   }
 
   /* 
+   * incrementFocusIndex
+   */
+
+  else if (incrementFocusIndex.match(action)) {
+    next(action);
+    const delta = action.payload;
+    const workingImages = selectWorkingImages(store.getState());
+    const focusIndex = selectFocusIndex(store.getState());
+    const options = selectIterationOptions(store.getState());
+    // TODO: bug here. If there isn't an next label to go to (say, b/c there 
+    // are only 20 images loaded, all of them only have locked objects, and
+    // the skipLockedObjects option is on), it won't return a valid newFocusIndex. 
+    const newIndex = findNextLabel(delta, workingImages, focusIndex, options);
+    store.dispatch(setFocus({ index: newIndex, type: 'auto' }));
+  }
+
+  /* 
+   * incrementImage
+   */
+
+  else if (incrementImage.match(action)) {
+    next(action);
+    const delta = action.payload;
+    const workingImages = selectWorkingImages(store.getState());
+    const focusIndex = selectFocusIndex(store.getState());
+    console.log(`${delta}ing with focusIndex: `, focusIndex)
+
+    if (delta === 'decrement' && focusIndex.image > 0) {
+      store.dispatch(setFocus({ 
+        index: { image: focusIndex.image - 1 },
+        type: 'auto' 
+      }));
+    }
+    else if (delta === 'increment' &&
+             focusIndex.image < workingImages.length - 1) {
+      store.dispatch(setFocus({
+        index: { image: focusIndex.image + 1 }, 
+        type: 'auto' 
+      }));
+    }
+  }
+
+  /* 
+   * bboxUpdated
+   */
+
+  else if (bboxUpdated.match(action)) {
+    console.log('reviewMiddleware.bboxUpdated()');
+    next(action);
+    const { imgId, objId, bbox } = action.payload;
+    store.dispatch(editLabel('update', 'object', {
+      imageId: imgId,
+      objectId: objId,
+      diffs: { bbox },
+    }));
+  }
+  /* 
    * labelAdded
    */
 
@@ -184,7 +241,8 @@ export const reviewMiddleware = store => next => action => {
     }
 
     store.dispatch(addLabelEnd());
-    store.dispatch(setFocus({ index: { label: 0 }, type: 'auto' }));
+    const newIndex = objIsTemp ? { object: 0, label: 0 } : { label: 0 };
+    store.dispatch(setFocus({ index: newIndex, type: 'auto' }));
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
 
@@ -212,6 +270,7 @@ export const reviewMiddleware = store => next => action => {
     const workingImages = selectWorkingImages(store.getState());
     const object = findObject(workingImages, imgId, objId);
     if (object.labels.length <= 1) {
+      console.log('NOTE: removing objects last label, so just deleting object')
       store.dispatch(editLabel('delete', 'object', {
         imageId: imgId,
         objectId: objId,
@@ -232,35 +291,6 @@ export const reviewMiddleware = store => next => action => {
     // store.dispatch(incrementFocusIndex('increment'));
     // TODO: fetchLabels again? 
     // store.dispatch(fetchLabels());
-  }
-
-  /* 
-   * bboxUpdated
-   */
-
-  else if (bboxUpdated.match(action)) {
-    console.log('reviewMiddleware.bboxUpdated()');
-    next(action);
-    const { imgId, objId, bbox } = action.payload;
-    store.dispatch(editLabel('update', 'object', {
-      imageId: imgId,
-      objectId: objId,
-      diffs: { bbox },
-    }));
-  }
-
-  /* 
-   * objectRemoved
-   */
-
-  else if (objectRemoved.match(action)) {
-    console.log('reviewMiddleware.objectRemoved(): ', action.payload);
-    const { imgId, objId } = action.payload;
-    store.dispatch(editLabel('delete', 'object', {
-      imageId: imgId,
-      objectId: objId,
-    }));
-    next(action);
   }
 
   /* 
@@ -313,6 +343,52 @@ export const reviewMiddleware = store => next => action => {
   }
 
   /* 
+   * objectAdded
+   */
+
+  // NOTE: now that we are creating new objects from within labelAdded middlware, 
+  // this is no longer used. However, markedEmpty is now really just adding 
+  // and empty object. Consider consolidating? 
+  //    - labelAdded could dispatch objectAdded internally (would need to accept labels in payload of objectAdded)
+  //    - markedEmpty could do the same
+  else if (objectAdded.match(action)) {
+    console.log('reviewMiddleware.objectAdded(): ', action.payload);
+    const { imgId, bbox, newObject } = action.payload;
+
+    const object = {
+      _id: new ObjectID().toString(),
+      bbox: bbox,
+      locked: false,
+      labels: [],
+    };
+    // if we are redoing a previous objectAdded action, 
+    // there will already be a newObject in the payload 
+    action.payload.newObject = newObject || object;
+
+    next(action);
+    store.dispatch(setFocus({ index: { object: 0 }, type: 'auto' }));
+    store.dispatch(addLabelStart());
+    store.dispatch(editLabel('create', 'object', {
+      object: action.payload.newObject,
+      imageId: imgId,
+    }));
+  }
+
+ /* 
+  * objectRemoved
+  */
+
+  else if (objectRemoved.match(action)) {
+    console.log('reviewMiddleware.objectRemoved(): ', action.payload);
+    const { imgId, objId } = action.payload;
+    store.dispatch(editLabel('delete', 'object', {
+      imageId: imgId,
+      objectId: objId,
+    }));
+    next(action);
+  }
+
+  /* 
    * objectLocked
    */
 
@@ -336,81 +412,6 @@ export const reviewMiddleware = store => next => action => {
     next(action);
     const { imgId, objId } = action.payload;
     store.dispatch(objectLocked({ imgId, objId, locked: false }));
-  }
-  
-  /* 
-   * incrementFocusIndex
-   */
-
-  else if (incrementFocusIndex.match(action)) {
-    next(action);
-    const delta = action.payload;
-    const workingImages = selectWorkingImages(store.getState());
-    const focusIndex = selectFocusIndex(store.getState());
-    const options = selectIterationOptions(store.getState());
-    // TODO: bug here. If there isn't an next label to go to (say, b/c there 
-    // are only 20 images loaded, all of them only have locked objects, and
-    // the skipLockedObjects option is on), it won't return a valid newFocusIndex. 
-    const newFocusIndex = findNextLabel(delta, workingImages, focusIndex, options);
-    store.dispatch(setFocus({ index: newFocusIndex, type: 'auto' }));
-  }
-
-  /* 
-   * incrementImage
-   */
-
-  else if (incrementImage.match(action)) {
-    next(action);
-    const delta = action.payload;
-    const workingImages = selectWorkingImages(store.getState());
-    const focusIndex = selectFocusIndex(store.getState());
-    console.log(`${delta}ing with focusIndex: `, focusIndex)
-
-    if (delta === 'decrement' && focusIndex.image > 0) {
-      store.dispatch(setFocus({ 
-        index: { image: focusIndex.image - 1 },
-        type: 'auto' 
-      }));
-    }
-    else if (delta === 'increment' &&
-             focusIndex.image < workingImages.length - 1) {
-      store.dispatch(setFocus({
-        index: { image: focusIndex.image + 1 }, 
-        type: 'auto' 
-      }));
-    }
-  }
-
-  /* 
-   * objectAdded
-   */
-
-  // NOTE: now that we are creating new objects from within labelAdded middlware, 
-  // this is no longer used. However, markedEmpty is now really just adding 
-  // and empty object. Consider consolidating? 
-  else if (objectAdded.match(action)) {
-    console.log('reviewMiddleware.objectAdded(): ', action.payload);
-    const { imgId, bbox } = action.payload;
-    // TODO: double check this is working as intended
-    // if we are redoing a previous objectAdded action, 
-    // there will already be a newObject in the payload 
-    const newObject =  action.payload.newObject 
-      ?  action.payload.newObject
-      : {
-          _id: new ObjectID().toString(),
-          bbox: bbox,
-          locked: false,
-          labels: [],
-        };
-    const createObjectPayload = {
-      object: Object.assign({}, newObject),
-      imageId: imgId,
-    };
-    action.payload.newObject = newObject;
-    next(action);
-    store.dispatch(setFocus({ index: { object: 0 }, type: 'auto' }));
-    store.dispatch(addLabelStart());
-    store.dispatch(editLabel('create', 'object', createObjectPayload));
   }
 
   /* 

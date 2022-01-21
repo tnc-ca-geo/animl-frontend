@@ -143,32 +143,21 @@ const BoundingBoxLabel = ({
   const dispatch = useDispatch();
 
   // update selctor options when new labels become available
-  const [ options, setOptions ] = useState();
-  const availLabels = useSelector(selectAvailLabels);
   const createOption = (category) => ({
-    label: category,
     value: category.toLowerCase().replace(/\W/g, ''),
+    label: category,
   });
-  useEffect(() => {
-    const newOptions = availLabels.ids.map((id) => createOption(id));
-    setOptions(newOptions);
-  }, [ availLabels ]);
+  const availLabels = useSelector(selectAvailLabels);
+  const options = availLabels.ids.map((id) => createOption(id));
 
   // manage catagory selector state (open/closed)
   const addingLabel = useSelector(selectIsAddingLabel);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
-  useEffect(() => {
-    setCatSelectorOpen((addingLabel && selected));
-  }, [ addingLabel, selected ]);
+  const catSelectorOpen = (addingLabel && selected);
 
   // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
-      if (object.isTemp) {
-        // TODO: remove temp object
-        // dispatch(objectRemoved({ imgId, objId: object._id }));
-        setTempObject(null);
-      }
+      if (object.isTemp) setTempObject(null);
       dispatch(addLabelEnd());
     }
     addingLabel
@@ -187,7 +176,7 @@ const BoundingBoxLabel = ({
         dispatch(addLabelStart());
       }
     }
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ selected, dispatch ]);
 
@@ -200,27 +189,14 @@ const BoundingBoxLabel = ({
   };
 
   const handleCategoryChange = (newValue) => {
+    const category = newValue.value || newValue;
     if (newValue) {
       setTempObject(null);
       dispatch(labelAdded({
         objIsTemp: object.isTemp,
-        category: newValue.value,
         userId: username,
         bbox: object.bbox,
-        objId: object._id,
-        imgId,
-      }));
-    }
-  };
-
-  const handleCategoryCreate = (inputValue) => {
-    if (inputValue) {
-      setTempObject(null);
-      dispatch(labelAdded({
-        objIsTemp: object.isTemp,
-        category: inputValue,
-        userId: username,
-        bbox: object.bbox,
+        category,
         objId: object._id,
         imgId,
       }));
@@ -249,7 +225,7 @@ const BoundingBoxLabel = ({
               isLoading={availLabels.isLoading}
               isDisabled={availLabels.isLoading}
               onChange={handleCategoryChange}
-              onCreateOption={handleCategoryCreate}
+              onCreateOption={handleCategoryChange}
               value={createOption(label.category)}
               options={options}
             />

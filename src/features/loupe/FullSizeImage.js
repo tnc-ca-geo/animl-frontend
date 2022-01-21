@@ -79,9 +79,8 @@ const FullSizeImage = ({ image, focusIndex }) => {
       lbl.validation === null || lbl.validation.validated
     ))
   ));
-  if (tempObject) {
-    objectsToRender.push(tempObject);
-  }
+  if (tempObject) objectsToRender.push(tempObject);
+
 
   // track whether the image has objects with empty, unvalidated labels
   const emptyLabels = currImgObjects.reduce((acc, curr) => {
@@ -128,10 +127,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
           imageWidth={dims.width}
           imageHeight={dims.height}
           object={object}
-          objectIndex={!object.isTemp 
-            ? currImgObjects.indexOf(object) 
-            : null
-          }
+          objectIndex={!object.isTemp ? currImgObjects.indexOf(object) : null}
           focusIndex={focusIndex}
           setTempObject={setTempObject}
         />

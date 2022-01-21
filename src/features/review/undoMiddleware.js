@@ -17,6 +17,13 @@ import {
 } from './reviewSlice';
 import { findObject } from '../../app/utils';
 
+// TODO - move towards refactoring all actions that are triggered by 
+// user input into their own "category" that can be tracked in undo/redo and 
+// reverted, and distinguish between more granular "internal" actions 
+// that get dispatched by middlware. 
+// Think of user-induced actions as their own layer,
+// separate from "internal" actions
+
 export const undoMiddleware = createUndoMiddleware({
   revertingActions: {
 
@@ -44,11 +51,6 @@ export const undoMiddleware = createUndoMiddleware({
         return { oldBbox: object.bbox };
       }
     },
-
-    // IN GENERAL - move towards refactoring all actions that are triggered by 
-    // user input into their own "category" that can be tracked in undo/redo and 
-    // reverted, and distinguish between "internal" actions that get dispatched
-    // by middlware. Think of user actions as their own layer...
 
     // objectAdded
     [objectAdded.toString()]: {

@@ -86,53 +86,33 @@ const BoundingBox = ({
   const dispatch = useDispatch();
 
   // track whether the object is focused
-  const [ objectFocused, setObjectFocused ] = useState();
-  useEffect(() => {
-    const focused = object.isTemp || focusIndex.object === objectIndex;
-    setObjectFocused(focused);
-  }, [ object.isTemp, focusIndex.object, objectIndex ]);
+  const objectFocused = object.isTemp || focusIndex.object === objectIndex;
 
-  // set label - maybe move this to label component?
-  const [ label, setLabel ] = useState();
-  useEffect(() => {
-    // show first non-invalidated label in array
-    let newLabel = object.labels.find((label) => (
-      label.validation === null || label.validation.validated 
-    ));
-    if (object.isTemp) { // unless object is being added
-      newLabel = { category: '', conf: 0, index: 0 }; // TODO: might need to actually create proper temp label w/ id here
-    }
-    else if (objectFocused && focusIndex.label) { // or obj & label are focused
-      newLabel = object.labels[focusIndex.label];
-    }
-    setLabel(newLabel);
-  }, [ object, focusIndex.label, objectFocused ]);
+  // show first non-invalidated label in array
+  let label = object.labels.find((label) => (
+    label.validation === null || label.validation.validated 
+  ));
+   // unless object is being added
+  if (object.isTemp) {
+    label = { category: '', conf: 0, index: 0 };
+  }
+  // or obj & label are focused
+  else if (objectFocused && focusIndex.label) {
+    label = object.labels[focusIndex.label];
+  }
 
   // set label color and confidence - maybe this belongs in label component?
-  const defaultColor = { primary: '$gray300', text: '$hiContrast' };
-  const [ labelIndex, setLabelIndex ] = useState(0);
-  const [ labelColor, setLabelColor ] = useState(defaultColor);
-  const [ conf, setConf ] = useState(100);
-  useEffect(() => {
-    if (label) {
-      // if obj is being added, it won't have a label yet, set labelIndex to 0
-      let lblIdx = object.labels.indexOf(label);
-      lblIdx = (lblIdx !== -1) ? lblIdx : 0;
-      setLabelIndex(lblIdx);
-      setLabelColor(labelColors(label.category));
-      setConf(Number.parseFloat(label.conf * 100).toFixed(1));
-    }
-  }, [ label, object ]);
+  const conf = Number.parseFloat(label.conf * 100).toFixed(1);
+  const labelColor = labelColors(label.category);
 
   // set index
-  const [ index, setIndex ] = useState();
-  useEffect(() => {
-    setIndex({
-      image: focusIndex.image,
-      object: objectIndex,  // will be null if object.isTemp
-      label: labelIndex // will be 0 if object.isTemp
-    });
-  }, [ focusIndex, objectIndex, labelIndex]);
+  let labelIndex = object.labels.indexOf(label);
+  labelIndex = (labelIndex !== -1) ? labelIndex : null;
+  const index = {
+    image: focusIndex.image,
+    object: objectIndex,
+    label: labelIndex 
+  };
   
   // track bbox
   const [ bbox, setBbox ] = useState(object.bbox);
@@ -242,8 +222,9 @@ const BoundingBox = ({
             setShowLabelButtons={setShowLabelButtons}
             setTempObject={setTempObject}
             verticalPos={(top > 30) ? 'top' : 'bottom'}
-            horizontalPos={
-              ((imageWidth - left - width) < 75) ? 'right' : 'left'
+            horizontalPos={((imageWidth - left - width) < 75) 
+              ? 'right' 
+              : 'left'
             }
           />
         }
