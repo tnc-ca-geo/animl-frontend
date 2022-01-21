@@ -81,6 +81,18 @@ const FullSizeImage = ({ image, focusIndex }) => {
   ));
   if (tempObject) objectsToRender.push(tempObject);
 
+  // if obejctsToRender contains any empties, order them first
+  // so that they get rendered below the smaller bboxes, 
+  // making them easier to select
+  const emptyObjIndices = objectsToRender.reduce((acc, curr, i) => {
+    if (curr.labels.some((lbl) => lbl.category === 'empty')) acc.push(i);
+    return acc;
+  }, []);
+  emptyObjIndices.forEach((i) => {
+    const object = objectsToRender[i];
+    objectsToRender.splice(i, 1);
+    objectsToRender.unshift(object);
+  });
 
   // track whether the image has objects with empty, unvalidated labels
   const emptyLabels = currImgObjects.reduce((acc, curr) => {
