@@ -1,21 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
 import { selectAvailLabels } from '../filters/filtersSlice';
 import { selectUserUsername } from '../user/userSlice.js';
-import {
-  labelAdded,
-  objectRemoved,
-  setFocus,
-} from '../review/reviewSlice';
-import {
-  addLabelStart,
-  addLabelEnd,
-  selectIsAddingLabel
-} from './loupeSlice';
+import { labelAdded, setFocus } from '../review/reviewSlice';
+import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice';
 import ValidationButtons from './ValidationButtons.js';
-import { truncate } from 'lodash';
 
 const StyledBoundingBoxLabel = styled('div', {
   // backgroundColor: '#345EFF',

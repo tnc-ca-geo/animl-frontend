@@ -8,9 +8,9 @@ import {
   setSelectedViewMiddleware,
   diffFiltersMiddleware
 } from '../features/views/viewsMiddleware';
-import { reviewMiddleware } from '../features/review/reviewMiddleware';
-
-// testing redux-undo-redo
+import { focusMiddleware } from '../features/review/focusMiddleware';
+import { labelMiddleware } from '../features/review/labelMiddleware';
+import { objectMiddleware } from '../features/review/objectMiddleware';
 import { undoMiddleware } from '../features/review/undoMiddleware';
 
 export const history = createBrowserHistory();
@@ -23,7 +23,9 @@ const store = configureStore({
       .concat(preFocusImageMiddleware)
       .concat(diffFiltersMiddleware)
       .concat(setSelectedViewMiddleware)
-      .concat(reviewMiddleware)
+      .concat(focusMiddleware)
+      .concat(labelMiddleware)
+      .concat(objectMiddleware)
       .concat(undoMiddleware)
   ),
 });

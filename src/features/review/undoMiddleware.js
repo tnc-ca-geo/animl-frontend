@@ -1,16 +1,14 @@
 import { createUndoMiddleware } from 'redux-undo-redo';
 import {
-  setFocus,
   bboxUpdated,
   labelAdded,
-  objectAdded,
-  objectRemoved,
+  // objectAdded,
+  // objectRemoved,
   objectLocked,
   objectManuallyUnlocked,
   labelValidated,
   labelValidationReverted,
   selectWorkingImages,
-  selectFocusIndex,
   labelRemoved,
   markedEmpty,
   markedEmptyReverted,
@@ -52,29 +50,29 @@ export const undoMiddleware = createUndoMiddleware({
       }
     },
 
-    // objectAdded
-    [objectAdded.toString()]: {
-      action: (action) => {
-        console.log('reverting objectAdded with action: ', action);
-        const imgId = action.payload.imgId;
-        const objId = action.payload.newObject._id;
-        return objectRemoved({ imgId, objId });
-      },
-    },
+    // // objectAdded
+    // [objectAdded.toString()]: {
+    //   action: (action) => {
+    //     console.log('reverting objectAdded with action: ', action);
+    //     const imgId = action.payload.imgId;
+    //     const objId = action.payload.newObject._id;
+    //     return objectRemoved({ imgId, objId });
+    //   },
+    // },
 
-    // objectRemoved
-    [objectRemoved.toString()]: {
-      action: (action, { bbox }) => {
-        console.log('reverting objectRemoved with action: ', action);
-        return objectAdded({ bbox, imgId: action.payload.imgId });
-      },
-      createArgs: (state, action) => { 
-        const { imgId, objId } = action.payload;
-        const workingImages = selectWorkingImages(state);
-        const object = findObject(workingImages, imgId, objId )
-        return { bbox: object.bbox };
-      }
-    },
+    // // objectRemoved
+    // [objectRemoved.toString()]: {
+    //   action: (action, { bbox }) => {
+    //     console.log('reverting objectRemoved with action: ', action);
+    //     return objectAdded({ bbox, imgId: action.payload.imgId });
+    //   },
+    //   createArgs: (state, action) => { 
+    //     const { imgId, objId } = action.payload;
+    //     const workingImages = selectWorkingImages(state);
+    //     const object = findObject(workingImages, imgId, objId )
+    //     return { bbox: object.bbox };
+    //   }
+    // },
 
     // labelAdded
     [labelAdded.toString()]: {

@@ -38,14 +38,12 @@ export const reviewSlice = createSlice({
       object.bbox = payload.bbox;
     },
 
-    objectAdded: (state, { payload }) => {
-      console.log('reviewSlice.objectAdded(): ', payload);
-      const image = findImage(state.workingImages, payload.imgId);
-      // TODO: double check this is getting properly removed after objectRemoved 
-      // and during undo/redo process 
-      payload.newObject.isTemp = true; 
-      image.objects.unshift(payload.newObject);
-    },
+    // objectAdded: (state, { payload }) => {
+    //   console.log('reviewSlice.objectAdded(): ', payload);
+    //   const image = findImage(state.workingImages, payload.imgId);
+    //   payload.newObject.isTemp = true; 
+    //   image.objects.unshift(payload.newObject);
+    // },
 
     objectRemoved: (state, { payload }) => {
       console.log('reviewSlice.objectRemoved(): ', payload);
@@ -139,7 +137,7 @@ export const reviewSlice = createSlice({
 export const {
   setFocus,
   bboxUpdated,
-  objectAdded,
+  // objectAdded,
   objectRemoved,
   labelAdded,
   labelRemoved,
