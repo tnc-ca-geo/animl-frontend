@@ -1,4 +1,4 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { push } from 'connected-react-router';
 import moment from 'moment';

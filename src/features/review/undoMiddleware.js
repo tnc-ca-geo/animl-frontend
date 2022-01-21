@@ -2,8 +2,6 @@ import { createUndoMiddleware } from 'redux-undo-redo';
 import {
   bboxUpdated,
   labelAdded,
-  // objectAdded,
-  // objectRemoved,
   objectLocked,
   objectManuallyUnlocked,
   labelValidated,
@@ -15,64 +13,8 @@ import {
 } from './reviewSlice';
 import { findObject } from '../../app/utils';
 
-// TODO - move towards refactoring all actions that are triggered by 
-// user input into their own "category" that can be tracked in undo/redo and 
-// reverted, and distinguish between more granular "internal" actions 
-// that get dispatched by middlware. 
-// Think of user-induced actions as their own layer,
-// separate from "internal" actions
-
 export const undoMiddleware = createUndoMiddleware({
   revertingActions: {
-
-    // // setFocus
-    // [setFocus.toString()]: {
-    //   action: (action, { oldFocus }) => (
-    //     setFocus({ index: oldFocus, type: action.payload.type })
-    //   ),
-    //   createArgs: (state, action) => ({ oldFocus: selectFocusIndex(state) })
-    // },
-
-    // bboxUpdated
-    [bboxUpdated.toString()]: {
-      action: (action, { oldBbox }) => ( 
-        bboxUpdated({
-          imgId: action.payload.imgId,
-          objId: action.payload.objId,
-          bbox: oldBbox
-        })
-      ),
-      createArgs: (state, action) => { 
-        const workingImages = selectWorkingImages(state);
-        const { imgId, objId } = action.payload;
-        const object = findObject(workingImages, imgId, objId);
-        return { oldBbox: object.bbox };
-      }
-    },
-
-    // // objectAdded
-    // [objectAdded.toString()]: {
-    //   action: (action) => {
-    //     console.log('reverting objectAdded with action: ', action);
-    //     const imgId = action.payload.imgId;
-    //     const objId = action.payload.newObject._id;
-    //     return objectRemoved({ imgId, objId });
-    //   },
-    // },
-
-    // // objectRemoved
-    // [objectRemoved.toString()]: {
-    //   action: (action, { bbox }) => {
-    //     console.log('reverting objectRemoved with action: ', action);
-    //     return objectAdded({ bbox, imgId: action.payload.imgId });
-    //   },
-    //   createArgs: (state, action) => { 
-    //     const { imgId, objId } = action.payload;
-    //     const workingImages = selectWorkingImages(state);
-    //     const object = findObject(workingImages, imgId, objId )
-    //     return { bbox: object.bbox };
-    //   }
-    // },
 
     // labelAdded
     [labelAdded.toString()]: {
@@ -104,6 +46,24 @@ export const undoMiddleware = createUndoMiddleware({
           oldValidation: label.validation,
           oldLocked: object.locked
         }
+      }
+    },
+
+    // bboxUpdated
+    [bboxUpdated.toString()]: {
+      action: (action, { oldBbox }) => {
+        console.log("reverting bboxUpdated with action: ", action);
+        bboxUpdated({
+          imgId: action.payload.imgId,
+          objId: action.payload.objId,
+          bbox: oldBbox
+        })
+      },
+      createArgs: (state, action) => { 
+        const workingImages = selectWorkingImages(state);
+        const { imgId, objId } = action.payload;
+        const object = findObject(workingImages, imgId, objId);
+        return { oldBbox: object.bbox };
       }
     },
 

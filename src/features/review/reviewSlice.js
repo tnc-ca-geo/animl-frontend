@@ -7,7 +7,6 @@ import {
   updateObjectsSuccess
 } from '../images/imagesSlice';
 
-
 const initialState = {
   workingImages: [],
   focusIndex: {
@@ -38,13 +37,6 @@ export const reviewSlice = createSlice({
       object.bbox = payload.bbox;
     },
 
-    // objectAdded: (state, { payload }) => {
-    //   console.log('reviewSlice.objectAdded(): ', payload);
-    //   const image = findImage(state.workingImages, payload.imgId);
-    //   payload.newObject.isTemp = true; 
-    //   image.objects.unshift(payload.newObject);
-    // },
-
     objectRemoved: (state, { payload }) => {
       console.log('reviewSlice.objectRemoved(): ', payload);
       const image = findImage(state.workingImages, payload.imgId);
@@ -67,7 +59,7 @@ export const reviewSlice = createSlice({
       }
     },
 
-    labelRemoved: (state, { payload }) => { // only used for undoing labelAdded
+    labelRemoved: (state, { payload }) => {
       console.log('reviewSlice.labelRemoved(): ', payload);
       const { imgId, objId, newLabel } = payload;
       const image = findImage(state.workingImages, imgId);
@@ -137,7 +129,6 @@ export const reviewSlice = createSlice({
 export const {
   setFocus,
   bboxUpdated,
-  // objectAdded,
   objectRemoved,
   labelAdded,
   labelRemoved,
@@ -158,4 +149,3 @@ export const selectFocusIndex = state => state.review.focusIndex;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 
 export default reviewSlice.reducer;
-

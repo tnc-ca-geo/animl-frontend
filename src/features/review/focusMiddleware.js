@@ -139,16 +139,17 @@ export const focusMiddleware = store => next => action => {
     const delta = action.payload;
     const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
-    console.log(`${delta}ing with focusIndex: `, focusIndex)
+    console.log(`${delta}ing with focusIndex: `, focusIndex);
+    const focusedOnFirstImg = focusIndex.image === 0;
+    const focusedOnLastImg = focusIndex.image === workingImages.length - 1;
 
-    if (delta === 'decrement' && focusIndex.image > 0) {
+    if (delta === 'decrement' && !focusedOnFirstImg) {
       store.dispatch(setFocus({ 
         index: { image: focusIndex.image - 1 },
         type: 'auto' 
       }));
     }
-    else if (delta === 'increment' &&
-             focusIndex.image < workingImages.length - 1) {
+    else if (delta === 'increment' && !focusedOnLastImg) {
       store.dispatch(setFocus({
         index: { image: focusIndex.image + 1 }, 
         type: 'auto' 

@@ -1,5 +1,4 @@
 
-import _ from 'lodash';
 import { ObjectID } from 'bson';
 import { editLabel } from '../images/imagesSlice';
 import {
@@ -27,35 +26,6 @@ export const objectMiddleware = store => next => action => {
       diffs: { bbox },
     }));
   }
-
-  /* 
-   * objectAdded
-   * NOTE: now that we are creating new objects from within
-   * labelAdded and markedEmpty middleware, this is no longer used.
-   */
-  
-  // else if (objectAdded.match(action)) {
-  //   console.log('objectMiddleware.objectAdded(): ', action.payload);
-  //   const { imgId, bbox, newObject } = action.payload;
-
-  //   const object = {
-  //     _id: new ObjectID().toString(),
-  //     bbox: bbox,
-  //     locked: false,
-  //     labels: [],
-  //   };
-  //   // if we are redoing a previous objectAdded action, 
-  //   // there will already be a newObject in the payload 
-  //   action.payload.newObject = newObject || object;
-
-  //   next(action);
-  //   store.dispatch(setFocus({ index: { object: 0 }, type: 'auto' }));
-  //   store.dispatch(addLabelStart());
-  //   store.dispatch(editLabel('create', 'object', {
-  //     object: action.payload.newObject,
-  //     imageId: imgId,
-  //   }));
-  // }
 
  /* 
   * objectRemoved

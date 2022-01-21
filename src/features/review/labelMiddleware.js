@@ -26,7 +26,9 @@ export const labelMiddleware = store => next => action => {
     const { newLabel, bbox, userId, category } = action.payload;
     const { objIsTemp, imgId, objId, newObject } = action.payload;
 
-    const label = {
+    // if we are redoing a previous labelAdded action, 
+    // there will already be a newLabel in the payload 
+    action.payload.newLabel = newLabel || {
       _id: new ObjectID().toString(),
       category,
       bbox,
@@ -35,9 +37,6 @@ export const labelMiddleware = store => next => action => {
       conf: 1,
       userId: userId
     };
-    // if we are redoing a previous labelAdded action, 
-    // there will already be a newLabel in the payload 
-    action.payload.newLabel = newLabel || label;
 
     if (objIsTemp) {
       action.payload.newObject = newObject || {
@@ -114,10 +113,8 @@ export const labelMiddleware = store => next => action => {
 
     next(action);
   
-    // TODO: increment focus? 
-    // store.dispatch(incrementFocusIndex('increment'));
-    // TODO: fetchLabels again? 
-    // store.dispatch(fetchLabels());
+    // store.dispatch(incrementFocusIndex('increment')); // increment focus?
+    // store.dispatch(fetchLabels()); // fetchLabels again? 
   }
 
   /* 
@@ -126,8 +123,8 @@ export const labelMiddleware = store => next => action => {
 
   else if (labelValidated.match(action)) {
     console.log('labelMiddleware.labelValidated() - ', action);
-    next(action);
     const { userId, imgId, objId, lblId, validated } = action.payload;
+    next(action);
 
     // update label
     const validation = { validated, userId };
