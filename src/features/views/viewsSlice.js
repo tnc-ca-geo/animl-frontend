@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
@@ -185,7 +185,9 @@ export const fetchModels = () => async dispatch => {
 export const selectViewsLoading = state => state.views.isLoading;
 export const selectUnsavedViewChanges = state => state.views.unsavedChanges;
 export const selectViews = state => state.views;
-export const selectModels = state => Object.values(state.views.views.models);
+export const selectModels = createSelector([selectViews],
+  (views) => Object.values(views.models)
+);
 export const selectSelectedView = state => (
   state.views.views.find((view) => view.selected)
 );
