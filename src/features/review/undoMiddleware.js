@@ -53,7 +53,7 @@ export const undoMiddleware = createUndoMiddleware({
     [bboxUpdated.toString()]: {
       action: (action, { oldBbox }) => {
         console.log("reverting bboxUpdated with action: ", action);
-        bboxUpdated({
+        return bboxUpdated({
           imgId: action.payload.imgId,
           objId: action.payload.objId,
           bbox: oldBbox
