@@ -9,7 +9,7 @@ import { IMAGE_QUERY_LIMITS } from '../../config';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const initialState = {
-  images: [],
+  images: [], // we are barely using this... consider removing?
   isLoading: false,
   isUpdatingObjects: false,
   isEditingLabel: false,
@@ -80,6 +80,7 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    // NOTE: not using updateObject anymore
     updateObjectsStart: (state) => { state.isUpdatingObjects = true; },
 
     updateObjectsFailure: (state, { payload }) => {

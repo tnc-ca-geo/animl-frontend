@@ -5,7 +5,6 @@ import { styled } from '../../theme/stitches.config.js';
 import { selectWorkingImages } from '../review/reviewSlice';
 import {
   fetchImages,
-  selectImages,
   selectHasNext,
   selectIsLoading,
   selectPaginatedField,

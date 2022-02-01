@@ -207,7 +207,10 @@ const BoundingBox = ({
         onMouseEnter={handleBBoxHover}
         onMouseLeave={handleBBoxMouseLeave}
         selected={objectFocused}
-        css={{ borderColor: labelColor.primary }}
+        css={{ 
+          borderColor: labelColor.primary,
+          background: labelColor.primary + '0D',
+        }}
       >
         {label &&
           <BoundingBoxLabel

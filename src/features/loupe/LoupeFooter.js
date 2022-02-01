@@ -8,17 +8,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import { selectUserUsername } from '../user/userSlice';
 import { selectImagesCount } from '../images/imagesSlice';
+import { selectIsAddingLabel, selectReviewMode } from './loupeSlice';
 import {
-  labelValidated,
   incrementFocusIndex,
   incrementImage,
   selectFocusIndex,
 } from '../review/reviewSlice';
-import {
-  selectIsAddingLabel,
-  selectReviewMode 
-} from './loupeSlice';
-import { validateSDL } from 'graphql/validation/validate';
 
 const IndexDisplay = styled('div', {
   fontFamily: '$mono',
