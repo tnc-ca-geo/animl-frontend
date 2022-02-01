@@ -263,7 +263,7 @@ export const fetchLabels = () => async dispatch => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    if(token){
+    if (token) {
       dispatch(getLabelsStart());
       const labels = await call('getLabels');
       dispatch(getLabelsSuccess(labels));

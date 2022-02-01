@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   username: null,
   groups: [],
+  projects: {},
   authState: null,
 };
 
@@ -13,8 +14,26 @@ export const userSlice = createSlice({
 
     userAuthStateChanged: (state, { payload }) => {
       state.authState = payload.nextAuthState;
-      state.username = payload.username ? payload.username : null;
-      state.groups = payload.groups ? payload.groups : null;
+      state.username = payload.username || null;
+      state.groups = payload.groups || null;
+      if (payload.groups) {
+        state.projects = payload.groups.reduce((projects, group, i) => {
+          const groupComponents = group.split('/');
+          if (groupComponents.length !== 3) return projects;
+          const project = groupComponents[1];
+          const role = groupComponents[2];
+          if (!projects[project]) {
+            projects[project] = { roles: [role], selected: i === 0 };
+          }
+          else {
+            projects[project].roles.push(role);
+          }
+          return projects;
+        }, {});
+      }
+      else {
+        state.projects = null;
+      }
     },
 
   },

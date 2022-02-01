@@ -18,6 +18,7 @@ export async function call(request, input) {
     const graphQLClient = new GraphQLClient(API_URL, {
       headers: {
         authorization: `Bearer ${token}`,
+        // project: 'sci_biosecurity',
       },
     });
     const query = gql`${params.template}`;

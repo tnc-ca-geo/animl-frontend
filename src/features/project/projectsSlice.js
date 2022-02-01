@@ -10,8 +10,8 @@ const initialState = {
   error: null
 };
 
-export const projectSlice = createSlice({
-  name: 'project',
+export const projectsSlice = createSlice({
+  name: 'projects',
   initialState,
   reducers: {
 
@@ -45,7 +45,7 @@ export const {
   getUsersStart,
   getUsersFailure,
   getUsersSuccess
-} = projectSlice.actions;
+} = projectsSlice.actions;
 
 // fetchUsers thunk
 export const fetchUsers = () => async dispatch => {
@@ -68,6 +68,6 @@ export const fetchUsers = () => async dispatch => {
 // export const selectUserAuthState = state => state.user.authState;
 // export const selectUserGroups = state => state.user.groups;
 // export const selectUserUsername = state => state.user.username;
-export const selectProjectUsers = state => state.project.users;
+// export const selectProjectUsers = state => state.projects.users;
 
-export default projectSlice.reducer;
+export default projectsSlice.reducer;

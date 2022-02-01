@@ -8,12 +8,12 @@ import camerasReducer from '../features/cameras/camerasSlice';
 import reviewReducer from '../features/review/reviewSlice';
 import viewsReducer from '../features/views/viewsSlice';
 import loupeReducer from '../features/loupe/loupeSlice';
-import projectSlice from '../features/project/projectSlice';
+import projectsSlice from '../features/project/projectsSlice';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
   user: userSlice,
-  project: projectSlice,
+  projects: projectsSlice,
   filters: filtersReducer,
   images: imagesReducer,
   cameras: camerasReducer,

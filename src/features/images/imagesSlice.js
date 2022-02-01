@@ -140,7 +140,7 @@ export const fetchImages = (filters, page = 'current') => {
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
         dispatch(getImagesStart());
-        const pageInfo = getState().images.pageInfo;
+        const pageInfo = getState().images.pageInfo;  // TODO: should we be using selectors here?
         let res = await call('getImages', { filters, pageInfo, page });
         const cameras = getState().cameras.cameras;
         res = enrichImages(res, cameras);
