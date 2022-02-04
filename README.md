@@ -2,7 +2,7 @@
 A frontend web app for viewing & labeling camera trap data by 
 [The Nature Conservancy](https://www.nature.org/).
 
-[Animl screenshot](screenshots/animl-frontend-v0.1.0.jpg)
+![Animl screenshot](screenshots/animl-frontend-v0.1.0.jpg)
 
 ## `Related repos`
 
