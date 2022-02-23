@@ -26,6 +26,8 @@ const checkIfValidMD5Hash = (hash) => {
   return regexExp.test(hash);
 };
 
+// TODO AUTH - update this to trigger checks on actions from new project slice
+
 // Track whether active filters match selected view filters
 export const diffFiltersMiddleware = store => next => action => {
   if (bulkSelectToggled.match(action) ||

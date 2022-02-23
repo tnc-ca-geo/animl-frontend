@@ -3,15 +3,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
-
-import { selectFiltersReady } from '../filters/filtersSlice';
 import {
+  fetchProjects,
+  selectProjects,
+  selectSelectedProject,
+  selectProjectsLoading,
   selectViews,
-  fetchViews,
-  setSelectedView,
   selectSelectedView,
+  setSelectedProject,
+  setSelectedView,
+} from '../projects/projectsSlice';
+import { selectAvailLabels, selectFiltersReady } from '../filters/filtersSlice';
+import {
+  // selectViews,
+  // fetchViews,
+  // setSelectedView,
+  // selectSelectedView,
   selectUnsavedViewChanges,
-  selectViewsLoading,
+  // selectViewsLoading,
  } from './viewsSlice';
 
 const ViewMenuItem = styled('li', {
@@ -33,7 +42,7 @@ const ViewMenuItem = styled('li', {
   }
 });
 
-const ViewMenu = styled('div', {
+const DropDownMenu = styled('div', {
   position: 'absolute',
   zIndex: '$5',
   width: '250px',
@@ -105,60 +114,99 @@ const StyledViewSelector = styled('div', {
 });
 
 const ViewSelector = () => {
+  console.group('ViewSelector() rendering');
+  const projectsLoading = useSelector(selectProjectsLoading);
+  console.log('projectsLoading: ', projectsLoading)
+  const projects = useSelector(selectProjects);
+  console.log('projects: ', projects)
+  const selectedProject = useSelector(selectSelectedProject);
+  console.log('selectedProject: ', selectedProject)
   const views = useSelector(selectViews);
+  console.log('views: ', views)
   const selectedView = useSelector(selectSelectedView);
-  const viewsAreLoading = useSelector(selectViewsLoading)
-  const filtersReady = useSelector(selectFiltersReady);
+  console.log('selectedView: ', selectedView)
+  const availLabels = useSelector(selectAvailLabels);
+  console.groupEnd();
+
+  // const viewsAreLoading = useSelector(selectViewsLoading)
+  // const filtersReady = useSelector(selectFiltersReady);
   const unsavedChanges = useSelector(selectUnsavedViewChanges);
-  const [expanded, setExpanded] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!views.views.length && !viewsAreLoading) {
-      dispatch(fetchViews());
+    if (!projects.length && !projectsLoading) {
+      dispatch(fetchProjects());
     }
-  }, [views, viewsAreLoading, dispatch]);
+  }, [projects, projectsLoading, dispatch]);
 
   useEffect(() => {
     // Wait for filters and views to load before setting selected view,
-    // and don't override user's filter selections if there are unsaved chagnes
-    if (filtersReady && selectedView && !unsavedChanges) {
+    // and don't override user's filter selections if there are unsaved changes
+    if (availLabels.ids.length && selectedView && !unsavedChanges) {
       dispatch(setSelectedView({ view: selectedView }));
     }
-  }, [selectedView, filtersReady, unsavedChanges, dispatch]);
+  }, [selectedView, availLabels.ids, unsavedChanges, dispatch]);
 
   useEffect(() => {
-    const handleWindowClick = () => { setExpanded(false) };
-    expanded 
+    const handleWindowClick = () => { setExpandedMenu(null) };
+    expandedMenu 
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
     return () => window.removeEventListener('click', handleWindowClick);
-  }, [expanded, setExpanded]);
+  }, [expandedMenu, setExpandedMenu]);
 
-  const handleViewNavClick = () => {
-    setExpanded(!expanded);
+  const handleMenuCrumbClick = (entity) => {
+    expandedMenu ? setExpandedMenu(null) : setExpandedMenu(entity);
   };
 
+  const handleProjectMenuItemClick = (e) => {
+    const projId = e.target.dataset.projId
+    if (projId !== selectedProject._id) dispatch(setSelectedProject(projId));
+  }
+
   const handleViewMenuItemClick = (e) => {
-    const _id = e.target.dataset.viewId;
-    const newSelectedView = views.views.find((view) => view._id === _id);
-    dispatch(setSelectedView({ view: newSelectedView }));
+    const viewId = e.target.dataset.viewId
+    if (viewId !== selectedView._id) dispatch(setSelectedView(viewId));
   }
 
   return (
     <StyledViewSelector>
-      <ViewNavigation onClick={handleViewNavClick}>
+      <ViewNavigation>
         <Breadcrumbs>
           <Crumb>
-            Santa Cruz Island
+            <SelectedViewCrumb
+              onClick={() => handleMenuCrumbClick('project')}
+            >
+              {selectedProject ? selectedProject.name : 'Loading projects...'}
+              {expandedMenu === 'project' &&
+                <DropDownMenu>
+                  <ul>
+                    {projects.map((proj) => (
+                      <ViewMenuItem
+                        key={proj._id}
+                        selected={proj.selected}
+                        data-proj-id={proj._id}
+                        onClick={handleProjectMenuItemClick}
+                      >
+                        {proj.name}
+                      </ViewMenuItem>
+                    ))}
+                  </ul>
+                </DropDownMenu>
+              }
+            </SelectedViewCrumb>
           </Crumb>
           /
-          <SelectedViewCrumb edited={unsavedChanges}>
-            {selectedView ? selectedView.name : 'Loading view...'}
-            {expanded &&
-              <ViewMenu>
+          <SelectedViewCrumb
+            edited={unsavedChanges}
+            onClick={() => handleMenuCrumbClick('view')}
+          >
+            {selectedView ? selectedView.name : 'Loading views...'}
+            {expandedMenu === 'view' &&
+              <DropDownMenu>
                 <ul>
-                  {views.views.map((view) => (
+                  {views.map((view) => (
                     <ViewMenuItem
                       key={view._id}
                       selected={view.selected}
@@ -169,13 +217,13 @@ const ViewSelector = () => {
                     </ViewMenuItem>
                   ))}
                 </ul>
-              </ViewMenu>
+              </DropDownMenu>
             }
           </SelectedViewCrumb>
         </Breadcrumbs>
         <IconButton variant='ghost'>
           <FontAwesomeIcon icon={ 
-            expanded ? ['fas', 'angle-up'] : ['fas', 'angle-down']
+            expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']
           }/>
         </IconButton>
       </ViewNavigation>

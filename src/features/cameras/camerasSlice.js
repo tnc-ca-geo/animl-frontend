@@ -96,8 +96,14 @@ export const editDeployments = (operation, payload) => {
         const err = `An operation (create, update, or delete) is required`;
         throw new Error(err);
       }
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
       dispatch(editDeploymentsStart());
-      const res = await call(operation, payload);
+      const res = await call({
+        projId: selectedProj._id,
+        request: operation,
+        input: payload,
+      });
       let camera = res[operation].camera;
       camera = enrichCameras([camera])[0];
       dispatch(editDeploymentsSuccess({

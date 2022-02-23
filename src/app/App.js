@@ -60,7 +60,8 @@ const App = () => {
       <NavBar />
       <Switch>
         <Route path="/">
-          <HomePage />
+          homepage
+          {/*<HomePage />*/}
         </Route>
       </Switch>
     </AppContainer>

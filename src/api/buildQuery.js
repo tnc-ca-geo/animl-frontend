@@ -26,10 +26,32 @@ const viewFields = `
     action {
       type
       alertRecipients
-      model
+      mlModel
+      confThreshold
+      categoryConfig
     }
   }
-`
+`;
+
+const cameraConfigFields = `
+  _id
+  deployments {
+    _id
+    name
+    description
+    timezone
+    startDate
+    editable
+    location {
+      _id
+      geometry {
+        type
+        coordinates
+      }
+      name
+    }
+  }
+`;
 
 const cameraFields = `
   _id
@@ -49,7 +71,7 @@ const cameraFields = `
       name
     }
   }
-`
+`;
 
 const labelFields = `
   _id
@@ -65,7 +87,7 @@ const labelFields = `
   }
   modelId
   userId
-`
+`;
 
 const objectFields = `
   _id
@@ -74,7 +96,7 @@ const objectFields = `
   labels {
     ${labelFields}
   }
-`
+`;
 
 const imageFields = `
   _id
@@ -93,9 +115,31 @@ const pageInfoFields = `
   hasPrevious
   next
   hasNext
-  count`;
+  count
+`;
 
 const queries = {
+
+  getProjects: (input) => ({
+    // TODO AUTH - build out this new query template 
+    template: `
+      {
+        projects {
+          _id
+          name
+          timezone
+          description
+          views {
+            ${viewFields}
+          }
+          cameras {
+            ${cameraConfigFields}
+          }
+          availableMLModels 
+        }
+      }
+    `,
+  }),
 
   getViews: (input) => ({
     template: `

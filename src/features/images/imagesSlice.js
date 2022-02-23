@@ -133,15 +133,21 @@ export const {
 } = imagesSlice.actions;
 
 // fetchImages thunk
-export const fetchImages = (filters, page = 'current') => {
+export const fetchImages = (filters, page = 'current' ) => {
   return async (dispatch, getState) => {
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
-        dispatch(getImagesStart());
+        const projects = getState().projects.projects
+        const selectedProj = projects.find((proj) => proj.selected);
         const pageInfo = getState().images.pageInfo;  // TODO: should we be using selectors here?
-        let res = await call('getImages', { filters, pageInfo, page });
+        dispatch(getImagesStart());
+        let res = await call({
+          projId: selectedProj._id,
+          request: 'getImages',
+          input: { filters, pageInfo, page },
+        });
         const cameras = getState().cameras.cameras;
         res = enrichImages(res, cameras);
         if (page !== 'next') {
@@ -156,7 +162,7 @@ export const fetchImages = (filters, page = 'current') => {
 };
 
 // editLabel thunk
-export const editLabel = (operation, entity, payload) => {
+export const editLabel = (operation, entity, payload, projId) => {
   return async (dispatch, getState) => {
     try {
       if (!operation || !entity || !payload) {
@@ -164,6 +170,8 @@ export const editLabel = (operation, entity, payload) => {
           and entity are required`;
         throw new Error(err);
       }
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
       dispatch(editLabelStart());
       console.groupCollapsed(`editLabel() - ${operation} ${entity}`);
       console.log(`payload: `, payload);
@@ -171,7 +179,11 @@ export const editLabel = (operation, entity, payload) => {
       // TODO: do we really need to pass in the operation and entity separately?
       // why not just do one string, e.g.: 'createObject'
       const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
-      const res = await call(req, payload);
+      const res = await call({
+        projId: selectedProj._id, 
+        request: req,
+        input: payload 
+      });
       const mutation = Object.keys(res)[0];
       const image = res[mutation].image;
       console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
@@ -191,9 +203,14 @@ export const fetchImageContext = (imgId) => {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
-
+        const projects = getState().projects.projects
+        const selectedProj = projects.find((proj) => proj.selected);
         dispatch(getImagesStart());        
-        let focusedImg = await call('getImage', { imgId });
+        let focusedImg = await call({
+          projId: selectedProj._id,
+          request: 'getImage',
+          input: { imgId }
+        });
         if (!focusedImg.image) {
           const err = `Failed to find an image with Id: ${imgId}`;
           throw new Error(err);

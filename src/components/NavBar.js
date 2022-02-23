@@ -63,14 +63,6 @@ const NavBar = () => {
           width='126'
         />
       </Logo>
-      {/*<NavLinks>
-        <li>
-          <NavLink to="/">Home</NavLink>
-        </li>
-        <li>
-          <NavLink to="/counter">Counter</NavLink>
-        </li>
-      </NavLinks>*/}
       <ViewSelectorWrapper>
         <ViewSelector />
       </ViewSelectorWrapper>

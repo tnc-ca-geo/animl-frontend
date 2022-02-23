@@ -107,21 +107,21 @@ export const {
 // TODO: maybe use createAsyncThunk for these? 
 // https://redux-toolkit.js.org/api/createAsyncThunk
 
-// fetchViews thunk
-export const fetchViews = () => async dispatch => {
-  try {
-    const currentUser = await Auth.currentAuthenticatedUser();
-    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+// // fetchViews thunk
+// export const fetchViews = () => async dispatch => {
+//   try {
+//     const currentUser = await Auth.currentAuthenticatedUser();
+//     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
    
-    if(token){
-      dispatch(getViewsStart());  
-      const views = await call('getViews');
-      dispatch(getViewsSuccess(views));
-    }
-  } catch (err) {
-    dispatch(getViewsFailure(err.toString()))
-  }
-};
+//     if(token){
+//       dispatch(getViewsStart());  
+//       const views = await call('getViews');
+//       dispatch(getViewsSuccess(views));
+//     }
+//   } catch (err) {
+//     dispatch(getViewsFailure(err.toString()))
+//   }
+// };
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?
@@ -129,24 +129,38 @@ export const fetchViews = () => async dispatch => {
 export const editView = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
       dispatch(editViewStart());
       switch (operation) {
         case 'create': {
-          const res = await call('createView', payload);
+          const res = await call({ 
+            projId: selectedProj._id,
+            request: 'createView',
+            input: payload
+          });
           const view = res.createView.view;
           dispatch(saveViewSuccess(view));
           dispatch(setSelectedView({ view }));
           break;
         }
         case 'update': {
-          const res = await call('updateView', payload);
+          const res = await call({
+            projId: selectedProj._id,
+            request: 'updateView', 
+            input: payload
+          });
           const view = res.updateView.view;
           dispatch(saveViewSuccess(view));
           dispatch(setSelectedView({ view }));
           break;
         }
         case 'delete': {
-          const res = await call('deleteView', payload);
+          const res = await call({
+            projId: selectedProj._id,
+            request: 'deleteView', 
+            input: payload
+          });
           const deletedViewId = res.deleteView.viewId;
           const views = getState().views.views;
           const defaultView = views.find((view) => view.name === 'All images');

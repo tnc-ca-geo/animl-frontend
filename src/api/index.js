@@ -4,7 +4,7 @@ import { Auth } from 'aws-amplify';
 import buildQuery from './buildQuery';
 import { API_URL } from '../config';
 
-export async function call(request, input) {
+export async function call({ projId, request, input }) {
   let token;
 
   try {
@@ -17,8 +17,8 @@ export async function call(request, input) {
   try {
     const graphQLClient = new GraphQLClient(API_URL, {
       headers: {
-        authorization: `Bearer ${token}`,
-        // project: 'sci_biosecurity',
+        'authorization': `Bearer ${token}`,
+        ...(projId && { 'x-selected-project': projId }),
       },
     });
     const query = gql`${params.template}`;

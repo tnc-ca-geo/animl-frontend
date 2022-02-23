@@ -16,6 +16,7 @@ import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 import CustomFilter from './CustomFilter.js';
 import FiltersPanelFooter from './FiltersPanelFooter';
+import { selectSelectedProject } from '../projects/projectsSlice.js';
 
 // const Label = styled('span', {
 //   // marginLeft: '$2',
@@ -39,6 +40,7 @@ const StyledFiltersPanel = styled('div', {
 });
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {
+  const selectedProject = useSelector(selectSelectedProject);
   const activeFilters = useSelector(selectActiveFilters);
   const availCameras = useSelector(selectAvailCameras);
   const availLabels = useSelector(selectAvailLabels);
@@ -46,12 +48,13 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!availLabels.ids.length && 
+    if (selectedProject._id &&
+        !availLabels.ids.length && 
         !availLabels.noneFound && 
         !availLabels.error) {
-      dispatch(fetchLabels());
+      dispatch(fetchLabels(selectedProject._id));
     }
-  }, [availCameras, availLabels, dispatch]);
+  }, [selectedProject._id, availCameras, availLabels, dispatch]);
 
   const [ showCustomFilter, setShowCustomFilter ] = useState(false);
   useEffect(() => {

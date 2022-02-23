@@ -5,6 +5,12 @@ import {
   getCamerasSuccess,
   editDeploymentsSuccess,
 } from '../cameras/camerasSlice';
+import {
+  getProjectsStart,
+  getProjectsFailure,
+  getProjectsSuccess,
+  selectSelectedProject
+} from '../projects/projectsSlice';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
 import { normalizeFilters } from './utils';
@@ -156,18 +162,20 @@ export const filtersSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(getCamerasStart, (state, { payload }) => {
+      .addCase(getProjectsStart, (state, { payload }) => {
         state.availFilters.cameras.isLoading = true;
         state.availFilters.deployments.isLoading = true;
       })          
-      .addCase(getCamerasFailure, (state, { payload }) => {
+      .addCase(getProjectsFailure, (state, { payload }) => {
         state.availFilters.cameras.isLoading = false;
         state.availFilters.cameras.error = payload;
   
         state.availFilters.deployments.isLoading = false;
         state.availFilters.deployments.error = payload;
       })      
+      // TODO AUTH - update to pull from currently selected Project & View
       .addCase(getCamerasSuccess, (state, { payload }) => {
+
         // update deployment filters state
         state.availFilters.deployments.isLoading = false;
         state.availFilters.deployments.error = null;
@@ -259,13 +267,18 @@ export const {
 // https://redux-toolkit.js.org/api/createAsyncThunk
 
 // fetchLabels thunk
-export const fetchLabels = () => async dispatch => {
+export const fetchLabels = () => async (dispatch, getState)=> {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
       dispatch(getLabelsStart());
-      const labels = await call('getLabels');
+      const labels = await call({
+        projId: selectedProj._id,
+        request: 'getLabels',
+      });
       dispatch(getLabelsSuccess(labels));
     }
   } catch (err) {
