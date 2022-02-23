@@ -1,15 +1,36 @@
-import React from 'react';
-import { styled } from '../../theme/stitches.config.js';
-import { useDispatch } from 'react-redux'
-import { checkboxFilterToggled } from './filtersSlice';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSelectedProject } from '../projects/projectsSlice.js';
+import {
+  fetchLabels,
+  selectAvailLabels,
+  selectActiveFilters,
+  checkboxFilterToggled
+} from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 
-const LabelFilter = ({ availLabels, activeLabels }) => {
+
+const LabelFilter = () => {
+  const selectedProject = useSelector(selectSelectedProject);
+  const availLabels = useSelector(selectAvailLabels);
+  const activeFilters = useSelector(selectActiveFilters);
+  const activeLabels = activeFilters.labels;
   const dispatch = useDispatch();
+
+  const haveLabels = availLabels && 
+                     availLabels.ids.length && 
+                     !availLabels.noneFound && 
+                     !availLabels.error;
+
+  useEffect(() => {
+    if (selectedProject) {
+      dispatch(fetchLabels(selectedProject._id));
+    }
+  }, [selectedProject, dispatch]);
 
   const handleCheckboxChange = (e) => {
     const payload = {

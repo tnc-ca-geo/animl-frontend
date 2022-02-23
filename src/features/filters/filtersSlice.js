@@ -66,6 +66,7 @@ export const filtersSlice = createSlice({
     getLabelsFailure: (state, { payload }) => {
       state.availFilters.labels.isLoading = false;
       state.availFilters.labels.error = payload;
+      state.availFilters.labels.ids = [];
     },
 
     getLabelsSuccess: (state, { payload }) => {
@@ -174,38 +175,42 @@ export const filtersSlice = createSlice({
         state.availFilters.deployments.error = payload;
       })      
       // TODO AUTH - update to pull from currently selected Project & View
-      .addCase(getCamerasSuccess, (state, { payload }) => {
+      // we need to know what project is currently seleted do update the avail filters
+      // and we need to refresh it each time the selected project chages
+      // so instead of catching getProjectsSuccess we should create a new action
+      // for it and dispatch it from a useEffect in the FilterPanel (or DeploymentFilter)
+      // .addCase(getProjectsSuccess, (state, { payload }) => {
 
-        // update deployment filters state
-        state.availFilters.deployments.isLoading = false;
-        state.availFilters.deployments.error = null;
-        const depsInState = state.availFilters.deployments.ids;
-        const newDeployments = payload.reduce((acc, camera) => {
-          for (const dep of camera.deployments) {
-            acc.push(dep);
-          }
-          return acc;
-        },[]);
+      //   // update deployment filters state
+      //   state.availFilters.deployments.isLoading = false;
+      //   state.availFilters.deployments.error = null;
+      //   const depsInState = state.availFilters.deployments.ids;
+      //   const newDeployments = payload.projects.reduce((acc, camera) => {
+      //     for (const dep of camera.deployments) {
+      //       acc.push(dep);
+      //     }
+      //     return acc;
+      //   },[]);
         
-        for (const dep of newDeployments) {
-          if (!depsInState.includes(dep._id)) {
-            state.availFilters.deployments.ids.push(dep._id);
-          }
-        }
+      //   for (const dep of newDeployments) {
+      //     if (!depsInState.includes(dep._id)) {
+      //       state.availFilters.deployments.ids.push(dep._id);
+      //     }
+      //   }
         
-        // update camera filters state
-        state.availFilters.cameras.isLoading = false;
-        state.availFilters.cameras.error = null;
-        const camsInState = state.availFilters.cameras.ids;
-        for (const camera of payload) {
-          if (!camsInState.includes(camera._id)) {
-            state.availFilters.cameras.ids.push(camera._id);
-          }
-        }
-        if (payload.length === 0) {
-          state.availFilters.cameras.noneFound = true;
-        }
-      })
+      //   // update camera filters state
+      //   state.availFilters.cameras.isLoading = false;
+      //   state.availFilters.cameras.error = null;
+      //   const camsInState = state.availFilters.cameras.ids;
+      //   for (const camera of payload) {
+      //     if (!camsInState.includes(camera._id)) {
+      //       state.availFilters.cameras.ids.push(camera._id);
+      //     }
+      //   }
+      //   if (payload.length === 0) {
+      //     state.availFilters.cameras.noneFound = true;
+      //   }
+      // })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
         // update deployment filters state 
         const { camera, operation, reqPayload } = payload;

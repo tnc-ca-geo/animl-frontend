@@ -113,8 +113,10 @@ const StyledViewSelector = styled('div', {
   // zIndex: '$5',
 });
 
+// TODO: overhaul this whole thing. It's in WIP state
+
 const ViewSelector = () => {
-  console.group('ViewSelector() rendering');
+  console.groupCollapsed('ViewSelector() rendering');
   const projectsLoading = useSelector(selectProjectsLoading);
   console.log('projectsLoading: ', projectsLoading)
   const projects = useSelector(selectProjects);
@@ -144,7 +146,7 @@ const ViewSelector = () => {
     // Wait for filters and views to load before setting selected view,
     // and don't override user's filter selections if there are unsaved changes
     if (availLabels.ids.length && selectedView && !unsavedChanges) {
-      dispatch(setSelectedView({ view: selectedView }));
+      dispatch(setSelectedView(selectedView._id));
     }
   }, [selectedView, availLabels.ids, unsavedChanges, dispatch]);
 

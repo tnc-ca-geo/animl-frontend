@@ -11,7 +11,10 @@ import BulkSelectCheckbox from './BulkSelectCheckbox';
 import CameraSection from './CameraSection';
 
 
-const DeploymentFilter = ({ availCams, activeCams }) => {
+const DeploymentFilter = () => {
+
+  // availCams={availCameras}
+  // activeCams={activeFilters.cameras}
   const cameras = useSelector(selectCameras);
   const activeFilters = useSelector(selectActiveFilters);
   const activeDeps = activeFilters.deployments;

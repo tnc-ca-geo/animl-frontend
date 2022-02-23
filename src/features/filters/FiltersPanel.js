@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { fetchCameras } from '../cameras/camerasSlice';
 import {
-  fetchLabels,
   selectActiveFilters,
   selectAvailCameras,
   selectAvailLabels,
@@ -39,22 +37,9 @@ const StyledFiltersPanel = styled('div', {
   overflowY: 'hidden',
 });
 
-const FiltersPanel = ({ toggleFiltersPanel }) => {
-  const selectedProject = useSelector(selectSelectedProject);
-  const activeFilters = useSelector(selectActiveFilters);
-  const availCameras = useSelector(selectAvailCameras);
-  const availLabels = useSelector(selectAvailLabels);
-  const router = useSelector(selectRouterLocation);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (selectedProject._id &&
-        !availLabels.ids.length && 
-        !availLabels.noneFound && 
-        !availLabels.error) {
-      dispatch(fetchLabels(selectedProject._id));
-    }
-  }, [selectedProject._id, availCameras, availLabels, dispatch]);
+const FiltersPanel = ({ toggleFiltersPanel }) => {
+  const router = useSelector(selectRouterLocation);
 
   const [ showCustomFilter, setShowCustomFilter ] = useState(false);
   useEffect(() => {
@@ -70,14 +55,8 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
       >
       </PanelHeader>
       <PanelBody>
-        <DeploymentFilter
-          availCams={availCameras}
-          activeCams={activeFilters.cameras}
-        />
-        <LabelFilter
-          availLabels={availLabels}
-          activeLabels={activeFilters.labels}
-        />
+        {/*<DeploymentFilter/>*/}
+        <LabelFilter/>
         <ReviewFilter/>
         <DateFilter type='created'/>
         <DateFilter type='added'/>

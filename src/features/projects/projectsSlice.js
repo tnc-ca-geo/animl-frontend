@@ -31,10 +31,10 @@ export const projectsSlice = createSlice({
       console.log('projectSlice.getProjectsSucces() - payload: ', payload);
       state.isLoading = false;
       state.error = null;
-      const projectsInState = state.projects.map((proj) => proj._id);
+      const projectIdsInState = state.projects.map((proj) => proj._id);
       const selectedProj = state.projects.find((proj) => proj.selected);
       payload.projects.forEach((proj, i) => {
-        if (!projectsInState.includes(proj._id)) {
+        if (!projectIdsInState.includes(proj._id)) {
           // TODO AUTH - how to decide which project is selected by default?
           // If no currently selected project, choose first one? 
           proj.selected = !selectedProj && i === 0;
