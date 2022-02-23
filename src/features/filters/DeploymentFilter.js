@@ -1,41 +1,37 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled } from '../../theme/stitches.config.js';
+import { selectSelectedProject } from '../projects/projectsSlice';
 import { 
   selectActiveFilters,
+  selectAvailCameras,
   selectAvailDeployments,
 } from './filtersSlice';
 import { fetchCameras, selectCameras } from '../cameras/camerasSlice';
 import Accordion from '../../components/Accordion';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
-import CameraSection from './CameraSection';
+import CameraFilterSection from './CameraFilterSection';
 
 
 const DeploymentFilter = () => {
-
-  // availCams={availCameras}
-  // activeCams={activeFilters.cameras}
-  const cameras = useSelector(selectCameras);
+  console.groupCollapsed('DeploymentFilter() rendering')
+  const selectedProject = useSelector(selectSelectedProject);
   const activeFilters = useSelector(selectActiveFilters);
-  const activeDeps = activeFilters.deployments;
+  // const availCams = useSelector(selectAvailCameras);
   const availDeps = useSelector(selectAvailDeployments);
-  const selectedDepCount = activeDeps 
-    ? activeDeps.length
-    : availDeps.ids.length;
-  const dispatch = useDispatch();
-
-  useEffect(()=> {
-    if (!cameras.cameras.length &&
-        !cameras.noneFound && 
-        !cameras.error) {
-      dispatch(fetchCameras());
-    }
-  }, [cameras.cameras, cameras.noneFound, cameras.error, dispatch]);
+  // const activeCams = activeFilters.cameras;
+  const activeDeps = activeFilters.deployments;
+  const activeDepCount = activeDeps ? activeDeps.length : availDeps.ids.length;
+  console.log('selectedProject: ', selectedProject);
+  console.log('activeFilters: ', activeFilters);
+  console.log('availDeps: ', availDeps);
+  console.log('activeDeps: ', activeDeps);
+  console.log('activeDepCount: ', activeDepCount);
+  console.groupEnd()
 
   return (
     <Accordion 
       label='Deployments'
-      selectedCount={selectedDepCount}
+      selectedCount={activeDepCount}
       expandedDefault={false}
     >
       <BulkSelectCheckbox
@@ -44,8 +40,8 @@ const DeploymentFilter = () => {
         showLabel={true}
       />
       <div>
-        {cameras.cameras.map((camera) => (
-          <CameraSection 
+        {selectedProject && selectedProject.cameras.map((camera) => (
+          <CameraFilterSection 
             key={camera._id}
             camera={camera}
             activeDeps={activeDeps}

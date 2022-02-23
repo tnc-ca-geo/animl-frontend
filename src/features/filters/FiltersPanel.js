@@ -55,7 +55,7 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
       >
       </PanelHeader>
       <PanelBody>
-        {/*<DeploymentFilter/>*/}
+        <DeploymentFilter/>
         <LabelFilter/>
         <ReviewFilter/>
         <DateFilter type='created'/>

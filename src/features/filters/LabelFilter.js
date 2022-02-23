@@ -21,15 +21,13 @@ const LabelFilter = () => {
   const activeLabels = activeFilters.labels;
   const dispatch = useDispatch();
 
-  const haveLabels = availLabels && 
-                     availLabels.ids.length && 
-                     !availLabels.noneFound && 
-                     !availLabels.error;
+  // const haveLabels = availLabels && 
+  //                    availLabels.ids.length && 
+  //                    !availLabels.noneFound && 
+  //                    !availLabels.error;
 
   useEffect(() => {
-    if (selectedProject) {
-      dispatch(fetchLabels(selectedProject._id));
-    }
+    if (selectedProject) dispatch(fetchLabels(selectedProject._id));
   }, [selectedProject, dispatch]);
 
   const handleCheckboxChange = (e) => {

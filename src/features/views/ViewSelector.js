@@ -164,7 +164,7 @@ const ViewSelector = () => {
 
   const handleProjectMenuItemClick = (e) => {
     const projId = e.target.dataset.projId
-    if (projId !== selectedProject._id) dispatch(setSelectedProject(projId));
+    if (projId !== selectedProject._id) dispatch(setSelectedProject({projId}));
   }
 
   const handleViewMenuItemClick = (e) => {

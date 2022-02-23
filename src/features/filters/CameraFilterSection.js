@@ -41,11 +41,11 @@ const DeploymentCheckboxWrapper = styled(CheckboxWrapper, {
   marginLeft: '$3',
 });
 
-const StyledCameraSection = styled('div', {
+const StyledCameraFilterSection = styled('div', {
   fontSize: '$3',
 });
 
-const CameraSection = ({ camera, activeDeps }) => {
+const CameraFilterSection = ({ camera, activeDeps }) => {
   const [expanded, setExpanded] = useState(false);
   const [mostRecentActiveDep, setMostRecentActiveDep] = useState();
   const [activeDepCount, setActiveDepCount] = useState();
@@ -83,7 +83,7 @@ const CameraSection = ({ camera, activeDeps }) => {
   const handleExpandCameraButtonClick = () => setExpanded(!expanded);
 
   return (
-    <StyledCameraSection>
+    <StyledCameraFilterSection>
       <CameraCheckboxWrapper>
         <label>
           <BulkSelectCheckbox
@@ -141,8 +141,8 @@ const CameraSection = ({ camera, activeDeps }) => {
           })}
         </Deployments>
       }
-    </StyledCameraSection>
+    </StyledCameraFilterSection>
   );
 };
 
-export default CameraSection;
+export default CameraFilterSection;

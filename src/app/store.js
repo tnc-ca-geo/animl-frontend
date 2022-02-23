@@ -8,6 +8,7 @@ import {
   setSelectedViewMiddleware,
   diffFiltersMiddleware
 } from '../features/views/viewsMiddleware';
+import { projectsMiddleware } from '../features/projects/projectsMiddleware';
 import { focusMiddleware } from '../features/review/focusMiddleware';
 import { labelMiddleware } from '../features/review/labelMiddleware';
 import { objectMiddleware } from '../features/review/objectMiddleware';
@@ -23,6 +24,7 @@ const store = configureStore({
       .concat(preFocusImageMiddleware)
       .concat(diffFiltersMiddleware)
       .concat(setSelectedViewMiddleware)
+      .concat(projectsMiddleware)
       .concat(focusMiddleware)
       .concat(labelMiddleware)
       .concat(objectMiddleware)

@@ -9,7 +9,8 @@ import {
   getProjectsStart,
   getProjectsFailure,
   getProjectsSuccess,
-  selectSelectedProject
+  selectSelectedProject,
+  setSelectedProject
 } from '../projects/projectsSlice';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
@@ -81,6 +82,8 @@ export const filtersSlice = createSlice({
         state.availFilters.labels.noneFound = true;
       }
     },
+
+
 
     checkboxFilterToggled: (state, { payload }) => {
       const { filterCat, val } = payload;
@@ -174,44 +177,30 @@ export const filtersSlice = createSlice({
         state.availFilters.deployments.isLoading = false;
         state.availFilters.deployments.error = payload;
       })      
-      // TODO AUTH - update to pull from currently selected Project & View
-      // we need to know what project is currently seleted do update the avail filters
-      // and we need to refresh it each time the selected project chages
-      // so instead of catching getProjectsSuccess we should create a new action
-      // for it and dispatch it from a useEffect in the FilterPanel (or DeploymentFilter)
-      // .addCase(getProjectsSuccess, (state, { payload }) => {
+      .addCase(setSelectedProject, (state, { payload }) => {
 
-      //   // update deployment filters state
-      //   state.availFilters.deployments.isLoading = false;
-      //   state.availFilters.deployments.error = null;
-      //   const depsInState = state.availFilters.deployments.ids;
-      //   const newDeployments = payload.projects.reduce((acc, camera) => {
-      //     for (const dep of camera.deployments) {
-      //       acc.push(dep);
-      //     }
-      //     return acc;
-      //   },[]);
+        console.log('filtersSlice() - setSelectedProject extra reducer: ', payload)
+        // update deployment filters state
+        state.availFilters.deployments.isLoading = false;
+        state.availFilters.deployments.error = null;
+        const newDeployments = payload.cameras.reduce((acc, camera) => {
+          for (const dep of camera.deployments) {
+            acc.push(dep._id);
+          }
+          return acc;
+        },[]);
+        state.availFilters.deployments.ids = newDeployments;
         
-      //   for (const dep of newDeployments) {
-      //     if (!depsInState.includes(dep._id)) {
-      //       state.availFilters.deployments.ids.push(dep._id);
-      //     }
-      //   }
-        
-      //   // update camera filters state
-      //   state.availFilters.cameras.isLoading = false;
-      //   state.availFilters.cameras.error = null;
-      //   const camsInState = state.availFilters.cameras.ids;
-      //   for (const camera of payload) {
-      //     if (!camsInState.includes(camera._id)) {
-      //       state.availFilters.cameras.ids.push(camera._id);
-      //     }
-      //   }
-      //   if (payload.length === 0) {
-      //     state.availFilters.cameras.noneFound = true;
-      //   }
-      // })
+        // update camera filters state
+        state.availFilters.cameras.isLoading = false;
+        state.availFilters.cameras.error = null;
+        state.availFilters.cameras.ids = payload.cameras.map((cam) => cam._id);
+        if (payload.length === 0) {
+          state.availFilters.cameras.noneFound = true;
+        }
+      })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
+        // TODO AUTH: test & make sure this works with new muliti-project schema
         // update deployment filters state 
         const { camera, operation, reqPayload } = payload;
         state.availFilters.deployments.isLoading = false;

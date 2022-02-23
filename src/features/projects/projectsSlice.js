@@ -3,7 +3,6 @@ import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
 const initialState = {
-  // name: null,
   projects: [],
   // users: [],
   isLoading: false,
@@ -49,7 +48,7 @@ export const projectsSlice = createSlice({
     setSelectedProject: (state, { payload }) => {
       console.log('projectSlice.setSelectedProject() - _id: ', payload);
       state.projects.forEach((proj) => {
-        proj.selected = proj._id === payload;
+        proj.selected = proj._id === payload.projId;
       });
     },
 
