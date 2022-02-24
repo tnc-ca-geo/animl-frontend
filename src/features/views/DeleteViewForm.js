@@ -5,9 +5,10 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
 import {
-  selectViewsLoading,
+  selectProjectsLoading,
   selectSelectedView,
-  editView } from './viewsSlice';
+  editView
+} from '../projects/projectsSlice';
 import Button from '../../components/Button';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -23,16 +24,16 @@ const deleteViewSchema = Yup.object().shape({
 
 const DeleteViewForm = ({ handleClose }) => {
   const [queuedForClose, setQueuedForClose ] = useState(false);
-  const viewsLoading = useSelector(selectViewsLoading);
+  const projectsLoading = useSelector(selectProjectsLoading);
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !viewsLoading) {
+    if (queuedForClose && !projectsLoading) {
       handleClose();
     }
-  }, [queuedForClose, viewsLoading, handleClose])
+  }, [queuedForClose, projectsLoading, handleClose])
 
   const handleDeleteViewSubmit = (values) => {
     dispatch(editView('delete', values));
@@ -42,7 +43,7 @@ const DeleteViewForm = ({ handleClose }) => {
 
   return (
     <div>
-      {viewsLoading &&
+      {projectsLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectSelectedView } from './viewsSlice';
+import { selectSelectedView } from '../projects/projectsSlice';
 import { selectFocusIndex } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import SidebarNav from '../views/SidebarNav';

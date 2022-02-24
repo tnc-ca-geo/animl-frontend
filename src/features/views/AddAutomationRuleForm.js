@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { editView } from './viewsSlice';
+import { editView } from '../projects/projectsSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
 import {
@@ -79,6 +79,9 @@ const addRuleSchema = Yup.object().shape({
   }),
 });
 
+// TODO AUTH - add inputs for:
+//    - confThreshold - used as default for categories w/o their own set thresholds 
+//    - categoryConfig (confThreshold, disabled) - category-level config
 const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
   const dispatch = useDispatch();
 
@@ -92,7 +95,7 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
       },
       action: {
         type: action.type.value,
-        ...(action.model && { model: action.model.value }),
+        ...(action.model && { mlModel: action.model.value }),
         ...(action.alertRecipients && { 
           alertRecipients: action.alertRecipients.replace(/\s/g, '').split(',')
         }),
@@ -206,8 +209,8 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
                     }
                     touched={touched.action}
                     options={models.map((model) => ({
-                      value: model._id,
-                      label: `${model.name} ${model.version}`,
+                      value: model,
+                      label: `${model}`,
                     }))}
                   />
                 </FormFieldWrapper>

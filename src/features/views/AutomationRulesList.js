@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { editView, selectViewsLoading } from './viewsSlice';
+import { editView, selectProjectsLoading } from '../projects/projectsSlice';
 import IconButton from '../../components/IconButton';
 import Button from '../../components/Button';
 import { ButtonRow } from '../../components/Form';
@@ -50,7 +50,7 @@ const RuleDescription = ({ rule, models }) => {
           `When an ${rule.event.label} is detected, `
         }
         {rule.action.type === 'run-inference'
-          ? `submit the image to ${model.name} ${model.version} for inference.`
+          ? `submit the image to ${model} for inference.`
           : `send an alert to ${rule.action.alertRecipients.join(', ')}.`
         }
       </p>
@@ -59,7 +59,7 @@ const RuleDescription = ({ rule, models }) => {
 };
 
 const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
-  const viewsLoading = useSelector(selectViewsLoading);
+  const projectsLoading = useSelector(selectProjectsLoading);
   const dispatch = useDispatch();
 
   const handleRuleDeleteClick = (e) => {
@@ -78,7 +78,7 @@ const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
 
   return (
     <div>
-      {viewsLoading &&
+      {projectsLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

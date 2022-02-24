@@ -10,18 +10,12 @@ import {
   selectProjectsLoading,
   selectViews,
   selectSelectedView,
+  selectUnsavedViewChanges,
   setSelectedProject,
   setSelectedView,
 } from '../projects/projectsSlice';
 import { selectAvailLabels, selectFiltersReady } from '../filters/filtersSlice';
-import {
-  // selectViews,
-  // fetchViews,
-  // setSelectedView,
-  // selectSelectedView,
-  selectUnsavedViewChanges,
-  // selectViewsLoading,
- } from './viewsSlice';
+
 
 const ViewMenuItem = styled('li', {
   color: '$hiContrast',
@@ -132,7 +126,7 @@ const ViewSelector = () => {
 
   // const viewsAreLoading = useSelector(selectViewsLoading)
   // const filtersReady = useSelector(selectFiltersReady);
-  const unsavedChanges = useSelector(selectUnsavedViewChanges);
+  const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
   const [expandedMenu, setExpandedMenu] = useState(null);
   const dispatch = useDispatch();
 
@@ -145,10 +139,10 @@ const ViewSelector = () => {
   useEffect(() => {
     // Wait for filters and views to load before setting selected view,
     // and don't override user's filter selections if there are unsaved changes
-    if (availLabels.ids.length && selectedView && !unsavedChanges) {
-      dispatch(setSelectedView(selectedView._id));
+    if (availLabels.ids.length && selectedView && !unsavedViewChanges) {
+      dispatch(setSelectedView({ viewId: selectedView._id }));
     }
-  }, [selectedView, availLabels.ids, unsavedChanges, dispatch]);
+  }, [selectedView, availLabels.ids, unsavedViewChanges, dispatch]);
 
   useEffect(() => {
     const handleWindowClick = () => { setExpandedMenu(null) };
@@ -169,7 +163,7 @@ const ViewSelector = () => {
 
   const handleViewMenuItemClick = (e) => {
     const viewId = e.target.dataset.viewId
-    if (viewId !== selectedView._id) dispatch(setSelectedView(viewId));
+    if (viewId !== selectedView._id) dispatch(setSelectedView({ viewId }));
   }
 
   return (
@@ -177,60 +171,62 @@ const ViewSelector = () => {
       <ViewNavigation>
         {!selectedView 
           ? 'Loading projects...'
-          : <Breadcrumbs>
-              <Crumb>
+          : <>
+              <Breadcrumbs>
+                <Crumb>
+                  <SelectedViewCrumb
+                    onClick={() => handleMenuCrumbClick('project')}
+                  >
+                    {selectedProject.name}
+                    {expandedMenu === 'project' &&
+                      <DropDownMenu>
+                        <ul>
+                          {projects.map((proj) => (
+                            <ViewMenuItem
+                              key={proj._id}
+                              selected={proj.selected}
+                              data-proj-id={proj._id}
+                              onClick={handleProjectMenuItemClick}
+                            >
+                              {proj.name}
+                            </ViewMenuItem>
+                          ))}
+                        </ul>
+                      </DropDownMenu>
+                    }
+                  </SelectedViewCrumb>
+                </Crumb>
+                /
                 <SelectedViewCrumb
-                  onClick={() => handleMenuCrumbClick('project')}
+                  edited={unsavedViewChanges}
+                  onClick={() => handleMenuCrumbClick('view')}
                 >
-                  {selectedProject.name}
-                  {expandedMenu === 'project' &&
+                  {selectedView.name}
+                  {expandedMenu === 'view' &&
                     <DropDownMenu>
                       <ul>
-                        {projects.map((proj) => (
+                        {views.map((view) => (
                           <ViewMenuItem
-                            key={proj._id}
-                            selected={proj.selected}
-                            data-proj-id={proj._id}
-                            onClick={handleProjectMenuItemClick}
+                            key={view._id}
+                            selected={view.selected}
+                            data-view-id={view._id}
+                            onClick={handleViewMenuItemClick}
                           >
-                            {proj.name}
+                            {view.name}
                           </ViewMenuItem>
                         ))}
                       </ul>
                     </DropDownMenu>
                   }
                 </SelectedViewCrumb>
-              </Crumb>
-              /
-              <SelectedViewCrumb
-                edited={unsavedChanges}
-                onClick={() => handleMenuCrumbClick('view')}
-              >
-                {selectedView.name}
-                {expandedMenu === 'view' &&
-                  <DropDownMenu>
-                    <ul>
-                      {views.map((view) => (
-                        <ViewMenuItem
-                          key={view._id}
-                          selected={view.selected}
-                          data-view-id={view._id}
-                          onClick={handleViewMenuItemClick}
-                        >
-                          {view.name}
-                        </ViewMenuItem>
-                      ))}
-                    </ul>
-                  </DropDownMenu>
-                }
-              </SelectedViewCrumb>
-            </Breadcrumbs>
+              </Breadcrumbs>
+              <IconButton variant='ghost'>
+                <FontAwesomeIcon icon={ 
+                  expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']
+                }/>
+              </IconButton>
+            </>
         }
-        <IconButton variant='ghost'>
-          <FontAwesomeIcon icon={ 
-            expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']
-          }/>
-        </IconButton>
       </ViewNavigation>
     </StyledViewSelector>
   );

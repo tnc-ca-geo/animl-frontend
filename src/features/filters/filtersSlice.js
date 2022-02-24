@@ -195,7 +195,7 @@ export const filtersSlice = createSlice({
         state.availFilters.cameras.isLoading = false;
         state.availFilters.cameras.error = null;
         state.availFilters.cameras.ids = payload.cameras.map((cam) => cam._id);
-        if (payload.length === 0) {
+        if (payload.cameras.length === 0) {
           state.availFilters.cameras.noneFound = true;
         }
       })

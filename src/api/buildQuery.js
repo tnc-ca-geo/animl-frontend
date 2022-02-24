@@ -1,58 +1,5 @@
 // TODO: Prune fields we're not using
 
-const viewFields = `
-  _id
-  name
-  description
-  editable
-  filters {
-    cameras
-    deployments
-    labels
-    createdStart
-    createdEnd
-    addedStart
-    addedEnd
-    reviewed
-    custom
-  }
-  automationRules {
-    _id
-    name
-    event {
-      type
-      label
-    }
-    action {
-      type
-      alertRecipients
-      mlModel
-      confThreshold
-      categoryConfig
-    }
-  }
-`;
-
-const cameraConfigFields = `
-  _id
-  deployments {
-    _id
-    name
-    description
-    timezone
-    startDate
-    editable
-    location {
-      _id
-      geometry {
-        type
-        coordinates
-      }
-      name
-    }
-  }
-`;
-
 const cameraFields = `
   _id
   make
@@ -118,6 +65,73 @@ const pageInfoFields = `
   count
 `;
 
+const cameraConfigFields = `
+  _id
+  deployments {
+    _id
+    name
+    description
+    timezone
+    startDate
+    editable
+    location {
+      _id
+      geometry {
+        type
+        coordinates
+      }
+      name
+    }
+  }
+`;
+
+const viewFields = `
+  _id
+  name
+  description
+  editable
+  filters {
+    cameras
+    deployments
+    labels
+    createdStart
+    createdEnd
+    addedStart
+    addedEnd
+    reviewed
+    custom
+  }
+  automationRules {
+    _id
+    name
+    event {
+      type
+      label
+    }
+    action {
+      type
+      alertRecipients
+      mlModel
+      confThreshold
+      categoryConfig
+    }
+  }
+`;
+
+const projectFields = `
+  _id
+  name
+  timezone
+  description
+  views {
+    ${viewFields}
+  }
+  cameras {
+    ${cameraConfigFields}
+  }
+  availableMLModels 
+`
+
 const queries = {
 
   getProjects: (input) => ({
@@ -125,17 +139,7 @@ const queries = {
     template: `
       {
         projects {
-          _id
-          name
-          timezone
-          description
-          views {
-            ${viewFields}
-          }
-          cameras {
-            ${cameraConfigFields}
-          }
-          availableMLModels 
+          ${projectFields}
         }
       }
     `,
@@ -181,8 +185,9 @@ const queries = {
     template: `
       mutation DeleteView($input: DeleteViewInput!) {
         deleteView(input: $input) {
-          success
-          viewId
+          project {
+            ${projectFields}
+          }
         }
       }
     `,

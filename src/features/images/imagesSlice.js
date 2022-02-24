@@ -191,7 +191,6 @@ export const editLabel = (operation, entity, payload, projId) => {
       const image = res[mutation].image;
       console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
       dispatch(editLabelSuccess(image));
-
     } catch (err) {
       console.log(`error attempting to ${operation} ${entity}: ${err.toString()}`);
       dispatch(editLabelFailure(err.toString()));

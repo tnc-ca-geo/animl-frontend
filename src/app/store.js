@@ -7,7 +7,7 @@ import { preFocusImageMiddleware } from '../features/images/imagesMiddleware';
 import { 
   setSelectedViewMiddleware,
   diffFiltersMiddleware
-} from '../features/views/viewsMiddleware';
+} from '../features/projects/viewsMiddleware';
 import { projectsMiddleware } from '../features/projects/projectsMiddleware';
 import { focusMiddleware } from '../features/review/focusMiddleware';
 import { labelMiddleware } from '../features/review/labelMiddleware';
@@ -21,10 +21,10 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware()
       .concat(routerMiddleware(history))
+      .concat(projectsMiddleware)
       .concat(preFocusImageMiddleware)
       .concat(diffFiltersMiddleware)
       .concat(setSelectedViewMiddleware)
-      .concat(projectsMiddleware)
       .concat(focusMiddleware)
       .concat(labelMiddleware)
       .concat(objectMiddleware)

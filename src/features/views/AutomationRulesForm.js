@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import { 
-  fetchModels,
-  selectModels,
-  selectSelectedView,
-} from './viewsSlice';
+import {
+  selectSelectedProject,
+  selectSelectedView
+} from '../projects/projectsSlice';
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 const AutomationRulesForm = ({ handleClose }) => {
+  const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
-  const models = useSelector(selectModels);
+  const models = selectedProject.availableMLModels;
   const [ showAddRuleForm, setShowAddRuleForm ] = useState(false);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!models.length) {
-      dispatch(fetchModels());
-    }
-  }, [models, dispatch]);
+  // useEffect(() => {
+  //   if (!models.length) {
+  //     dispatch(fetchModels());
+  //   }
+  // }, [models, dispatch]);
 
   const handleAddRuleClick = () => {
     setShowAddRuleForm(true);
