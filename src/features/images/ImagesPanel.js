@@ -12,6 +12,7 @@ import {
 } from './imagesSlice';
 import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
+import { selectSelectedProject } from '../projects/projectsSlice';
 
 // const ImagesTableLoadingOverlay = styled('div', {
 //   flexGrow: '1',
@@ -35,6 +36,8 @@ const StyledImagesPanel = styled('div', {
 });
 
 const ImagesPanel = () => {
+  console.groupCollapsed('ImagesPanel rendering')
+  const selectedProject = useSelector(selectSelectedProject);
   const filters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
@@ -42,10 +45,17 @@ const ImagesPanel = () => {
   const hasNext = useSelector(selectHasNext);
   const isLoading = useSelector(selectIsLoading);
   const dispatch = useDispatch();
-  
-  useEffectAfterMount(() => {
-    dispatch(fetchImages(filters));
-  }, [filters, paginatedField, sortAscending, dispatch]);
+  console.log('selectedProject: ', selectedProject);
+  console.log('filters: ', filters);
+  console.log('isLoading: ', isLoading);
+  console.groupEnd();
+
+  useEffect(() => {
+    if (selectedProject && filters) {
+      console.log('fetching images from ImagesPanel')
+      dispatch(fetchImages(filters));
+    }
+  }, [selectedProject, filters, paginatedField, sortAscending, dispatch]);
 
   const loadNextPage = () => {
     // Pass an empty promise that immediately resolves to InfiniteLoader 

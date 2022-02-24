@@ -175,54 +175,57 @@ const ViewSelector = () => {
   return (
     <StyledViewSelector>
       <ViewNavigation>
-        <Breadcrumbs>
-          <Crumb>
-            <SelectedViewCrumb
-              onClick={() => handleMenuCrumbClick('project')}
-            >
-              {selectedProject ? selectedProject.name : 'Loading projects...'}
-              {expandedMenu === 'project' &&
-                <DropDownMenu>
-                  <ul>
-                    {projects.map((proj) => (
-                      <ViewMenuItem
-                        key={proj._id}
-                        selected={proj.selected}
-                        data-proj-id={proj._id}
-                        onClick={handleProjectMenuItemClick}
-                      >
-                        {proj.name}
-                      </ViewMenuItem>
-                    ))}
-                  </ul>
-                </DropDownMenu>
-              }
-            </SelectedViewCrumb>
-          </Crumb>
-          /
-          <SelectedViewCrumb
-            edited={unsavedChanges}
-            onClick={() => handleMenuCrumbClick('view')}
-          >
-            {selectedView ? selectedView.name : 'Loading views...'}
-            {expandedMenu === 'view' &&
-              <DropDownMenu>
-                <ul>
-                  {views.map((view) => (
-                    <ViewMenuItem
-                      key={view._id}
-                      selected={view.selected}
-                      data-view-id={view._id}
-                      onClick={handleViewMenuItemClick}
-                    >
-                      {view.name}
-                    </ViewMenuItem>
-                  ))}
-                </ul>
-              </DropDownMenu>
-            }
-          </SelectedViewCrumb>
-        </Breadcrumbs>
+        {!selectedView 
+          ? 'Loading projects...'
+          : <Breadcrumbs>
+              <Crumb>
+                <SelectedViewCrumb
+                  onClick={() => handleMenuCrumbClick('project')}
+                >
+                  {selectedProject.name}
+                  {expandedMenu === 'project' &&
+                    <DropDownMenu>
+                      <ul>
+                        {projects.map((proj) => (
+                          <ViewMenuItem
+                            key={proj._id}
+                            selected={proj.selected}
+                            data-proj-id={proj._id}
+                            onClick={handleProjectMenuItemClick}
+                          >
+                            {proj.name}
+                          </ViewMenuItem>
+                        ))}
+                      </ul>
+                    </DropDownMenu>
+                  }
+                </SelectedViewCrumb>
+              </Crumb>
+              /
+              <SelectedViewCrumb
+                edited={unsavedChanges}
+                onClick={() => handleMenuCrumbClick('view')}
+              >
+                {selectedView.name}
+                {expandedMenu === 'view' &&
+                  <DropDownMenu>
+                    <ul>
+                      {views.map((view) => (
+                        <ViewMenuItem
+                          key={view._id}
+                          selected={view.selected}
+                          data-view-id={view._id}
+                          onClick={handleViewMenuItemClick}
+                        >
+                          {view.name}
+                        </ViewMenuItem>
+                      ))}
+                    </ul>
+                  </DropDownMenu>
+                }
+              </SelectedViewCrumb>
+            </Breadcrumbs>
+        }
         <IconButton variant='ghost'>
           <FontAwesomeIcon icon={ 
             expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']

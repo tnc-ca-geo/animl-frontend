@@ -1,12 +1,7 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { 
-  selectActiveFilters,
-  selectAvailCameras,
-  selectAvailDeployments,
-} from './filtersSlice';
-import { fetchCameras, selectCameras } from '../cameras/camerasSlice';
+import { selectActiveFilters, selectAvailDeployments } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import CameraFilterSection from './CameraFilterSection';
@@ -16,9 +11,7 @@ const DeploymentFilter = () => {
   console.groupCollapsed('DeploymentFilter() rendering')
   const selectedProject = useSelector(selectSelectedProject);
   const activeFilters = useSelector(selectActiveFilters);
-  // const availCams = useSelector(selectAvailCameras);
   const availDeps = useSelector(selectAvailDeployments);
-  // const activeCams = activeFilters.cameras;
   const activeDeps = activeFilters.deployments;
   const activeDepCount = activeDeps ? activeDeps.length : availDeps.ids.length;
   console.log('selectedProject: ', selectedProject);

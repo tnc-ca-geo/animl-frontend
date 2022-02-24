@@ -135,6 +135,7 @@ export const {
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current' ) => {
   return async (dispatch, getState) => {
+    console.log('iamgesSlice - fetchingImages() - filters: ', filters)
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -153,6 +154,8 @@ export const fetchImages = (filters, page = 'current' ) => {
         if (page !== 'next') {
           dispatch(clearImages());
         }
+        console.log('iamgesSlice - fetchingImages() - res: ', res)
+
         dispatch(getImagesSuccess(res));
       }
     } catch (err) {

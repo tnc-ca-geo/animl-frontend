@@ -85,7 +85,7 @@ const labelFields = `
     validationDate
     userId
   }
-  modelId
+  mlModel
   userId
 `;
 

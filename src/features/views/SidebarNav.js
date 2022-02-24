@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectCameras } from '../cameras/camerasSlice';
-import { selectSelectedView } from './viewsSlice';
+import { selectSelectedProject, selectSelectedView } from '../projects/projectsSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';
 import CameraAdminModal from '../cameras/CameraAdminModal';
@@ -30,8 +30,8 @@ const StyledSidebarNav = styled('div', {
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState();
+  const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
-  const cameras = useSelector(selectCameras);
 
   const handleModalToggle = (content) => {
     setModalOpen(!modalOpen);
@@ -55,7 +55,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
       <MenuButton
         variant='ghost'
-        disabled={!cameras.cameras.length}
+        disabled={!selectedProject}
         state={modalOpen && (modalContent === 'camera-admin-modal') 
           ? 'active' 
           : ''
