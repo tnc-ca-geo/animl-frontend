@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-
 import {
   selectProjectsLoading,
   selectSelectedView,

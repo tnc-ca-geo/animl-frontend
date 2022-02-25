@@ -73,7 +73,10 @@ const initialValsCreate = (project) => ({
   description: '',
   latitude: '',
   longitude: '',
-  timezone: project.timezone,
+  timezone: { 
+    value: project.timezone,
+    label: project.timezone
+  },
   startDate: null,
   editable: true,
 });
@@ -82,10 +85,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
   const saveMode = deployment ? 'updateDeployment' : 'createDeployment';
   const [queuedForClose, setQueuedForClose] = useState(false);
   const projectsLoading = useSelector(selectProjectsLoading);
-  const timezoneOptions = timeZonesNames.map((tz) => (
-    { value: tz, label: tz }
-  ));
-  console.log('timezoneOptions: ', timezoneOptions)
+  const timezoneOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const dispatch = useDispatch();
   const initialValues = saveMode === 'createDeployment' 
     ? initialValsCreate(project)
@@ -94,7 +94,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
         description: deployment.description,
         latitude: deployment.location.geometry.coordinates[1],
         longitude: deployment.location.geometry.coordinates[0],
-        timezone: deployment.timezone,
+        timezone: { value: deployment.timezone, label: deployment.timezone },
         startDate: deployment.startDate,
         editable: deployment.editable,
       };
@@ -119,14 +119,14 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
     if (formVals.description !== deployment.description) {
       diffs.description = formVals.description;
     }
-    if (formVals.timezone !== deployment.timezone) {
-      diffs.timezone = formVals.timezone;
+    if (formVals.timezone.value !== deployment.timezone.value) {
+      diffs.timezone = formVals.timezone.value;
     }
     if (formVals.startDate !== deployment.startDate) {
       diffs.startDate = formVals.startDate;
     }
-    if ((formVals.latitude !== deployment.latitude) ||
-        (formVals.longitude !== deployment.longitude)) {
+    if ((formVals.latitude !== deployment.location.geometry.coordinates[1]) ||
+        (formVals.longitude !== deployment.location.geometry.coordinates[0])) {
       diffs.location = createLocation(formVals.latitude, formVals.longitude);
     }
     return diffs;
@@ -143,7 +143,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
             name: formVals.name,
             description: formVals.description,
             location: createLocation(formVals.latitude, formVals.longitude),
-            timezone: formVals.timezone,
+            timezone: formVals.timezone.value,
             startDate: formVals.startDate,
           }
         }
@@ -178,9 +178,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
             handleSaveDeploymentSubmit(saveMode, values);
           }}
         >
-          {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => {
-            console.log('form values: ', values)
-            return (
+          {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>
               <FieldRow>
                 <FormFieldWrapper>
@@ -235,7 +233,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                   <SelectField
                     name='timezone'
                     label='Timezone'
-                    value={{ value: values.timezone, label: values.timezone }}
+                    value={values.timezone}
                     onChange={setFieldValue}
                     onBlur={setFieldTouched}
                     error={_.has(errors, 'timezone.value') &&
@@ -290,7 +288,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                 </Button>
               </ButtonRow>
             </Form>
-          )}}
+          )}
         </Formik>
       </FormWrapper>
     </div>

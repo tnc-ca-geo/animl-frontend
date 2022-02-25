@@ -44,6 +44,7 @@ const imageFields = `
   make
   originalFileName
   deployment
+  project
   objects {
     ${objectFields}
   }`;
