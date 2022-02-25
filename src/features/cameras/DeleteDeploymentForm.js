@@ -3,7 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field, } from 'formik';
 import * as Yup from 'yup';
-import { editDeployments, selectCamerasLoading } from './camerasSlice';
+import {
+  editDeployments,
+  selectProjectsLoading
+} from '../projects/projectsSlice';
 import Button from '../../components/Button';
 import {
   FormWrapper,
@@ -23,15 +26,15 @@ const deleteDeploymentSchema = Yup.object().shape({
 
 const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   const [queuedForClose, setQueuedForClose ] = useState(false);
-  const camerasLoading = useSelector(selectCamerasLoading);
+  const projectsLoading = useSelector(selectProjectsLoading);
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !camerasLoading) {
+    if (queuedForClose && !projectsLoading) {
       handleClose();
     }
-  }, [queuedForClose, camerasLoading, handleClose]);
+  }, [queuedForClose, projectsLoading, handleClose]);
 
   const handleDeleteDeploymentSubmit = (formVals) => {
     dispatch(editDeployments('deleteDeployment', formVals));
@@ -40,7 +43,7 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   
   return (
     <div>
-      {camerasLoading &&
+      {projectsLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

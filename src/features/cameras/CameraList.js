@@ -88,64 +88,67 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
 
   return (
     <div>
-      <StyledCameraList>
-        {cameras.cameras.map((cam) => (
-          <Accordion
-            key={cam._id}
-            label={cam._id}
-            expandedDefault={false}
-            headerButtons={
-              <AddDeploymentButton
-                handleSaveDepClick={handleSaveDepClick}
-                cameraId={cam._id}
-              />
-            }
-          >
-            {cam.deployments.map((dep) => (
-              <DeploymentItem key={dep._id}> 
-                <DepName>{dep.name}</DepName>
-                <DepDates>
-                  <Date type='start'>{
-                    dep.startDate 
-                      ? format(dep.startDate) 
-                      : <Bookend>dawn of time</Bookend>
-                  }</Date>
-                  <DateDash>-</DateDash>
-                  <Date type='end'>{
-                    dep.endDate 
-                    ? format(dep.endDate) 
-                    : <Bookend>today</Bookend>
-                  }</Date>
-                </DepDates>
-                <DepButtons>
-                  <IconButton
-                    variant='ghost'
-                    size='small'
-                    onClick={() => handleSaveDepClick({
-                      cameraId: cam._id,
-                      deployment: dep,
-                    })}
-                    disabled={dep.editable === false}
-                  >
-                    <FontAwesomeIcon icon={['fas', 'pen']}/>
-                  </IconButton>
-                  <IconButton
-                    variant='ghost'
-                    size='small'
-                    onClick={() => handleDeleteDepClick({
-                      cameraId: cam._id,
-                      deployment: dep,
-                    })}
-                    disabled={dep.editable === false}
-                  >
-                    <FontAwesomeIcon icon={['fas', 'times']}/>
-                  </IconButton>
-                </DepButtons>
-              </DeploymentItem>
+      {(cameras.length === 0)
+        ? 'There are no cameras associated with this project'
+        : <StyledCameraList>
+            {cameras.map((cam) => (
+              <Accordion
+                key={cam._id}
+                label={cam._id}
+                expandedDefault={false}
+                headerButtons={
+                  <AddDeploymentButton
+                    handleSaveDepClick={handleSaveDepClick}
+                    cameraId={cam._id}
+                  />
+                }
+              >
+                {cam.deployments.map((dep) => (
+                  <DeploymentItem key={dep._id}> 
+                    <DepName>{dep.name}</DepName>
+                    <DepDates>
+                      <Date type='start'>{
+                        dep.startDate 
+                          ? format(dep.startDate) 
+                          : <Bookend>dawn of time</Bookend>
+                      }</Date>
+                      <DateDash>-</DateDash>
+                      <Date type='end'>{
+                        dep.endDate 
+                        ? format(dep.endDate) 
+                        : <Bookend>today</Bookend>
+                      }</Date>
+                    </DepDates>
+                    <DepButtons>
+                      <IconButton
+                        variant='ghost'
+                        size='small'
+                        onClick={() => handleSaveDepClick({
+                          cameraId: cam._id,
+                          deployment: dep,
+                        })}
+                        disabled={dep.editable === false}
+                      >
+                        <FontAwesomeIcon icon={['fas', 'pen']}/>
+                      </IconButton>
+                      <IconButton
+                        variant='ghost'
+                        size='small'
+                        onClick={() => handleDeleteDepClick({
+                          cameraId: cam._id,
+                          deployment: dep,
+                        })}
+                        disabled={dep.editable === false}
+                      >
+                        <FontAwesomeIcon icon={['fas', 'times']}/>
+                      </IconButton>
+                    </DepButtons>
+                  </DeploymentItem>
+                ))}
+              </Accordion>
             ))}
-          </Accordion>
-        ))}
-      </StyledCameraList>
+          </StyledCameraList>
+      }
     </div>
   );
 };

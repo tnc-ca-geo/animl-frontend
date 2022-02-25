@@ -56,13 +56,15 @@ const SelectField = ({
   touched,
 }) => {
   
-  const handleChange = value => {
+  const handleChange = (value) => {
     onChange(name, value);
   };
 
   const handleBlur = () => {
     onBlur(name, true);
   };
+
+  console.log('SelectField - value: ', value)
 
   return (
     <div>
@@ -76,7 +78,7 @@ const SelectField = ({
         value={_.isEmpty(value) ? null : value}
         className='react-select'
         classNamePrefix='react-select'
-        isSearchable={false}
+        isSearchable={true}
       />
       {!!error &&
         touched && (

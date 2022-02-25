@@ -1,6 +1,7 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth, input } from 'aws-amplify';
 import { call } from '../../api';
+import { enrichCameras } from './utils';
 
 const initialState = {
   projects: [],
@@ -66,6 +67,12 @@ export const projectsSlice = createSlice({
       }
     },
 
+    setUnsavedViewChanges: (state, { payload }) => {
+      state.unsavedViewChanges = payload;
+    },
+
+    // Views CRUD
+
     editViewStart: (state) => { 
       // TODO AUTH - maybe be more specific about what part of projects 
       // is loading (have a state.viewsAreLoading, state.camerasAreLoading)
@@ -83,6 +90,8 @@ export const projectsSlice = createSlice({
     // changes to the state at the time we request the opperations?
     // User doesn't have to wait in that case, but if the request fails that 
     // would cause issues....
+    // TODO AUTH - instead of passing in projectId to payload, we could also 
+    // just search all views in all projects for the project Id
     saveViewSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
@@ -107,24 +116,53 @@ export const projectsSlice = createSlice({
       proj.views = proj.views.filter((view) => view._id !== payload.viewId);
     },
 
-    setUnsavedViewChanges: (state, { payload }) => {
-      state.unsavedViewChanges = payload;
+    // Deployments CRUD
+
+    editDeploymentsStart: (state) => {
+      state.isLoading = true;
+    },
+
+    editDeploymentsFailure: (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload;
+    },
+
+    // TODO AUTH - make work in projectsSlice
+    editDeploymentsSuccess: (state, { payload }) => {
+      console.log('projectSlice - editDeploymentSucces() - ', payload);
+      state.isLoading = false;
+      state.error = null;
+      const editedCam = payload.camera;
+      for (const proj of state.projects) {
+        for (const cam of proj.cameras) {
+          if (cam._id === editedCam._id) {
+            cam.deployments = editedCam.deployments;
+          }
+        }
+      }
     },
 
   },
 });
 
 export const {
+
   getProjectsStart,
   getProjectsFailure,
   getProjectsSuccess,
   setSelectedProject,
   setSelectedView,
+  setUnsavedViewChanges,
+
   editViewStart,
   saveViewSuccess,
   deleteViewSuccess,
   editViewFailure,
-  setUnsavedViewChanges,
+
+  editDeploymentsStart, 
+  editDeploymentsFailure,
+  editDeploymentsSuccess,
+
 } = projectsSlice.actions;
 
 
@@ -199,6 +237,37 @@ export const editView = (operation, payload) => {
     } catch (err) {
       console.log(`error attempting to ${operation} view: ${err.toString()}`);
       dispatch(editViewFailure(err.toString()));
+    }
+  };
+};
+
+// TODO AUTH - make work in projectsSlice
+// editDeployments thunk
+export const editDeployments = (operation, payload) => {
+  return async (dispatch, getState) => {
+    try {
+      if (!operation || !payload) {
+        const err = `An operation (create, update, or delete) is required`;
+        throw new Error(err);
+      }
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
+      dispatch(editDeploymentsStart());
+      const res = await call({
+        projId: selectedProj._id,
+        request: operation,
+        input: payload,
+      });
+      console.log('res: ', res)
+      const camera = enrichCameras([res[operation].cameraConfig])[0];
+      dispatch(editDeploymentsSuccess({
+        camera,
+        operation,
+        reqPayload: payload 
+      }));
+    } catch (err) {
+      console.log(`error attempting to ${operation}: ${err.toString()}`);
+      dispatch(editDeploymentsFailure(err.toString()));
     }
   };
 };

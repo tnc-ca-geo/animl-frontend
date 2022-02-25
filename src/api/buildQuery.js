@@ -3,20 +3,11 @@
 const cameraFields = `
   _id
   make
-  deployments {
+  model 
+  projRegistrations {
     _id
-    name
-    description
-    startDate
-    editable
-    location {
-      _id
-      geometry {
-        type
-        coordinates
-      }
-      name
-    }
+    project
+    active
   }
 `;
 
@@ -362,8 +353,8 @@ const queries = {
     template: `
       mutation CreateDeployment($input: CreateDeploymentInput!) {
         createDeployment(input: $input) {
-          camera {
-            ${cameraFields}
+          cameraConfig {
+            ${cameraConfigFields}
           }
         }
       }
@@ -375,8 +366,8 @@ const queries = {
     template: `
       mutation UpdateDeployment($input: UpdateDeploymentInput!) {
         updateDeployment(input: $input) {
-          camera {
-            ${cameraFields}
+          cameraConfig {
+            ${cameraConfigFields}
           }
         }
       }
@@ -388,8 +379,8 @@ const queries = {
     template: `
       mutation DeleteDeployment($input: DeleteDeploymentInput!) {
         deleteDeployment(input: $input) {
-          camera {
-            ${cameraFields}
+          cameraConfig {
+            ${cameraConfigFields}
           }
         }
       }

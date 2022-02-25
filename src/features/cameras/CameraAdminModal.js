@@ -15,9 +15,10 @@ import {
   DATE_FORMAT_READABLE as DFR,
   DATE_FORMAT_EXIF as EXIF,
 } from '../../config';
+import { selectSelectedProject } from '../projects/projectsSlice';
 
 const CameraAdminModal = () => {
-  const cameras = useSelector(selectCameras);
+  const project = useSelector(selectSelectedProject);
   const [ showSaveDepForm, setShowSaveDepForm ] = useState(false);
   const [ showDeleteDeptForm, setShowDeleteDepForm ] = useState(false);
   const [ cameraSelected, setCameraSelected ] = useState();
@@ -41,27 +42,24 @@ const CameraAdminModal = () => {
 
   return (
     <div>
-      {cameras.cameras.length
-        ? showSaveDepForm
-          ? <SaveDeploymentForm
+      {showSaveDepForm
+        ? <SaveDeploymentForm
+            project={project}
+            cameraId={cameraSelected}
+            deployment={deploymentSelected}
+            handleClose={handleCancelEditClick}
+          />
+        : showDeleteDeptForm
+          ? <DeleteDeploymentForm 
               cameraId={cameraSelected}
               deployment={deploymentSelected}
-              handleClose={handleCancelEditClick}
+              handleClose={handleCancelDeleteClick}
             />
-          : showDeleteDeptForm
-            ? <DeleteDeploymentForm 
-                cameraId={cameraSelected}
-                deployment={deploymentSelected}
-                handleClose={handleCancelDeleteClick}
-              />
-            : <CameraList
-                cameras={cameras}
-                handleSaveDepClick={handleSaveDepClick}
-                handleDeleteDepClick={handleDeleteDepClick}
-              />
-        : <SpinnerOverlay>
-            <PulseSpinner />
-          </SpinnerOverlay>
+          : <CameraList
+              cameras={project.cameras}
+              handleSaveDepClick={handleSaveDepClick}
+              handleDeleteDepClick={handleDeleteDepClick}
+            />
       }
     </div>
   );

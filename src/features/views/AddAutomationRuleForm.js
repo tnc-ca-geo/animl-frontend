@@ -124,6 +124,7 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
         onSubmit={handleSaveRulesSubmit}
       >
       {({values, errors, touched, setFieldValue, setFieldTouched, handleChange, isValid, dirty}) => {
+        console.log('values.event.type: ', values.event.type)
         return (
           <Form>
             <FieldRow>
