@@ -127,7 +127,6 @@ const projectFields = `
 const queries = {
 
   getProjects: (input) => ({
-    // TODO AUTH - build out this new query template 
     template: `
       {
         projects {
@@ -382,6 +381,25 @@ const queries = {
         deleteDeployment(input: $input) {
           cameraConfig {
             ${cameraConfigFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  registerCamera: (input) => ({
+    template: `
+      mutation RegisterCamera($input: RegisterCameraInput!) {
+        registerCamera(input: $input) {
+          success
+          rejectionInfo {
+            msg
+            currProjReg
+          }
+          cameraId
+          project {
+            ${projectFields}
           }
         }
       }

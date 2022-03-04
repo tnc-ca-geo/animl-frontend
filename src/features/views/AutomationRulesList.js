@@ -37,7 +37,7 @@ const StyledRuleDescription = styled('div', {
 });
 
 const RuleDescription = ({ rule, models }) => {
-  const model = models.find((model) => model._id === rule.action.model);
+  const model = models.find((model) => model === rule.action.mlModel);
 
   return (
     <StyledRuleDescription>

@@ -11,8 +11,8 @@ import {
   selectViews,
   selectSelectedView,
   selectUnsavedViewChanges,
-  setSelectedProject,
-  setSelectedView,
+  // setSelectedProject,
+  setSelectedProjAndView,
 } from '../projects/projectsSlice';
 import { selectAvailLabels, selectFiltersReady } from '../filters/filtersSlice';
 
@@ -110,19 +110,19 @@ const StyledViewSelector = styled('div', {
 // TODO: overhaul this whole thing. It's in WIP state
 
 const ViewSelector = () => {
-  console.groupCollapsed('ViewSelector() rendering');
+  // console.groupCollapsed('ViewSelector() rendering');
   const projectsLoading = useSelector(selectProjectsLoading);
-  console.log('projectsLoading: ', projectsLoading)
+  // console.log('projectsLoading: ', projectsLoading)
   const projects = useSelector(selectProjects);
-  console.log('projects: ', projects)
-  const selectedProject = useSelector(selectSelectedProject);
-  console.log('selectedProject: ', selectedProject)
+  // console.log('projects: ', projects)
+  const selectedProj = useSelector(selectSelectedProject);
+  // console.log('selectedProj: ', selectedProj)
   const views = useSelector(selectViews);
-  console.log('views: ', views)
+  // console.log('views: ', views)
   const selectedView = useSelector(selectSelectedView);
-  console.log('selectedView: ', selectedView)
+  // console.log('selectedView: ', selectedView)
   const availLabels = useSelector(selectAvailLabels);
-  console.groupEnd();
+  // console.groupEnd();
 
   // const viewsAreLoading = useSelector(selectViewsLoading)
   // const filtersReady = useSelector(selectFiltersReady);
@@ -136,13 +136,17 @@ const ViewSelector = () => {
     }
   }, [projects, projectsLoading, dispatch]);
 
-  useEffect(() => {
-    // Wait for filters and views to load before setting selected view,
-    // and don't override user's filter selections if there are unsaved changes
-    if (availLabels.ids.length && selectedView && !unsavedViewChanges) {
-      dispatch(setSelectedView({ viewId: selectedView._id }));
-    }
-  }, [selectedView, availLabels.ids, unsavedViewChanges, dispatch]);
+  // useEffect(() => {
+  //   // Wait for filters and views to load before setting selected view,
+  //   // and don't override user's filter selections if there are unsaved changes
+  //   if (availLabels.ids.length && selectedProj && selectedView && !unsavedViewChanges) {
+  //     console.log('ViewSelector() - dispatching setSelectedProjAndView');
+  //     dispatch(setSelectedProjAndView({
+  //       projId: selectedProj._id,
+  //       viewId: selectedView._id
+  //     }));
+  //   }
+  // }, [selectedProj, selectedView, availLabels.ids, unsavedViewChanges, dispatch]);
 
   useEffect(() => {
     const handleWindowClick = () => { setExpandedMenu(null) };
@@ -157,13 +161,19 @@ const ViewSelector = () => {
   };
 
   const handleProjectMenuItemClick = (e) => {
+    console.log('ViewSelector() - handleProjectMenuItemClick');
     const projId = e.target.dataset.projId
-    if (projId !== selectedProject._id) dispatch(setSelectedProject({projId}));
+    if (projId !== selectedProj._id) {
+      dispatch(setSelectedProjAndView({ projId }));
+    }
   }
 
   const handleViewMenuItemClick = (e) => {
+    console.log('ViewSelector() - handleViewMenuItemClick');
     const viewId = e.target.dataset.viewId
-    if (viewId !== selectedView._id) dispatch(setSelectedView({ viewId }));
+    if (viewId !== selectedView._id) {
+      dispatch(setSelectedProjAndView({ projId: selectedProj._id, viewId }))
+    }
   }
 
   return (
@@ -177,7 +187,7 @@ const ViewSelector = () => {
                   <SelectedViewCrumb
                     onClick={() => handleMenuCrumbClick('project')}
                   >
-                    {selectedProject.name}
+                    {selectedProj.name}
                     {expandedMenu === 'project' &&
                       <DropDownMenu>
                         <ul>

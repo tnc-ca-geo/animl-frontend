@@ -64,7 +64,7 @@ const SelectField = ({
     onBlur(name, true);
   };
 
-  console.log('SelectField - value: ', value)
+  // console.log('SelectField - value: ', value)
 
   return (
     <div>

@@ -36,7 +36,7 @@ const StyledImagesPanel = styled('div', {
 });
 
 const ImagesPanel = () => {
-  console.groupCollapsed('ImagesPanel rendering')
+  // console.groupCollapsed('ImagesPanel rendering')
   const selectedProject = useSelector(selectSelectedProject);
   const filters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
@@ -45,10 +45,10 @@ const ImagesPanel = () => {
   const hasNext = useSelector(selectHasNext);
   const isLoading = useSelector(selectIsLoading);
   const dispatch = useDispatch();
-  console.log('selectedProject: ', selectedProject);
-  console.log('filters: ', filters);
-  console.log('isLoading: ', isLoading);
-  console.groupEnd();
+  // console.log('selectedProject: ', selectedProject);
+  // console.log('filters: ', filters);
+  // console.log('isLoading: ', isLoading);
+  // console.groupEnd();
 
   useEffect(() => {
     if (selectedProject && filters) {

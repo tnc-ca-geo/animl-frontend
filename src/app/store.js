@@ -5,7 +5,7 @@ import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from './rootReducer';
 import { preFocusImageMiddleware } from '../features/images/imagesMiddleware';
 import { 
-  setSelectedViewMiddleware,
+  setSelectedProjAndViewMiddleware,
   diffFiltersMiddleware
 } from '../features/projects/viewsMiddleware';
 import { projectsMiddleware } from '../features/projects/projectsMiddleware';
@@ -24,7 +24,7 @@ const store = configureStore({
       .concat(projectsMiddleware)
       .concat(preFocusImageMiddleware)
       .concat(diffFiltersMiddleware)
-      .concat(setSelectedViewMiddleware)
+      .concat(setSelectedProjAndViewMiddleware)
       .concat(focusMiddleware)
       .concat(labelMiddleware)
       .concat(objectMiddleware)

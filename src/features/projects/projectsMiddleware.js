@@ -1,26 +1,28 @@
 import {
   selectProjects,
   setSelectedView,
-  setSelectedProject
+  setSelectedProject,
+  setSelectedProjAndView
 } from "./projectsSlice";
-
-// TODO AUTH - decide whether we intercept and add full project/view to payload 
-// here (in middleware), or find it and when action is dispatched
 
 export const projectsMiddleware = store => next => action => {
 
-  if (setSelectedProject.match(action)) {
+  if (setSelectedProjAndView.match(action)) {
+    console.log('projectsMiddleware() - setSelectedProjAndView: ', action.payload)
     // find and add cameras to payload (used in filtersSlice extraReducers)
     const projects = selectProjects(store.getState());
-    action.payload.cameras = projects.find((proj) => (
+    const selectedProj = projects.find((proj) => (
       proj._id === action.payload.projId
-    )).cameras;
-    next(action);
-  }
+    ));
+    action.payload.cameras = selectedProj.cameras;
 
-  else if (setSelectedView.match(action)) {
+    // add default viewId to payload if not specified in payload
+    if (!action.payload.viewId) {
+      const defaultView = selectedProj.views.find((v) => v.name === 'All images');
+      action.payload.viewId = defaultView._id;
+    }
+
     // find and add view to payload (used in setSelectedViewMiddleware)
-    const projects = selectProjects(store.getState());
     projects.forEach((p) => {
       p.views.forEach((v) => {
         if (v._id === action.payload.viewId) {
@@ -28,6 +30,7 @@ export const projectsMiddleware = store => next => action => {
         }
       })
     });
+
     next(action);
   }
 

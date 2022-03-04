@@ -51,6 +51,11 @@ export const FormWrapper = ({ children }) => (
   </StyledFormWrapper>
 );
 
+export const FormSubheader = styled('div', {
+  padding: '$3 $0',
+  fontWeight: '$5',
+});
+
 export const FieldRow = styled('div', {
   paddingBottom: '$3',
   display: 'flex',

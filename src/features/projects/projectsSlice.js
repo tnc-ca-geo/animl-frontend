@@ -8,7 +8,10 @@ const initialState = {
   unsavedViewChanges: false,
   isLoading: false,
   noneFound: false,
-  error: null
+  error: null,
+  // TODO AUTH - probably want to have more specific state props for isLoading, 
+  // error, etc depending on what part of the Project we're updating 
+  cameraRegistrationError: null,
 };
 
 export const projectsSlice = createSlice({
@@ -36,36 +39,50 @@ export const projectsSlice = createSlice({
       payload.projects.forEach((proj, i) => {
         if (!projectIdsInState.includes(proj._id)) {
           // TODO AUTH - how to decide which project is selected by default?
-          // If no currently selected project, choose first one? 
+          // If no currently selected project, choose first one?
           proj.selected = !selectedProj && i === 0;
           proj.views.forEach((view) => {
-              view.selected = view.name === 'All images';
+            view.selected = view.name === 'All images';
           });
           state.projects.push(proj);
         }
       });
     },
 
-    setSelectedProject: (state, { payload }) => {
-      console.log('projectSlice.setSelectedProject() - _id: ', payload);
-      state.projects.forEach((proj) => {
-        proj.selected = proj._id === payload.projId;
-      });
-    },
+    setSelectedProjAndView: (state, { payload }) => {
+      console.log('projectSlice.setSelectedProjAndView() - _id: ', payload);
+      let selectedProj = state.projects.find((p) => p.selected);
+      if (selectedProj._id !== payload.projId) {
+        state.projects.forEach((proj) => {
+          proj.selected = proj._id === payload.projId;
+          if (proj._id === payload.projId) selectedProj = proj;
+        });
+      }
 
-    setSelectedView: (state, { payload }) => {
-      console.log('projectSlice.setSelectedView() - _id: ', payload.viewId);
-      // TODO AUTH - maybe set selected view and set selected project should 
-      // be one action? so we don't run the risk of trying to set the selected
-      // view on an un-selected project (coudld happen if a user saves/edits a view
-      // in one project then toggles to another before it returns).
-      const selectedProj = state.projects.find((proj) => proj.selected);
-      if (selectedProj) {
+      const selectedView = selectedProj.views.find((v) => v.selected);
+      if (selectedView._id !== payload.viewId) {
         selectedProj.views.forEach((view) => {
           view.selected = view._id === payload.viewId;
         });
       }
+
+      state.error = null;
+      state.cameraRegistrationError = null;
     },
+
+    // setSelectedView: (state, { payload }) => {
+    //   console.log('projectSlice.setSelectedView() - _id: ', payload.viewId);
+    //   // TODO AUTH - maybe set selected view and set selected project should 
+    //   // be one action? so we don't run the risk of trying to set the selected
+    //   // view on an un-selected project (coudld happen if a user saves/edits a view
+    //   // in one project then toggles to another before it returns).
+    //   const selectedProj = state.projects.find((proj) => proj.selected);
+    //   if (selectedProj) {
+    //     selectedProj.views.forEach((view) => {
+    //       view.selected = view._id === payload.viewId;
+    //     });
+    //   }
+    // },
 
     setUnsavedViewChanges: (state, { payload }) => {
       state.unsavedViewChanges = payload;
@@ -127,7 +144,6 @@ export const projectsSlice = createSlice({
       state.error = payload;
     },
 
-    // TODO AUTH - make work in projectsSlice
     editDeploymentsSuccess: (state, { payload }) => {
       console.log('projectSlice - editDeploymentSucces() - ', payload);
       state.isLoading = false;
@@ -140,6 +156,29 @@ export const projectsSlice = createSlice({
           }
         }
       }
+
+      // TODO: When we delete a deployment, we should also purge it from 
+      // all view's that include it in their filters!
+    },
+
+    // Camera registration 
+
+    registerCameraStart: (state) => {
+      state.isLoading = true;
+    },
+
+    registerCameraFailure: (state, { payload }) => {
+      console.log('projectSlice - registerCameraFailure() - ', payload);
+      state.isLoading = false;
+      state.cameraRegistrationError = payload;
+    },
+
+    registerCameraSuccess: (state, { payload }) => {
+      console.log('projectSlice - registerCameraSuccess() - ', payload);
+      state.isLoading = false;
+      state.cameraRegistrationError = null;
+      const proj = state.projects.find((p) => p._id === payload.project._id);
+      proj.cameras = payload.project.cameras;
     },
 
   },
@@ -150,8 +189,8 @@ export const {
   getProjectsStart,
   getProjectsFailure,
   getProjectsSuccess,
-  setSelectedProject,
-  setSelectedView,
+  // setSelectedProject,
+  setSelectedProjAndView,
   setUnsavedViewChanges,
 
   editViewStart,
@@ -162,6 +201,10 @@ export const {
   editDeploymentsStart, 
   editDeploymentsFailure,
   editDeploymentsSuccess,
+
+  registerCameraStart,
+  registerCameraFailure,
+  registerCameraSuccess,
 
 } = projectsSlice.actions;
 
@@ -201,7 +244,7 @@ export const editView = (operation, payload) => {
           });
           const view = res.createView.view;
           dispatch(saveViewSuccess({ projId, view}));
-          dispatch(setSelectedView({ viewId: view._id }));
+          dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
           break;
         }
         case 'update': {
@@ -212,7 +255,7 @@ export const editView = (operation, payload) => {
           });
           const view = res.updateView.view;
           dispatch(saveViewSuccess({ projId, view}));
-          dispatch(setSelectedView({ viewId: view._id }));
+          dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
           break;
         }
         case 'delete': {
@@ -225,7 +268,7 @@ export const editView = (operation, payload) => {
           const defaultView = updatedProj.views.find((view) => (
             view.name === 'All images'
           ));
-          dispatch(setSelectedView({ viewId: defaultView._id })); 
+          dispatch(setSelectedProjAndView({ projId, viewId: defaultView._id })); 
           dispatch(deleteViewSuccess({ projId, viewId: payload._id }));
           break;
         }
@@ -241,7 +284,6 @@ export const editView = (operation, payload) => {
   };
 };
 
-// TODO AUTH - make work in projectsSlice
 // editDeployments thunk
 export const editDeployments = (operation, payload) => {
   return async (dispatch, getState) => {
@@ -272,6 +314,30 @@ export const editDeployments = (operation, payload) => {
   };
 };
 
+// registerCamera thunk
+export const registerCamera = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
+      dispatch(registerCameraStart());
+      const res = await call({
+        projId: selectedProj._id,
+        request: 'registerCamera',
+        input: payload,
+      });
+      console.log('res: ', res)
+      res.registerCamera.success 
+        ? dispatch(registerCameraSuccess(res.registerCamera))
+        : dispatch(registerCameraFailure(res.registerCamera.rejectionInfo.msg));
+    } catch (err) {
+      console.log(`error attempting to register camera: ${err.toString()}`);
+      dispatch(registerCameraFailure(err.toString()));
+    }
+  };
+};
+
+
 
 // Selectors
 export const selectProjectsLoading = state => state.projects.isLoading;
@@ -287,7 +353,10 @@ export const selectViews = createSelector([selectSelectedProject],
 export const selectSelectedView = createSelector([selectViews],
   (views) => views ? views.find((view) => view.selected) : null
 );
-export const selectUnsavedViewChanges = state => state.projects.unsavedViewChanges;
+export const selectUnsavedViewChanges = state => 
+  state.projects.unsavedViewChanges;
+export const selectCameraRegistrationError = state => 
+  state.projects.cameraRegistrationError;
 
 
 export default projectsSlice.reducer;

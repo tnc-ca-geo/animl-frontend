@@ -19,3 +19,5 @@ const stage = process.env.REACT_APP_STAGE || process.env.NODE_ENV;
 export const API_URL = API_URLS[stage];
 export const IMAGES_URL = IMAGES_URLS[stage];
 export const IMAGE_QUERY_LIMITS = [10, 50, 100];
+
+export const SUPPORTED_CAM_MAKES = ['BuckEyeCam'];

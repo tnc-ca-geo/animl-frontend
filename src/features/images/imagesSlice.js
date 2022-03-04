@@ -252,7 +252,7 @@ export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectIsLoading = state => state.images.isLoading;
 export const selectVisibleRows = state => state.images.visibleRows;
-export const selectPreFocusImage= state => state.images.preFocusImage;
+export const selectPreFocusImage = state => state.images.preFocusImage;
 
 // TODO: find a different place for this?
 export const selectRouterLocation = state => state.router.location;

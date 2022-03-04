@@ -6,6 +6,7 @@ import { selectCameras } from './camerasSlice';
 import CameraList from './CameraList';
 import SaveDeploymentForm from './SaveDeploymentForm';
 import DeleteDeploymentForm from './DeleteDeploymentForm';
+import RegisterCameraForm from './RegisterCameraForm';
 import Accordion from '../../components/Accordion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
@@ -16,6 +17,10 @@ import {
   DATE_FORMAT_EXIF as EXIF,
 } from '../../config';
 import { selectSelectedProject } from '../projects/projectsSlice';
+
+// TODO AUTH: Add UI for registering new cameras
+// TODO AUTH: Add UI for unregistering cameras
+// TODO AUTH: indicate whether a camera is currently registered or not
 
 const CameraAdminModal = () => {
   const project = useSelector(selectSelectedProject);
@@ -40,6 +45,8 @@ const CameraAdminModal = () => {
   const handleCancelEditClick = () => setShowSaveDepForm(false);
   const handleCancelDeleteClick = () => setShowDeleteDepForm(false);
 
+  // TODO AUTH: move spinner overlay to this comonent and remove from forms
+
   return (
     <div>
       {showSaveDepForm
@@ -55,11 +62,14 @@ const CameraAdminModal = () => {
               deployment={deploymentSelected}
               handleClose={handleCancelDeleteClick}
             />
-          : <CameraList
-              cameras={project.cameras}
-              handleSaveDepClick={handleSaveDepClick}
-              handleDeleteDepClick={handleDeleteDepClick}
-            />
+          : <>
+              <CameraList
+                cameras={project.cameras}
+                handleSaveDepClick={handleSaveDepClick}
+                handleDeleteDepClick={handleDeleteDepClick}
+              />
+              <RegisterCameraForm />
+            </>
       }
     </div>
   );

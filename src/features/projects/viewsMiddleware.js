@@ -14,10 +14,11 @@ import {
   customFilterChanged,
 } from '../filters/filtersSlice';
 import {
-  setSelectedView,
+  setSelectedProjAndView,
   saveViewSuccess,
   selectSelectedView,
-  setUnsavedViewChanges
+  setUnsavedViewChanges,
+  editDeploymentsSuccess
 } from './projectsSlice'
 
 const checkIfValidMD5Hash = (hash) => {
@@ -34,7 +35,8 @@ export const diffFiltersMiddleware = store => next => action => {
       dateFilterChanged.match(action) ||
       reviewFilterToggled.match(action) ||
       customFilterChanged.match(action) ||
-      setSelectedView.match(action) ||
+      setSelectedProjAndView.match(action) ||
+      editDeploymentsSuccess.match(action) ||
       saveViewSuccess.match(action)) {
 
     next(action);
@@ -56,18 +58,24 @@ export const diffFiltersMiddleware = store => next => action => {
 // If an image Id has been passed into the URL as a query param, 
 // initialize app with pre-focused image. 
 // Otherwise apply selected view's filters to active filters
-export const setSelectedViewMiddleware = store => next => action => {
-  if (setSelectedView.match(action)) {
+// TODO - this is kind of a wierd place to check router params and override 
+// setting selected view, but I think we're trying to wait for filters to be 
+// ready before either setting them or doing a fetchImageContext (which also 
+// sets active filters declaratively). 
+export const setSelectedProjAndViewMiddleware = store => next => action => {
+  if (setSelectedProjAndView.match(action)) {
 
     const routerLocation = selectRouterLocation(store.getState());
     const query = routerLocation.query;
     if ('img' in query && checkIfValidMD5Hash(query.img)) {
+      console.log('setSelectedProjAndViewMiddleware() - img detected in URL')
       // if there's an image id in the URL, fetch image and image's context
       store.dispatch(preFocusImageStart(query.img));
       store.dispatch(fetchImageContext(query.img));
     }
     else {
-      // else, set active filters to selected view filters 
+      console.log('setSelectedProjAndViewMiddleware() - NO img detected in URL');
+      // else, set active filters to selected view filters
       const newFilters = action.payload.view.filters;
       store.dispatch(setActiveFilters(newFilters));
     }

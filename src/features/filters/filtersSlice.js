@@ -3,25 +3,24 @@ import {
   getCamerasStart,
   getCamerasFailure,
   getCamerasSuccess,
-  editDeploymentsSuccess,
 } from '../cameras/camerasSlice';
 import {
   getProjectsStart,
   getProjectsFailure,
   getProjectsSuccess,
   selectSelectedProject,
-  setSelectedProject
+  setSelectedProject,
+  registerCameraSuccess,
+  setSelectedProjAndView,
+  editDeploymentsSuccess,
 } from '../projects/projectsSlice';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
-import { normalizeFilters } from './utils';
-
-// TODO: come up with some standard names for components of the fitlters state
-// and make consistent thoughout code
-// are "cameras", "deployments", etc. "filters"? 
-// I think yes (but I've been calling them "filter categories" in the code. Maybe "filter name is better")
-// but what might call the individual IDs within filters that have arrays...
-// "includedId"?
+import {
+  normalizeFilters,
+  updateAvailCamFilters,
+  updateAvailDepFilters,
+} from './utils';
 
 const initialState = {
   availFilters: {
@@ -83,8 +82,6 @@ export const filtersSlice = createSlice({
       }
     },
 
-
-
     checkboxFilterToggled: (state, { payload }) => {
       const { filterCat, val } = payload;
       const activeIds = state.activeFilters[filterCat];
@@ -130,7 +127,6 @@ export const filtersSlice = createSlice({
     setActiveFilters: (state, { payload }) => {
       console.log('filtersSlice.setActiveFilters(): ', payload)
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
-      console.log('filtersSlice.setActiveFilters(): normalizedFilters ', normalizedFilters)
       state.activeFilters = normalizedFilters;
     },
 
@@ -169,35 +165,25 @@ export const filtersSlice = createSlice({
       .addCase(getProjectsStart, (state, { payload }) => {
         state.availFilters.cameras.isLoading = true;
         state.availFilters.deployments.isLoading = true;
-      })          
+      })
       .addCase(getProjectsFailure, (state, { payload }) => {
         state.availFilters.cameras.isLoading = false;
         state.availFilters.cameras.error = payload;
   
         state.availFilters.deployments.isLoading = false;
         state.availFilters.deployments.error = payload;
-      })      
-      .addCase(setSelectedProject, (state, { payload }) => {
-
-        console.log('filtersSlice() - setSelectedProject extra reducer: ', payload)
-        // update deployment filters state
-        state.availFilters.deployments.isLoading = false;
-        state.availFilters.deployments.error = null;
-        const newDeployments = payload.cameras.reduce((acc, camera) => {
-          for (const dep of camera.deployments) {
-            acc.push(dep._id);
-          }
-          return acc;
-        },[]);
-        state.availFilters.deployments.ids = newDeployments;
-        
-        // update camera filters state
-        state.availFilters.cameras.isLoading = false;
-        state.availFilters.cameras.error = null;
-        state.availFilters.cameras.ids = payload.cameras.map((cam) => cam._id);
-        if (payload.cameras.length === 0) {
-          state.availFilters.cameras.noneFound = true;
-        }
+      })
+      .addCase(setSelectedProjAndView, (state, { payload }) => {
+        console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
+        updateAvailDepFilters(state, payload.cameras);
+        updateAvailCamFilters(state, payload.cameras);
+        // set all filters to new selected view? We're currently handling this 
+        // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
+      })
+      .addCase(registerCameraSuccess, (state, { payload }) => {
+        console.log('filtersSlice() - registerCameraSuccess extra reducer: ', payload)
+        updateAvailDepFilters(state, payload.project.cameras);
+        updateAvailCamFilters(state, payload.project.cameras);
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
         // TODO AUTH: test & make sure this works with new muliti-project schema
@@ -229,7 +215,7 @@ export const filtersSlice = createSlice({
             state.availFilters.deployments.ids = availDepFilters.filter((id) => (
               id !== reqPayload.deploymentId
             ));
-            state.activeFilters.deployments = activeDepFilters !== null
+            state.activeFilters.deployments = (activeDepFilters !== null)
               ? activeDepFilters.filter((id) => id !== reqPayload.deploymentId)
               : null;
             break;
