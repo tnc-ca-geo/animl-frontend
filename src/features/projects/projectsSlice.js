@@ -52,17 +52,16 @@ export const projectsSlice = createSlice({
     setSelectedProjAndView: (state, { payload }) => {
       console.log('projectSlice.setSelectedProjAndView() - _id: ', payload);
       let selectedProj = state.projects.find((p) => p.selected);
-      if (selectedProj._id !== payload.projId) {
-        state.projects.forEach((proj) => {
-          proj.selected = proj._id === payload.projId;
-          if (proj._id === payload.projId) selectedProj = proj;
+      if (payload.newProjSelected) {
+        state.projects.forEach((p) => {
+          p.selected = p._id === payload.projId;
+          if (p._id === payload.projId) selectedProj = p;
         });
       }
 
-      const selectedView = selectedProj.views.find((v) => v.selected);
-      if (selectedView._id !== payload.viewId) {
-        selectedProj.views.forEach((view) => {
-          view.selected = view._id === payload.viewId;
+      if (payload.newViewSelected) {
+        selectedProj.views.forEach((v) => {
+          v.selected = v._id === payload.viewId;
         });
       }
 

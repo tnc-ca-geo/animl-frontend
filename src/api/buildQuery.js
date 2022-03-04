@@ -225,7 +225,7 @@ const queries = {
     },
   }),
 
-  getCameras: (input) => ({
+  getCameras: () => ({
     template: `
       {
         cameras {
@@ -235,7 +235,7 @@ const queries = {
     `,
   }),
 
-  getLabels: (input) => ({
+  getLabels: () => ({
     template: `
       {
         labels {

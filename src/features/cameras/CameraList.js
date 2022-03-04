@@ -70,8 +70,32 @@ const DeploymentItem = styled('div', {
   }
 });
 
-const AddDeploymentButton = (props) => {
-  const { handleSaveDepClick, cameraId } = props;
+const StyledActiveState = styled('div', {
+  padding: '$0 $2',
+  borderRadius: '$2',
+  variants: {
+    active: {
+      true: {
+        backgroundColor: '$green100',
+        color: '$green700',
+      },
+      false: {
+        backgroundColor: 'gainsboro',
+        '&:hover': {
+          backgroundColor: 'lightgray',
+        },
+      },
+    },
+  },
+});
+
+const ActiveState = ({ active }) => (
+  <StyledActiveState active={active.toString()}>
+    { active ? 'active' : 'inactive'}
+  </StyledActiveState>
+);
+
+const AddDeploymentButton = ({ handleSaveDepClick, cameraId }) => {
   return (
     <IconButton
       variant='ghost'
@@ -97,11 +121,14 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                 label={cam._id}
                 expandedDefault={false}
                 headerButtons={
-                  <AddDeploymentButton
-                    handleSaveDepClick={handleSaveDepClick}
-                    cameraId={cam._id}
-                  />
-                }
+                  <>
+                    <AddDeploymentButton
+                      handleSaveDepClick={handleSaveDepClick}
+                      cameraId={cam._id}
+                    />
+                    <ActiveState active={cam.active} />
+                  </>
+                }s
               >
                 {cam.deployments.map((dep) => (
                   <DeploymentItem key={dep._id}> 

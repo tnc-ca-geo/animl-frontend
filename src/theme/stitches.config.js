@@ -30,6 +30,8 @@ export const {
       hiContrast: '#000000', //'#031b4e', // black
       loContrast: '#FFFFFF', // white
       warning: '#E04040',
+      green100: '#E6F9EE',
+      green700: '#26561D',
 
       gray200: '#FAFAFA',
       gray300: '#F0F0F0',

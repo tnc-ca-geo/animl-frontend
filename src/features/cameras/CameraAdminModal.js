@@ -1,8 +1,12 @@
-import React, { useState }from 'react';
+import React, { useEffect, useState }from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import moment from 'moment';
-import { selectCameras } from './camerasSlice';
+import {
+  selectCamerasLoading,
+  selectCameras,
+  fetchCameras,
+} from './camerasSlice';
 import CameraList from './CameraList';
 import SaveDeploymentForm from './SaveDeploymentForm';
 import DeleteDeploymentForm from './DeleteDeploymentForm';
@@ -18,7 +22,6 @@ import {
 } from '../../config';
 import { selectSelectedProject } from '../projects/projectsSlice';
 
-// TODO AUTH: Add UI for registering new cameras
 // TODO AUTH: Add UI for unregistering cameras
 // TODO AUTH: indicate whether a camera is currently registered or not
 
@@ -28,7 +31,26 @@ const CameraAdminModal = () => {
   const [ showDeleteDeptForm, setShowDeleteDepForm ] = useState(false);
   const [ cameraSelected, setCameraSelected ] = useState();
   const [ deploymentSelected, setDeploymentSelected ] = useState();
+  const dispatch = useDispatch();
 
+  const cameras = useSelector(selectCameras);
+  const camerasLoading = useSelector(selectCamerasLoading);
+  useEffect(() => {
+    if (!cameras.length && !camerasLoading) {
+      dispatch(fetchCameras());
+    }
+  }, [cameras.length, camerasLoading, dispatch]);
+
+  let enrichedCams = [];
+  if (project.cameras.length && cameras.length) {
+    enrichedCams = project.cameras.map((c) => {
+      const cameraSource = cameras.find((cs) => cs._id === c._id);
+      const active = cameraSource.projRegistrations.some((pr) => (
+        pr.project === project._id && pr.active
+      ));
+      return { ...c, active };
+    });
+  }
 
   const handleSaveDepClick = ({ cameraId, deployment }) => {
     setShowSaveDepForm(true);
@@ -45,7 +67,7 @@ const CameraAdminModal = () => {
   const handleCancelEditClick = () => setShowSaveDepForm(false);
   const handleCancelDeleteClick = () => setShowDeleteDepForm(false);
 
-  // TODO AUTH: move spinner overlay to this comonent and remove from forms
+  // TODO AUTH: move spinner overlay to this component and remove from forms
 
   return (
     <div>
@@ -64,7 +86,7 @@ const CameraAdminModal = () => {
             />
           : <>
               <CameraList
-                cameras={project.cameras}
+                cameras={enrichedCams}
                 handleSaveDepClick={handleSaveDepClick}
                 handleDeleteDepClick={handleDeleteDepClick}
               />

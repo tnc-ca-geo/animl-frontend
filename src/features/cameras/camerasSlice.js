@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
-import { enrichCameras } from './utils';
+import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   cameras: [],
@@ -38,24 +38,17 @@ export const camerasSlice = createSlice({
       }
     },
 
-    editDeploymentsStart: (state) => {
-      state.isLoading = true;
-    },
+  },
 
-    editDeploymentsFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
-    },
-
-    editDeploymentsSuccess: (state, { payload }) => {
-      console.log('edidDeploymentSuccess');
-      state.isLoading = false;
-      state.error = null;
-      const editedCam = payload.camera;
-      let camera = state.cameras.find((camera) => camera._id === editedCam._id);
-      camera.deployments = editedCam.deployments;
-    },
-
+  extraReducers: (builder) => {
+    builder
+      .addCase(setSelectedProjAndView, (state, { payload }) => {
+        if (payload.newProjSelected) {
+          state.isLoading = false;
+          state.error = null;
+          state.cameras = [];
+        }
+      })
   },
 });
 
@@ -64,63 +57,33 @@ export const {
   getCamerasStart,
   getCamerasFailure,
   getCamerasSuccess,
-  editDeploymentsStart, 
-  editDeploymentsFailure,
-  editDeploymentsSuccess,
 } = camerasSlice.actions;
 
-// TODO: maybe use createAsyncThunk for these? 
-// https://redux-toolkit.js.org/api/createAsyncThunk
-
 // fetchCameras thunk
-export const fetchCameras = () => async dispatch => {
+export const fetchCameras = () => async (dispatch, getState) => {
   try {
+    console.log('fetchingCameras()')
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    if(token){
+    if (token){
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
       dispatch(getCamerasStart());
-      const res = await call('getCameras');
-      const cameras = enrichCameras(res.cameras);
-      dispatch(getCamerasSuccess(cameras));
+      const res = await call({
+        projId: selectedProj._id,
+        request: 'getCameras',
+      });
+      console.log('res: ', res);
+      dispatch(getCamerasSuccess(res.cameras));
     }
   } catch (err) {
     dispatch(getCamerasFailure(err.toString()));
   }
 };
 
-// editDeployments thunk
-export const editDeployments = (operation, payload) => {
-  return async (dispatch, getState) => {
-    try {
-      if (!operation || !payload) {
-        const err = `An operation (create, update, or delete) is required`;
-        throw new Error(err);
-      }
-      const projects = getState().projects.projects
-      const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(editDeploymentsStart());
-      const res = await call({
-        projId: selectedProj._id,
-        request: operation,
-        input: payload,
-      });
-      let camera = res[operation].camera;
-      camera = enrichCameras([camera])[0];
-      dispatch(editDeploymentsSuccess({
-        camera,
-        operation,
-        reqPayload: payload 
-      }));
-    } catch (err) {
-      console.log(`error attempting to ${operation}: ${err.toString()}`);
-      dispatch(editDeploymentsFailure(err.toString()));
-    }
-  };
-};
 
 // Selectors
-export const selectCameras = state => state.cameras;
+export const selectCameras = state => state.cameras.cameras;
 export const selectCamerasLoading = state => state.cameras.isLoading;
-
 
 export default camerasSlice.reducer;
