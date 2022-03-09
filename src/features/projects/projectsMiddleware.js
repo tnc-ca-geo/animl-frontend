@@ -8,7 +8,7 @@ import {
 export const projectsMiddleware = store => next => action => {
 
   if (setSelectedProjAndView.match(action)) {
-    console.log('projectsMiddleware() - setSelectedProjAndView: ', action.payload)
+    console.log('projectsMiddleware() - setSelectedProjAndView: ', action.payload);
 
     let { projId, viewId } = action.payload;
 

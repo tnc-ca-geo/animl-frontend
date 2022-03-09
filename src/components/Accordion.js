@@ -57,7 +57,7 @@ const Accordion = (props) => {
       <AccordionHeader onClick={handleAccordionHeaderClick}>
         <ExpandButton>
           <IconButton variant='ghost'>
-            <FontAwesomeIcon icon={ 
+            <FontAwesomeIcon icon={
               expanded ? ['fas', 'angle-down'] : ['fas', 'angle-right']
             }/>
           </IconButton>

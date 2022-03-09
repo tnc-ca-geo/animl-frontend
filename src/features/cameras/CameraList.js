@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import moment from 'moment';
-import { selectCameras } from './camerasSlice';
+import { selectCameras, unregisterCamera } from './camerasSlice';
 import Accordion from '../../components/Accordion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
@@ -16,6 +16,22 @@ import {
 const StyledCameraList = styled('div', {
   border: '1px solid $gray400',
   borderBottom: 'none',
+});
+
+const ManageCamButton = styled(Button, {
+  border: 'none',
+  backgroundColor: '$loContrast',
+  paddingLeft: '$2',
+  color: '$hiContrast',
+  '&:hover': {
+    color: '$hiContrast',
+    backgroundColor: '$gray400',
+    cursor: 'pointer',
+  },
+
+  svg: {
+    paddingLeft: '$2',
+  }
 });
 
 const DepButtons = styled('div', {
@@ -95,20 +111,14 @@ const ActiveState = ({ active }) => (
   </StyledActiveState>
 );
 
-const AddDeploymentButton = ({ handleSaveDepClick, cameraId }) => {
-  return (
-    <IconButton
-      variant='ghost'
-      size='small'
-      onClick={() => handleSaveDepClick({cameraId})}
-    >
-      <FontAwesomeIcon icon={['fas', 'plus']}/>
-    </IconButton>
-  )
-};
-
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const format = (date) => moment(date, EXIF).format(DFRS);
+  const dispatch = useDispatch();
+
+  const handleUnregisterClick = (cameraId) => {
+    console.log('handleUnregisterClick: ', cameraId);
+    dispatch(unregisterCamera({ cameraId }));
+  };
 
   return (
     <div>
@@ -122,11 +132,21 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                 expandedDefault={false}
                 headerButtons={
                   <>
-                    <AddDeploymentButton
-                      handleSaveDepClick={handleSaveDepClick}
-                      cameraId={cam._id}
-                    />
                     <ActiveState active={cam.active} />
+                    <ManageCamButton
+                      onClick={() => handleSaveDepClick(cam._id)}
+                    >
+                      Add deployment
+                      <FontAwesomeIcon icon={['fas', 'plus']}/>
+                    </ManageCamButton>
+                    {cam.active && 
+                      <ManageCamButton
+                        onClick={() => handleUnregisterClick(cam._id)}
+                      >
+                        Release
+                        <FontAwesomeIcon icon={['fas', 'times']}/>
+                      </ManageCamButton>
+                    }
                   </>
                 }s
               >

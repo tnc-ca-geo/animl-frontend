@@ -22,8 +22,6 @@ import {
 } from '../../config';
 import { selectSelectedProject } from '../projects/projectsSlice';
 
-// TODO AUTH: Add UI for unregistering cameras
-// TODO AUTH: indicate whether a camera is currently registered or not
 
 const CameraAdminModal = () => {
   const project = useSelector(selectSelectedProject);

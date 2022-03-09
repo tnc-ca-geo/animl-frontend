@@ -1,7 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
-import { setSelectedProjAndView } from '../projects/projectsSlice';
+import { 
+  setSelectedProjAndView,
+  registerCameraSuccess
+} from '../projects/projectsSlice';
 
 const initialState = {
   cameras: [],
@@ -27,12 +30,7 @@ export const camerasSlice = createSlice({
     getCamerasSuccess: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      const camIdsInState = state.cameras.map((cam) => cam._id);
-      for (const camera of payload) {
-        if (!camIdsInState.includes(camera._id)) {
-          state.cameras.push(camera);
-        }
-      }
+      state.cameras = payload;
       if (payload.length === 0) {
         state.noneFound = true;
       }
@@ -47,6 +45,15 @@ export const camerasSlice = createSlice({
           state.isLoading = false;
           state.error = null;
           state.cameras = [];
+        }
+      })
+      .addCase(registerCameraSuccess, (state, { payload }) => {
+        console.log('cameraSlice() - registerCameraSuccess extra reducer: ', payload)
+        state.isLoading = false;
+        state.error = null;
+        state.cameras = payload.cameras;
+        if (payload.cameras.length === 0) {
+          state.noneFound = true;
         }
       })
   },
@@ -75,6 +82,31 @@ export const fetchCameras = () => async (dispatch, getState) => {
       });
       console.log('res: ', res);
       dispatch(getCamerasSuccess(res.cameras));
+    }
+  } catch (err) {
+    dispatch(getCamerasFailure(err.toString()));
+  }
+};
+
+// unregisger camera thunk
+export const unregisterCamera = (payload) => async (dispatch, getState) => {
+  try {
+    console.log('unregisteringCamera() - ', payload)
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token){
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      dispatch(getCamerasStart());
+      const res = await call({
+        projId: selectedProj._id,
+        request: 'unregisterCamera',
+        input: payload
+      });
+      console.log('res: ', res);
+      res.unregisterCamera.success 
+        ? dispatch(getCamerasSuccess(res.unregisterCamera.cameras))
+        : dispatch(getCamerasFailure(res.registerCamera.rejectionInfo.msg));
     }
   } catch (err) {
     dispatch(getCamerasFailure(err.toString()));

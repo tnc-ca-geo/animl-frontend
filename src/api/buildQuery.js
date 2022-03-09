@@ -401,6 +401,28 @@ const queries = {
           project {
             ${projectFields}
           }
+          cameras {
+            ${cameraFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  unregisterCamera: (input) => ({
+    template: `
+      mutation UnregisterCamera($input: UnregisterCameraInput!) {
+        unregisterCamera(input: $input) {
+          success
+          rejectionInfo {
+            msg
+            currProjReg
+          }
+          cameraId
+          cameras {
+            ${cameraFields}
+          }
         }
       }
     `,

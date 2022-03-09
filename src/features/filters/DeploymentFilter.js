@@ -8,19 +8,19 @@ import CameraFilterSection from './CameraFilterSection';
 
 
 const DeploymentFilter = () => {
-  // console.groupCollapsed('DeploymentFilter() rendering')
+  console.groupCollapsed('DeploymentFilter() rendering')
   const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
   const availDeps = useSelector(selectAvailDeployments);
   const activeDeps = activeFilters.deployments;
   const activeDepCount = activeDeps ? activeDeps.length : availDeps.ids.length;
-  // console.log('selectedProject: ', selectedProject);
-  // console.log('activeFilters: ', activeFilters);
-  // console.log('availDeps: ', availDeps);
-  // console.log('activeDeps: ', activeDeps);
-  // console.log('activeDepCount: ', activeDepCount);
-  // console.groupEnd()
+  console.log('selectedProject: ', selectedProject);
+  console.log('activeFilters: ', activeFilters);
+  console.log('availDeps: ', availDeps);
+  console.log('activeDeps: ', activeDeps);
+  console.log('activeDepCount: ', activeDepCount);
+  console.groupEnd()
 
   // useEffect(() => {
   //   console.log('DeploymentFilter() - selectedProject or selectedView changed!')
