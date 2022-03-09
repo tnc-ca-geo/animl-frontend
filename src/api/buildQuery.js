@@ -121,6 +121,9 @@ const projectFields = `
   cameras {
     ${cameraConfigFields}
   }
+  labels {
+    categories
+  }
   availableMLModels 
 `
 

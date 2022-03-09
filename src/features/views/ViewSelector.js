@@ -136,17 +136,14 @@ const ViewSelector = () => {
     }
   }, [projects, projectsLoading, dispatch]);
 
-  // useEffect(() => {
-  //   // Wait for filters and views to load before setting selected view,
-  //   // and don't override user's filter selections if there are unsaved changes
-  //   if (availLabels.ids.length && selectedProj && selectedView && !unsavedViewChanges) {
-  //     console.log('ViewSelector() - dispatching setSelectedProjAndView');
-  //     dispatch(setSelectedProjAndView({
-  //       projId: selectedProj._id,
-  //       viewId: selectedView._id
-  //     }));
-  //   }
-  // }, [selectedProj, selectedView, availLabels.ids, unsavedViewChanges, dispatch]);
+  useEffect(() => {
+    // set selected project to default
+    // and don't override user's filter selections if there are unsaved changes
+    if (!projectsLoading && projects.length && !selectedProj && !selectedView && !unsavedViewChanges) {
+      console.log('ViewSelector() - dispatching setSelectedProjAndView');
+      dispatch(setSelectedProjAndView({ projId: 'default_project' }));
+    }
+  }, [projects, selectedProj, selectedView, projectsLoading, unsavedViewChanges, dispatch]);
 
   useEffect(() => {
     const handleWindowClick = () => { setExpandedMenu(null) };
@@ -162,7 +159,7 @@ const ViewSelector = () => {
 
   const handleProjectMenuItemClick = (e) => {
     console.log('ViewSelector() - handleProjectMenuItemClick');
-    const projId = e.target.dataset.projId
+    const projId = e.target.dataset.projId;
     if (projId !== selectedProj._id) {
       dispatch(setSelectedProjAndView({ projId }));
     }

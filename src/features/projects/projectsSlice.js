@@ -35,15 +35,8 @@ export const projectsSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       const projectIdsInState = state.projects.map((proj) => proj._id);
-      const selectedProj = state.projects.find((proj) => proj.selected);
       payload.projects.forEach((proj, i) => {
         if (!projectIdsInState.includes(proj._id)) {
-          // TODO AUTH - how to decide which project is selected by default?
-          // If no currently selected project, choose first one?
-          proj.selected = !selectedProj && i === 0;
-          proj.views.forEach((view) => {
-            view.selected = view.name === 'All images';
-          });
           state.projects.push(proj);
         }
       });
@@ -68,20 +61,6 @@ export const projectsSlice = createSlice({
       state.error = null;
       state.cameraRegistrationError = null;
     },
-
-    // setSelectedView: (state, { payload }) => {
-    //   console.log('projectSlice.setSelectedView() - _id: ', payload.viewId);
-    //   // TODO AUTH - maybe set selected view and set selected project should 
-    //   // be one action? so we don't run the risk of trying to set the selected
-    //   // view on an un-selected project (coudld happen if a user saves/edits a view
-    //   // in one project then toggles to another before it returns).
-    //   const selectedProj = state.projects.find((proj) => proj.selected);
-    //   if (selectedProj) {
-    //     selectedProj.views.forEach((view) => {
-    //       view.selected = view._id === payload.viewId;
-    //     });
-    //   }
-    // },
 
     setUnsavedViewChanges: (state, { payload }) => {
       state.unsavedViewChanges = payload;
@@ -157,7 +136,7 @@ export const projectsSlice = createSlice({
       }
 
       // TODO: When we delete a deployment, we should also purge it from 
-      // all view's that include it in their filters!
+      // all views that include it in their filters!
     },
 
     // Camera registration 
@@ -188,7 +167,6 @@ export const {
   getProjectsStart,
   getProjectsFailure,
   getProjectsSuccess,
-  // setSelectedProject,
   setSelectedProjAndView,
   setUnsavedViewChanges,
 

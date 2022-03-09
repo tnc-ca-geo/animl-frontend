@@ -12,10 +12,10 @@ export const projectsMiddleware = store => next => action => {
 
     let { projId, viewId } = action.payload;
 
-    // add cameras to payload (used in filtersSlice extraReducers)
+    // add project to payload (used in filtersSlice extraReducers)
     const projects = selectProjects(store.getState());
     const projToSelect = projects.find((proj) => proj._id === projId);
-    action.payload.cameras = projToSelect.cameras;
+    action.payload.project = projToSelect;
 
     // add default viewId to payload if not specified in payload
     if (!viewId) {
@@ -33,9 +33,16 @@ export const projectsMiddleware = store => next => action => {
 
     // indicate whether there will be a view and/or project change
     const currSelectedProj = projects.find((p) => p.selected);
-    const currSelectedView = currSelectedProj.views.find((v) => v.selected);
-    action.payload.newProjSelected = currSelectedProj._id !== projId; 
-    action.payload.newViewSelected = currSelectedView._id !== viewId; 
+    if (currSelectedProj) {
+      const currSelectedView = currSelectedProj.views.find((v) => v.selected);
+      action.payload.newProjSelected = currSelectedProj._id !== projId; 
+      action.payload.newViewSelected = currSelectedView._id !== viewId; 
+    }
+    else {
+      // we're setting selected project for the first time
+      action.payload.newProjSelected = true; 
+      action.payload.newViewSelected = true; 
+    }
 
     next(action);
   }

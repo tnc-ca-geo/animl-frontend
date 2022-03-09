@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectSelectedProject } from '../projects/projectsSlice.js';
 import {
-  fetchLabels,
   selectAvailLabels,
   selectActiveFilters,
   checkboxFilterToggled
@@ -15,20 +13,10 @@ import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 
 
 const LabelFilter = () => {
-  const selectedProject = useSelector(selectSelectedProject);
   const availLabels = useSelector(selectAvailLabels);
   const activeFilters = useSelector(selectActiveFilters);
   const activeLabels = activeFilters.labels;
   const dispatch = useDispatch();
-
-  // const haveLabels = availLabels && 
-  //                    availLabels.ids.length && 
-  //                    !availLabels.noneFound && 
-  //                    !availLabels.error;
-
-  useEffect(() => {
-    if (selectedProject) dispatch(fetchLabels(selectedProject._id));
-  }, [selectedProject, dispatch]);
 
   const handleCheckboxChange = (e) => {
     const payload = {

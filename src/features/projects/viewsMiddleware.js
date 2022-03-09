@@ -68,18 +68,19 @@ export const setSelectedProjAndViewMiddleware = store => next => action => {
     const routerLocation = selectRouterLocation(store.getState());
     const query = routerLocation.query;
     if ('img' in query && checkIfValidMD5Hash(query.img)) {
-      console.log('setSelectedProjAndViewMiddleware() - img detected in URL')
       // if there's an image id in the URL, fetch image and image's context
+      console.log('setSelectedProjAndViewMiddleware() - img detected in URL')
       store.dispatch(preFocusImageStart(query.img));
       store.dispatch(fetchImageContext(query.img));
+      next(action);
     }
     else {
-      console.log('setSelectedProjAndViewMiddleware() - NO img detected in URL');
       // else, set active filters to selected view filters
+      console.log('setSelectedProjAndViewMiddleware() - NO img detected in URL');
+      next(action);
       const newFilters = action.payload.view.filters;
       store.dispatch(setActiveFilters(newFilters));
     }
-    next(action);
 
   }
   else {

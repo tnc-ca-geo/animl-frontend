@@ -20,6 +20,7 @@ import {
   normalizeFilters,
   updateAvailCamFilters,
   updateAvailDepFilters,
+  updateAvailLabelFilters,
 } from './utils';
 
 const initialState = {
@@ -125,7 +126,7 @@ export const filtersSlice = createSlice({
     },
 
     setActiveFilters: (state, { payload }) => {
-      console.log('filtersSlice.setActiveFilters(): ', payload)
+      console.log('filtersSlice.setActiveFilters(): ', payload);
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
       state.activeFilters = normalizedFilters;
     },
@@ -175,8 +176,9 @@ export const filtersSlice = createSlice({
       })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
-        updateAvailDepFilters(state, payload.cameras);
-        updateAvailCamFilters(state, payload.cameras);
+        updateAvailDepFilters(state, payload.project.cameras);
+        updateAvailCamFilters(state, payload.project.cameras);
+        updateAvailLabelFilters(state, payload.project.labels);
         // set all filters to new selected view? We're currently handling this 
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
