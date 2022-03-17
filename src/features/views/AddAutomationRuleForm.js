@@ -123,137 +123,134 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
         validationSchema={addRuleSchema} 
         onSubmit={handleSaveRulesSubmit}
       >
-      {({values, errors, touched, setFieldValue, setFieldTouched, handleChange, isValid, dirty}) => {
-        console.log('values.event.type: ', values.event.type)
-        return (
-          <Form>
-            <FieldRow>
-              <FormFieldWrapper>
-                <label htmlFor='rule-name'>Rule name</label>
+      {({values, errors, touched, setFieldValue, setFieldTouched, handleChange, isValid, dirty}) => (
+        <Form>
+          <FieldRow>
+            <FormFieldWrapper>
+              <label htmlFor='rule-name'>Rule name</label>
+              <Field
+                name='name'
+                id='rule-name'
+                value={values.name}
+                placeholder='Rule name...'
+              />
+              <ErrorMessage
+                component={FormError}
+                name='name'
+              />
+            </FormFieldWrapper>
+          </FieldRow>
+          {/*<p>What event or condition should trigger your rule?</p>*/}
+          <FieldRow>
+            <FormFieldWrapper>
+              <SelectField
+                name='event.type'
+                label='Trigger'
+                value={values.event.type}
+                onChange={setFieldValue}
+                onBlur={setFieldTouched}
+                error={_.has(errors, 'event.type.value') &&
+                  errors.event.type.value
+                }
+                touched={touched.event}
+                options={[
+                  { value: 'image-added', label: 'Image added' },
+                  { value: 'label-added', label: 'Label added' },
+                ]}
+              />
+            </FormFieldWrapper>
+            {values.event.type.value === 'label-added' && (
+              <FormFieldWrapper
+                css={{ flexGrow: '0' }}
+              >
+                <label htmlFor='event-label'>Label</label>
                 <Field
-                  name='name'
-                  id='rule-name'
-                  value={values.name}
-                  placeholder='Rule name...'
+                  id='event-label'
+                  name='event.label'
+                  value={values.event.label ? values.event.label : '' }
                 />
                 <ErrorMessage
                   component={FormError}
-                  name='name'
+                  name='event.label'
                 />
               </FormFieldWrapper>
-            </FieldRow>
-            {/*<p>What event or condition should trigger your rule?</p>*/}
-            <FieldRow>
+            )}
+          </FieldRow>
+          {/*<p>What action would you like to take?</p>*/}
+          <FieldRow>
+            <FormFieldWrapper>
+              <SelectField
+                name='action.type'
+                label='Action'
+                value={values.action.type}
+                onChange={setFieldValue}
+                onBlur={setFieldTouched}
+                error={_.has(errors, 'action.type.value') &&
+                  errors.action.type.value
+                }
+                touched={touched.action}
+                options={[
+                  { value: 'run-inference', label: 'Run inference' },
+                  { value: 'send-alert', label: 'Send alert' },
+                ]}
+              />
+            </FormFieldWrapper>
+            {values.action.type.value === 'run-inference' && (
               <FormFieldWrapper>
                 <SelectField
-                  name='event.type'
-                  label='Trigger'
-                  value={values.event.type}
+                  name='action.model'
+                  label='Model'
+                  value={values.action.model}
                   onChange={setFieldValue}
                   onBlur={setFieldTouched}
-                  error={_.has(errors, 'event.type.value') &&
-                    errors.event.type.value
-                  }
-                  touched={touched.event}
-                  options={[
-                    { value: 'image-added', label: 'Image added' },
-                    { value: 'label-added', label: 'Label added' },
-                  ]}
-                />
-              </FormFieldWrapper>
-              {values.event.type.value === 'label-added' && (
-                <FormFieldWrapper
-                  css={{ flexGrow: '0' }}
-                >
-                  <label htmlFor='event-label'>Label</label>
-                  <Field
-                    id='event-label'
-                    name='event.label'
-                    value={values.event.label ? values.event.label : '' }
-                  />
-                  <ErrorMessage
-                    component={FormError}
-                    name='event.label'
-                  />
-                </FormFieldWrapper>
-              )}
-            </FieldRow>
-            {/*<p>What action would you like to take?</p>*/}
-            <FieldRow>
-              <FormFieldWrapper>
-                <SelectField
-                  name='action.type'
-                  label='Action'
-                  value={values.action.type}
-                  onChange={setFieldValue}
-                  onBlur={setFieldTouched}
-                  error={_.has(errors, 'action.type.value') &&
-                    errors.action.type.value
+                  error={_.has(errors, 'action.model.value') &&
+                    errors.action.model.value
                   }
                   touched={touched.action}
-                  options={[
-                    { value: 'run-inference', label: 'Run inference' },
-                    { value: 'send-alert', label: 'Send alert' },
-                  ]}
+                  options={models.map((model) => ({
+                    value: model,
+                    label: `${model}`,
+                  }))}
                 />
               </FormFieldWrapper>
-              {values.action.type.value === 'run-inference' && (
-                <FormFieldWrapper>
-                  <SelectField
-                    name='action.model'
-                    label='Model'
-                    value={values.action.model}
-                    onChange={setFieldValue}
-                    onBlur={setFieldTouched}
-                    error={_.has(errors, 'action.model.value') &&
-                      errors.action.model.value
-                    }
-                    touched={touched.action}
-                    options={models.map((model) => ({
-                      value: model,
-                      label: `${model}`,
-                    }))}
-                  />
-                </FormFieldWrapper>
-              )}
-              {values.action.type.value === 'send-alert' && (
-                <FormFieldWrapper css={{ minWidth: '300px' }}>
-                  <label htmlFor='action-alert-recipients'>To</label>
-                  <Field
-                    name='action.alertRecipients'
-                    id='action-alert-recipients'
-                    value={values.action.alertRecipients 
-                      ? values.action.alertRecipients 
-                      : ''
-                    }
-                    placeholder='Comma-separated list of email addresses...'
-                  />
-                  <ErrorMessage
-                    component={FormError}
-                    name='action.alertRecipients'
-                  />
-                </FormFieldWrapper>
-              )}
-            </FieldRow>
-            <ButtonRow>
-              <Button
-                type='button'
-                size='large'
-                onClick={handleDiscardRuleClick}
-              >
-                Cancel
-              </Button>
-              <Button
-                type='submit'
-                size='large'
-                disabled={!isValid || !dirty}
-              >
-                Save
-              </Button>
-            </ButtonRow>
-          </Form>
-        )}
-      }
+            )}
+            {values.action.type.value === 'send-alert' && (
+              <FormFieldWrapper css={{ minWidth: '300px' }}>
+                <label htmlFor='action-alert-recipients'>To</label>
+                <Field
+                  name='action.alertRecipients'
+                  id='action-alert-recipients'
+                  value={values.action.alertRecipients 
+                    ? values.action.alertRecipients 
+                    : ''
+                  }
+                  placeholder='Comma-separated list of email addresses...'
+                />
+                <ErrorMessage
+                  component={FormError}
+                  name='action.alertRecipients'
+                />
+              </FormFieldWrapper>
+            )}
+          </FieldRow>
+          <ButtonRow>
+            <Button
+              type='button'
+              size='large'
+              onClick={handleDiscardRuleClick}
+            >
+              Cancel
+            </Button>
+            <Button
+              type='submit'
+              size='large'
+              disabled={!isValid || !dirty}
+            >
+              Save
+            </Button>
+          </ButtonRow>
+        </Form>
+      )}
       </Formik>
     </FormWrapper>
   );

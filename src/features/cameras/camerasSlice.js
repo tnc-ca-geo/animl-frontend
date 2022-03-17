@@ -91,7 +91,7 @@ export const fetchCameras = () => async (dispatch, getState) => {
 // unregisger camera thunk
 export const unregisterCamera = (payload) => async (dispatch, getState) => {
   try {
-    console.log('unregisteringCamera() - ', payload)
+    console.log('unregisteringCamera() - ', payload);
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token){
@@ -106,7 +106,7 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
       console.log('res: ', res);
       res.unregisterCamera.success 
         ? dispatch(getCamerasSuccess(res.unregisterCamera.cameras))
-        : dispatch(getCamerasFailure(res.registerCamera.rejectionInfo.msg));
+        : dispatch(getCamerasFailure(res.unregisterCamera.rejectionInfo.msg));
     }
   } catch (err) {
     dispatch(getCamerasFailure(err.toString()));

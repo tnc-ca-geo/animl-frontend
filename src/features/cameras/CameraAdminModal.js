@@ -35,6 +35,8 @@ const CameraAdminModal = () => {
   const camerasLoading = useSelector(selectCamerasLoading);
   useEffect(() => {
     if (!cameras.length && !camerasLoading) {
+      // TODO AUTH: fix bug here. If we're in a brand new project w/ no 
+      // registered cameras, this keeps fetching
       dispatch(fetchCameras());
     }
   }, [cameras.length, camerasLoading, dispatch]);
@@ -51,6 +53,7 @@ const CameraAdminModal = () => {
   }
 
   const handleSaveDepClick = ({ cameraId, deployment }) => {
+    console.log('handleSaveDepClick: ', cameraId)
     setShowSaveDepForm(true);
     setCameraSelected(cameraId);
     setDeploymentSelected(deployment);
@@ -60,7 +63,7 @@ const CameraAdminModal = () => {
     setShowDeleteDepForm(true);
     setCameraSelected(cameraId);
     setDeploymentSelected(deployment);
-  }
+  };
 
   const handleCancelEditClick = () => setShowSaveDepForm(false);
   const handleCancelDeleteClick = () => setShowDeleteDepForm(false);

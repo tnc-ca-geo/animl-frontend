@@ -8,6 +8,7 @@ import {
 
 const enrichImages = (res, cameras) => {
   for (const img of res.images.images) {
+
     const camera = cameras.find((c) => c._id === img.cameraSn);
     const deployment = camera 
       ? camera.deployments.find((d) => d._id === img.deployment).name
@@ -20,6 +21,7 @@ const enrichImages = (res, cameras) => {
 
     img.dateTimeOriginal = moment(img.dateTimeOriginal, EXIF).format(DFR);
     img.dateAdded = moment(img.dateAdded, EXIF).format(DFRS);
+
   }
   return res;
 };

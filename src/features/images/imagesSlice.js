@@ -140,23 +140,22 @@ export const fetchImages = (filters, page = 'current' ) => {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
-        const projects = getState().projects.projects
+
+        const projects = getState().projects.projects;
         const selectedProj = projects.find((proj) => proj.selected);
         const pageInfo = getState().images.pageInfo;  // TODO: should we be using selectors here?
         dispatch(getImagesStart());
+
         let res = await call({
           projId: selectedProj._id,
           request: 'getImages',
           input: { filters, pageInfo, page },
         });
-        const cameras = getState().cameras.cameras;
-        res = enrichImages(res, cameras);
-        if (page !== 'next') {
-          dispatch(clearImages());
-        }
+        res = enrichImages(res, selectedProj.cameras);
+        if (page !== 'next') dispatch(clearImages());
         console.log('iamgesSlice - fetchingImages() - res: ', res)
-
         dispatch(getImagesSuccess(res));
+        
       }
     } catch (err) {
       dispatch(getImagesFailure(err.toString()))

@@ -269,7 +269,8 @@ export const editDeployments = (operation, payload) => {
         const err = `An operation (create, update, or delete) is required`;
         throw new Error(err);
       }
-      const projects = getState().projects.projects
+      console.log('projectsSlice - editDeployments() - payload: ', payload)
+      const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       dispatch(editDeploymentsStart());
       const res = await call({

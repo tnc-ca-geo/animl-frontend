@@ -112,6 +112,7 @@ const ActiveState = ({ active }) => (
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
+  console.log('enriched cams: ', cameras)
   const format = (date) => moment(date, EXIF).format(DFRS);
   const dispatch = useDispatch();
 
@@ -134,14 +135,14 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                   <>
                     <ActiveState active={cam.active} />
                     <ManageCamButton
-                      onClick={() => handleSaveDepClick(cam._id)}
+                      onClick={() => handleSaveDepClick({ cameraId: cam._id })}
                     >
                       Add deployment
                       <FontAwesomeIcon icon={['fas', 'plus']}/>
                     </ManageCamButton>
                     {cam.active && 
                       <ManageCamButton
-                        onClick={() => handleUnregisterClick(cam._id)}
+                        onClick={() => handleUnregisterClick({ cameraId: cam._id })}
                       >
                         Release
                         <FontAwesomeIcon icon={['fas', 'times']}/>
