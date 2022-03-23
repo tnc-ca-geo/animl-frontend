@@ -38,5 +38,4 @@ export const CheckboxLabel = styled('span', {
     },
   ],
 
-
 });

@@ -12,6 +12,7 @@ const initialState = {
   // TODO AUTH - probably want to have more specific state props for isLoading, 
   // error, etc depending on what part of the Project we're updating 
   cameraRegistrationError: null,
+  getModelsError: null,
 };
 
 export const projectsSlice = createSlice({
@@ -135,7 +136,7 @@ export const projectsSlice = createSlice({
         }
       }
 
-      // TODO: When we delete a deployment, we should also purge it from 
+      // TODO AUTH: When we delete a deployment, we should also purge it from 
       // all views that include it in their filters!
     },
 
@@ -157,6 +158,29 @@ export const projectsSlice = createSlice({
       state.cameraRegistrationError = null;
       const proj = state.projects.find((p) => p._id === payload.project._id);
       proj.cameras = payload.project.cameras;
+    },
+
+    // fetch model source records
+
+    getModelsStart: (state) => {
+      state.isLoading = true;
+    },
+
+    getModelsFailure: (state, { payload }) => {
+      console.log('projectSlice - getModelsFailure() - ', payload);
+      state.isLoading = false;
+      state.getModelsFailure = payload;
+    },
+
+    getModelsSuccess: (state, { payload }) => {
+      console.log('projectSlice - getModelsSucces() - ', payload);
+      state.isLoading = false;
+      state.getModelsFailure = null;
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      payload.mlModels.forEach((model) => {
+        if (!proj.mlModels) proj.mlModels = [model];
+        else if (!proj.mlModels.includes(model._id)) proj.mlModels.push(model);
+      });
     },
 
   },
@@ -183,6 +207,10 @@ export const {
   registerCameraFailure,
   registerCameraSuccess,
 
+  getModelsStart,
+  getModelsFailure,
+  getModelsSuccess,
+
 } = projectsSlice.actions;
 
 
@@ -190,12 +218,13 @@ export const {
 export const fetchProjects = () => async dispatch => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
-    // const userPoolId = currentUser.pool.userPoolId;
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    if (token){
+    if (token) {
+
       dispatch(getProjectsStart());
       const projects = await call({ request: 'getProjects' });
       dispatch(getProjectsSuccess(projects));
+
     }
   } catch (err) {
     dispatch(getProjectsFailure(err.toString()));
@@ -208,50 +237,55 @@ export const fetchProjects = () => async dispatch => {
 export const editView = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const projId = selectedProj._id;
-      dispatch(editViewStart());
-      switch (operation) {
-        case 'create': {
-          const res = await call({ 
-            projId,
-            request: 'createView',
-            input: payload
-          });
-          const view = res.createView.view;
-          dispatch(saveViewSuccess({ projId, view}));
-          dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
-          break;
-        }
-        case 'update': {
-          const res = await call({
-            projId,
-            request: 'updateView', 
-            input: payload
-          });
-          const view = res.updateView.view;
-          dispatch(saveViewSuccess({ projId, view}));
-          dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
-          break;
-        }
-        case 'delete': {
-          const res = await call({
-            projId,
-            request: 'deleteView', 
-            input: payload
-          });
-          const updatedProj = res.deleteView.project;
-          const defaultView = updatedProj.views.find((view) => (
-            view.name === 'All images'
-          ));
-          dispatch(setSelectedProjAndView({ projId, viewId: defaultView._id })); 
-          dispatch(deleteViewSuccess({ projId, viewId: payload._id }));
-          break;
-        }
-        default: {
-          const err = 'An operation (create, update, or delete) is required';
-          throw new Error(err);
+      if (token && selectedProj) {
+
+        dispatch(editViewStart());
+        switch (operation) {
+          case 'create': {
+            const res = await call({ 
+              projId,
+              request: 'createView',
+              input: payload
+            });
+            const view = res.createView.view;
+            dispatch(saveViewSuccess({ projId, view}));
+            dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
+            break;
+          }
+          case 'update': {
+            const res = await call({
+              projId,
+              request: 'updateView', 
+              input: payload
+            });
+            const view = res.updateView.view;
+            dispatch(saveViewSuccess({ projId, view}));
+            dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
+            break;
+          }
+          case 'delete': {
+            const res = await call({
+              projId,
+              request: 'deleteView', 
+              input: payload
+            });
+            const updatedProj = res.deleteView.project;
+            const defaultView = updatedProj.views.find((view) => (
+              view.name === 'All images'
+            ));
+            dispatch(setSelectedProjAndView({ projId, viewId: defaultView._id })); 
+            dispatch(deleteViewSuccess({ projId, viewId: payload._id }));
+            break;
+          }
+          default: {
+            const err = 'An operation (create, update, or delete) is required';
+            throw new Error(err);
+          }
         }
       }
     } catch (err) {
@@ -265,26 +299,31 @@ export const editView = (operation, payload) => {
 export const editDeployments = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
-      if (!operation || !payload) {
-        const err = `An operation (create, update, or delete) is required`;
-        throw new Error(err);
-      }
-      console.log('projectsSlice - editDeployments() - payload: ', payload)
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(editDeploymentsStart());
-      const res = await call({
-        projId: selectedProj._id,
-        request: operation,
-        input: payload,
-      });
-      console.log('res: ', res)
-      const camera = enrichCameras([res[operation].cameraConfig])[0];
-      dispatch(editDeploymentsSuccess({
-        camera,
-        operation,
-        reqPayload: payload 
-      }));
+      if (token && selectedProj) {
+
+        if (!operation || !payload) {
+          const err = `An operation (create, update, or delete) is required`;
+          throw new Error(err);
+        }
+        console.log('projectsSlice - editDeployments() - payload: ', payload)
+        dispatch(editDeploymentsStart());
+        const res = await call({
+          projId: selectedProj._id,
+          request: operation,
+          input: payload,
+        });
+        console.log('res: ', res)
+        const camera = enrichCameras([res[operation].cameraConfig])[0];
+        dispatch(editDeploymentsSuccess({
+          camera,
+          operation,
+          reqPayload: payload 
+        }));
+      }
     } catch (err) {
       console.log(`error attempting to ${operation}: ${err.toString()}`);
       dispatch(editDeploymentsFailure(err.toString()));
@@ -296,24 +335,56 @@ export const editDeployments = (operation, payload) => {
 export const registerCamera = (payload) => {
   return async (dispatch, getState) => {
     try {
-      const projects = getState().projects.projects
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(registerCameraStart());
-      const res = await call({
-        projId: selectedProj._id,
-        request: 'registerCamera',
-        input: payload,
-      });
-      console.log('res: ', res)
-      res.registerCamera.success 
-        ? dispatch(registerCameraSuccess(res.registerCamera))
-        : dispatch(registerCameraFailure(res.registerCamera.rejectionInfo.msg));
+      if (token && selectedProj) {
+
+        dispatch(registerCameraStart());
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'registerCamera',
+          input: payload,
+        });
+        console.log('res: ', res)
+        res.registerCamera.success 
+          ? dispatch(registerCameraSuccess(res.registerCamera))
+          : dispatch(registerCameraFailure(res.registerCamera.rejectionInfo.msg));
+
+      }
     } catch (err) {
       console.log(`error attempting to register camera: ${err.toString()}`);
       dispatch(registerCameraFailure(err.toString()));
     }
   };
 };
+
+// fetchModels thunk
+export const fetchModels = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+      if (token && selectedProj) {
+        dispatch(getModelsStart());
+        const res = await call({
+          projId,
+          request: 'getModels',
+          input: payload,
+        });
+        dispatch(getModelsSuccess({ projId, mlModels: res.models }));
+      }
+    } catch (err) {
+      dispatch(getModelsFailure(err.toString()))
+    }
+  };
+}
+
+
 
 
 
@@ -335,6 +406,10 @@ export const selectUnsavedViewChanges = state =>
   state.projects.unsavedViewChanges;
 export const selectCameraRegistrationError = state => 
   state.projects.cameraRegistrationError;
+
+export const selectMLModels = createSelector([selectSelectedProject],
+  (proj) => proj ? proj.mlModels : null
+);
 
 
 export default projectsSlice.reducer;

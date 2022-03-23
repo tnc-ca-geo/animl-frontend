@@ -13,15 +13,8 @@ import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 const AutomationRulesForm = ({ handleClose }) => {
   const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
-  const models = selectedProject.availableMLModels;
+  const availableModels = selectedProject.availableMLModels;
   const [ showAddRuleForm, setShowAddRuleForm ] = useState(false);
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   if (!models.length) {
-  //     dispatch(fetchModels());
-  //   }
-  // }, [models, dispatch]);
 
   const handleAddRuleClick = () => {
     setShowAddRuleForm(true);
@@ -33,16 +26,16 @@ const AutomationRulesForm = ({ handleClose }) => {
 
   return (
     <div>
-      {models.length && selectedView
+      {availableModels.length && selectedView
         ? showAddRuleForm
           ? <AddAutomationRuleForm
               view={selectedView}
-              models={models}
+              availableModels={availableModels}
               hideAddRuleForm={hideAddRuleForm}
             />
           : <AutomationRulesList
               view={selectedView}
-              models={models}
+              availableModels={availableModels}
               onAddRuleClick={handleAddRuleClick}
             />
         : <SpinnerOverlay>

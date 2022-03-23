@@ -1,10 +1,10 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { editView } from '../projects/projectsSlice';
+import { editView, selectMLModels, fetchModels } from '../projects/projectsSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
 import {
@@ -14,6 +14,7 @@ import {
   FormFieldWrapper,
   FormError
 } from '../../components/Form';
+import CategoryConfigForm from './CategoryConfigForm';
 
 
 const emptyRule = {
@@ -23,6 +24,7 @@ const emptyRule = {
   },
   action: {
     type: {},
+    categoryConfig: {},
   },
 };
 
@@ -51,7 +53,7 @@ const addRuleSchema = Yup.object().shape({
       then: Yup.object().shape({
         label: Yup.string().required(),
         value: Yup.string().required('You must specify a model'),
-      }),
+      }).nullable(),
     }),
     alertRecipients: Yup.string().when('type.value', {
       is: (val) => val === 'send-alert',
@@ -60,7 +62,7 @@ const addRuleSchema = Yup.object().shape({
         .test(
           'email-list-test',
           'One or more email addresses were invalid', 
-          function(value) {
+          function (value) {
             if (value) {
               let schema = Yup.string().email();
               const emails = value.replace(/\s/g, '').split(',');
@@ -73,41 +75,49 @@ const addRuleSchema = Yup.object().shape({
             else {
               return false;
             }
-          })
-        .required('One or more email addresses were invalid'),
-    }),
-  }),
+          }
+        )
+        .required('One or more email addresses were invalid')
+    })
+  })
 });
 
-// TODO AUTH - add inputs for:
-//    - confThreshold - used as default for categories w/o their own set thresholds 
-//    - categoryConfig (confThreshold, disabled) - category-level config
-const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
+
+const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
   const dispatch = useDispatch();
+  const models = useSelector(selectMLModels);
+
+  useEffect(() => {
+    if (!models || !models.length) {
+      dispatch(fetchModels({ _ids: availableModels}));
+    }
+  }, [models, availableModels, dispatch]);
 
   const handleSaveRulesSubmit = ({name, event, action}) => {
-    console.log('handleSaveRuleSubmit firing with action: ', action)
-    const newRule = {
+    let newRule = {
       name,
       event: {
         type: event.type.value,
         ...(event.label && { label: event.label }),
       },
-      action: {
-        type: action.type.value,
-        ...(action.model && { mlModel: action.model.value }),
-        ...(action.alertRecipients && { 
-          alertRecipients: action.alertRecipients.replace(/\s/g, '').split(',')
-        }),
-      },
+      action: { type: action.type.value },
     };
+
+    if (action.type.value === 'run-inference') {
+      newRule.action.mlModel = action.model.value;
+      newRule.action.categoryConfig = action.categoryConfig;
+    }
+    else if (action.type.value === 'send-alert') {
+      const recipients = action.alertRecipients.replace(/\s/g, '').split(',');
+      newRule.action.alertRecipients = recipients;
+    }
+
     const rules = view.automationRules.concat(newRule);
     const payload = {
       _id: view._id,
-      diffs: {
-        automationRules: rules,
-      }
+      diffs: { automationRules: rules }
     };
+    
     dispatch(editView('update', payload));
     hideAddRuleForm();
   };
@@ -123,7 +133,7 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
         validationSchema={addRuleSchema} 
         onSubmit={handleSaveRulesSubmit}
       >
-      {({values, errors, touched, setFieldValue, setFieldTouched, handleChange, isValid, dirty}) => (
+      {({ values, errors, touched, setFieldValue, setFieldTouched, isValid, dirty }) => (
         <Form>
           <FieldRow>
             <FormFieldWrapper>
@@ -160,9 +170,7 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
               />
             </FormFieldWrapper>
             {values.event.type.value === 'label-added' && (
-              <FormFieldWrapper
-                css={{ flexGrow: '0' }}
-              >
+              <FormFieldWrapper css={{ flexGrow: '0' }}>
                 <label htmlFor='event-label'>Label</label>
                 <Field
                   id='event-label'
@@ -183,7 +191,16 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
                 name='action.type'
                 label='Action'
                 value={values.action.type}
-                onChange={setFieldValue}
+                onChange={(name, value) => {
+                  setFieldValue(name, value);
+                  if (value.value === 'send-alert') {
+                    setFieldValue('action.categoryConfig', {});
+                    // setFieldValue('action.confThreshold', null);
+                  } 
+                  else if (value.value === 'run-inference') {
+                    setFieldValue('action.model', null);
+                  }
+                }}
                 onBlur={setFieldTouched}
                 error={_.has(errors, 'action.type.value') &&
                   errors.action.type.value
@@ -201,13 +218,26 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
                   name='action.model'
                   label='Model'
                   value={values.action.model}
-                  onChange={setFieldValue}
+                  onChange={(name, value) => {
+                    setFieldValue(name, value);
+                    const selectedModel = models.find((m) => (
+                      m._id === value.value
+                    ));
+                    const categoryConfig = {};
+                    selectedModel.categories.forEach((cat) => {
+                      categoryConfig[cat.name] = {
+                        confThreshold: selectedModel.defaultConfThreshold,
+                        disabled: false,
+                      };                      
+                    });
+                    setFieldValue('action.categoryConfig', categoryConfig);
+                  }}
                   onBlur={setFieldTouched}
                   error={_.has(errors, 'action.model.value') &&
                     errors.action.model.value
                   }
                   touched={touched.action}
-                  options={models.map((model) => ({
+                  options={availableModels.map((model) => ({
                     value: model,
                     label: `${model}`,
                   }))}
@@ -233,6 +263,17 @@ const AddAutomationRuleForm = ({ view, models, hideAddRuleForm }) => {
               </FormFieldWrapper>
             )}
           </FieldRow>
+          {/* Category configurations */}
+          {Object.entries(values.action.categoryConfig).length > 0 && 
+            <label>Confidence thresholds</label>
+          }
+          <FieldArray name='categoryConfigs'>
+            <>
+              {Object.entries(values.action.categoryConfig).map(([k, v]) => (
+                <CategoryConfigForm key={k} catName={k} config={v} />
+              ))}
+            </>
+          </FieldArray>
           <ButtonRow>
             <Button
               type='button'

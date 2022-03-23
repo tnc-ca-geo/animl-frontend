@@ -36,8 +36,8 @@ const StyledRuleDescription = styled('div', {
   }
 });
 
-const RuleDescription = ({ rule, models }) => {
-  const model = models.find((model) => model === rule.action.mlModel);
+const RuleDescription = ({ rule, availableModels }) => {
+  const model = availableModels.find((m) => m === rule.action.mlModel);
 
   return (
     <StyledRuleDescription>
@@ -58,7 +58,7 @@ const RuleDescription = ({ rule, models }) => {
   );
 };
 
-const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
+const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
   const projectsLoading = useSelector(selectProjectsLoading);
   const dispatch = useDispatch();
 
@@ -88,7 +88,7 @@ const AutomationRulesList = ({ view, models, onAddRuleClick }) => {
           {view.automationRules.map((rule) => {
             return (
               <Rule key={rule._id}>
-                <RuleDescription rule={rule} models={models} />
+                <RuleDescription rule={rule} availableModels={availableModels} />
                 <IconButton
                   variant='ghost'
                   disabled={view && !view.editable}

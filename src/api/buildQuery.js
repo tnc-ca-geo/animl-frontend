@@ -248,19 +248,6 @@ const queries = {
     `,
   }),
 
-  getModels: (input) => ({
-    template: `
-      {
-        models {
-          _id
-          name
-          description
-          version
-        }
-      }
-    `,
-  }),
-
   // updateObjects: (input) => ({
   //   template: `
   //     mutation UpdateObjects($input: UpdateObjectsInput!) {
@@ -431,6 +418,27 @@ const queries = {
     `,
     variables: { input: input },
   }),
+
+  getModels: (input) => {
+    return {
+      template: `
+        {
+          models {
+            _id
+            description
+            version
+            defaultConfThreshold
+            categories {
+              _id
+              name
+            }
+          }
+        }
+      `,
+      variables: { input: input },
+    }
+  },
+
 };
 
 export default queries;
