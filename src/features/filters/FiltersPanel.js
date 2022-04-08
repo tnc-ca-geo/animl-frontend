@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import {
-  selectActiveFilters,
-  selectAvailCameras,
-  selectAvailLabels,
- } from './filtersSlice';
  import { selectRouterLocation } from '../images/imagesSlice';
 import PanelHeader from '../../components/PanelHeader';
 import DeploymentFilter from './DeploymentFilter';
@@ -14,7 +9,6 @@ import DateFilter from './DateFilter';
 import LabelFilter from './LabelFilter';
 import CustomFilter from './CustomFilter.js';
 import FiltersPanelFooter from './FiltersPanelFooter';
-import { selectSelectedProject } from '../projects/projectsSlice.js';
 
 // const Label = styled('span', {
 //   // marginLeft: '$2',

@@ -10,11 +10,12 @@ import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const initialState = {
   images: [], // we are barely using this... consider removing?
-  isLoading: false,
+  isLoadingImages: false,
   isUpdatingObjects: false,
   isEditingLabel: false,
   preFocusImage: null,
-  error: null,
+  getImagesErrors: null,
+  editLabelErrors: null,
   visibleRows: [], // don't really need this anymore?
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[1],
@@ -35,16 +36,16 @@ export const imagesSlice = createSlice({
 
     clearImages: (state) => { state.images = []; },
 
-    getImagesStart: (state) => { state.isLoading = true; },
+    getImagesStart: (state) => { state.isLoadingImage = true; },
 
     getImagesFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
+      state.isLoadingImage = false;
+      state.getImagesErrors = payload;
     },
 
     getImagesSuccess: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
+      state.isLoadingImage = false;
+      state.getImagesErrors = null;
 
       Object.keys(payload.images.pageInfo).forEach((key) => {
         if (key in state.pageInfo &&
@@ -80,34 +81,34 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
-    // NOTE: not using updateObject anymore
-    updateObjectsStart: (state) => { state.isUpdatingObjects = true; },
+    // // TODO: not using updateObject anymore, so remove
+    // updateObjectsStart: (state) => { state.isUpdatingObjects = true; },
 
-    updateObjectsFailure: (state, { payload }) => {
-      state.isUpdatingObjects = false;
-      state.error = payload;
-    },
+    // updateObjectsFailure: (state, { payload }) => {
+    //   state.isUpdatingObjects = false;
+    //   state.error = payload;
+    // },
 
-    updateObjectsSuccess: (state, { payload }) => {
-      state.isUpdatingObjects = false;
-      state.error = null;
-      const imgId = payload.updateObjects.image._id;
-      const newObjects = payload.updateObjects.image.objects;
-      const image = state.images.find(img => img._id === imgId);
-      image.objects = newObjects;
-    },
+    // updateObjectsSuccess: (state, { payload }) => {
+    //   state.isUpdatingObjects = false;
+    //   state.error = null;
+    //   const imgId = payload.updateObjects.image._id;
+    //   const newObjects = payload.updateObjects.image.objects;
+    //   const image = state.images.find(img => img._id === imgId);
+    //   image.objects = newObjects;
+    // },
 
     editLabelStart: (state) => { state.isEditingLabel = true; },
 
     editLabelFailure: (state, { payload }) => {
       state.isEditingLabel = false;
-      state.error = payload;
+      state.editLabelErrors = payload;
     },
 
     editLabelSuccess: (state, { payload }) => {
       // console.log('editLabelSuccess: ', payload);
       state.isEditingLabel = false;
-      state.error = null;
+      state.editLabelErrors = null;
       const image = state.images.find(img => img._id === payload._id);
       image.objects = payload.objects;
     },
@@ -124,9 +125,9 @@ export const {
   preFocusImageEnd,
   sortChanged,
   visibleRowsChanged,
-  updateObjectsStart,
-  updateObjectsFailure,
-  updateObjectsSuccess,
+  // updateObjectsStart,
+  // updateObjectsFailure,
+  // updateObjectsSuccess,
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
@@ -151,6 +152,7 @@ export const fetchImages = (filters, page = 'current' ) => {
           request: 'getImages',
           input: { filters, pageInfo, page },
         });
+
         res = enrichImages(res, selectedProj.cameras);
         if (page !== 'next') dispatch(clearImages());
         console.log('iamgesSlice - fetchingImages() - res: ', res)
@@ -158,7 +160,7 @@ export const fetchImages = (filters, page = 'current' ) => {
         
       }
     } catch (err) {
-      dispatch(getImagesFailure(err.toString()))
+      dispatch(getImagesFailure(err));
     }
   };
 };
@@ -167,17 +169,20 @@ export const fetchImages = (filters, page = 'current' ) => {
 export const editLabel = (operation, entity, payload, projId) => {
   return async (dispatch, getState) => {
     try {
+
       if (!operation || !entity || !payload) {
-        const err = `An operation (create, update, or delete) 
+        const msg = `An operation (create, update, or delete) 
           and entity are required`;
-        throw new Error(err);
+        throw new Error(msg);
       }
+
       const projects = getState().projects.projects
       const selectedProj = projects.find((proj) => proj.selected);
       dispatch(editLabelStart());
       console.groupCollapsed(`editLabel() - ${operation} ${entity}`);
       console.log(`payload: `, payload);
       console.groupEnd();
+
       // TODO: do we really need to pass in the operation and entity separately?
       // why not just do one string, e.g.: 'createObject'
       const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
@@ -190,9 +195,10 @@ export const editLabel = (operation, entity, payload, projId) => {
       const image = res[mutation].image;
       console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
       dispatch(editLabelSuccess(image));
+
     } catch (err) {
-      console.log(`error attempting to ${operation} ${entity}: ${err.toString()}`);
-      dispatch(editLabelFailure(err.toString()));
+      console.log(`error attempting to ${operation} ${entity}: `, err);
+      dispatch(editLabelFailure(err));
     }
   };
 };
@@ -203,18 +209,22 @@ export const fetchImageContext = (imgId) => {
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
       if (token) {
+
         const projects = getState().projects.projects
         const selectedProj = projects.find((proj) => proj.selected);
-        dispatch(getImagesStart());        
+        dispatch(getImagesStart());
+
         let focusedImg = await call({
           projId: selectedProj._id,
           request: 'getImage',
           input: { imgId }
         });
+        // TODO: test this (see TODO in catch block below)
         if (!focusedImg.image) {
-          const err = `Failed to find an image with Id: ${imgId}`;
-          throw new Error(err);
+          const msg = `Failed to find an image with Id: ${imgId}`;
+          throw new Error(msg);
         }
 
         // Fetch all images from image's camera with a createdStart date of 
@@ -233,9 +243,14 @@ export const fetchImageContext = (imgId) => {
           custom: null,
         };
         dispatch(setActiveFilters(filters));
+
       }
     } catch (err) {
-      dispatch(getImagesFailure(err.toString()));
+      // TODO: if we catch the error thrown above if there isn't a focusedImg.image
+      // it won't be an array of error objects like those returned from the API, 
+      // so we need to format it to match, e.g [{message: 'Failed to ...'}]
+      // before passing it to getImagesFailure()
+      dispatch(getImagesFailure(err));
       dispatch(preFocusImageEnd());
       dispatch(push('/')); // remove URL query string 
     }
@@ -249,7 +264,7 @@ export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
 export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
-export const selectIsLoading = state => state.images.isLoading;
+export const selectIsLoading = state => state.images.isLoadingImage;
 export const selectVisibleRows = state => state.images.visibleRows;
 export const selectPreFocusImage = state => state.images.preFocusImage;
 

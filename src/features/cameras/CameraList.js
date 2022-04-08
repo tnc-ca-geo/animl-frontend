@@ -118,7 +118,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
 
   const handleUnregisterClick = (cameraId) => {
     console.log('handleUnregisterClick: ', cameraId);
-    dispatch(unregisterCamera({ cameraId }));
+    dispatch(unregisterCamera(cameraId));
   };
 
   return (

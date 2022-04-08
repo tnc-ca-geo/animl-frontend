@@ -149,45 +149,6 @@ const queries = {
     `,
   }),
 
-  createView: (input) => ({
-    template: `
-      mutation CreateView($input: CreateViewInput!) {
-        createView(input: $input) {
-          view {
-            ${viewFields}
-          }
-        }
-      }
-    `,
-    variables: { input: input },
-  }),
-
-  updateView: (input) => ({
-    template: `
-      mutation UpdateView($input: UpdateViewInput!) {
-        updateView(input: $input) {
-          view {
-            ${viewFields}
-          }
-        }
-      }
-    `,
-    variables: { input: input },
-  }),
-
-  deleteView: (input) => ({
-    template: `
-      mutation DeleteView($input: DeleteViewInput!) {
-        deleteView(input: $input) {
-          project {
-            ${projectFields}
-          }
-        }
-      }
-    `,
-    variables: { input: input },
-  }),
-
   getImage: ({ imgId }) => {
     return {
       template: `
@@ -246,6 +207,65 @@ const queries = {
         }
       }
     `,
+  }),
+
+  getModels: (input) => {
+    return {
+      template: `
+        {
+          models {
+            _id
+            description
+            version
+            defaultConfThreshold
+            categories {
+              _id
+              name
+            }
+          }
+        }
+      `,
+      variables: { input: input },
+    }
+  },
+  
+  createView: (input) => ({
+    template: `
+      mutation CreateView($input: CreateViewInput!) {
+        createView(input: $input) {
+          view {
+            ${viewFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateView: (input) => ({
+    template: `
+      mutation UpdateView($input: UpdateViewInput!) {
+        updateView(input: $input) {
+          view {
+            ${viewFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteView: (input) => ({
+    template: `
+      mutation DeleteView($input: DeleteViewInput!) {
+        deleteView(input: $input) {
+          project {
+            ${projectFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
   }),
 
   // updateObjects: (input) => ({
@@ -382,12 +402,6 @@ const queries = {
     template: `
       mutation RegisterCamera($input: RegisterCameraInput!) {
         registerCamera(input: $input) {
-          success
-          rejectionInfo {
-            msg
-            currProjReg
-          }
-          cameraId
           project {
             ${projectFields}
           }
@@ -404,12 +418,9 @@ const queries = {
     template: `
       mutation UnregisterCamera($input: UnregisterCameraInput!) {
         unregisterCamera(input: $input) {
-          success
-          rejectionInfo {
-            msg
-            currProjReg
+          project {
+            ${projectFields}
           }
-          cameraId
           cameras {
             ${cameraFields}
           }
@@ -418,26 +429,6 @@ const queries = {
     `,
     variables: { input: input },
   }),
-
-  getModels: (input) => {
-    return {
-      template: `
-        {
-          models {
-            _id
-            description
-            version
-            defaultConfThreshold
-            categories {
-              _id
-              name
-            }
-          }
-        }
-      `,
-      variables: { input: input },
-    }
-  },
 
 };
 

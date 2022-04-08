@@ -174,8 +174,8 @@ export const editView = (operation, payload) => {
         }
       }
     } catch (err) {
-      console.log(`error attempting to ${operation} view: ${err.toString()}`);
-      dispatch(editViewFailure(err.toString()));
+      console.log(`error attempting to ${operation} view: `, err);
+      dispatch(editViewFailure(err));
     }
   };
 };
@@ -191,7 +191,7 @@ export const fetchModels = () => async dispatch => {
       dispatch(getModelsSuccess(models));
     }
   } catch (err) {
-    dispatch(getViewsFailure(err.toString()))
+    dispatch(getViewsFailure(err));
   }
 };
 

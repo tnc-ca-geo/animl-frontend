@@ -82,6 +82,7 @@ const DisabledCheckboxWrapper = styled(CheckboxWrapper, {
   minWidth: '100px',
 
   'label': {
+    display: 'flex',
     marginBottom: '0px',
   }
 });

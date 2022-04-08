@@ -4,11 +4,11 @@ import _ from 'lodash';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import {
+import { selectProjectsLoading } from '../projects/projectsSlice';
+import { 
   registerCamera,
-  selectProjectsLoading,
-  selectCameraRegistrationError,
-} from '../projects/projectsSlice';
+  selectRegisterCameraErrors
+} from '../cameras/camerasSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
 import {
@@ -40,7 +40,8 @@ const registerCameraSchema = Yup.object().shape({
 const RegisterCameraForm = ({ cameraId, deployment, handleClose }) => {
   // const [queuedForClose, setQueuedForClose ] = useState(false);
   const projectsLoading = useSelector(selectProjectsLoading);
-  const cameraRegistrationError = useSelector(selectCameraRegistrationError);
+  const registerCameraErrors = useSelector(selectRegisterCameraErrors);
+  console.log('registerCameraErrors: ', registerCameraErrors)
   const makeOptions = SUPPORTED_CAM_MAKES.map((m) => ({ value: m, label: m }));
   const dispatch = useDispatch();
 
@@ -117,10 +118,10 @@ const RegisterCameraForm = ({ cameraId, deployment, handleClose }) => {
                   Register Camera
                 </Button>
               </ButtonRow>
-              {cameraRegistrationError &&           
-                <FormError>
-                  {cameraRegistrationError}
-                </FormError>
+              {registerCameraErrors && 
+                registerCameraErrors.map((err, i) => (
+                  <FormError key={i}>{err.message}</FormError>
+                ))
               }
             </Form>
           )}

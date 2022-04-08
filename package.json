@@ -22,7 +22,7 @@
     "env-cmd": "^10.1.0",
     "formik": "^2.2.6",
     "graphql": "^15.3.0",
-    "graphql-request": "^3.1.0",
+    "graphql-request": "^4.2.0",
     "install": "^0.13.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",

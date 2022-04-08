@@ -4,7 +4,7 @@ import { findImage, findObject, findLabel } from '../../app/utils';
 import {
   getImagesSuccess,
   clearImages,
-  updateObjectsSuccess
+  // updateObjectsSuccess
 } from '../images/imagesSlice';
 
 const initialState = {
@@ -116,15 +116,15 @@ export const reviewSlice = createSlice({
       .addCase(clearImages, (state) => {
         state.workingImages = [];
       })
-      .addCase(updateObjectsSuccess, (state, { payload }) => {
-        // TODO: we don't use updateObject anymore, so this isn't doing anything
-        // consider pushing returned images from editLabelSuccess into
-        // working images instead? 
-        const imgId = payload.updateObjects.image._id;
-        const newObjects = payload.updateObjects.image.objects;
-        const image = state.workingImages.find(img => img._id === imgId);
-        image.objects = newObjects;
-      });
+      // .addCase(updateObjectsSuccess, (state, { payload }) => {
+      //   // TODO: we don't use updateObject anymore, so this isn't doing anything
+      //   // consider pushing returned images from editLabelSuccess into
+      //   // working images instead? 
+      //   const imgId = payload.updateObjects.image._id;
+      //   const newObjects = payload.updateObjects.image.objects;
+      //   const image = state.workingImages.find(img => img._id === imgId);
+      //   image.objects = newObjects;
+      // });
   },
 
 });

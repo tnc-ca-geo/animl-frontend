@@ -1,21 +1,14 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
-import {
-  getCamerasStart,
-  getCamerasFailure,
-  getCamerasSuccess,
-} from '../cameras/camerasSlice';
+import { call } from '../../api';
+import { Auth } from 'aws-amplify';
+import { registerCameraSuccess } from '../cameras/camerasSlice';
 import {
   getProjectsStart,
   getProjectsFailure,
-  getProjectsSuccess,
-  selectSelectedProject,
-  setSelectedProject,
-  registerCameraSuccess,
+  // registerCameraSuccess,
   setSelectedProjAndView,
   editDeploymentsSuccess,
 } from '../projects/projectsSlice';
-import { call } from '../../api';
-import { Auth } from 'aws-amplify';
 import {
   normalizeFilters,
   updateAvailCamFilters,
@@ -29,19 +22,19 @@ const initialState = {
       ids: [],
       isLoading: false,
       noneFound: false,
-      error: null,
+      errors: null,
     },
     deployments: {
       ids: [],
       isLoading: false,
       noneFound: false,
-      error: null,
+      errors: null,
     },
     labels: {
       ids: [],
       isLoading: false,
       noneFound: false,
-      error: null,
+      errors: null,
     }
   },
   activeFilters: {
@@ -66,13 +59,13 @@ export const filtersSlice = createSlice({
 
     getLabelsFailure: (state, { payload }) => {
       state.availFilters.labels.isLoading = false;
-      state.availFilters.labels.error = payload;
+      state.availFilters.labels.errors = payload;
       state.availFilters.labels.ids = [];
     },
 
     getLabelsSuccess: (state, { payload }) => {
       state.availFilters.labels.isLoading = false;
-      state.availFilters.labels.error = null;
+      state.availFilters.labels.errors = null;
       payload.labels.categories.forEach((cat) => {
         if (!state.availFilters.labels.ids.includes(cat)) {
           state.availFilters.labels.ids.push(cat);
@@ -169,10 +162,10 @@ export const filtersSlice = createSlice({
       })
       .addCase(getProjectsFailure, (state, { payload }) => {
         state.availFilters.cameras.isLoading = false;
-        state.availFilters.cameras.error = payload;
+        state.availFilters.cameras.errors = payload;
   
         state.availFilters.deployments.isLoading = false;
-        state.availFilters.deployments.error = payload;
+        state.availFilters.deployments.errors = payload;
       })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
@@ -192,10 +185,11 @@ export const filtersSlice = createSlice({
         // update deployment filters state 
         const { camera, operation, reqPayload } = payload;
         state.availFilters.deployments.isLoading = false;
-        state.availFilters.deployments.error = null;
+        state.availFilters.deployments.errors = null;
         const availDepFilters = state.availFilters.deployments.ids;
         const activeDepFilters = state.activeFilters.deployments;
         switch (operation) {
+          case 'updateDeployment': { break }
           case 'createDeployment': {
             // add new dep to available deployment filters
             const newDepId = reqPayload.deployment._id;
@@ -231,7 +225,6 @@ export const filtersSlice = createSlice({
   }
 });
 
-// export actions from slice
 export const {
   getLabelsStart,
   getLabelsSuccess,
@@ -264,7 +257,7 @@ export const fetchLabels = () => async (dispatch, getState)=> {
       dispatch(getLabelsSuccess(labels));
     }
   } catch (err) {
-    dispatch(getLabelsFailure(err.toString()))
+    dispatch(getLabelsFailure(err));
   }
 };
 
@@ -288,7 +281,7 @@ export const selectFiltersReady = createSelector(
   [selectAvailCameras, selectAvailLabels],
   (cameras, labels) => {
     const fetchedFilters = [cameras, labels];
-    return !fetchedFilters.some(filter => filter.isLoading || filter.error);
+    return !fetchedFilters.some(filter => filter.isLoading || filter.errors);
   }
 );
 

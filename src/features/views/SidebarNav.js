@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectCameras } from '../cameras/camerasSlice';
 import { selectSelectedProject, selectSelectedView } from '../projects/projectsSlice';
 import Modal from '../../components/Modal';
 import IconButton from '../../components/IconButton';

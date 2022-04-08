@@ -72,15 +72,18 @@ export const labelMiddleware = store => next => action => {
     const reviewMode = selectReviewMode(store.getState());
     if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
 
-    // BUG: This seems to be firing correctly, but not returning the newly
-    // created category. Might be a timing issue (new label hasn't been saved
-    // before fetchLabels() returns
-    const availLabels = selectAvailLabels(store.getState());
-    const newCategoryAdded = !availLabels.ids.includes(
-      action.payload.newLabel.category
-    );
-    if (newCategoryAdded) console.log('NOTE: new category detected, so fetching labels')  
-    if (newCategoryAdded) store.dispatch(fetchLabels());  
+    // TODO: no longer have a fetchLabels query handler in API 
+    // (we're fetching labels as a field level resolver for Project)
+    // so we either need to to refetch this entire project, or rewirte a 
+    // fetchLabels(projectId) handler again and insert them into the project slice
+
+    // const availLabels = selectAvailLabels(store.getState());
+    // const newCategoryAdded = !availLabels.ids.includes(
+    //   action.payload.newLabel.category
+    // );
+    // if (newCategoryAdded) console.log('NOTE: new category detected, so fetching labels')  
+    // if (newCategoryAdded) store.dispatch(fetchLabels());
+    
     // TODO: also dispatch fetchLabels after label invalidations?
   }
 

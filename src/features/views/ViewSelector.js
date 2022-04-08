@@ -137,11 +137,18 @@ const ViewSelector = () => {
   }, [projects, projectsLoading, dispatch]);
 
   useEffect(() => {
-    // set selected project to default
+    // set initial selected project
     // and don't override user's filter selections if there are unsaved changes
-    if (!projectsLoading && projects.length && !selectedProj && !selectedView && !unsavedViewChanges) {
+    if (!projectsLoading && 
+        projects.length && 
+        !selectedProj && 
+        !selectedView && 
+        !unsavedViewChanges) {
+      // const projIdToSelect = projects.find((p) => p._id ==='default_project')
+      //     ? 'default_project'
+      //     : projects[0]._id;
       console.log('ViewSelector() - dispatching setSelectedProjAndView');
-      dispatch(setSelectedProjAndView({ projId: 'default_project' }));
+      dispatch(setSelectedProjAndView({ projId: projects[0]._id }));
     }
   }, [projects, selectedProj, selectedView, projectsLoading, unsavedViewChanges, dispatch]);
 

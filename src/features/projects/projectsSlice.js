@@ -2,17 +2,57 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth, input } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameras } from './utils';
+import {
+  registerCameraSuccess,
+  unregisterCameraSuccess
+} from '../cameras/camerasSlice';
 
 const initialState = {
   projects: [],
   unsavedViewChanges: false,
-  isLoading: false,
-  noneFound: false,
-  error: null,
-  // TODO AUTH - probably want to have more specific state props for isLoading, 
-  // error, etc depending on what part of the Project we're updating 
-  cameraRegistrationError: null,
-  getModelsError: null,
+  /* TODO: figure out better way to structure this? e.g.: */
+
+  // loadingStates: {
+  //   projects: {
+  //     isLoading: false,
+  //     errors: null,
+  //   },
+  //   views: {
+  //     isLoading: false,
+  //     errors: null,
+  //   },
+  //   deployments: {
+  //     isLoading: false,
+  //     errors: null,
+  //   },
+  //   cameras: { // this on is a little weird b/c registering a camera might update cameraConfigs but it also affects source cameras
+  //     isLoading: false,
+  //     errors: null,
+  //   },
+  //   models: {
+  //     isLoading: false,
+  //     errors: null,
+  //   },
+  // },
+
+  // instead of "isLoading[Resource]" state, we might want to be specfic about
+  // operation or at least distinguish bettween "isGetting[Resource]" a resource
+  // vs "isEditing[Resource]" ?
+
+  isLoadingProjects: false,
+  getProjectsErrors: null,
+
+  isEditingViews: false,
+  editViewsErrors: null,
+
+  isEditingDeployments: false,
+  editDeploymentsErrors: null,
+
+  // isRegisteringCamera: false, 
+  // registerCameraErrors: null,
+
+  isLoadingModels: false,
+  getModelsErrors: null,
 };
 
 export const projectsSlice = createSlice({
@@ -22,19 +62,19 @@ export const projectsSlice = createSlice({
 
     getProjectsStart: (state) => {
       console.log('projectSlice.getProjectsStart()');
-      state.isLoading = true;
+      state.isLoadingProjects = true;
     },
 
     getProjectsFailure: (state, { payload }) => {
       console.log('projectSlice.getProjectsFailure() - payload: ', payload);
-      state.isLoading = false;
-      state.error = payload;
+      state.isLoadingProjects = false;
+      state.getProjectsErrors = payload;
     },
 
     getProjectsSuccess: (state, { payload }) => {
       console.log('projectSlice.getProjectsSucces() - payload: ', payload);
-      state.isLoading = false;
-      state.error = null;
+      state.isLoadingProjects = false;
+      state.getProjectsErrors = null;
       const projectIdsInState = state.projects.map((proj) => proj._id);
       payload.projects.forEach((proj, i) => {
         if (!projectIdsInState.includes(proj._id)) {
@@ -59,8 +99,16 @@ export const projectsSlice = createSlice({
         });
       }
 
-      state.error = null;
-      state.cameraRegistrationError = null;
+      state.getProjectsErrors = null;
+      state.editViewsErrors = null;
+      state.registerCameraErrors = null;
+      state.getModelsErrors = null;
+
+      // TODO: make sure we're resetting everything else that needs resetting:
+      //    - camerasSlice.cameras (done)
+      //    - undoHistory (TODO)
+      //    - filtersSlice.filters (done)
+      
     },
 
     setUnsavedViewChanges: (state, { payload }) => {
@@ -70,15 +118,12 @@ export const projectsSlice = createSlice({
     // Views CRUD
 
     editViewStart: (state) => { 
-      // TODO AUTH - maybe be more specific about what part of projects 
-      // is loading (have a state.viewsAreLoading, state.camerasAreLoading)
-      // for those updates?
-      state.isLoading = true;
+      state.isEditingViews = true;
     },
 
     editViewFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
+      state.isEditingViews = false;
+      state.editViewsErrors = payload;
     },
 
     // TODO AUTH - come up with a uniform strategy for updateing entities in
@@ -89,8 +134,8 @@ export const projectsSlice = createSlice({
     // TODO AUTH - instead of passing in projectId to payload, we could also 
     // just search all views in all projects for the project Id
     saveViewSuccess: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
+      state.isEditingViews = false;
+      state.editViewsErrors = null;
       let viewInState = false;
       const proj = state.projects.find((p) => p._id === payload.projId);
       proj.views.forEach((view, i) => {
@@ -106,28 +151,32 @@ export const projectsSlice = createSlice({
 
     deleteViewSuccess: (state, { payload }) => {
       console.log('projectSlice - deleteViewSuccess() - ', payload)
-      state.isLoading = false;
-      state.error = null;
+      state.isEditingViews = false;
+      state.editViewsErrors = null;
       const proj = state.projects.find((p) => p._id === payload.projId);
       proj.views = proj.views.filter((view) => view._id !== payload.viewId);
     },
 
-    // Deployments CRUD
+    /* Deployments CRUD */
 
     editDeploymentsStart: (state) => {
-      state.isLoading = true;
+      state.isEditingDeployments = true;
     },
 
     editDeploymentsFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
+      state.isEditingDeployments = false;
+      state.editDeploymentsErrors = payload;
     },
 
     editDeploymentsSuccess: (state, { payload }) => {
       console.log('projectSlice - editDeploymentSucces() - ', payload);
-      state.isLoading = false;
-      state.error = null;
+      state.isEditingDeployments = false;
+      state.editDeploymentsErrors = null;
       const editedCam = payload.camera;
+      // BUG HERE: if the camera has been registered to multiple projects before, 
+      // ALL cameraConfigs on all of those projects will be updated.
+      // we only want to update the deployments for the cameraConfig for this
+      // cam on the project that was specified 
       for (const proj of state.projects) {
         for (const cam of proj.cameras) {
           if (cam._id === editedCam._id) {
@@ -137,44 +186,25 @@ export const projectsSlice = createSlice({
       }
 
       // TODO AUTH: When we delete a deployment, we should also purge it from 
-      // all views that include it in their filters!
+      // all views that include it in their filters! 
+      // that will require updating on the backend too
     },
 
-    // Camera registration 
-
-    registerCameraStart: (state) => {
-      state.isLoading = true;
-    },
-
-    registerCameraFailure: (state, { payload }) => {
-      console.log('projectSlice - registerCameraFailure() - ', payload);
-      state.isLoading = false;
-      state.cameraRegistrationError = payload;
-    },
-
-    registerCameraSuccess: (state, { payload }) => {
-      console.log('projectSlice - registerCameraSuccess() - ', payload);
-      state.isLoading = false;
-      state.cameraRegistrationError = null;
-      const proj = state.projects.find((p) => p._id === payload.project._id);
-      proj.cameras = payload.project.cameras;
-    },
-
-    // fetch model source records
+    /* fetch model source records */
 
     getModelsStart: (state) => {
-      state.isLoading = true;
+      state.isLoadingModels = true;
     },
 
     getModelsFailure: (state, { payload }) => {
       console.log('projectSlice - getModelsFailure() - ', payload);
-      state.isLoading = false;
+      state.isLoadingModels = false;
       state.getModelsFailure = payload;
     },
 
     getModelsSuccess: (state, { payload }) => {
       console.log('projectSlice - getModelsSucces() - ', payload);
-      state.isLoading = false;
+      state.isLoadingModels = false;
       state.getModelsFailure = null;
       const proj = state.projects.find((p) => p._id === payload.projId);
       payload.mlModels.forEach((model) => {
@@ -182,6 +212,28 @@ export const projectsSlice = createSlice({
         else if (!proj.mlModels.includes(model._id)) proj.mlModels.push(model);
       });
     },
+
+  },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(registerCameraSuccess, (state, { payload }) => {
+        console.log('projectSlice() - registerCameraSuccess extra reducer: ', payload);
+        const proj = state.projects.find((p) => p._id === payload.project._id);
+        proj.cameras = payload.project.cameras;
+      })
+      .addCase(unregisterCameraSuccess, (state, { payload }) => {
+        console.log('projectSlice() - unregisterCameraSuccess extra reducer: ', payload);
+        // if a project is returned & it's the default_project 
+        // update the default_project's cameraConfig array in state
+        if (payload.project && payload.project._id === 'default_project') {
+          const defaultProj = state.projects.find((p) => (
+            p._id === 'default_project'
+          ));
+          if (!defaultProj) return;
+          defaultProj.cameras = payload.project.cameras;
+        }
+      })
 
   },
 });
@@ -203,10 +255,6 @@ export const {
   editDeploymentsFailure,
   editDeploymentsSuccess,
 
-  registerCameraStart,
-  registerCameraFailure,
-  registerCameraSuccess,
-
   getModelsStart,
   getModelsFailure,
   getModelsSuccess,
@@ -227,7 +275,7 @@ export const fetchProjects = () => async dispatch => {
 
     }
   } catch (err) {
-    dispatch(getProjectsFailure(err.toString()));
+    dispatch(getProjectsFailure(err));
   }
 };
 
@@ -264,7 +312,7 @@ export const editView = (operation, payload) => {
               input: payload
             });
             const view = res.updateView.view;
-            dispatch(saveViewSuccess({ projId, view}));
+            dispatch(saveViewSuccess({ projId, view }));
             dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
             break;
           }
@@ -289,8 +337,8 @@ export const editView = (operation, payload) => {
         }
       }
     } catch (err) {
-      console.log(`error attempting to ${operation} view: ${err.toString()}`);
-      dispatch(editViewFailure(err.toString()));
+      console.log(`error attempting to ${operation} view: `, err);
+      dispatch(editViewFailure(err));
     }
   };
 };
@@ -316,46 +364,17 @@ export const editDeployments = (operation, payload) => {
           request: operation,
           input: payload,
         });
-        console.log('res: ', res)
+        console.log('res: ', res);
         const camera = enrichCameras([res[operation].cameraConfig])[0];
         dispatch(editDeploymentsSuccess({
           camera,
-          operation,
-          reqPayload: payload 
+          operation,  // TODO: do we need this? we don't seem to be using it
+          reqPayload: payload  // TODO: do we need this? we don't seem to be using it
         }));
       }
     } catch (err) {
-      console.log(`error attempting to ${operation}: ${err.toString()}`);
-      dispatch(editDeploymentsFailure(err.toString()));
-    }
-  };
-};
-
-// registerCamera thunk
-export const registerCamera = (payload) => {
-  return async (dispatch, getState) => {
-    try {
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      if (token && selectedProj) {
-
-        dispatch(registerCameraStart());
-        const res = await call({
-          projId: selectedProj._id,
-          request: 'registerCamera',
-          input: payload,
-        });
-        console.log('res: ', res)
-        res.registerCamera.success 
-          ? dispatch(registerCameraSuccess(res.registerCamera))
-          : dispatch(registerCameraFailure(res.registerCamera.rejectionInfo.msg));
-
-      }
-    } catch (err) {
-      console.log(`error attempting to register camera: ${err.toString()}`);
-      dispatch(registerCameraFailure(err.toString()));
+      console.log(`error attempting to ${operation}: `, err);
+      dispatch(editDeploymentsFailure(err));
     }
   };
 };
@@ -364,11 +383,13 @@ export const registerCamera = (payload) => {
 export const fetchModels = (payload) => {
   return async (dispatch, getState) => {
     try {
+
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const projId = selectedProj._id;
+
       if (token && selectedProj) {
         dispatch(getModelsStart());
         const res = await call({
@@ -378,8 +399,9 @@ export const fetchModels = (payload) => {
         });
         dispatch(getModelsSuccess({ projId, mlModels: res.models }));
       }
+
     } catch (err) {
-      dispatch(getModelsFailure(err.toString()))
+      dispatch(getModelsFailure(err));
     }
   };
 }
@@ -404,9 +426,6 @@ export const selectSelectedView = createSelector([selectViews],
 );
 export const selectUnsavedViewChanges = state => 
   state.projects.unsavedViewChanges;
-export const selectCameraRegistrationError = state => 
-  state.projects.cameraRegistrationError;
-
 export const selectMLModels = createSelector([selectSelectedProject],
   (proj) => proj ? proj.mlModels : null
 );
