@@ -173,15 +173,10 @@ export const projectsSlice = createSlice({
       state.isEditingDeployments = false;
       state.editDeploymentsErrors = null;
       const editedCam = payload.camera;
-      // BUG HERE: if the camera has been registered to multiple projects before, 
-      // ALL cameraConfigs on all of those projects will be updated.
-      // we only want to update the deployments for the cameraConfig for this
-      // cam on the project that was specified 
-      for (const proj of state.projects) {
-        for (const cam of proj.cameras) {
-          if (cam._id === editedCam._id) {
-            cam.deployments = editedCam.deployments;
-          }
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      for (const cam of proj.cameras) {
+        if (cam._id === editedCam._id) {
+          cam.deployments = editedCam.deployments;
         }
       }
 
@@ -285,6 +280,7 @@ export const fetchProjects = () => async dispatch => {
 export const editView = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
+      
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -301,7 +297,7 @@ export const editView = (operation, payload) => {
               input: payload
             });
             const view = res.createView.view;
-            dispatch(saveViewSuccess({ projId, view}));
+            dispatch(saveViewSuccess({ projId, view }));
             dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
             break;
           }
@@ -323,10 +319,10 @@ export const editView = (operation, payload) => {
               input: payload
             });
             const updatedProj = res.deleteView.project;
-            const defaultView = updatedProj.views.find((view) => (
+            const dfltView = updatedProj.views.find((view) => (
               view.name === 'All images'
             ));
-            dispatch(setSelectedProjAndView({ projId, viewId: defaultView._id })); 
+            dispatch(setSelectedProjAndView({ projId, viewId: dfltView._id })); 
             dispatch(deleteViewSuccess({ projId, viewId: payload._id }));
             break;
           }
@@ -347,29 +343,33 @@ export const editView = (operation, payload) => {
 export const editDeployments = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
+
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
       if (token && selectedProj) {
 
         if (!operation || !payload) {
           const err = `An operation (create, update, or delete) is required`;
           throw new Error(err);
         }
-        console.log('projectsSlice - editDeployments() - payload: ', payload)
+        console.log('projectsSlice - editDeployments() - payload: ', payload);
         dispatch(editDeploymentsStart());
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: operation,
           input: payload,
         });
         console.log('res: ', res);
         const camera = enrichCameras([res[operation].cameraConfig])[0];
         dispatch(editDeploymentsSuccess({
+          projId,
           camera,
-          operation,  // TODO: do we need this? we don't seem to be using it
-          reqPayload: payload  // TODO: do we need this? we don't seem to be using it
+          operation,
+          reqPayload: payload
         }));
       }
     } catch (err) {
