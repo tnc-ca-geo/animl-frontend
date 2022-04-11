@@ -239,7 +239,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     },
     {
       Header: 'Camera',
-      accessor: 'cameraSn',
+      accessor: 'cameraId',
     },
     {
       Header: 'Deployment',

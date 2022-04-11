@@ -40,7 +40,7 @@ const imageFields = `
   _id
   dateTimeOriginal
   dateAdded
-  cameraSn
+  cameraId
   make
   originalFileName
   deployment
@@ -118,7 +118,7 @@ const projectFields = `
   views {
     ${viewFields}
   }
-  cameras {
+  cameraConfigs {
     ${cameraConfigFields}
   }
   labels {
@@ -213,7 +213,7 @@ const queries = {
     return {
       template: `
         {
-          models {
+          mlModels {
             _id
             description
             version

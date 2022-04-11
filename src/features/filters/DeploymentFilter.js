@@ -34,10 +34,10 @@ const DeploymentFilter = () => {
         showLabel={true}
       />
       <div>
-        {selectedProject && selectedProject.cameras.map((camera) => (
+        {selectedProject && selectedProject.cameraConfigs.map((camConfig) => (
           <CameraFilterSection 
-            key={camera._id}
-            camera={camera}
+            key={camConfig._id}
+            camConfig={camConfig}
             activeDeps={activeDeps}
           />
         ))}

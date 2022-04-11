@@ -169,21 +169,21 @@ export const filtersSlice = createSlice({
       })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
-        updateAvailDepFilters(state, payload.project.cameras);
-        updateAvailCamFilters(state, payload.project.cameras);
+        updateAvailDepFilters(state, payload.project.cameraConfigs);
+        updateAvailCamFilters(state, payload.project.cameraConfigs);
         updateAvailLabelFilters(state, payload.project.labels);
         // set all filters to new selected view? We're currently handling this 
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
       .addCase(registerCameraSuccess, (state, { payload }) => {
         console.log('filtersSlice() - registerCameraSuccess extra reducer: ', payload)
-        updateAvailDepFilters(state, payload.project.cameras);
-        updateAvailCamFilters(state, payload.project.cameras);
+        updateAvailDepFilters(state, payload.project.cameraConfigs);
+        updateAvailCamFilters(state, payload.project.cameraConfigs);
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
         // TODO AUTH: test & make sure this works with new muliti-project schema
         // update deployment filters state 
-        const { camera, operation, reqPayload } = payload;
+        const { operation, reqPayload } = payload;
         state.availFilters.deployments.isLoading = false;
         state.availFilters.deployments.errors = null;
         const availDepFilters = state.availFilters.deployments.ids;

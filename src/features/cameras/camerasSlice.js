@@ -189,7 +189,6 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
 // Selectors
 export const selectCameras = state => state.cameras.cameras;
 export const selectCamerasLoading = state => state.cameras.isLoading;
-export const selectRegisterCameraErrors = state => 
-  state.projects.registerCameraErrors;
+export const selectRegisterCameraErrors = state => state.cameras.errors;
 
 export default camerasSlice.reducer;

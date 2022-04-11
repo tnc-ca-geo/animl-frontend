@@ -22,11 +22,11 @@ const normalizeFilters = (
   return newActiveFilts;
 };
 
-const updateAvailDepFilters = (state, cameras) => {
+const updateAvailDepFilters = (state, camConfigs) => {
   state.availFilters.deployments.isLoading = false;
   state.availFilters.deployments.error = null;
-  const newDeployments = cameras.reduce((acc, camera) => {
-    for (const dep of camera.deployments) {
+  const newDeployments = camConfigs.reduce((acc, camConfig) => {
+    for (const dep of camConfig.deployments) {
       acc.push(dep._id);
     }
     return acc;

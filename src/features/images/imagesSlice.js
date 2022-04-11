@@ -153,7 +153,7 @@ export const fetchImages = (filters, page = 'current' ) => {
           input: { filters, pageInfo, page },
         });
 
-        res = enrichImages(res, selectedProj.cameras);
+        res = enrichImages(res, selectedProj.cameraConfigs);
         if (page !== 'next') dispatch(clearImages());
         console.log('iamgesSlice - fetchingImages() - res: ', res)
         dispatch(getImagesSuccess(res));
@@ -234,7 +234,7 @@ export const fetchImageContext = (imgId) => {
         const filters = {
           addedEnd: null,
           addedStart: null,
-          cameras: [focusedImg.image.cameraSn], // TODO: does this still work now that we're more deployment filter oriented?
+          cameras: [focusedImg.image.cameraId], // TODO: does this still work now that we're more deployment filter oriented?
           createdEnd: null,
           createdStart: startDate,
           deployments: null,

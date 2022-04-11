@@ -45,7 +45,7 @@ const StyledCameraFilterSection = styled('div', {
   fontSize: '$3',
 });
 
-const CameraFilterSection = ({ camera, activeDeps }) => {
+const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const [expanded, setExpanded] = useState(false);
   const [mostRecentActiveDep, setMostRecentActiveDep] = useState();
   const [activeDepCount, setActiveDepCount] = useState();
@@ -54,7 +54,7 @@ const CameraFilterSection = ({ camera, activeDeps }) => {
   useEffect(() => {
     // get most recent active deployment name
     let depName = '';
-    for (const dep of camera.deployments) {
+    for (const dep of camConfig.deployments) {
       if ((activeDeps && activeDeps.includes(dep._id)) || 
           activeDeps === null) {
         depName = dep.name;
@@ -64,14 +64,14 @@ const CameraFilterSection = ({ camera, activeDeps }) => {
     setMostRecentActiveDep(depName);
     
     // get active deplployment count
-    let actDepCount = camera.deployments.length;
+    let actDepCount = camConfig.deployments.length;
     if (activeDeps !== null) {
-      actDepCount = camera.deployments.filter((dep) => (
+      actDepCount = camConfig.deployments.filter((dep) => (
         activeDeps.includes(dep._id)
       )).length;
     }
     setActiveDepCount(actDepCount);
-  }, [ camera, activeDeps ])
+  }, [ camConfig, activeDeps ])
 
   const handleCheckboxChange = (e) => {
     dispatch(checkboxFilterToggled({
@@ -88,12 +88,12 @@ const CameraFilterSection = ({ camera, activeDeps }) => {
         <label>
           <BulkSelectCheckbox
             filterCat='deployments'
-            managedIds={camera.deployments.map((dep) => dep._id)}
+            managedIds={camConfig.deployments.map((dep) => dep._id)}
             showLabel={false}
           />
           <CheckboxLabel
             active={activeDepCount > 0}>
-            <CameraId>{camera._id}</CameraId>
+            <CameraId>{camConfig._id}</CameraId>
             <ActiveDepLabel>{` - ${mostRecentActiveDep}`}</ActiveDepLabel>
             <AdditionalActiveDepCount>
               {activeDepCount - 1 > 0 
@@ -116,7 +116,7 @@ const CameraFilterSection = ({ camera, activeDeps }) => {
 
       {expanded && 
         <Deployments>
-          {camera.deployments.map((deployment) => {
+          {camConfig.deployments.map((deployment) => {
             const depChecked = activeDeps === null || 
                               activeDeps.includes(deployment._id);
             return (

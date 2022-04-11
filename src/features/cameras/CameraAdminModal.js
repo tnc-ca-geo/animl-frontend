@@ -42,13 +42,13 @@ const CameraAdminModal = () => {
   }, [cameras.length, camerasLoading, dispatch]);
 
   let enrichedCams = [];
-  if (project.cameras.length && cameras.length) {
-    enrichedCams = project.cameras.map((c) => {
-      const cameraSource = cameras.find((cs) => cs._id === c._id);
-      const active = cameraSource.projRegistrations.some((pr) => (
+  if (project.cameraConfigs.length && cameras.length) {
+    enrichedCams = project.cameraConfigs.map((camConfig) => {
+      const camera = cameras.find((cam) => cam._id === camConfig._id);
+      const active = camera.projRegistrations.some((pr) => (
         pr.project === project._id && pr.active
       ));
-      return { ...c, active };
+      return { ...camConfig, active };
     });
   }
 

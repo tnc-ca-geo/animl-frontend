@@ -1,7 +1,7 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth, input } from 'aws-amplify';
 import { call } from '../../api';
-import { enrichCameras } from './utils';
+import { enrichCameraConfigs } from './utils';
 import {
   registerCameraSuccess,
   unregisterCameraSuccess
@@ -172,11 +172,11 @@ export const projectsSlice = createSlice({
       console.log('projectSlice - editDeploymentSucces() - ', payload);
       state.isEditingDeployments = false;
       state.editDeploymentsErrors = null;
-      const editedCam = payload.camera;
+      const editedCamConfig = payload.cameraConfig;
       const proj = state.projects.find((p) => p._id === payload.projId);
-      for (const cam of proj.cameras) {
-        if (cam._id === editedCam._id) {
-          cam.deployments = editedCam.deployments;
+      for (const camConfig of proj.cameraConfigs) {
+        if (camConfig._id === editedCamConfig._id) {
+          camConfig.deployments = editedCamConfig.deployments;
         }
       }
 
@@ -215,7 +215,7 @@ export const projectsSlice = createSlice({
       .addCase(registerCameraSuccess, (state, { payload }) => {
         console.log('projectSlice() - registerCameraSuccess extra reducer: ', payload);
         const proj = state.projects.find((p) => p._id === payload.project._id);
-        proj.cameras = payload.project.cameras;
+        proj.cameraConfigs = payload.project.cameraConfigs;
       })
       .addCase(unregisterCameraSuccess, (state, { payload }) => {
         console.log('projectSlice() - unregisterCameraSuccess extra reducer: ', payload);
@@ -226,7 +226,7 @@ export const projectsSlice = createSlice({
             p._id === 'default_project'
           ));
           if (!defaultProj) return;
-          defaultProj.cameras = payload.project.cameras;
+          defaultProj.cameraConfigs = payload.project.cameraConfigs;
         }
       })
 
@@ -364,10 +364,10 @@ export const editDeployments = (operation, payload) => {
           input: payload,
         });
         console.log('res: ', res);
-        const camera = enrichCameras([res[operation].cameraConfig])[0];
+        const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
         dispatch(editDeploymentsSuccess({
           projId,
-          camera,
+          cameraConfig,
           operation,
           reqPayload: payload
         }));
@@ -397,7 +397,7 @@ export const fetchModels = (payload) => {
           request: 'getModels',
           input: payload,
         });
-        dispatch(getModelsSuccess({ projId, mlModels: res.models }));
+        dispatch(getModelsSuccess({ projId, mlModels: res.mlModels }));
       }
 
     } catch (err) {

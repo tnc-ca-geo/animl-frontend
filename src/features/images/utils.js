@@ -6,12 +6,12 @@ import {
   IMAGES_URL, 
 } from '../../config';
 
-const enrichImages = (res, cameras) => {
+const enrichImages = (res, camConfigs) => {
   for (const img of res.images.images) {
 
-    const camera = cameras.find((c) => c._id === img.cameraSn);
-    const deployment = camera 
-      ? camera.deployments.find((d) => d._id === img.deployment).name
+    const camConfig = camConfigs.find((c) => c._id === img.cameraId);
+    const deployment = camConfig 
+      ? camConfig.deployments.find((d) => d._id === img.deployment).name
       : 'unknown';
     img.deploymentName = deployment;
 
