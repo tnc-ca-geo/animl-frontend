@@ -46,7 +46,7 @@ const CameraAdminModal = () => {
     enrichedCams = project.cameraConfigs.map((camConfig) => {
       const camera = cameras.find((cam) => cam._id === camConfig._id);
       const active = camera.projRegistrations.some((pr) => (
-        pr.project === project._id && pr.active
+        pr.projectId === project._id && pr.active
       ));
       return { ...camConfig, active };
     });

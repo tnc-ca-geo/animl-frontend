@@ -126,11 +126,6 @@ export const projectsSlice = createSlice({
       state.editViewsErrors = payload;
     },
 
-    // TODO AUTH - come up with a uniform strategy for updateing entities in
-    // in the front end afters saving them in DB. Don't do it at all and push 
-    // changes to the state at the time we request the opperations?
-    // User doesn't have to wait in that case, but if the request fails that 
-    // would cause issues....
     // TODO AUTH - instead of passing in projectId to payload, we could also 
     // just search all views in all projects for the project Id
     saveViewSuccess: (state, { payload }) => {
@@ -323,7 +318,7 @@ export const editView = (operation, payload) => {
               view.name === 'All images'
             ));
             dispatch(setSelectedProjAndView({ projId, viewId: dfltView._id })); 
-            dispatch(deleteViewSuccess({ projId, viewId: payload._id }));
+            dispatch(deleteViewSuccess({ projId, viewId: payload.viewId }));
             break;
           }
           default: {

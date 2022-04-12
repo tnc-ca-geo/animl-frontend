@@ -93,7 +93,7 @@ const SaveViewForm = ({ handleClose }) => {
   const handleSaveViewSubmit = (operation, selectedView, formVals) => {
     const payload = (operation === 'update')
       ? {
-          _id: selectedView._id,
+          viewId: selectedView._id,
           diffs: { filters: formVals.filters }
         }
       : formVals;

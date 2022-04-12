@@ -68,7 +68,7 @@ const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
       rule._id.toString() !== ruleToRemove
     ));
     const payload = {
-      _id: view._id,
+      viewId: view._id,
       diffs: {
         automationRules: rules,
       }

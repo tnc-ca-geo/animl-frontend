@@ -114,7 +114,7 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
 
     const rules = view.automationRules.concat(newRule);
     const payload = {
-      _id: view._id,
+      viewId: view._id,
       diffs: { automationRules: rules }
     };
     

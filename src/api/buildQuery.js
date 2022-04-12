@@ -6,7 +6,7 @@ const cameraFields = `
   model 
   projRegistrations {
     _id
-    project
+    projectId
     active
   }
 `;
@@ -43,8 +43,8 @@ const imageFields = `
   cameraId
   make
   originalFileName
-  deployment
-  project
+  deploymentId
+  projectId
   objects {
     ${objectFields}
   }`;
@@ -149,7 +149,7 @@ const queries = {
     `,
   }),
 
-  getImage: ({ imgId }) => {
+  getImage: ({ imageId }) => {
     return {
       template: `
         query GetImage($input: QueryImageInput!) {
@@ -159,7 +159,7 @@ const queries = {
         }
       `,
       variables: {
-        input: { _id: imgId }
+        input: { imageId }
       }
     }
   },

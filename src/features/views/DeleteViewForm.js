@@ -18,7 +18,7 @@ const ViewName = styled('span', {
 });
 
 const deleteViewSchema = Yup.object().shape({
-  _id: Yup.string().required('A view ID is required'),
+  viewId: Yup.string().required('A view ID is required'),
 });
 
 const DeleteViewForm = ({ handleClose }) => {
@@ -49,7 +49,7 @@ const DeleteViewForm = ({ handleClose }) => {
       }
       <FormWrapper>
         <Formik
-          initialValues={{ _id: selectedView._id }}
+          initialValues={{ viewId: selectedView._id }}
           validationSchema={deleteViewSchema}
           onSubmit={(values) => handleDeleteViewSubmit(values)}
         >
@@ -60,7 +60,7 @@ const DeleteViewForm = ({ handleClose }) => {
                 the <ViewName>{selectedView.name}</ViewName> view?
               </HelperText>
               <Field
-                name='_id'
+                name='viewId'
                 type='hidden'
               />
               <ButtonRow>
