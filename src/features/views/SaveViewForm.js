@@ -6,7 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 import {
-  selectProjectsLoading,
+  selectViewsLoading,
   selectSelectedView,
   selectUnsavedViewChanges,
   editView,
@@ -72,19 +72,16 @@ const newViewSchema = Yup.object().shape({
 
 const SaveViewForm = ({ handleClose }) => {
   const [saveMode, setSaveMode] = useState();
-  const [queuedForClose, setQueuedForClose ] = useState(false);
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const [queuedForClose, setQueuedForClose] = useState(false);
+  const viewsLoading = useSelector(selectViewsLoading);
   const selectedView = useSelector(selectSelectedView);
   const activeFilters = useSelector(selectActiveFilters);
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
   const dispatch = useDispatch();
 
-  // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !projectsLoading) {
-      handleClose();
-    }
-  }, [queuedForClose, projectsLoading, handleClose])
+    if (queuedForClose && !viewsLoading.isLoading) handleClose();
+  }, [queuedForClose, viewsLoading.isLoading, handleClose]);
 
   const handleSaveModeSelection = (mode) => {
     setSaveMode(mode);
@@ -103,7 +100,7 @@ const SaveViewForm = ({ handleClose }) => {
 
   return (
     <div>
-      {projectsLoading &&
+      {viewsLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

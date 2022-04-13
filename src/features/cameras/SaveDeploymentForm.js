@@ -11,7 +11,7 @@ import * as Yup from 'yup';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 import {
   editDeployments,
-  selectProjectsLoading
+  selectDeploymentsLoading
 } from '../projects/projectsSlice';
 import Button from '../../components/Button';
 import SelectField from '../../components/SelectField';
@@ -84,7 +84,7 @@ const initialValsCreate = (project) => ({
 const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
   const saveMode = deployment ? 'updateDeployment' : 'createDeployment';
   const [queuedForClose, setQueuedForClose] = useState(false);
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const depsLoading = useSelector(selectDeploymentsLoading);
   const timezoneOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const dispatch = useDispatch();
   const initialValues = saveMode === 'createDeployment' 
@@ -99,12 +99,9 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
         editable: deployment.editable,
       };
 
-  // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !projectsLoading) {
-      handleClose();
-    }
-  }, [queuedForClose, projectsLoading, handleClose]);
+    if (queuedForClose && !depsLoading.isLoading) handleClose();
+  }, [queuedForClose, depsLoading, handleClose]);
 
   const createLocation = (lat, lon) => ({
     _id: new ObjectID().toString(),
@@ -159,7 +156,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
 
   return (
     <div>
-      {projectsLoading &&
+      {depsLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

@@ -4,7 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
-  selectProjectsLoading,
+  selectViewsLoading,
   selectSelectedView,
   editView
 } from '../projects/projectsSlice';
@@ -23,16 +23,14 @@ const deleteViewSchema = Yup.object().shape({
 
 const DeleteViewForm = ({ handleClose }) => {
   const [queuedForClose, setQueuedForClose ] = useState(false);
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const viewsLoading = useSelector(selectViewsLoading);
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !projectsLoading) {
-      handleClose();
-    }
-  }, [queuedForClose, projectsLoading, handleClose])
+    if (queuedForClose && !viewsLoading.isLoading) handleClose();
+  }, [queuedForClose, viewsLoading.isLoading, handleClose])
 
   const handleDeleteViewSubmit = (values) => {
     dispatch(editView('delete', values));
@@ -42,7 +40,7 @@ const DeleteViewForm = ({ handleClose }) => {
 
   return (
     <div>
-      {projectsLoading &&
+      {viewsLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

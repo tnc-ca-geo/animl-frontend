@@ -1,7 +1,7 @@
 
 import { ObjectID } from 'bson';
-import { editLabel } from '../images/imagesSlice';
 import {
+  editLabel,
   bboxUpdated,
   objectRemoved,
   objectLocked,
@@ -12,9 +12,7 @@ import {
 
 export const objectMiddleware = store => next => action => {
 
-  /* 
-   * bboxUpdated
-   */
+  /* bboxUpdated */
 
   if (bboxUpdated.match(action)) {
     console.log('objectMiddleware.bboxUpdated()');
@@ -27,9 +25,7 @@ export const objectMiddleware = store => next => action => {
     }));
   }
 
- /* 
-  * objectRemoved
-  */
+ /* objectRemoved */
 
   else if (objectRemoved.match(action)) {
     console.log('objectMiddleware.objectRemoved(): ', action.payload);
@@ -41,9 +37,7 @@ export const objectMiddleware = store => next => action => {
     next(action);
   }
 
-  /* 
-   * objectLocked
-   */
+  /* objectLocked */
 
   else if (objectLocked.match(action)) {
     console.log('objectMiddleware.objectLocked() - ', action.payload);
@@ -56,9 +50,7 @@ export const objectMiddleware = store => next => action => {
     }));
   }
 
-  /* 
-   * objectManuallyUnlocked
-   */
+  /* objectManuallyUnlocked */
 
   else if (objectManuallyUnlocked.match(action)) {
     console.log('objectMiddleware.objectManuallyUnlocked()');
@@ -67,9 +59,7 @@ export const objectMiddleware = store => next => action => {
     store.dispatch(objectLocked({ imgId, objId, locked: false }));
   }
 
-  /* 
-   * markedEmpty
-   */
+  /* markedEmpty */
 
   else if (markedEmpty.match(action)) {
     console.log('objectMiddleware.markedEmpty(): ', action.payload);
@@ -97,9 +87,7 @@ export const objectMiddleware = store => next => action => {
     }));
   }
 
-  /* 
-   * markedEmpty
-   */
+  /* markedEmpty */
 
   else if (markedEmptyReverted.match(action)) {
     console.log('objectMiddleware.markedEmptyReverted(): ', action.payload);

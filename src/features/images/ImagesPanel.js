@@ -6,7 +6,7 @@ import { selectWorkingImages } from '../review/reviewSlice';
 import {
   fetchImages,
   selectHasNext,
-  selectIsLoading,
+  selectImagesLoading,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
@@ -43,7 +43,7 @@ const ImagesPanel = () => {
   const sortAscending = useSelector(selectSortAscending);
   const workingImages = useSelector(selectWorkingImages);
   const hasNext = useSelector(selectHasNext);
-  const isLoading = useSelector(selectIsLoading);
+  const imagesLoading = useSelector(selectImagesLoading);
   const dispatch = useDispatch();
   // console.log('selectedProject: ', selectedProject);
   // console.log('filters: ', filters);
@@ -60,7 +60,7 @@ const ImagesPanel = () => {
   const loadNextPage = () => {
     // Pass an empty promise that immediately resolves to InfiniteLoader 
     // in case it asks us to load more than once
-    return isLoading
+    return imagesLoading.isLoading
       ? Promise.resolve()
       : dispatch(fetchImages(filters, 'next'));
   };

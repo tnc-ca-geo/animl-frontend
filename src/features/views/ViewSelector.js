@@ -131,7 +131,7 @@ const ViewSelector = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!projects.length && !projectsLoading) {
+    if (!projects.length && !projectsLoading.isLoading) {
       dispatch(fetchProjects());
     }
   }, [projects, projectsLoading, dispatch]);
@@ -139,7 +139,7 @@ const ViewSelector = () => {
   useEffect(() => {
     // set initial selected project
     // and don't override user's filter selections if there are unsaved changes
-    if (!projectsLoading && 
+    if (!projectsLoading.isLoading && 
         projects.length && 
         !selectedProj && 
         !selectedView && 

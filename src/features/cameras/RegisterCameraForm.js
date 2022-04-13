@@ -4,10 +4,9 @@ import _ from 'lodash';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { selectProjectsLoading } from '../projects/projectsSlice';
 import { 
   registerCamera,
-  selectRegisterCameraErrors
+  selectCamerasLoading,
 } from '../cameras/camerasSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
@@ -37,20 +36,10 @@ const registerCameraSchema = Yup.object().shape({
   }),
 });
 
-const RegisterCameraForm = ({ cameraId, deployment, handleClose }) => {
-  // const [queuedForClose, setQueuedForClose ] = useState(false);
-  const projectsLoading = useSelector(selectProjectsLoading);
-  const registerCameraErrors = useSelector(selectRegisterCameraErrors);
-  console.log('registerCameraErrors: ', registerCameraErrors)
+const RegisterCameraForm = () => {
+  const camerasLoading = useSelector(selectCamerasLoading);
   const makeOptions = SUPPORTED_CAM_MAKES.map((m) => ({ value: m, label: m }));
   const dispatch = useDispatch();
-
-  // TODO: extract into hook?
-  // useEffect(() => {
-  //   if (queuedForClose && !projectsLoading) {
-  //     handleClose();
-  //   }
-  // }, [queuedForClose, projectsLoading, handleClose]);
 
   const handleRegisterCameraSubmit = (formVals) => {
     console.log('handleRegisterCameraSubmit() - formVals: ', formVals);
@@ -58,12 +47,11 @@ const RegisterCameraForm = ({ cameraId, deployment, handleClose }) => {
       cameraId: formVals.cameraId,
       make: formVals.make.value,
     }));
-    // setQueuedForClose(true);
   };
   
   return (
     <div>
-      {projectsLoading &&
+      {camerasLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>
@@ -118,8 +106,8 @@ const RegisterCameraForm = ({ cameraId, deployment, handleClose }) => {
                   Register Camera
                 </Button>
               </ButtonRow>
-              {registerCameraErrors && 
-                registerCameraErrors.map((err, i) => (
+              {camerasLoading.errors && 
+                camerasLoading.errors.map((err, i) => (
                   <FormError key={i}>{err.message}</FormError>
                 ))
               }

@@ -1,11 +1,8 @@
 import { createSlice, createAction } from '@reduxjs/toolkit';
-// import undoable, { excludeAction } from 'redux-undo';
+import { Auth } from 'aws-amplify';
+import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
-import {
-  getImagesSuccess,
-  clearImages,
-  // updateObjectsSuccess
-} from '../images/imagesSlice';
+import { getImagesSuccess, clearImages } from '../images/imagesSlice';
 
 const initialState = {
   workingImages: [],
@@ -15,8 +12,13 @@ const initialState = {
     label: null,
   },
   focusChangeType: null,
-  updatingObjects: false,
-  error: null,
+  loadingStates: {
+    labels: {
+      isLoading: false,
+      operation: null, /* 'fetching', 'updating', 'deleting' */
+      errors: null,
+    }
+  }
 };
 
 export const reviewSlice = createSlice({
@@ -105,6 +107,24 @@ export const reviewSlice = createSlice({
       }
     },
 
+    editLabelStart: (state) => { 
+      state.loadingStates.labels.isLoading = true;
+      state.loadingStates.labels.operation = 'updating';
+    },
+
+    editLabelFailure: (state, { payload }) => {
+      state.loadingStates.labels.isLoading = false;
+      state.loadingStates.labels.operation = null;
+      state.loadingStates.labels.errors = payload;
+    },
+
+    editLabelSuccess: (state, { payload }) => {
+      // NOTE: currently not doing anything with returned image
+      state.loadingStates.labels.isLoading = false;
+      state.loadingStates.labels.operation = null;
+      state.loadingStates.labels.errors = null;
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -116,15 +136,6 @@ export const reviewSlice = createSlice({
       .addCase(clearImages, (state) => {
         state.workingImages = [];
       })
-      // .addCase(updateObjectsSuccess, (state, { payload }) => {
-      //   // TODO: we don't use updateObject anymore, so this isn't doing anything
-      //   // consider pushing returned images from editLabelSuccess into
-      //   // working images instead? 
-      //   const imgId = payload.updateObjects.image._id;
-      //   const newObjects = payload.updateObjects.image.objects;
-      //   const image = state.workingImages.find(img => img._id === imgId);
-      //   image.objects = newObjects;
-      // });
   },
 
 });
@@ -139,7 +150,52 @@ export const {
   labelValidationReverted,
   objectLocked,
   markedEmpty,
+  editLabelStart,
+  editLabelFailure,
+  editLabelSuccess,
 } = reviewSlice.actions;
+
+// editLabel thunk
+export const editLabel = (operation, entity, payload, projId) => {
+  return async (dispatch, getState) => {
+    try {
+
+      if (!operation || !entity || !payload) {
+        const msg = `An operation (create, update, or delete) 
+          and entity are required`;
+        throw new Error(msg);
+      }
+
+      dispatch(editLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
+      console.groupCollapsed(`editLabel() - ${operation} ${entity}`);
+      console.log(`payload: `, payload);
+      console.groupEnd();
+
+      if (token && selectedProj) {
+        // TODO: do we really need to pass in the operation and entity separately?
+        // why not just do one string, e.g.: 'createObject'
+        const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
+        const res = await call({
+          projId: selectedProj._id, 
+          request: req,
+          input: payload 
+        });
+        const mutation = Object.keys(res)[0];
+        const image = res[mutation].image;
+        console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
+        dispatch(editLabelSuccess(image));
+      }
+
+    } catch (err) {
+      console.log(`error attempting to ${operation} ${entity}: `, err);
+      dispatch(editLabelFailure(err));
+    }
+  };
+};
 
 // Actions only used in middlewares:
 export const incrementFocusIndex = createAction('review/incrementFocusIndex');

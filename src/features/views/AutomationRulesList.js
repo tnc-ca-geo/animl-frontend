@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { editView, selectProjectsLoading } from '../projects/projectsSlice';
+import { editView, selectViewsLoading } from '../projects/projectsSlice';
 import IconButton from '../../components/IconButton';
 import Button from '../../components/Button';
 import { ButtonRow } from '../../components/Form';
@@ -59,7 +59,7 @@ const RuleDescription = ({ rule, availableModels }) => {
 };
 
 const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const viewsLoading = useSelector(selectViewsLoading);
   const dispatch = useDispatch();
 
   const handleRuleDeleteClick = (e) => {
@@ -78,7 +78,7 @@ const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
 
   return (
     <div>
-      {projectsLoading &&
+      {viewsLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>

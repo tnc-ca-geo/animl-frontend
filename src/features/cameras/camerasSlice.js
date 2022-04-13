@@ -7,9 +7,12 @@ import {
 
 const initialState = {
   cameras: [],
-  isLoading: false,
-  noneFound: false,
-  errors: null,
+  loadingState: {
+    isLoading: false,
+    operation: null, /* 'fetching', 'updating', 'deleting' */
+    errors: null,
+    noneFound: false,
+  },
 };
 
 export const camerasSlice = createSlice({
@@ -18,68 +21,81 @@ export const camerasSlice = createSlice({
   reducers: {
 
     getCamerasStart: (state) => {
-      state.isLoading = true;
+      state.loadingState.isLoading = true;
+      state.loadingState.operation = 'fetching';
     },
 
     getCamerasFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.errors = payload;
+      state.loadingState.isLoading = false;
+      state.loadingState.operation = null;
+      state.loadingState.errors = payload;
     },
 
     getCamerasSuccess: (state, { payload }) => {
-      state.isLoading = false;
-      state.errors = null;
+      console.log('getCamerasSuccess: ', payload);
       state.cameras = payload;
-      if (payload.length === 0) {
-        state.noneFound = true;
-      }
+      state.loadingState = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound: (payload.length === 0),
+      };
     },
 
     /* Camera registration */
 
     registerCameraStart: (state) => {
-      state.isLoading = true;
+      state.loadingState.isLoading = true;
+      state.loadingState.operation = 'updating';
     },
 
     registerCameraFailure: (state, { payload }) => {
       console.log('cameraSlice - registerCameraFailure() - ', payload);
-      state.isLoading = false;
-      state.errors = payload;
+      state.loadingState.isLoading = false;
+      state.loadingState.operation = null;
+      state.loadingState.errors = payload;
     },
 
     registerCameraSuccess: (state, { payload }) => {
       console.log('cameraSlice - registerCameraSuccess() - ', payload);
-      state.isLoading = false;
-      state.errors = null;
-      // TODO: make the cameras update update more surgical?
       state.cameras = payload.cameras;
-      if (payload.cameras.length === 0) {
-        state.noneFound = true;
-      }
+      state.loadingState = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound: (payload.cameras.length === 0),
+      };
+      // TODO: make the cameras update update more surgical?
+      // i.e. ONLY return the new/updated Camera source record and merge it 
+      // into existing cameras (like we do with Views), and only return the 
+      // new cameraConfig & merge that with Project.cameras array. 
+      // Advantages: don't have to do getCameras() on backend before returning, 
+      // less data in payload
     },
 
     /* Camera unregistration */
 
     unregisterCameraStart: (state) => {
-      state.isLoading = true;
+      state.loadingState.isLoading = true;
+      state.loadingState.operation = 'updating';
     },
 
     unregisterCameraFailure: (state, { payload }) => {
       console.log('cameraSlice - unregisterCameraFailure() - ', payload);
-      state.isLoading = false;
-      state.errors = payload;
+      state.loadingState.isLoading = false;
+      state.loadingState.operation = null;
+      state.loadingState.errors = payload;
     },
 
     unregisterCameraSuccess: (state, { payload }) => {
       console.log('cameraSlice - unregisterCameraSuccess() - ', payload);
-      state.isLoading = false;
-      state.errors = null;
-
-      // TODO: make the cameras update update more surgical
       state.cameras = payload.cameras;
-      if (payload.cameras.length === 0) {
-        state.noneFound = true;
-      }
+      state.loadingState = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound: (payload.cameras.length === 0),
+      };
     },
 
   },
@@ -88,9 +104,13 @@ export const camerasSlice = createSlice({
     builder
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         if (payload.newProjSelected) {
-          state.isLoading = false;
-          state.errors = null;
           state.cameras = [];
+          state.loadingState = {
+            isLoading: false,
+            operation: null,
+            errors: null,
+            noneFound: null,
+          };
         }
       })
   },
@@ -116,13 +136,13 @@ export const {
 // fetchCameras thunk
 export const fetchCameras = () => async (dispatch, getState) => {
   try {
-    console.log('fetchingCameras()')
+    console.log('fetchingCameras()');
+    dispatch(getCamerasStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(getCamerasStart());
       const res = await call({
         projId: selectedProj._id,
         request: 'getCameras',
@@ -139,13 +159,13 @@ export const fetchCameras = () => async (dispatch, getState) => {
 export const registerCamera = (payload) => {
   return async (dispatch, getState) => {
     try {
+      dispatch(registerCameraStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        dispatch(registerCameraStart());
         const res = await call({
           projId: selectedProj._id,
           request: 'registerCamera',
@@ -166,12 +186,13 @@ export const registerCamera = (payload) => {
 export const unregisterCamera = (payload) => async (dispatch, getState) => {
   try {
     console.log('unregisteringCamera() - ', payload);
+    dispatch(unregisterCameraStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    if (token){
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(unregisterCameraStart());
+    const projects = getState().projects.projects;
+    const selectedProj = projects.find((proj) => proj.selected);
+
+    if (token && selectedProj) {
       const res = await call({
         projId: selectedProj._id,
         request: 'unregisterCamera',
@@ -188,7 +209,7 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
 
 // Selectors
 export const selectCameras = state => state.cameras.cameras;
-export const selectCamerasLoading = state => state.cameras.isLoading;
-export const selectRegisterCameraErrors = state => state.cameras.errors;
+export const selectCamerasLoading = state => state.cameras.loadingState;
+export const selectCamerasErrors = state => state.cameras.errors;
 
 export default camerasSlice.reducer;

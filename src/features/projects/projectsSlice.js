@@ -9,50 +9,29 @@ import {
 
 const initialState = {
   projects: [],
+  loadingStates: {
+    projects: {
+      isLoading: false,
+      operation: null, /* 'fetching', 'updating', 'deleting' */
+      errors: null,
+    },
+    views: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
+    deployments: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
+    models: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
+  },
   unsavedViewChanges: false,
-  /* TODO: figure out better way to structure this? e.g.: */
-
-  // loadingStates: {
-  //   projects: {
-  //     isLoading: false,
-  //     errors: null,
-  //   },
-  //   views: {
-  //     isLoading: false,
-  //     errors: null,
-  //   },
-  //   deployments: {
-  //     isLoading: false,
-  //     errors: null,
-  //   },
-  //   cameras: { // this on is a little weird b/c registering a camera might update cameraConfigs but it also affects source cameras
-  //     isLoading: false,
-  //     errors: null,
-  //   },
-  //   models: {
-  //     isLoading: false,
-  //     errors: null,
-  //   },
-  // },
-
-  // instead of "isLoading[Resource]" state, we might want to be specfic about
-  // operation or at least distinguish bettween "isGetting[Resource]" a resource
-  // vs "isEditing[Resource]" ?
-
-  isLoadingProjects: false,
-  getProjectsErrors: null,
-
-  isEditingViews: false,
-  editViewsErrors: null,
-
-  isEditingDeployments: false,
-  editDeploymentsErrors: null,
-
-  // isRegisteringCamera: false, 
-  // registerCameraErrors: null,
-
-  isLoadingModels: false,
-  getModelsErrors: null,
 };
 
 export const projectsSlice = createSlice({
@@ -62,19 +41,20 @@ export const projectsSlice = createSlice({
 
     getProjectsStart: (state) => {
       console.log('projectSlice.getProjectsStart()');
-      state.isLoadingProjects = true;
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.projects = ls;
     },
 
     getProjectsFailure: (state, { payload }) => {
       console.log('projectSlice.getProjectsFailure() - payload: ', payload);
-      state.isLoadingProjects = false;
-      state.getProjectsErrors = payload;
+      const ls = { isLoading: false, operation: null, errors: payload };  
+      state.loadingStates.projects = ls;
     },
 
     getProjectsSuccess: (state, { payload }) => {
       console.log('projectSlice.getProjectsSucces() - payload: ', payload);
-      state.isLoadingProjects = false;
-      state.getProjectsErrors = null;
+      const ls = { isLoading: false, operation: null, errors: null };  
+      state.loadingStates.projects = ls;
       const projectIdsInState = state.projects.map((proj) => proj._id);
       payload.projects.forEach((proj, i) => {
         if (!projectIdsInState.includes(proj._id)) {
@@ -86,11 +66,15 @@ export const projectsSlice = createSlice({
     setSelectedProjAndView: (state, { payload }) => {
       console.log('projectSlice.setSelectedProjAndView() - _id: ', payload);
       let selectedProj = state.projects.find((p) => p.selected);
+
       if (payload.newProjSelected) {
         state.projects.forEach((p) => {
           p.selected = p._id === payload.projId;
           if (p._id === payload.projId) selectedProj = p;
         });
+
+        state.loadingStates.projects.errors = null;
+        state.loadingStates.models.errors = null;
       }
 
       if (payload.newViewSelected) {
@@ -98,39 +82,34 @@ export const projectsSlice = createSlice({
           v.selected = v._id === payload.viewId;
         });
       }
-
-      state.getProjectsErrors = null;
-      state.editViewsErrors = null;
-      state.registerCameraErrors = null;
-      state.getModelsErrors = null;
-
-      // TODO: make sure we're resetting everything else that needs resetting:
-      //    - camerasSlice.cameras (done)
-      //    - undoHistory (TODO)
-      //    - filtersSlice.filters (done)
       
+      state.loadingStates.views.errors = null;
     },
 
     setUnsavedViewChanges: (state, { payload }) => {
       state.unsavedViewChanges = payload;
     },
 
-    // Views CRUD
+    /* Views CRUD */
 
     editViewStart: (state) => { 
-      state.isEditingViews = true;
+      console.log('editViewStart')
+      const ls = { isLoading: true, operation: 'updating', errors: null };  
+      state.loadingStates.views = ls;
     },
 
     editViewFailure: (state, { payload }) => {
-      state.isEditingViews = false;
-      state.editViewsErrors = payload;
+      const ls = { isLoading: false, operation: null, errors: payload };  
+      state.loadingStates.views = ls;
     },
 
     // TODO AUTH - instead of passing in projectId to payload, we could also 
     // just search all views in all projects for the project Id
     saveViewSuccess: (state, { payload }) => {
-      state.isEditingViews = false;
-      state.editViewsErrors = null;
+      console.log('saveViewSuccess')
+      const ls = { isLoading: false, operation: null, errors: null };  
+      state.loadingStates.views = ls;
+
       let viewInState = false;
       const proj = state.projects.find((p) => p._id === payload.projId);
       proj.views.forEach((view, i) => {
@@ -145,9 +124,10 @@ export const projectsSlice = createSlice({
     },
 
     deleteViewSuccess: (state, { payload }) => {
-      console.log('projectSlice - deleteViewSuccess() - ', payload)
-      state.isEditingViews = false;
-      state.editViewsErrors = null;
+      console.log('projectSlice - deleteViewSuccess() - ', payload);
+      const ls = { isLoading: false, operation: null, errors: null };  
+      state.loadingStates.views = ls;
+
       const proj = state.projects.find((p) => p._id === payload.projId);
       proj.views = proj.views.filter((view) => view._id !== payload.viewId);
     },
@@ -155,18 +135,20 @@ export const projectsSlice = createSlice({
     /* Deployments CRUD */
 
     editDeploymentsStart: (state) => {
-      state.isEditingDeployments = true;
+      const ls = { isLoading: true, operation: 'updating', errors: null };  
+      state.loadingStates.deployments = ls;
     },
 
     editDeploymentsFailure: (state, { payload }) => {
-      state.isEditingDeployments = false;
-      state.editDeploymentsErrors = payload;
+      const ls = { isLoading: false, operation: null, errors: payload };  
+      state.loadingStates.deployments = ls;
     },
 
     editDeploymentsSuccess: (state, { payload }) => {
       console.log('projectSlice - editDeploymentSucces() - ', payload);
-      state.isEditingDeployments = false;
-      state.editDeploymentsErrors = null;
+      const ls = { isLoading: false, operation: null, errors: null };  
+      state.loadingStates.deployments = ls;
+
       const editedCamConfig = payload.cameraConfig;
       const proj = state.projects.find((p) => p._id === payload.projId);
       for (const camConfig of proj.cameraConfigs) {
@@ -183,19 +165,21 @@ export const projectsSlice = createSlice({
     /* fetch model source records */
 
     getModelsStart: (state) => {
-      state.isLoadingModels = true;
+      const ls = { isLoading: true, operation: 'fetching', errors: null };  
+      state.loadingStates.deployments = ls;
     },
 
     getModelsFailure: (state, { payload }) => {
       console.log('projectSlice - getModelsFailure() - ', payload);
-      state.isLoadingModels = false;
-      state.getModelsFailure = payload;
+      const ls = { isLoading: false, operation: null, errors: payload };  
+      state.loadingStates.deployments = ls;
     },
 
     getModelsSuccess: (state, { payload }) => {
       console.log('projectSlice - getModelsSucces() - ', payload);
-      state.isLoadingModels = false;
-      state.getModelsFailure = null;
+      const ls = { isLoading: false, operation: null, errors: null };  
+      state.loadingStates.deployments = ls;
+
       const proj = state.projects.find((p) => p._id === payload.projId);
       payload.mlModels.forEach((model) => {
         if (!proj.mlModels) proj.mlModels = [model];
@@ -275,15 +259,15 @@ export const fetchProjects = () => async dispatch => {
 export const editView = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
-      
+
+      dispatch(editViewStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const projId = selectedProj._id;
-      if (token && selectedProj) {
 
-        dispatch(editViewStart());
+      if (token && selectedProj) {
         switch (operation) {
           case 'create': {
             const res = await call({ 
@@ -339,6 +323,7 @@ export const editDeployments = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
 
+      dispatch(editDeploymentsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -352,7 +337,6 @@ export const editDeployments = (operation, payload) => {
           throw new Error(err);
         }
         console.log('projectsSlice - editDeployments() - payload: ', payload);
-        dispatch(editDeploymentsStart());
         const res = await call({
           projId,
           request: operation,
@@ -378,7 +362,8 @@ export const editDeployments = (operation, payload) => {
 export const fetchModels = (payload) => {
   return async (dispatch, getState) => {
     try {
-
+      
+      dispatch(getModelsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -386,7 +371,6 @@ export const fetchModels = (payload) => {
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
-        dispatch(getModelsStart());
         const res = await call({
           projId,
           request: 'getModels',
@@ -402,11 +386,7 @@ export const fetchModels = (payload) => {
 }
 
 
-
-
-
 // Selectors
-export const selectProjectsLoading = state => state.projects.isLoading;
 export const selectProjects = state => state.projects.projects;
 export const selectSelectedProject = state => (
   state.projects.projects.find((proj) => proj.selected)
@@ -424,6 +404,9 @@ export const selectUnsavedViewChanges = state =>
 export const selectMLModels = createSelector([selectSelectedProject],
   (proj) => proj ? proj.mlModels : null
 );
-
+export const selectProjectsLoading = state => state.projects.loadingStates.projects;
+export const selectViewsLoading = state => state.projects.loadingStates.views;
+export const selectDeploymentsLoading = state => state.projects.loadingStates.deployments;
+export const selectModelsLoadingState = state => state.projects.loadingStates.models;
 
 export default projectsSlice.reducer;

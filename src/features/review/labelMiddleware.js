@@ -1,10 +1,10 @@
 
 import { ObjectID } from 'bson';
-import { selectAvailLabels, fetchLabels } from '../filters/filtersSlice';
+// import { selectAvailLabels, fetchLabels } from '../filters/filtersSlice';
 import { addLabelEnd, selectReviewMode } from '../loupe/loupeSlice';
-import { editLabel } from '../images/imagesSlice';
 import {
   setFocus,
+  editLabel,
   objectLocked,
   labelAdded,
   labelRemoved,
@@ -17,9 +17,7 @@ import { findObject } from '../../app/utils';
 
 export const labelMiddleware = store => next => action => {
 
-  /* 
-   * labelAdded
-   */
+  /* labelAdded */
 
   if (labelAdded.match(action)) {
     console.log('labelMiddleware.labelAdded(): ', action.payload);
@@ -87,9 +85,7 @@ export const labelMiddleware = store => next => action => {
     // TODO: also dispatch fetchLabels after label invalidations?
   }
 
-  /* 
-   * labelRemoved
-   */
+  /* labelRemoved */
 
   else if (labelRemoved.match(action)) {
     console.log('labelMiddleware.labelRemoved(): ', action.payload);
@@ -120,9 +116,7 @@ export const labelMiddleware = store => next => action => {
     // store.dispatch(fetchLabels()); // fetchLabels again? 
   }
 
-  /* 
-   * labelValidated
-   */
+  /* labelValidated */
 
   else if (labelValidated.match(action)) {
     console.log('labelMiddleware.labelValidated() - ', action);
@@ -148,9 +142,7 @@ export const labelMiddleware = store => next => action => {
     store.dispatch(objectLocked({ imgId, objId, locked}));
   }
 
-  /* 
-   * labelValidationReverted
-   */
+  /* labelValidationReverted */
 
   else if (labelValidationReverted.match(action)) {
     console.log('labelMiddleware.labelValidationReverted() - ', action);

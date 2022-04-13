@@ -9,14 +9,15 @@ import { IMAGE_QUERY_LIMITS } from '../../config';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const initialState = {
-  images: [], // we are barely using this... consider removing?
-  isLoadingImages: false,
-  isUpdatingObjects: false,
-  isEditingLabel: false,
+  images: [], // we aren't using this... consider removing?
+  loadingState: {
+    isLoading: false,
+    operation: null, /* 'fetching', 'updating', 'deleting' */
+    errors: null,
+    noneFound: false,
+  },
   preFocusImage: null,
-  getImagesErrors: null,
-  editLabelErrors: null,
-  visibleRows: [], // don't really need this anymore?
+  visibleRows: [],
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[1],
     paginatedField: 'dateTimeOriginal',
@@ -34,18 +35,35 @@ export const imagesSlice = createSlice({
   initialState,
   reducers: {
 
-    clearImages: (state) => { state.images = []; },
+    clearImages: (state) => { 
+      state.images = []; 
+      state.loadingState = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound: false,
+      }
+    },
 
-    getImagesStart: (state) => { state.isLoadingImage = true; },
+    getImagesStart: (state) => { 
+      state.loadingState.isLoading = true;
+      state.loadingState.operation = 'fetching';
+    },
 
     getImagesFailure: (state, { payload }) => {
-      state.isLoadingImage = false;
-      state.getImagesErrors = payload;
+      state.loadingState.isLoading = false;
+      state.loadingState.operation = null;
+      state.loadingState.errors = payload;
     },
 
     getImagesSuccess: (state, { payload }) => {
-      state.isLoadingImage = false;
-      state.getImagesErrors = null;
+      const noneFound = payload.images.pageInfo.count === 0;
+      state.loadingState = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound,
+      };
 
       Object.keys(payload.images.pageInfo).forEach((key) => {
         if (key in state.pageInfo &&
@@ -53,8 +71,7 @@ export const imagesSlice = createSlice({
           state.pageInfo[key] = payload.images.pageInfo[key];
         }
       });
-
-      state.images = state.images.concat(payload.images.images);
+      state.images =  state.images.concat(payload.images.images);
     },
 
     preFocusImageStart: (state, { payload }) => {
@@ -64,9 +81,7 @@ export const imagesSlice = createSlice({
     preFocusImageEnd: (state) => { state.preFocusImage = null; },
 
     sortChanged: (state, { payload }) => {
-      if (!payload.length) {
-        return;
-      }
+      if (!payload.length) return;
       const sortAscending = !payload[0].desc;
       const sortField = payload[0].id;
       if (state.pageInfo.paginatedField !== sortField) {
@@ -81,38 +96,6 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
-    // // TODO: not using updateObject anymore, so remove
-    // updateObjectsStart: (state) => { state.isUpdatingObjects = true; },
-
-    // updateObjectsFailure: (state, { payload }) => {
-    //   state.isUpdatingObjects = false;
-    //   state.error = payload;
-    // },
-
-    // updateObjectsSuccess: (state, { payload }) => {
-    //   state.isUpdatingObjects = false;
-    //   state.error = null;
-    //   const imgId = payload.updateObjects.image._id;
-    //   const newObjects = payload.updateObjects.image.objects;
-    //   const image = state.images.find(img => img._id === imgId);
-    //   image.objects = newObjects;
-    // },
-
-    editLabelStart: (state) => { state.isEditingLabel = true; },
-
-    editLabelFailure: (state, { payload }) => {
-      state.isEditingLabel = false;
-      state.editLabelErrors = payload;
-    },
-
-    editLabelSuccess: (state, { payload }) => {
-      // console.log('editLabelSuccess: ', payload);
-      state.isEditingLabel = false;
-      state.editLabelErrors = null;
-      const image = state.images.find(img => img._id === payload._id);
-      image.objects = payload.objects;
-    },
-
   },
 });
 
@@ -125,12 +108,6 @@ export const {
   preFocusImageEnd,
   sortChanged,
   visibleRowsChanged,
-  // updateObjectsStart,
-  // updateObjectsFailure,
-  // updateObjectsSuccess,
-  editLabelStart,
-  editLabelFailure,
-  editLabelSuccess,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -138,14 +115,15 @@ export const fetchImages = (filters, page = 'current' ) => {
   return async (dispatch, getState) => {
     console.log('iamgesSlice - fetchingImages() - filters: ', filters)
     try {
+
+      dispatch(getImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      if (token) {
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const pageInfo = getState().images.pageInfo;
 
-        const projects = getState().projects.projects;
-        const selectedProj = projects.find((proj) => proj.selected);
-        const pageInfo = getState().images.pageInfo;  // TODO: should we be using selectors here?
-        dispatch(getImagesStart());
+      if (token && selectedProj) {
 
         let res = await call({
           projId: selectedProj._id,
@@ -165,57 +143,18 @@ export const fetchImages = (filters, page = 'current' ) => {
   };
 };
 
-// editLabel thunk
-export const editLabel = (operation, entity, payload, projId) => {
-  return async (dispatch, getState) => {
-    try {
-
-      if (!operation || !entity || !payload) {
-        const msg = `An operation (create, update, or delete) 
-          and entity are required`;
-        throw new Error(msg);
-      }
-
-      const projects = getState().projects.projects
-      const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(editLabelStart());
-      console.groupCollapsed(`editLabel() - ${operation} ${entity}`);
-      console.log(`payload: `, payload);
-      console.groupEnd();
-
-      // TODO: do we really need to pass in the operation and entity separately?
-      // why not just do one string, e.g.: 'createObject'
-      const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
-      const res = await call({
-        projId: selectedProj._id, 
-        request: req,
-        input: payload 
-      });
-      const mutation = Object.keys(res)[0];
-      const image = res[mutation].image;
-      console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
-      dispatch(editLabelSuccess(image));
-
-    } catch (err) {
-      console.log(`error attempting to ${operation} ${entity}: `, err);
-      dispatch(editLabelFailure(err));
-    }
-  };
-};
-
-// fetchImageContext thunk - retrun an image along with adjacent images
+// fetchImageContext thunk - fetch image along with temporally adjacent images
 export const fetchImageContext = (imgId) => {
   return async (dispatch, getState) => {
     try {
+
+      dispatch(getImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects
+      const selectedProj = projects.find((proj) => proj.selected);
 
-      if (token) {
-
-        const projects = getState().projects.projects
-        const selectedProj = projects.find((proj) => proj.selected);
-        dispatch(getImagesStart());
-
+      if (token && selectedProj) {
         let focusedImg = await call({
           projId: selectedProj._id,
           request: 'getImage',
@@ -264,7 +203,7 @@ export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
 export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
-export const selectIsLoading = state => state.images.isLoadingImage;
+export const selectImagesLoading = state => state.images.loadingState;
 export const selectVisibleRows = state => state.images.visibleRows;
 export const selectPreFocusImage = state => state.images.preFocusImage;
 

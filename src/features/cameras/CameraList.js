@@ -124,7 +124,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   return (
     <div>
       {(cameras.length === 0)
-        ? 'There are no cameras associated with this project'
+        ? 'There are currently no cameras associated with this project'
         : <StyledCameraList>
             {cameras.map((cam) => (
               <Accordion

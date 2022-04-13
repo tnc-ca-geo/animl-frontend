@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   sortChanged,
   // visibleRowsChanged,
-  selectIsLoading,
+  selectImagesLoading,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
@@ -188,7 +188,7 @@ const makeRows = (workingImages, focusIndex) => {
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
+  const imagesLoading = useSelector(selectImagesLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
   const paginatedFiled = useSelector(selectPaginatedField);
@@ -410,7 +410,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   return (
     <TableContainer>
-      {isLoading &&
+      {imagesLoading.isLoading &&
         <SpinnerOverlay>
           <CircleSpinner />
         </SpinnerOverlay>

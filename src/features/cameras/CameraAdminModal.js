@@ -34,9 +34,8 @@ const CameraAdminModal = () => {
   const cameras = useSelector(selectCameras);
   const camerasLoading = useSelector(selectCamerasLoading);
   useEffect(() => {
-    if (!cameras.length && !camerasLoading) {
-      // TODO AUTH: fix bug here. If we're in a brand new project w/ no 
-      // registered cameras, this keeps fetching
+    const { isLoading, noneFound } = camerasLoading;
+    if (!cameras.length && !isLoading && !noneFound){
       dispatch(fetchCameras());
     }
   }, [cameras.length, camerasLoading, dispatch]);

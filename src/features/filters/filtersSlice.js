@@ -8,6 +8,7 @@ import {
   // registerCameraSuccess,
   setSelectedProjAndView,
   editDeploymentsSuccess,
+  selectProjectsLoading,
 } from '../projects/projectsSlice';
 import {
   normalizeFilters,
@@ -18,23 +19,16 @@ import {
 
 const initialState = {
   availFilters: {
-    cameras: {
-      ids: [],
-      isLoading: false,
-      noneFound: false,
-      errors: null,
-    },
-    deployments: {
-      ids: [],
-      isLoading: false,
-      noneFound: false,
-      errors: null,
-    },
+    cameras: { ids: [] },
+    deployments: { ids: [] },
     labels: {
       ids: [],
-      isLoading: false,
-      noneFound: false,
-      errors: null,
+      loadingState: {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound: false,
+      },
     }
   },
   activeFilters: {
@@ -55,24 +49,31 @@ export const filtersSlice = createSlice({
   initialState,
   reducers: {
 
-    getLabelsStart: (state) => { state.availFilters.labels.isLoading = true; },
+    getLabelsStart: (state) => {
+      state.availFilters.labels.loadingState.isLoading = true; 
+      state.availFilters.labels.loadingState.operation = 'fetching'; 
+    },
 
     getLabelsFailure: (state, { payload }) => {
-      state.availFilters.labels.isLoading = false;
-      state.availFilters.labels.errors = payload;
+      let loadingState = state.availFilters.labels.loadingState;
+      loadingState.isLoading = false; 
+      loadingState.operation = null; 
+      loadingState.errors = payload;
       state.availFilters.labels.ids = [];
     },
 
     getLabelsSuccess: (state, { payload }) => {
-      state.availFilters.labels.isLoading = false;
-      state.availFilters.labels.errors = null;
+      let loadingState = state.availFilters.labels.loadingState;
+      loadingState.isLoading = false; 
+      loadingState.operation = null; 
+      loadingState.errors = null;
       payload.labels.categories.forEach((cat) => {
         if (!state.availFilters.labels.ids.includes(cat)) {
           state.availFilters.labels.ids.push(cat);
         }
       });
       if (payload.labels.categories.length === 0) {
-        state.availFilters.labels.noneFound = true;
+        loadingState.noneFound = true;
       }
     },
 
@@ -157,35 +158,33 @@ export const filtersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getProjectsStart, (state, { payload }) => {
-        state.availFilters.cameras.isLoading = true;
-        state.availFilters.deployments.isLoading = true;
+        let loadingState = state.availFilters.labels.loadingState;
+        loadingState.isLoading = true; 
+        loadingState.operation = 'fetching';
       })
       .addCase(getProjectsFailure, (state, { payload }) => {
-        state.availFilters.cameras.isLoading = false;
-        state.availFilters.cameras.errors = payload;
-  
-        state.availFilters.deployments.isLoading = false;
-        state.availFilters.deployments.errors = payload;
+        let loadingState = state.availFilters.labels.loadingState;
+        loadingState.isLoading = false; 
+        loadingState.operation = null; 
+        loadingState.errors = payload;
       })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
-        updateAvailDepFilters(state, payload.project.cameraConfigs);
-        updateAvailCamFilters(state, payload.project.cameraConfigs);
-        updateAvailLabelFilters(state, payload.project.labels);
+        const { cameraConfigs, labels } = payload.project;
+        updateAvailDepFilters(state, cameraConfigs);
+        updateAvailCamFilters(state, cameraConfigs);
+        updateAvailLabelFilters(state, labels);
         // set all filters to new selected view? We're currently handling this 
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
       .addCase(registerCameraSuccess, (state, { payload }) => {
         console.log('filtersSlice() - registerCameraSuccess extra reducer: ', payload)
-        updateAvailDepFilters(state, payload.project.cameraConfigs);
-        updateAvailCamFilters(state, payload.project.cameraConfigs);
+        const { cameraConfigs } = payload.project;
+        updateAvailDepFilters(state, cameraConfigs);
+        updateAvailCamFilters(state, cameraConfigs);
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
-        // TODO AUTH: test & make sure this works with new muliti-project schema
-        // update deployment filters state 
         const { operation, reqPayload } = payload;
-        state.availFilters.deployments.isLoading = false;
-        state.availFilters.deployments.errors = null;
         const availDepFilters = state.availFilters.deployments.ids;
         const activeDepFilters = state.activeFilters.deployments;
         switch (operation) {
@@ -244,12 +243,12 @@ export const {
 // fetchLabels thunk
 export const fetchLabels = () => async (dispatch, getState)=> {
   try {
+    dispatch(getLabelsStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    const projects = getState().projects.projects
+    const selectedProj = projects.find((proj) => proj.selected);
     if (token) {
-      const projects = getState().projects.projects
-      const selectedProj = projects.find((proj) => proj.selected);
-      dispatch(getLabelsStart());
       const labels = await call({
         projId: selectedProj._id,
         request: 'getLabels',
@@ -267,6 +266,7 @@ export const selectAvailFilters = state => state.filters.availFilters;
 export const selectAvailCameras = state => state.filters.availFilters.cameras;
 export const selectAvailDeployments = state => state.filters.availFilters.deployments;
 export const selectAvailLabels = state => state.filters.availFilters.labels;
+export const selectLabelsLoading = state => state.filters.availFilters.labels.loadingState;
 export const selectReviewed = state => state.filters.activeFilters.reviewed;
 export const selectCustomFilter = state => state.filters.activeFilters.custom;
 export const selectDateAddedFilter = state => ({
@@ -278,10 +278,10 @@ export const selectDateCreatedFilter = state => ({
   end: state.filters.activeFilters.createdEnd,
 });
 export const selectFiltersReady = createSelector(
-  [selectAvailCameras, selectAvailLabels],
-  (cameras, labels) => {
-    const fetchedFilters = [cameras, labels];
-    return !fetchedFilters.some(filter => filter.isLoading || filter.errors);
+  [selectProjectsLoading, selectLabelsLoading],
+  (projectsLoading, labelsLoading) => {
+    const dependencies = [projectsLoading, labelsLoading];
+    return !dependencies.some(d => d.isLoading || d.errors);
   }
 );
 

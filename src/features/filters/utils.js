@@ -23,31 +23,28 @@ const normalizeFilters = (
 };
 
 const updateAvailDepFilters = (state, camConfigs) => {
-  state.availFilters.deployments.isLoading = false;
-  state.availFilters.deployments.error = null;
-  const newDeployments = camConfigs.reduce((acc, camConfig) => {
+  const newDeps = camConfigs.reduce((acc, camConfig) => {
     for (const dep of camConfig.deployments) {
       acc.push(dep._id);
     }
     return acc;
   },[]);
-  state.availFilters.deployments.ids = newDeployments;
+  state.availFilters.deployments.ids = newDeps;
 }
 
-const updateAvailCamFilters = (state, cameras) => {
-  state.availFilters.cameras.isLoading = false;
-  state.availFilters.cameras.error = null;
-  state.availFilters.cameras.ids = cameras.map((cam) => cam._id);
-  if (cameras.length === 0) {
-    state.availFilters.cameras.noneFound = true;
-  } 
-}
+const updateAvailCamFilters = (state, camConfigs) => {
+  state.availFilters.cameras.ids = camConfigs.map((cc) => cc._id);
+};
 
 const updateAvailLabelFilters = (state, labels) => {
   state.availFilters.labels.ids = labels.categories;
-  if (labels.categories.length === 0) {
-    state.availFilters.labels.noneFound = true;
-  }
+  const noneFound = (labels.categories.length === 0);
+  state.availFilters.labels.loadingState = {
+    isLoading: false,
+    operation: null,
+    errors: null,
+    noneFound,
+  };
 }
 
 export {

@@ -5,7 +5,7 @@ import { Formik, Form, Field, } from 'formik';
 import * as Yup from 'yup';
 import {
   editDeployments,
-  selectProjectsLoading
+  selectDeploymentsLoading
 } from '../projects/projectsSlice';
 import Button from '../../components/Button';
 import {
@@ -26,15 +26,14 @@ const deleteDeploymentSchema = Yup.object().shape({
 
 const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   const [queuedForClose, setQueuedForClose ] = useState(false);
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const depsLoading = useSelector(selectDeploymentsLoading);
+  
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose && !projectsLoading) {
-      handleClose();
-    }
-  }, [queuedForClose, projectsLoading, handleClose]);
+    if (queuedForClose && !depsLoading.isLoading) handleClose();
+  }, [queuedForClose, depsLoading, handleClose]);
 
   const handleDeleteDeploymentSubmit = (formVals) => {
     dispatch(editDeployments('deleteDeployment', formVals));
@@ -43,7 +42,7 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   
   return (
     <div>
-      {projectsLoading &&
+      {depsLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>
