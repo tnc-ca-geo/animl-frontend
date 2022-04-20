@@ -1,14 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
-// import { createUndoMiddleware } from 'redux-undo-redo';
 import createRootReducer from './rootReducer';
-import { preFocusImageMiddleware } from '../features/images/imagesMiddleware';
+import { preFocusImage } from '../features/images/imagesMiddleware';
 import { 
-  setSelectedProjAndViewMiddleware,
-  diffFiltersMiddleware
-} from '../features/projects/viewsMiddleware';
-import { projectsMiddleware } from '../features/projects/projectsMiddleware';
+  enrichProjAndViewPayload,
+  setActiveFiltersToSelectedView,
+  diffFilters
+} from '../features/projects/projectsMiddleware';
 import { focusMiddleware } from '../features/review/focusMiddleware';
 import { labelMiddleware } from '../features/review/labelMiddleware';
 import { objectMiddleware } from '../features/review/objectMiddleware';
@@ -21,10 +20,10 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware()
       .concat(routerMiddleware(history))
-      .concat(projectsMiddleware)
-      .concat(preFocusImageMiddleware)
-      .concat(diffFiltersMiddleware)
-      .concat(setSelectedProjAndViewMiddleware)
+      .concat(enrichProjAndViewPayload)
+      .concat(preFocusImage)
+      .concat(diffFilters)
+      .concat(setActiveFiltersToSelectedView)
       .concat(focusMiddleware)
       .concat(labelMiddleware)
       .concat(objectMiddleware)

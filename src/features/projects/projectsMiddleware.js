@@ -1,14 +1,28 @@
+import _ from 'lodash';
+import {
+  setActiveFilters,
+  bulkSelectToggled,
+  checkboxFilterToggled,
+  dateFilterChanged,
+  reviewFilterToggled,
+  selectActiveFilters,
+  customFilterChanged,
+} from '../filters/filtersSlice';
 import {
   selectProjects,
-  setSelectedView,
-  setSelectedProject,
-  setSelectedProjAndView
-} from "./projectsSlice";
+  setSelectedProjAndView,
+  saveViewSuccess,
+  selectSelectedView,
+  setUnsavedViewChanges,
+  editDeploymentsSuccess,
+  deleteViewSuccess
+} from './projectsSlice'
 
-export const projectsMiddleware = store => next => action => {
+// enrich newly selected project and view payload
+export const enrichProjAndViewPayload = store => next => action => {
 
   if (setSelectedProjAndView.match(action)) {
-    console.log('projectsMiddleware() - setSelectedProjAndView: ', action.payload);
+    console.log('projectsMiddleware() - enrichProjectAndViewPayload: ', action.payload);
 
     let { projId, viewId } = action.payload;
 
@@ -43,7 +57,7 @@ export const projectsMiddleware = store => next => action => {
       action.payload.newProjSelected = true; 
       action.payload.newViewSelected = true; 
     }
-
+    
     next(action);
   }
 
@@ -51,4 +65,50 @@ export const projectsMiddleware = store => next => action => {
     next(action);
   }
 
+};
+
+// track whether active filters match selected view filters
+export const diffFilters = store => next => action => {
+  console.log('projectsMiddleware() - difFiltersMiddleware: ', action.payload);
+
+  if (
+    bulkSelectToggled.match(action) ||
+    checkboxFilterToggled.match(action) ||
+    dateFilterChanged.match(action) ||
+    reviewFilterToggled.match(action) ||
+    customFilterChanged.match(action) ||
+    setSelectedProjAndView.match(action) ||
+    editDeploymentsSuccess.match(action) ||
+    saveViewSuccess.match(action) ||
+    deleteViewSuccess.match(action)
+  ) {
+
+    next(action);
+    const activeFilters = selectActiveFilters(store.getState());
+    const selectedView = selectSelectedView(store.getState());
+    if (activeFilters && selectedView) {
+      const match = _.isEqual(activeFilters, selectedView.filters);
+      store.dispatch(setUnsavedViewChanges(!match));
+    }
+
+  }
+  
+  else {
+    next(action)
+  }
+};
+
+// apply selected view's filters to active filters
+export const setActiveFiltersToSelectedView = store => next => action => {
+
+  if (setSelectedProjAndView.match(action)) {
+    console.log('projectsMiddleware() - setActiveViewFilters: ', action.payload);
+    next(action);
+    const newFilters = action.payload.view.filters;
+    store.dispatch(setActiveFilters(newFilters));
+  }
+
+  else {
+    next(action);
+  }
 };

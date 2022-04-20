@@ -9,6 +9,7 @@ import {
   selectImagesLoading,
   selectPaginatedField,
   selectSortAscending,
+  selectImageContextLoading,
 } from './imagesSlice';
 import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
@@ -27,42 +28,34 @@ import { selectSelectedProject } from '../projects/projectsSlice';
 // });
 
 const StyledImagesPanel = styled('div', {
-  // display: 'grid',
-  // gridTemplateRows: 'auto 1fr auto',
-  // gridTemplateColumns: '100%',
-  // width: '100%',
   flexGrow: '1',
   backgroundColor: '$loContrast',
 });
 
 const ImagesPanel = () => {
-  // console.groupCollapsed('ImagesPanel rendering')
   const selectedProject = useSelector(selectSelectedProject);
-  const filters = useSelector(selectActiveFilters);
+  const activeFilters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const workingImages = useSelector(selectWorkingImages);
   const hasNext = useSelector(selectHasNext);
   const imagesLoading = useSelector(selectImagesLoading);
+  const imgContextLoading = useSelector(selectImageContextLoading);
   const dispatch = useDispatch();
-  // console.log('selectedProject: ', selectedProject);
-  // console.log('filters: ', filters);
-  // console.log('isLoading: ', isLoading);
-  // console.groupEnd();
 
   useEffect(() => {
-    if (selectedProject && filters) {
-      console.log('fetching images from ImagesPanel')
-      dispatch(fetchImages(filters));
+    if (selectedProject && activeFilters && !imgContextLoading.isLoading) {
+      dispatch(fetchImages(activeFilters));
     }
-  }, [selectedProject, filters, paginatedField, sortAscending, dispatch]);
+  }, [selectedProject, activeFilters, imgContextLoading, paginatedField, 
+    sortAscending, dispatch]);
 
   const loadNextPage = () => {
     // Pass an empty promise that immediately resolves to InfiniteLoader 
     // in case it asks us to load more than once
     return imagesLoading.isLoading
       ? Promise.resolve()
-      : dispatch(fetchImages(filters, 'next'));
+      : dispatch(fetchImages(activeFilters, 'next'));
   };
   
   return (

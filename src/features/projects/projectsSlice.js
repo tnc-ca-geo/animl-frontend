@@ -336,13 +336,13 @@ export const editDeployments = (operation, payload) => {
           const err = `An operation (create, update, or delete) is required`;
           throw new Error(err);
         }
-        console.log('projectsSlice - editDeployments() - payload: ', payload);
+
         const res = await call({
           projId,
           request: operation,
           input: payload,
         });
-        console.log('res: ', res);
+
         const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
         dispatch(editDeploymentsSuccess({
           projId,

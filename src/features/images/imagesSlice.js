@@ -7,14 +7,22 @@ import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
+import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   images: [], // we aren't using this... consider removing?
-  loadingState: {
-    isLoading: false,
-    operation: null, /* 'fetching', 'updating', 'deleting' */
-    errors: null,
-    noneFound: false,
+  loadingStates: {
+    images: {
+      isLoading: false,
+      operation: null, /* 'fetching', 'updating', 'deleting' */
+      errors: null,
+      noneFound: false,
+    },
+    imageContext: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
   },
   preFocusImage: null,
   visibleRows: [],
@@ -37,7 +45,7 @@ export const imagesSlice = createSlice({
 
     clearImages: (state) => { 
       state.images = []; 
-      state.loadingState = {
+      state.loadingStates.images = {
         isLoading: false,
         operation: null,
         errors: null,
@@ -46,19 +54,21 @@ export const imagesSlice = createSlice({
     },
 
     getImagesStart: (state) => { 
-      state.loadingState.isLoading = true;
-      state.loadingState.operation = 'fetching';
+      let ls = state.loadingStates.images;
+      ls.isLoading = true;
+      ls.operation = 'fetching';
     },
 
     getImagesFailure: (state, { payload }) => {
-      state.loadingState.isLoading = false;
-      state.loadingState.operation = null;
-      state.loadingState.errors = payload;
+      let ls = state.loadingStates.images;
+      ls.isLoading = false;
+      ls.operation = null;
+      ls.errors = payload;
     },
 
     getImagesSuccess: (state, { payload }) => {
       const noneFound = payload.images.pageInfo.count === 0;
-      state.loadingState = {
+      state.loadingStates.images = {
         isLoading: false,
         operation: null,
         errors: null,
@@ -78,7 +88,30 @@ export const imagesSlice = createSlice({
       state.preFocusImage = payload;
     },
 
-    preFocusImageEnd: (state) => { state.preFocusImage = null; },
+    preFocusImageEnd: (state) => {
+      state.preFocusImage = null;
+    },
+
+    getImageContextStart: (state) => {
+      let ls = state.loadingStates.imageContext;
+      ls.isLoading = true;
+      ls.operation = 'fetching';
+    },
+
+    getImageContextSuccess: (state) => {
+      let ls = state.loadingStates.imageContext;
+      ls.isLoading = false;
+      ls.operation = null;
+      ls.errors = null;
+    },
+
+    getImageContextFailure: (state, { payload }) => {
+      console.log('getImageContextFailure: ', payload);
+      let ls = state.loadingStates.imageContext;
+      ls.isLoading = false;
+      ls.operation = null;
+      ls.errors = payload;
+    },
 
     sortChanged: (state, { payload }) => {
       if (!payload.length) return;
@@ -106,6 +139,9 @@ export const {
   getImagesFailure,
   preFocusImageStart,
   preFocusImageEnd,
+  getImageContextStart,
+  getImageContextSuccess,
+  getImageContextFailure,
   sortChanged,
   visibleRowsChanged,
 } = imagesSlice.actions;
@@ -143,37 +179,39 @@ export const fetchImages = (filters, page = 'current' ) => {
   };
 };
 
-// fetchImageContext thunk - fetch image along with temporally adjacent images
+// fetchImageContext thunk - fetch image & determine appropriate filters to
+// request it along with temporally adjacent images
 export const fetchImageContext = (imgId) => {
   return async (dispatch, getState) => {
     try {
 
-      dispatch(getImagesStart());
+      console.log('fetchImageContext() - imgId: ', imgId);
+      dispatch(getImageContextStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects
+      const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        let focusedImg = await call({
+
+        let res = await call({
           projId: selectedProj._id,
           request: 'getImage',
-          input: { imgId }
+          input: { imageId: imgId }
         });
-        // TODO: test this (see TODO in catch block below)
-        if (!focusedImg.image) {
-          const msg = `Failed to find an image with Id: ${imgId}`;
-          throw new Error(msg);
+
+        if (!res.image) {
+          throw new Error(`Failed to find image with Id: ${imgId}`);
         }
 
-        // Fetch all images from image's camera with a createdStart date of 
+        // Fetch all images from the image's camera with a createdStart date of 
         // 5 mins before dateTimeOriginal of image-to-focus
-        const dto = focusedImg.image.dateTimeOriginal;
+        const dto = res.image.dateTimeOriginal;
         const startDate = moment(dto, EXIF).subtract(5, 'minutes').format(EXIF);
         const filters = {
           addedEnd: null,
           addedStart: null,
-          cameras: [focusedImg.image.cameraId], // TODO: does this still work now that we're more deployment filter oriented?
+          cameras: [res.image.cameraId],
           createdEnd: null,
           createdStart: startDate,
           deployments: null,
@@ -182,16 +220,19 @@ export const fetchImageContext = (imgId) => {
           custom: null,
         };
         dispatch(setActiveFilters(filters));
-
+        dispatch(getImageContextSuccess());
       }
+
     } catch (err) {
-      // TODO: if we catch the error thrown above if there isn't a focusedImg.image
-      // it won't be an array of error objects like those returned from the API, 
-      // so we need to format it to match, e.g [{message: 'Failed to ...'}]
-      // before passing it to getImagesFailure()
-      dispatch(getImagesFailure(err));
+      // if we don't find the image and we catch the error thrown above,
+      // re-format to match error objects like those returned from the API
+      let error = err;
+      if (err.message && err.message.includes('Failed to find')) {
+        error = [{ message: err.message }];
+      };
+      dispatch(getImageContextFailure(error));
       dispatch(preFocusImageEnd());
-      dispatch(push('/')); // remove URL query string 
+      dispatch(push({ search: '' })); // remove URL query string 
     }
   };
 };
@@ -203,9 +244,10 @@ export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
 export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
-export const selectImagesLoading = state => state.images.loadingState;
+export const selectImagesLoading = state => state.images.loadingStates.images;
 export const selectVisibleRows = state => state.images.visibleRows;
 export const selectPreFocusImage = state => state.images.preFocusImage;
+export const selectImageContextLoading = state => state.images.loadingStates.imageContext;
 
 // TODO: find a different place for this?
 export const selectRouterLocation = state => state.router.location;

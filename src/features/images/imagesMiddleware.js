@@ -7,12 +7,14 @@ import {
   preFocusImageEnd
 } from './imagesSlice';
 
-// After successful image fetch, check to see whether we should
-// set the focus on a specific image
-export const preFocusImageMiddleware = store => next => action => {
+export const preFocusImage = store => next => action => {
+
+  // After successful image fetch
   if (getImagesSuccess.match(action)) {
 
     next(action);
+
+    // if there's a pre focused image, focus it
     const imgId = selectPreFocusImage(store.getState());
     if (imgId) {
       const workingImages = selectWorkingImages(store.getState());
@@ -20,8 +22,8 @@ export const preFocusImageMiddleware = store => next => action => {
       store.dispatch(setFocus({ index: { image: imgIndex }, type: 'auto'}));
       store.dispatch(toggleOpenLoupe(true));
       store.dispatch(preFocusImageEnd());
-      store.dispatch(push('/')); // remove URL query string 
-    }
+      // store.dispatch(push({ search: '' })); // remove URL query string 
+    };
     
   }
   else {

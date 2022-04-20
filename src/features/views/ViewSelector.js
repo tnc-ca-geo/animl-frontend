@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
+import { 
+  selectRouterLocation,
+  fetchImageContext,
+  preFocusImageStart,
+} from '../images/imagesSlice';
 import {
   fetchProjects,
   selectProjects,
@@ -109,6 +115,11 @@ const StyledViewSelector = styled('div', {
 
 // TODO: overhaul this whole thing. It's in WIP state
 
+const checkIfValidMD5Hash = (hash) => {
+  const regexExp = /^[a-f0-9]{32}$/gi;
+  return regexExp.test(hash);
+};
+
 const ViewSelector = () => {
   // console.groupCollapsed('ViewSelector() rendering');
   const projectsLoading = useSelector(selectProjectsLoading);
@@ -131,26 +142,68 @@ const ViewSelector = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!projects.length && !projectsLoading.isLoading) {
+    if (
+      !projects.length && 
+      !projectsLoading.isLoading && 
+      !projectsLoading.noneFound
+    ) {
       dispatch(fetchProjects());
     }
   }, [projects, projectsLoading, dispatch]);
 
+  // push initial selected project & view to URL
+  const routerLocation = useSelector(selectRouterLocation);
   useEffect(() => {
-    // set initial selected project
-    // and don't override user's filter selections if there are unsaved changes
-    if (!projectsLoading.isLoading && 
-        projects.length && 
-        !selectedProj && 
-        !selectedView && 
-        !unsavedViewChanges) {
-      // const projIdToSelect = projects.find((p) => p._id ==='default_project')
-      //     ? 'default_project'
-      //     : projects[0]._id;
-      console.log('ViewSelector() - dispatching setSelectedProjAndView');
-      dispatch(setSelectedProjAndView({ projId: projects[0]._id }));
+    console.log('path: ', routerLocation.pathname);
+    const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
+    const projIdInPath = paths[0];
+    const viewIdInPath = paths[1];
+
+    // if (projIdInPath && viewIdInPath) return;
+    // if (projectsLoading.isLoading || projects.length === 0) return;
+    if (
+      !unsavedViewChanges &&
+      (!projectsLoading.isLoading && !projects.length === 0) &&
+      (!projIdInPath || !viewIdInPath)
+    ) {
+      console.log('ViewSelector() - pushing initial projId and viewId to URL');
+
+      // TODO: check that there are, in fact, projects & views in state that match the Ids
+      const projId = projIdInPath || projects[0]._id;
+      const proj = projects.find((p) => p._id === projId);
+      const defaultView = proj.views.find((v) => v.name === 'All images');
+      const viewId = viewIdInPath || defaultView._id;
+      console.log('projId: ', projId);
+      console.log('viewId: ', viewId);
+      dispatch(push(`/${projId}/${viewId}`));
     }
-  }, [projects, selectedProj, selectedView, projectsLoading, unsavedViewChanges, dispatch]);
+  }, [projects, projectsLoading, unsavedViewChanges, routerLocation, dispatch]);
+
+  // react to changes in URL & dispatch selected project and view to state
+  useEffect(() => {      
+    let paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
+    let projId = paths[0];
+    let viewId = paths[1];
+    // if (!projId || !viewId) return;
+
+    if (
+      (!projectsLoading.isLoading && projects.length) && 
+      (projId && viewId)
+    ) {
+      // TODO: check that there are projects & views in state that match the Ids
+      console.log(`ViewSelector() - dispatching setSelectedProjAndView - setting project to ${projId} and view to ${viewId}`)
+      dispatch(setSelectedProjAndView({ projId, viewId }));
+
+      // if 'img' detected in query params, 
+      // kick off pre-focused-image initialization sequence
+      const query = routerLocation.query;
+      if ('img' in query && checkIfValidMD5Hash(query.img)) {
+        console.log('ViewSelector() - img detected in URL, so kicking off pre-focused-image init process');
+        dispatch(preFocusImageStart(query.img));
+        dispatch(fetchImageContext(query.img));
+      }
+    }
+  }, [projects.length, projectsLoading, routerLocation, dispatch]);
 
   useEffect(() => {
     const handleWindowClick = () => { setExpandedMenu(null) };
@@ -168,17 +221,19 @@ const ViewSelector = () => {
     console.log('ViewSelector() - handleProjectMenuItemClick');
     const projId = e.target.dataset.projId;
     if (projId !== selectedProj._id) {
-      dispatch(setSelectedProjAndView({ projId }));
+      const project = projects.find((p) => p._id === projId);
+      const viewId = project.views.find((v) => v.name === 'All images')._id;
+      dispatch(push(`/${projId}/${viewId}`));
     }
-  }
+  };
 
   const handleViewMenuItemClick = (e) => {
     console.log('ViewSelector() - handleViewMenuItemClick');
     const viewId = e.target.dataset.viewId
     if (viewId !== selectedView._id) {
-      dispatch(setSelectedProjAndView({ projId: selectedProj._id, viewId }))
+      dispatch(push(`/${selectedProj._id}/${viewId}`));
     }
-  }
+  };
 
   return (
     <StyledViewSelector>
