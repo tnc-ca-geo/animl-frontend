@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectSelectedProject, selectSelectedView } from '../projects/projectsSlice';
+import {
+  setModalOpen,
+  selectSelectedProject,
+  selectSelectedView,
+  selectModalOpen,
+} from '../projects/projectsSlice';
 import Modal from '../../components/Modal';
 import CameraAdminModal from '../cameras/CameraAdminModal';
 import AutomationRulesForm from './AutomationRulesForm';
@@ -45,13 +50,14 @@ const modalContentMap = {
 };
 
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
-  const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState();
+  const modalOpen = useSelector(selectModalOpen);
   const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
+  const dispatch = useDispatch();
 
   const handleModalToggle = (content) => {
-    setModalOpen(!modalOpen);
+    dispatch(setModalOpen(!modalOpen));
     setModalContent(content);
   };
 

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 // import { selectUserUsername } from '../user/userSlice';
 import { selectImagesCount } from '../images/imagesSlice';
+import { selectModalOpen } from '../projects/projectsSlice.js';
 import { selectIsAddingLabel, selectReviewMode } from './loupeSlice';
 import {
   incrementFocusIndex,
@@ -95,10 +96,12 @@ const LoupeFooter = ({ image }) => {
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
   const isAddingLabel = useSelector(selectIsAddingLabel);
+  const modalOpen = useSelector(selectModalOpen);
   // const username = useSelector(selectUserUsername);
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (!image || isAddingLabel) return;
+      if (!image || isAddingLabel || modalOpen) return;
+
       let charCode = String.fromCharCode(e.which).toLowerCase();
 
       // key listeners for increment/decrement
@@ -157,7 +160,7 @@ const LoupeFooter = ({ image }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ isAddingLabel, reviewMode, focusIndex, image, dispatch ]);
+  }, [ isAddingLabel, modalOpen, reviewMode, focusIndex, image, dispatch ]);
 
   const handleIncrementClick = (delta) => {
     reviewMode

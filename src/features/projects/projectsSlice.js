@@ -32,6 +32,7 @@ const initialState = {
     },
   },
   unsavedViewChanges: false,
+  modalOpen: false,
 };
 
 export const projectsSlice = createSlice({
@@ -187,6 +188,10 @@ export const projectsSlice = createSlice({
       });
     },
 
+    setModalOpen: (state, { payload }) => {
+      state.modalOpen = payload;
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -232,6 +237,8 @@ export const {
   getModelsStart,
   getModelsFailure,
   getModelsSuccess,
+
+  setModalOpen,
 
 } = projectsSlice.actions;
 
@@ -408,5 +415,6 @@ export const selectProjectsLoading = state => state.projects.loadingStates.proje
 export const selectViewsLoading = state => state.projects.loadingStates.views;
 export const selectDeploymentsLoading = state => state.projects.loadingStates.deployments;
 export const selectModelsLoadingState = state => state.projects.loadingStates.models;
+export const selectModalOpen = state => state.projects.modalOpen;
 
 export default projectsSlice.reducer;
