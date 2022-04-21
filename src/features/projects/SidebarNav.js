@@ -4,17 +4,12 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { selectSelectedProject, selectSelectedView } from '../projects/projectsSlice';
 import Modal from '../../components/Modal';
-import IconButton from '../../components/IconButton';
 import CameraAdminModal from '../cameras/CameraAdminModal';
 import AutomationRulesForm from './AutomationRulesForm';
 import SaveViewForm from './SaveViewForm';
 import DeleteViewForm from './DeleteViewForm';
+import SidebarNavItem from './SidebarNavItem';
 
-const MenuButton = styled(IconButton, {
-  fontSize: '$4',
-  margin: '$2',
-  borderRadius: '$2',
-});
 
 const StyledSidebarNav = styled('div', {
   display: 'flex',
@@ -25,6 +20,29 @@ const StyledSidebarNav = styled('div', {
   flexBasis: '$9',
   borderRight: '1px solid $gray400',
 });
+
+const modalContentMap = {
+  'camera-admin-modal': {
+    title: 'Manage Cameras',
+    size: 'md',
+    content: <CameraAdminModal/>,
+  },
+  'automation-rules-form': {
+    title: 'Configure Automation Rules',
+    size: 'md',
+    content: <AutomationRulesForm/>,
+  },
+  'save-view-form': {
+    title: 'Save View',
+    size: 'sm',
+    content: <SaveViewForm/>,
+  },
+  'delete-view-form': {
+    title: 'Delete View',
+    size: 'sm',
+    content: <DeleteViewForm/>,
+  },
+};
 
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -39,109 +57,67 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
   return (
     <StyledSidebarNav>
-      <MenuButton
-        variant='ghost'
+
+      {/* filters */}
+      <SidebarNavItem 
         state={filtersPanelOpen ? 'active' : ''}
-        onClick={toggleFiltersPanel}>
-        <FontAwesomeIcon icon={['fas', 'filter']} />
-      </MenuButton>
+        disabled={false}
+        handleClick={toggleFiltersPanel}
+        icon={<FontAwesomeIcon icon={['fas', 'filter']} />}
+        tooltipContent='Filter images'
+      />
 
-      {/*
-      <MenuButton variant='ghost'>
-        <FontAwesomeIcon icon={['fas', 'cog']} />
-      </MenuButton>
-      */}
-
-      <MenuButton
-        variant='ghost'
-        disabled={!selectedProject}
+      {/* camera admin */}
+      <SidebarNavItem 
         state={modalOpen && (modalContent === 'camera-admin-modal') 
           ? 'active' 
           : ''
         }
-        onClick={() => handleModalToggle('camera-admin-modal')}
-      >
-        <FontAwesomeIcon icon={['fas', 'camera']} />
-      </MenuButton>
-      {(modalOpen && (modalContent === 'camera-admin-modal')) &&
-        <Modal 
-          handleClose={handleModalToggle}
-          title='Manage Cameras'
-          size='md'
-        >
-          <CameraAdminModal/>
-        </Modal>
-      }
+        disabled={!selectedProject}
+        handleClick={() => handleModalToggle('camera-admin-modal')}
+        icon={<FontAwesomeIcon icon={['fas', 'camera']} />}
+        tooltipContent='Manage cameras'
+      />
 
-      <MenuButton
-        variant='ghost'
-        disabled={!selectedView}
+      {/* configure automation rules */}
+      <SidebarNavItem 
         state={modalOpen && (modalContent === 'automation-rules-form') 
           ? 'active' 
           : ''
         }
-        onClick={() => handleModalToggle('automation-rules-form')}
-      >
-        <FontAwesomeIcon icon={['fas', 'robot']} />
-      </MenuButton>
-      {(modalOpen && (modalContent === 'automation-rules-form')) &&
-        <Modal 
-          handleClose={handleModalToggle}
-          title='Automation Rules'
-          size='md'
-        >
-          <AutomationRulesForm/>
-        </Modal>
-      }
+        disabled={!selectedProject}
+        handleClick={() => handleModalToggle('automation-rules-form')}
+        icon={<FontAwesomeIcon icon={['fas', 'robot']} />}
+        tooltipContent='Configure automation'
+      />
 
-      <MenuButton
-        variant='ghost'
+      {/* save view */}
+      <SidebarNavItem 
+        state={modalOpen && (modalContent === 'save-view-form') ? 'active' : ''}
         disabled={!selectedView}
-        state={modalOpen && (modalContent === 'save-view-form') 
-          ? 'active' 
-          : ''
-        }
-        onClick={() => handleModalToggle('save-view-form')}
-      >
-        <FontAwesomeIcon icon={['fas', 'save']} />
-      </MenuButton>
-      {(modalOpen && (modalContent === 'save-view-form')) &&
-        <Modal 
-          handleClose={handleModalToggle}
-          title='Save View'
-          size='sm'
-        >
-          <SaveViewForm/>
-        </Modal>
-      }
+        handleClick={() => handleModalToggle('save-view-form')}
+        icon={<FontAwesomeIcon icon={['fas', 'save']} />}
+        tooltipContent='Save view'
+      />
       
-      <MenuButton
-        variant='ghost'
+      {/* delete view */}
+      <SidebarNavItem 
+        state={modalOpen && (modalContent === 'delete-view-form') ? 'active' : ''}
         disabled={!selectedView || !selectedView.editable}
-        state={modalOpen && (modalContent === 'delete-view-form') 
-          ? 'active' 
-          : ''
-        }
-        onClick={() => handleModalToggle('delete-view-form')}
-      >
-        <FontAwesomeIcon icon={['fas', 'trash-alt']} />
-      </MenuButton>
-      {(modalOpen && (modalContent === 'delete-view-form')) &&
+        handleClick={() => handleModalToggle('delete-view-form')}
+        icon={<FontAwesomeIcon icon={['fas', 'trash-alt']} />}
+        tooltipContent='Delete view'
+      />
+      
+      {modalOpen &&
         <Modal 
           handleClose={handleModalToggle}
-          title='Delete View'
-          size='sm'
+          title={modalContentMap[modalContent].title}
+          size={modalContentMap[modalContent].size}
         >
-          <DeleteViewForm/>
+          {modalContentMap[modalContent].content}
         </Modal>
       }
-
-      {/*
-      <MenuButton variant='ghost'>
-          <FontAwesomeIcon icon={['fas', 'redo']} />
-      </MenuButton>
-      */}
-      
 
     </StyledSidebarNav>
   );
