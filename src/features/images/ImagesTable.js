@@ -197,7 +197,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   // const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
-  const hasMountedRef = useRef(false);
   const imagesCount = hasNext ? workingImages.length + 1 : workingImages.length;
   const isImageLoaded = useCallback((index) => {
     return !hasNext || index < workingImages.length;
@@ -321,7 +320,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     else {
       toggleHideAllColumns(false)
     }
-  }, [isLoupeOpen, columnsToHide]);
+  }, [isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
 
   const handleRowClick = useCallback((id) => {
     const newIndex = { image: Number(id), object: null, label: null }

@@ -1,11 +1,11 @@
 import React from 'react';
-import { styled } from '../../theme/stitches.config.js';
 import { useDispatch, useSelector } from 'react-redux'
 import { reviewFilterToggled, selectReviewed } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
+
 
 const ReviewFilter = () => {
   const dispatch = useDispatch();

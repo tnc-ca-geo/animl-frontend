@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-// import { ActionCreators as UndoActionCreators } from 'redux-undo';
 import { actions as undoActions } from 'redux-undo-redo'
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
-import { selectUserUsername } from '../user/userSlice';
+// import { selectUserUsername } from '../user/userSlice';
 import { selectImagesCount } from '../images/imagesSlice';
 import { selectIsAddingLabel, selectReviewMode } from './loupeSlice';
 import {
@@ -96,7 +95,7 @@ const LoupeFooter = ({ image }) => {
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const username = useSelector(selectUserUsername);
+  // const username = useSelector(selectUserUsername);
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!image || isAddingLabel) return;

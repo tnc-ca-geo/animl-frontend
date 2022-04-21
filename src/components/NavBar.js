@@ -1,14 +1,10 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config.js';
-import { Link, NavLink } from 'react-router-dom';
-import ViewSelector from '../features/views/ViewSelector';
+import { Link } from 'react-router-dom';
+import ProjectAndViewNav from '../features/projects/ProjectAndViewNav';
 import { Auth, Hub } from 'aws-amplify';
 import logo from '../assets/animl-logo.svg';
 import Button from './Button';
-
-// const StyledSignOut = styled(AmplifySignOut, {
-//   backgroundColor: '$hiContrast',
-// })
 
 const Logo = styled(Link, {
   position: 'absolute',
@@ -17,11 +13,7 @@ const Logo = styled(Link, {
   paddingLeft: '$1',
 });
 
-const NavLinks = styled('div', {
-  display: 'flex',
-});
-
-const ViewSelectorWrapper = styled('div', {
+const ProjectAndViewNavWrapper = styled('div', {
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
@@ -36,7 +28,6 @@ const StyledNav = styled('nav', {
   padding: '$0 $3',
   borderBottom: '1px solid $gray400',
   backgroundColor: '$loContrast',
-  // zIndex: '$2',
 });
 
 
@@ -63,9 +54,9 @@ const NavBar = () => {
           width='126'
         />
       </Logo>
-      <ViewSelectorWrapper>
-        <ViewSelector />
-      </ViewSelectorWrapper>
+      <ProjectAndViewNavWrapper>
+        <ProjectAndViewNav />
+      </ProjectAndViewNavWrapper>
       <Button
         onClick={handleSignOutButtonClick}
         size='small'

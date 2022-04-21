@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import moment from 'moment';
-import { styled } from '../theme/stitches.config.js';
 import 'react-dates/initialize';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';

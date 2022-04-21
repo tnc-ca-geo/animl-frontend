@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import moment from 'moment';
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
-import { styled } from '../theme/stitches.config';
 import { DATE_FORMAT_EXIF as EXIF } from '../config';
 
 // NOTE: Date Picker style overrides are in theme/globalStyles.js

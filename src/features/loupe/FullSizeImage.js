@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useResizeObserver } from '../../app/utils';
@@ -102,9 +102,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
   }, []);
 
   const handleMarkEmptyButtonClick = () => {
-    console.log('FullSizeImage - Mark empty button clicked');
     if (emptyLabels.length > 0) {
-      console.log('NOTE: found objects with empty, unvalidated labels, so validating them');
       currImgObjects.forEach((obj) => {
         obj.labels
           .filter((lbl) => (lbl.category === 'empty' && !lbl.validated))
@@ -120,7 +118,6 @@ const FullSizeImage = ({ image, focusIndex }) => {
       });
     }
     else {
-      console.log('NOTE: NO objects found with empty, unvalidated labels, so creating empty obj');
       dispatch(markedEmpty({ imgId: image._id, userId }));
     }
   };

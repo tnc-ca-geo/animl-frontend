@@ -1,13 +1,12 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import moment from 'moment';
-import { selectCameras, unregisterCamera } from './camerasSlice';
+import { unregisterCamera } from './camerasSlice';
 import Accordion from '../../components/Accordion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 import {
   DATE_FORMAT_READABLE_SHORT as DFRS,
   DATE_FORMAT_EXIF as EXIF,

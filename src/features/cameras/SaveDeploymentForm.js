@@ -5,7 +5,6 @@ import moment from 'moment';
 import { timeZonesNames } from '@vvo/tzdb';
 import { styled } from '../../theme/stitches.config.js';
 import { ObjectID } from 'bson';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
@@ -21,7 +20,6 @@ import {
   ButtonRow,
   FormFieldWrapper,
   FormError,
-  HelperText,
 } from '../../components/Form';
 import DatePickerWithFormik from '../../components/DatePicker';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -29,19 +27,6 @@ import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 const FormHeader = styled('div', {
   fontWeight: '$3',
   textAlign: 'center'
-});
-
-const ViewName = styled('span', {
-  fontWeight: '$5',
-});
-
-const Row = styled('div', {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  '&:not(:last-child)': {
-    marginBottom: '$5',
-  }
 });
 
 const newDeploymentSchema = Yup.object().shape({

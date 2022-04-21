@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffectAfterMount } from '../../app/utils'
 import { styled } from '../../theme/stitches.config.js';
 import { selectWorkingImages } from '../review/reviewSlice';
 import {

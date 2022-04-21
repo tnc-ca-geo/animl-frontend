@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
  import { selectRouterLocation } from '../images/imagesSlice';
 import PanelHeader from '../../components/PanelHeader';
@@ -10,9 +10,6 @@ import LabelFilter from './LabelFilter';
 import CustomFilter from './CustomFilter.js';
 import FiltersPanelFooter from './FiltersPanelFooter';
 
-// const Label = styled('span', {
-//   // marginLeft: '$2',
-// });
 
 const PanelBody = styled('div', {
   height: 'calc(100% - $7 - $7)', // 2x $7's to account for header + footer

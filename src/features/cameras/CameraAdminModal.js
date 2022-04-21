@@ -1,7 +1,5 @@
 import React, { useEffect, useState }from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled } from '../../theme/stitches.config';
-import moment from 'moment';
 import {
   selectCamerasLoading,
   selectCameras,
@@ -11,15 +9,6 @@ import CameraList from './CameraList';
 import SaveDeploymentForm from './SaveDeploymentForm';
 import DeleteDeploymentForm from './DeleteDeploymentForm';
 import RegisterCameraForm from './RegisterCameraForm';
-import Accordion from '../../components/Accordion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../../components/Button';
-import IconButton from '../../components/IconButton';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
-import {
-  DATE_FORMAT_READABLE as DFR,
-  DATE_FORMAT_EXIF as EXIF,
-} from '../../config';
 import { selectSelectedProject } from '../projects/projectsSlice';
 
 

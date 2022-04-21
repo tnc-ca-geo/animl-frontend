@@ -7,7 +7,6 @@ import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
-import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   images: [], // we aren't using this... consider removing?

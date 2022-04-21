@@ -4,7 +4,6 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-
 import {
   selectViewsLoading,
   selectSelectedView,
@@ -49,15 +48,6 @@ const SaveModeTab = styled(Button, {
 
 const ViewName = styled('span', {
   fontWeight: '$5',
-});
-
-const Row = styled('div', {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  '&:not(:last-child)': {
-    marginBottom: '$5',
-  }
 });
 
 const newViewSchema = Yup.object().shape({

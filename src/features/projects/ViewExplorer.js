@@ -4,7 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { selectSelectedView } from '../projects/projectsSlice';
 import { selectFocusIndex } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
-import SidebarNav from '../views/SidebarNav';
+import SidebarNav from '../projects/SidebarNav';
 import FiltersPanel from '../filters/FiltersPanel';
 import ImagesPanel from '../images/ImagesPanel';
 import Loupe from '../loupe/Loupe';
@@ -14,12 +14,7 @@ const ViewExplorerWrapper = styled('div', {
   // zIndex: '$1',
 });
 
-// const ViewExplorerBody = styled('div', {
-//   display: 'flex',
-//   flexGrow: 1,
-// });
-
-export function ViewExplorer() {
+const ViewExplorer = () => {
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
@@ -55,3 +50,5 @@ export function ViewExplorer() {
     </ViewExplorerWrapper>
   );
 };
+
+export default ViewExplorer;

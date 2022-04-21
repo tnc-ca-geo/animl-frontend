@@ -8,10 +8,12 @@ import { ResizeObserver } from '@juggle/resize-observer'
 export function useEffectAfterMount(fn, inputs) {
   const didMountRef = useRef(false);
   useEffect(() => {
-    if (didMountRef.current)
+    if (didMountRef.current) {
       return fn();
-    else
+    }
+    else {
       didMountRef.current = true;
+    }
   }, inputs);
 };
 

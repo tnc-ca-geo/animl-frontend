@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-
-import { editView, selectMLModels, fetchModels } from '../projects/projectsSlice';
+import { editView, selectMLModels, fetchModels } from './projectsSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
 import {

@@ -20,7 +20,6 @@ const globalStyles = globalCss({
         fontStyle: 'normal',
         fontWeight: '400',
         fontDisplay: 'fallback',
-        src: "url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.eot')",
         src: `local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), 
             url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.woff2') format('woff2'),
             url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.woff') format('woff'),
@@ -32,7 +31,6 @@ const globalStyles = globalCss({
         fontStyle: 'normal',
         fontWeight: '400',
         fontDisplay: 'fallback',
-        src: `url('../assets/fonts/ibm-plex-mono-regular.eot')`, // IE9 Compat Modes.
         src: `local('IBM Plex Mono'), local('IBMPlexMono'),
             url('../assets/fonts/ibm-plex-mono-regular.woff2') format('woff2'),
             url('../assets/fonts/ibm-plex-mono-regular.woff') format('woff'), 

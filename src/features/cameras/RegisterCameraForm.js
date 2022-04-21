@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
-import { styled } from '../../theme/stitches.config.js';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { 
   registerCamera,
@@ -16,15 +15,11 @@ import {
   FieldRow,
   FormFieldWrapper,
   ButtonRow,
-  HelperText,
   FormError
 } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { SUPPORTED_CAM_MAKES  } from '../../config.js';
 
-const DepName = styled('span', {
-  fontWeight: '$5',
-});
 
 // TODO: improve validation? Make sure cameraId is not already actively 
 // registered to current project
