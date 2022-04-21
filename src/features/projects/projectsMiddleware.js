@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { actions as undoActions } from 'redux-undo-redo'
 import {
   setActiveFilters,
   bulkSelectToggled,
@@ -98,11 +99,13 @@ export const diffFilters = store => next => action => {
   }
 };
 
-// apply selected view's filters to active filters
+// clear undo/redo history and apply selected view's filters to active filters
 export const setActiveFiltersToSelectedView = store => next => action => {
 
   if (setSelectedProjAndView.match(action)) {
     console.log('projectsMiddleware() - setActiveViewFilters: ', action.payload);
+    store.dispatch(undoActions.clear());
+
     next(action);
     const newFilters = action.payload.view.filters;
     store.dispatch(setActiveFilters(newFilters));

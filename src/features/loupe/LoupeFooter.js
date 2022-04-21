@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { actions as undoActions } from 'redux-undo-redo'
+import { actions as undoActions } from 'redux-undo-redo';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
