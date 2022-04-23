@@ -125,6 +125,11 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors = null;
     },
 
+    dismissLabelsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.labels.errors.splice(index, 1);
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -153,6 +158,7 @@ export const {
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
+  dismissLabelsError,
 } = reviewSlice.actions;
 
 // editLabel thunk
@@ -206,5 +212,6 @@ export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 export const selectWorkingImages = state => state.review.workingImages;
 export const selectFocusIndex = state => state.review.focusIndex;
 export const selectFocusChangeType = state => state.review.focusChangeType;
+export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
 
 export default reviewSlice.reducer;

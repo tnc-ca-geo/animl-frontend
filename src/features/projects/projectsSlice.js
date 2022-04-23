@@ -64,6 +64,11 @@ export const projectsSlice = createSlice({
       });
     },
 
+    dismissProjectsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.projects.errors.splice(index, 1);
+    },
+
     setSelectedProjAndView: (state, { payload }) => {
       console.log('projectSlice.setSelectedProjAndView() - _id: ', payload);
       let selectedProj = state.projects.find((p) => p.selected);
@@ -133,6 +138,12 @@ export const projectsSlice = createSlice({
       proj.views = proj.views.filter((view) => view._id !== payload.viewId);
     },
 
+    dismissViewsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.views.errors.splice(index, 1);
+    },
+
+
     /* Deployments CRUD */
 
     editDeploymentsStart: (state) => {
@@ -162,6 +173,11 @@ export const projectsSlice = createSlice({
       // all views that include it in their filters! 
       // that will require updating on the backend too
     },
+    
+    dismissDeploymentsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.deployments.errors.splice(index, 1);
+    },
 
     /* fetch model source records */
 
@@ -190,6 +206,11 @@ export const projectsSlice = createSlice({
 
     setModalOpen: (state, { payload }) => {
       state.modalOpen = payload;
+    },
+
+    dismissModelsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.models.errors.splice(index, 1);
     },
 
   },
@@ -224,19 +245,23 @@ export const {
   getProjectsSuccess,
   setSelectedProjAndView,
   setUnsavedViewChanges,
+  dismissProjectsError,
 
   editViewStart,
   saveViewSuccess,
   deleteViewSuccess,
   editViewFailure,
+  dismissViewsError,
 
   editDeploymentsStart, 
   editDeploymentsFailure,
   editDeploymentsSuccess,
+  dismissDeploymentsError,
 
   getModelsStart,
   getModelsFailure,
   getModelsSuccess,
+  dismissModelsError,
 
   setModalOpen,
 
@@ -416,5 +441,10 @@ export const selectViewsLoading = state => state.projects.loadingStates.views;
 export const selectDeploymentsLoading = state => state.projects.loadingStates.deployments;
 export const selectModelsLoadingState = state => state.projects.loadingStates.models;
 export const selectModalOpen = state => state.projects.modalOpen;
+export const selectProjectsErrors = state => state.projects.loadingStates.projects.errors;
+export const selectViewsErrors = state => state.projects.loadingStates.views.errors;
+export const selectDeploymentsErrors = state => state.projects.loadingStates.deployments.errors;
+export const selectModelsErrors = state => state.projects.loadingStates.models.errors;
+
 
 export default projectsSlice.reducer;

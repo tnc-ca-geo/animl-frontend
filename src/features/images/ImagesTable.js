@@ -165,26 +165,6 @@ const TableHeader = styled('div', {
   },
 });
 
-const makeRows = (workingImages, focusIndex) => {
-  return workingImages.map((image, imageIndex) => {
-    const isImageFocused = imageIndex === focusIndex.image;
-    const thumbnail = <Image selected={isImageFocused} src={image.thumbUrl} />;
-    const labelPills = <LabelPills
-      objects={workingImages[imageIndex].objects}
-      imageIndex={imageIndex}
-      focusIndex={focusIndex}
-    />;
-    const hasUnlockedObj = image.objects.some((obj) => obj.locked === false);
-    const needsReview = hasUnlockedObj ? 'Yes' : 'No';
-
-    return {
-      thumbnail,
-      labelPills,
-      needsReview,
-      ...image,
-    }
-  })
-};
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
@@ -451,6 +431,27 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       }
     </TableContainer>
   );  
+};
+
+function makeRows(workingImages, focusIndex) {
+  return workingImages.map((image, imageIndex) => {
+    const isImageFocused = imageIndex === focusIndex.image;
+    const thumbnail = <Image selected={isImageFocused} src={image.thumbUrl} />;
+    const labelPills = <LabelPills
+      objects={workingImages[imageIndex].objects}
+      imageIndex={imageIndex}
+      focusIndex={focusIndex}
+    />;
+    const hasUnlockedObj = image.objects.some((obj) => obj.locked === false);
+    const needsReview = hasUnlockedObj ? 'Yes' : 'No';
+
+    return {
+      thumbnail,
+      labelPills,
+      needsReview,
+      ...image,
+    }
+  })
 }
 
 export default ImagesTable;

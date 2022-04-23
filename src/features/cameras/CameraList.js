@@ -111,7 +111,6 @@ const ActiveState = ({ active }) => (
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
-  console.log('enriched cams: ', cameras)
   const format = (date) => moment(date, EXIF).format(DFRS);
   const dispatch = useDispatch();
 

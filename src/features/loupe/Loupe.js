@@ -4,7 +4,10 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import { useSelector } from 'react-redux';
-import { selectWorkingImages, selectFocusIndex } from '../review/reviewSlice';
+import {
+  selectWorkingImages,
+  selectFocusIndex,
+} from '../review/reviewSlice';
 import {
   toggleOpenLoupe,
   reviewModeToggled,
@@ -107,60 +110,62 @@ const Loupe = () => {
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   return (
-    <StyledLoupe>
-      <LoupeHeader
-        handlePanelClose={handleCloseLoupe}
-        closeButtonPosition='left'
-      >
-        {image && 
-          <MetadataPane>
-            <MetadataList>
-              <Item label='Date created' value={image.dateTimeOriginal}/>
-              <Item label='Camera' value={image.cameraSn}/>
-              <Item label='Deployment' value={image.deploymentName}/>
-              <Item label='File name' value={image.originalFileName}/>
-            </MetadataList>
-          </MetadataPane>
-        }
-        {/*<div>
-          Label review
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewMode}
-          >
-            <FontAwesomeIcon
-              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-            />
-          </IconButton>
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewSettings}
-          >
-            <FontAwesomeIcon
-              icon={['fas', 'cog']}
-            />
-          </IconButton>
-          {reviewSettingsOpen && 
-            <ReviewSettingsForm
-              handleClose={handleToggleReviewSettings}
-            />
+    <>
+      <StyledLoupe>
+        <LoupeHeader
+          handlePanelClose={handleCloseLoupe}
+          closeButtonPosition='left'
+        >
+          {image && 
+            <MetadataPane>
+              <MetadataList>
+                <Item label='Date created' value={image.dateTimeOriginal}/>
+                <Item label='Camera' value={image.cameraSn}/>
+                <Item label='Deployment' value={image.deploymentName}/>
+                <Item label='File name' value={image.originalFileName}/>
+              </MetadataList>
+            </MetadataPane>
           }
-        </div>*/}
-      </LoupeHeader>
-      <LoupeBody>
-        {image &&
-          <div>
-            <ImagePane>
-              <FullSizeImage
-                image={image}
-                focusIndex={focusIndex}
+          {/*<div>
+            Label review
+            <IconButton
+              variant='ghost'
+              onClick={handleToggleReviewMode}
+            >
+              <FontAwesomeIcon
+                icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
               />
-            </ImagePane>
-          </div>
-        }
-      </LoupeBody>
-      <LoupeFooter image={image}/>
-    </StyledLoupe>
+            </IconButton>
+            <IconButton
+              variant='ghost'
+              onClick={handleToggleReviewSettings}
+            >
+              <FontAwesomeIcon
+                icon={['fas', 'cog']}
+              />
+            </IconButton>
+            {reviewSettingsOpen && 
+              <ReviewSettingsForm
+                handleClose={handleToggleReviewSettings}
+              />
+            }
+          </div>*/}
+        </LoupeHeader>
+        <LoupeBody>
+          {image &&
+            <div>
+              <ImagePane>
+                <FullSizeImage
+                  image={image}
+                  focusIndex={focusIndex}
+                />
+              </ImagePane>
+            </div>
+          }
+        </LoupeBody>
+        <LoupeFooter image={image}/>
+      </StyledLoupe>
+    </>
   );
 };
 

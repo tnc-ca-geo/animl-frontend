@@ -20,7 +20,7 @@ const ClosePanelButton = styled(IconButton, {
       }
     }
   }
-})
+});
 
 const StyledHeader = styled('div', {
   display: 'flex',
@@ -42,7 +42,7 @@ const PanelHeader = (props) => (
     }
     { props.children }
     <ClosePanelButton
-      position={props.closeButtonPosition ? props.closeButtonPosition : 'right'}
+      position={props.closeButtonPosition || 'right'}
       variant='ghost'
       onClick={props.handlePanelClose}>
       <FontAwesomeIcon 

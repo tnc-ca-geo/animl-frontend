@@ -60,6 +60,7 @@ const newViewSchema = Yup.object().shape({
     .max(500, 'Too Long!'),
 });
 
+
 const SaveViewForm = ({ handleClose }) => {
   const [saveMode, setSaveMode] = useState();
   const [queuedForClose, setQueuedForClose] = useState(false);

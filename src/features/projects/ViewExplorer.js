@@ -8,6 +8,8 @@ import SidebarNav from '../projects/SidebarNav';
 import FiltersPanel from '../filters/FiltersPanel';
 import ImagesPanel from '../images/ImagesPanel';
 import Loupe from '../loupe/Loupe';
+import ErrorAlerts from '../../components/ErrorAlerts';
+
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
@@ -47,6 +49,7 @@ const ViewExplorer = () => {
       {loupeOpen &&
         <Loupe />
       }
+      <ErrorAlerts />
     </ViewExplorerWrapper>
   );
 };

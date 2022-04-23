@@ -9,7 +9,8 @@ import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
 import { AmplifyAuthenticator } from "@aws-amplify/ui-react";
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
-import { Provider } from '@radix-ui/react-tooltip';
+import * as Tooltip from '@radix-ui/react-tooltip';
+import * as Toast from '@radix-ui/react-toast';
 import {
   selectUserAuthState,
   selectUserUsername,
@@ -57,18 +58,18 @@ const App = () => {
   }, [dispatch]);
 
   return authState === AuthState.SignedIn && user ? (
-    <Provider
-      // delayDuration={100}
-    >
-      <AppContainer>
-        <NavBar />
-        <Switch>
-          <Route path="/">
-            <HomePage />
-          </Route>
-        </Switch>
-      </AppContainer>
-    </Provider>
+    <Tooltip.Provider>
+      <Toast.Provider>
+        <AppContainer>
+          <NavBar />
+          <Switch>
+            <Route path="/">
+              <HomePage />
+            </Route>
+          </Switch>
+        </AppContainer>
+      </Toast.Provider>
+    </Tooltip.Provider>
   ) : (
     <LoginScreen>
       <Logo>

@@ -98,6 +98,10 @@ export const camerasSlice = createSlice({
       };
     },
 
+    dismissCamerasError: (state, { payload }) => {
+      const index = payload;
+      state.loadingState.errors.splice(index, 1);
+    },
   },
 
   extraReducers: (builder) => {
@@ -130,6 +134,8 @@ export const {
   unregisterCameraStart,
   unregisterCameraFailure,
   unregisterCameraSuccess,
+
+  dismissCamerasError,
 
 } = camerasSlice.actions;
 
@@ -210,6 +216,6 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
 // Selectors
 export const selectCameras = state => state.cameras.cameras;
 export const selectCamerasLoading = state => state.cameras.loadingState;
-export const selectCamerasErrors = state => state.cameras.errors;
+export const selectCamerasErrors = state => state.cameras.loadingState.errors;
 
 export default camerasSlice.reducer;

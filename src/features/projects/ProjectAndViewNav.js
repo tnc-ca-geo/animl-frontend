@@ -114,10 +114,7 @@ const StyledProjectAndViewNav = styled('div', {
   // zIndex: '$5',
 });
 
-const checkIfValidMD5Hash = (hash) => {
-  const regexExp = /^[a-f0-9]{32}$/gi;
-  return regexExp.test(hash);
-};
+// TODO display alerts if there are loadingStates.projects.errors in projectsSlice
 
 const ProjectAndViewNav = () => {
   const projectsLoading = useSelector(selectProjectsLoading);
@@ -275,6 +272,11 @@ const ProjectAndViewNav = () => {
       }
     </StyledProjectAndViewNav>
   );
+};
+
+function checkIfValidMD5Hash(hash) {
+  const regexExp = /^[a-f0-9]{32}$/gi;
+  return regexExp.test(hash);
 }
 
 export default ProjectAndViewNav;
