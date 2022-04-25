@@ -165,6 +165,23 @@ const TableHeader = styled('div', {
   },
 });
 
+const NoneFoundAlert = styled('div', {
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '$gray200',
+  fontWeight: '$3',
+  fontSize: '$5',
+
+  '&::after': {
+    content: '\\1F400',
+    paddingLeft: '$2',
+    fontSize: '30px'
+  }
+});
+
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
@@ -393,6 +410,11 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         <SpinnerOverlay>
           <CircleSpinner />
         </SpinnerOverlay>
+      }
+      {imagesLoading.noneFound && 
+        <NoneFoundAlert>
+          Rats! We couldn't find any matching images
+        </NoneFoundAlert>
       }
       {workingImages.length > 0 &&
         <Table {...getTableProps()}>

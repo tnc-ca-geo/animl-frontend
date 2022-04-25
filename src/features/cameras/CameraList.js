@@ -1,8 +1,8 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import moment from 'moment';
-import { unregisterCamera } from './camerasSlice';
+import { unregisterCamera, selectCamerasLoading } from './camerasSlice';
 import Accordion from '../../components/Accordion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
@@ -104,26 +104,39 @@ const StyledActiveState = styled('div', {
   },
 });
 
+const NoneFoundAlert = styled('div', {
+  fontSize: '$3',
+  fontFamily: '$roboto',
+  color: '$gray600',
+});
+
+
 const ActiveState = ({ active }) => (
   <StyledActiveState active={active.toString()}>
     { active ? 'active' : 'inactive'}
   </StyledActiveState>
 );
 
+
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const format = (date) => moment(date, EXIF).format(DFRS);
+  const camerasLoading = useSelector(selectCamerasLoading);
   const dispatch = useDispatch();
 
   const handleUnregisterClick = (cameraId) => {
     console.log('handleUnregisterClick: ', cameraId);
     dispatch(unregisterCamera(cameraId));
   };
-
+  
   return (
     <div>
-      {(cameras.length === 0)
-        ? 'There are currently no cameras associated with this project'
-        : <StyledCameraList>
+      {camerasLoading.noneFound && 
+        <NoneFoundAlert>
+          There are currently no cameras associated with this project.
+        </NoneFoundAlert>
+      }
+      {cameras.length > 0 &&
+        <StyledCameraList>
             {cameras.map((cam) => (
               <Accordion
                 key={cam._id}
