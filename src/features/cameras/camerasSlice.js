@@ -102,6 +102,7 @@ export const camerasSlice = createSlice({
       const index = payload;
       state.loadingState.errors.splice(index, 1);
     },
+    
   },
 
   extraReducers: (builder) => {

@@ -128,6 +128,11 @@ export const imagesSlice = createSlice({
       state.visibleRows = payload;
     },
 
+    dismissImageContextError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.imageContext.errors.splice(index, 1);
+    },
+
   },
 });
 
@@ -143,6 +148,7 @@ export const {
   getImageContextFailure,
   sortChanged,
   visibleRowsChanged,
+  dismissImageContextError,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -227,7 +233,7 @@ export const fetchImageContext = (imgId) => {
       // re-format to match error objects like those returned from the API
       let error = err;
       if (err.message && err.message.includes('Failed to find')) {
-        error = [{ message: err.message }];
+        error = [{ message: err.message, extensions: { code: 'NOT_FOUND' }}];
       };
       dispatch(getImageContextFailure(error));
       dispatch(preFocusImageEnd());
@@ -247,6 +253,7 @@ export const selectImagesLoading = state => state.images.loadingStates.images;
 export const selectVisibleRows = state => state.images.visibleRows;
 export const selectPreFocusImage = state => state.images.preFocusImage;
 export const selectImageContextLoading = state => state.images.loadingStates.imageContext;
+export const selectImageContextErrors = state => state.images.loadingStates.imageContext.errors;
 
 // TODO: find a different place for this?
 export const selectRouterLocation = state => state.router.location;
