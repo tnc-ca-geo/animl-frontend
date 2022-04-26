@@ -109,6 +109,7 @@ const dismissErrorActions = {
 
 function enrichErrors(errors, title, entity) {
   if (!errors) return;
+  console.log('errors: ', errors);
   return errors.map((err, index) => ({
     index,
     entity,

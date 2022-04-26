@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
+import { red } from '@radix-ui/colors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import {
@@ -19,6 +20,25 @@ import {
   fetchImageContext,
   preFocusImageStart,
 } from '../images/imagesSlice';
+
+const NoneFoundAlert = styled('div', {
+  // fontSize: '$3',
+  // padding: '$2 $3',
+  // fontFamily: '$roboto',
+  fontSize: '$4',
+  fontWeight: '$3',
+  color: '$hiContrast',
+  // backgroundColor: red.red2,
+  // borderRadius: '$1',
+  // boxShadow: `inset 0 0 0 1px ${red.red7}`,
+  // '&:hover': { boxShadow: `inset 0 0 0 1px ${red.red8}` },
+  // '&:focus': { boxShadow: `0 0 0 2px ${red.red8}` },
+  '&::after': {
+    content: '\\1F400',
+    paddingLeft: '$2',
+    fontSize: '20px'
+  }
+});
 
 const ViewMenuItem = styled('li', {
   color: '$hiContrast',
@@ -66,7 +86,7 @@ const DropDownMenu = styled('div', {
 
 const Crumb = styled('span', {
   color: '$hiContrast',
-  fontWeight: '$4',
+  fontWeight: '$3',
   position: 'relative',
   paddingRight: '$2',
   '&:last-child': {
@@ -114,7 +134,6 @@ const StyledProjectAndViewNav = styled('div', {
   // zIndex: '$5',
 });
 
-// TODO display alerts if there are loadingStates.projects.errors in projectsSlice
 
 const ProjectAndViewNav = () => {
   const projectsLoading = useSelector(selectProjectsLoading);
@@ -128,8 +147,8 @@ const ProjectAndViewNav = () => {
 
   // fetch projects
   useEffect(() => {
-    const { isLoading, noneFound } = projectsLoading;
-    if (!projects.length && !isLoading && !noneFound) {
+    const { isLoading, noneFound, errors } = projectsLoading;
+    if (!projects.length && !isLoading && !noneFound && !errors) {
       dispatch(fetchProjects());
     }
   }, [projects, projectsLoading, dispatch]);
@@ -210,65 +229,70 @@ const ProjectAndViewNav = () => {
 
   return (
     <StyledProjectAndViewNav>
-      {!selectedView 
-        ? 'Loading projects...'
-        : <>
-            <Breadcrumbs>
-              <Crumb 
-                data-menu='project'
-                onClick={handleBreadCrumbClick}
-                isExpanded={expandedMenu === 'project'}
-              >
-                {selectedProj.name}
-                {expandedMenu === 'project' &&
-                  <DropDownMenu>
-                    <ul>
-                      {projects.map((proj) => (
-                        <ViewMenuItem
-                          key={proj._id}
-                          selected={proj.selected}
-                          data-proj-id={proj._id}
-                          onClick={handleProjectMenuItemClick}
-                        >
-                          {proj.name}
-                        </ViewMenuItem>
-                      ))}
-                    </ul>
-                  </DropDownMenu>
-                }
-              </Crumb>
-              /
-              <Crumb
-                data-menu='view'
-                onClick={handleBreadCrumbClick}
-                isExpanded={expandedMenu === 'view'}
-                edited={unsavedViewChanges}
-              >
-                {selectedView.name}
-                {expandedMenu === 'view' &&
-                  <DropDownMenu>
-                    <ul>
-                      {views.map((view) => (
-                        <ViewMenuItem
-                          key={view._id}
-                          selected={view.selected}
-                          data-view-id={view._id}
-                          onClick={handleViewMenuItemClick}
-                        >
-                          {view.name}
-                        </ViewMenuItem>
-                      ))}
-                    </ul>
-                  </DropDownMenu>
-                }
-              </Crumb>
-            </Breadcrumbs>
-            <IconButton variant='ghost'>
-              <FontAwesomeIcon icon={ 
-                expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']
-              }/>
-            </IconButton>
-          </>
+      {projectsLoading.isLoading && 'Loading projects...'}
+      {projectsLoading.noneFound && 
+        <NoneFoundAlert>
+          Rats! You don't have access to any projects yet!
+        </NoneFoundAlert>
+      }
+      {selectedView &&
+        <>
+          <Breadcrumbs>
+            <Crumb 
+              data-menu='project'
+              onClick={handleBreadCrumbClick}
+              isExpanded={expandedMenu === 'project'}
+            >
+              {selectedProj.name}
+              {expandedMenu === 'project' &&
+                <DropDownMenu>
+                  <ul>
+                    {projects.map((proj) => (
+                      <ViewMenuItem
+                        key={proj._id}
+                        selected={proj.selected}
+                        data-proj-id={proj._id}
+                        onClick={handleProjectMenuItemClick}
+                      >
+                        {proj.name}
+                      </ViewMenuItem>
+                    ))}
+                  </ul>
+                </DropDownMenu>
+              }
+            </Crumb>
+            /
+            <Crumb
+              data-menu='view'
+              onClick={handleBreadCrumbClick}
+              isExpanded={expandedMenu === 'view'}
+              edited={unsavedViewChanges}
+            >
+              {selectedView.name}
+              {expandedMenu === 'view' &&
+                <DropDownMenu>
+                  <ul>
+                    {views.map((view) => (
+                      <ViewMenuItem
+                        key={view._id}
+                        selected={view.selected}
+                        data-view-id={view._id}
+                        onClick={handleViewMenuItemClick}
+                      >
+                        {view.name}
+                      </ViewMenuItem>
+                    ))}
+                  </ul>
+                </DropDownMenu>
+              }
+            </Crumb>
+          </Breadcrumbs>
+          <IconButton variant='ghost'>
+            <FontAwesomeIcon icon={ 
+              expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']
+            }/>
+          </IconButton>
+        </>
       }
     </StyledProjectAndViewNav>
   );

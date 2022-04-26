@@ -14,6 +14,7 @@ const initialState = {
       isLoading: false,
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
+      noneFound: false,
     },
     views: {
       isLoading: false,
@@ -54,14 +55,18 @@ export const projectsSlice = createSlice({
 
     getProjectsSuccess: (state, { payload }) => {
       console.log('projectSlice.getProjectsSucces() - payload: ', payload);
-      const ls = { isLoading: false, operation: null, errors: null };  
+      const noneFound = !payload.projects || payload.projects.length === 0;
+      const ls = { isLoading: false, operation: null, errors: null, noneFound };
       state.loadingStates.projects = ls;
-      const projectIdsInState = state.projects.map((proj) => proj._id);
-      payload.projects.forEach((proj, i) => {
-        if (!projectIdsInState.includes(proj._id)) {
-          state.projects.push(proj);
-        }
-      });
+      state.projects = noneFound ? [] : payload.projects;
+      
+      // const projectIdsInState = state.projects.map((proj) => proj._id);
+      // payload.projects.forEach((proj, i) => {
+      //   if (!projectIdsInState.includes(proj._id)) {
+      //     state.projects.push(proj);
+      //   }
+      // });
+
     },
 
     dismissProjectsError: (state, { payload }) => {
@@ -281,6 +286,7 @@ export const fetchProjects = () => async dispatch => {
 
     }
   } catch (err) {
+    console.log('err: ', err)
     dispatch(getProjectsFailure(err));
   }
 };

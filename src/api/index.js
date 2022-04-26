@@ -29,6 +29,7 @@ export async function call({ projId, request, input }) {
       : await graphQLClient.request(query)
 
   } catch (err) {
+    console.log('err in call() catch block: ', err)
     // https://github.com/prisma-labs/graphql-request/issues/201
     throw JSON.parse(JSON.stringify(err)).response.errors;
   }
