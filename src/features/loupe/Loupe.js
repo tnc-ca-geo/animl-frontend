@@ -146,7 +146,7 @@ const Loupe = () => {
             </IconButton>
             {reviewSettingsOpen && 
               <ReviewSettingsForm
-                handleClose={handleToggleReviewSettings}
+                handleModalToggle={handleToggleReviewSettings}
               />
             }
           </div>*/}

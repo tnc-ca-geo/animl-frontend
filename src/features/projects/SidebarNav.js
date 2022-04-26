@@ -14,7 +14,7 @@ import {
   selectSelectedView,
   selectModalOpen,
 } from '../projects/projectsSlice';
-import Modal from '../../components/Modal';
+import { Modal } from '../../components/Modal';
 import CameraAdminModal from '../cameras/CameraAdminModal';
 import AutomationRulesForm from './AutomationRulesForm';
 import SaveViewForm from './SaveViewForm';
@@ -56,14 +56,19 @@ const modalContentMap = {
 };
 
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
-  const [modalContent, setModalContent] = useState();
   const userRoles = useSelector(selectUserCurrentRoles);
+  const [modalContent, setModalContent] = useState();
   const modalOpen = useSelector(selectModalOpen);
   const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
+  console.log('modalContent: ', modalContent);
+  console.log('modalOpen: ', modalOpen);
+
+
   const handleModalToggle = (content) => {
+    console.log('handleModalToggle - content: ', content)
     dispatch(setModalOpen(!modalOpen));
     setModalContent(content);
   };
@@ -127,7 +132,17 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
           tooltipContent='Delete view'
         />
       }
-      
+
+      <Modal 
+        open={modalOpen}
+        handleModalToggle={handleModalToggle}
+        title={modalContent && modalContentMap[modalContent].title}
+        size={modalContent && modalContentMap[modalContent].size}
+      >
+        {modalContent && modalContentMap[modalContent].content}
+      </Modal>
+
+      {/*
       {modalOpen &&
         <Modal 
           handleClose={handleModalToggle}
@@ -137,6 +152,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
           {modalContentMap[modalContent].content}
         </Modal>
       }
+    */}
 
     </StyledSidebarNav>
   );

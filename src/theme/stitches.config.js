@@ -1,4 +1,5 @@
 import { createStitches } from '@stitches/react';
+import { violet, blackA, mauve, green } from '@radix-ui/colors';
 
 // Mapping label ids/categories to colors
 const labelColorMap = {

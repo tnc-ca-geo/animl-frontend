@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { iterationOptionsChanged, selectIterationOptions } from './loupeSlice';
-import Modal from '../../components/Modal';
+import { Modal } from '../../components/Modal';
 import Checkbox from '../../components/Checkbox';
 
 const CheckboxLabel = styled('span', {
@@ -30,7 +30,7 @@ const StyledReviewSettings = styled('div', {
   color: '$gray600',
 })
 
-const ReviewSettingsForm = ({handleClose}) => {
+const ReviewSettingsForm = ({ handleModalToggle }) => {
   const iterationOptions = useSelector(selectIterationOptions);
   const iterationOptionsText = {
       skipEmptyImages: 'Skip empty images',
@@ -47,7 +47,7 @@ const ReviewSettingsForm = ({handleClose}) => {
 
   return (
     <Modal
-      handleClose={handleClose}
+      handleModalToggle={handleModalToggle}
       title='Label review settings'
       size='sm'
     >

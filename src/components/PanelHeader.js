@@ -44,7 +44,7 @@ const PanelHeader = (props) => (
     <ClosePanelButton
       position={props.closeButtonPosition || 'right'}
       variant='ghost'
-      onClick={props.handlePanelClose}>
+      onClick={() => props.handlePanelClose()}>
       <FontAwesomeIcon 
         icon={['fas', 'times']}
       />
