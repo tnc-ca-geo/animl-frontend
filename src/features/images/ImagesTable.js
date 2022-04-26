@@ -6,6 +6,8 @@ import React, {
   useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { green, orange } from '@radix-ui/colors';
+import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
@@ -182,6 +184,34 @@ const NoneFoundAlert = styled('div', {
   }
 });
 
+const StyledReviewIcon = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '$4',
+  height: '$4',
+  marginLeft: '$3',
+  borderRadius: '50%',
+  variants: {
+    reviewed: {
+      true: {
+        color: green.green11,
+        backgroundColor: green.green4,
+      },
+      false: {
+        color: orange.orange11,
+        backgroundColor: orange.orange4,
+      }
+    }
+  }
+});
+
+const ReviewedIcon = ({ reviewed }) => (
+  <StyledReviewIcon reviewed={reviewed}>
+    {reviewed ? <CheckIcon/> : <Cross2Icon/>}
+  </StyledReviewIcon>
+);
+
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
@@ -229,8 +259,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       accessor: 'dateAdded',
     },
     {
-      Header: 'Needs review',
-      accessor: 'needsReview',
+      Header: 'Reviewed',
+      accessor: 'reviewed',
       disableSortBy: true,
     },
     {
@@ -465,12 +495,14 @@ function makeRows(workingImages, focusIndex) {
       focusIndex={focusIndex}
     />;
     const hasUnlockedObj = image.objects.some((obj) => obj.locked === false);
-    const needsReview = hasUnlockedObj ? 'Yes' : 'No';
+    const reviewed = hasUnlockedObj 
+      ? <ReviewedIcon reviewed={false} /> 
+      : <ReviewedIcon reviewed={true} />;
 
     return {
       thumbnail,
       labelPills,
-      needsReview,
+      reviewed,
       ...image,
     }
   })

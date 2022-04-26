@@ -109,7 +109,9 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
                     }
                     onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
                     css={{
-                      backgroundColor: labelColors(label.category).primary + 'b3', 
+                      backgroundColor: labelColors(label.category).primary,
+                      // borderColor: labelColors(label.category).text,
+                      color: labelColors(label.category).text,
                     }}
                   >
                     {label.category}

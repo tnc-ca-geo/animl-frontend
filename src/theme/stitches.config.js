@@ -1,5 +1,5 @@
 import { createStitches } from '@stitches/react';
-import { violet, blackA, mauve, green } from '@radix-ui/colors';
+// import { yellow, indigo, crimson, tomato, mint, gray } from '@radix-ui/colors';
 
 // Mapping label ids/categories to colors
 const labelColorMap = {
@@ -11,6 +11,17 @@ const labelColorMap = {
   empty:  { primary: '#DEDEDE', text: 'hiContrast'},
   default: { primary: '#00C797', text: 'hiContrast' },
 };
+
+// experimenting with radix colors...
+// const labelColorMap = {
+//   animal: { primary: yellow.yellow3, text: yellow.yellow11 },
+//   fox:    { primary: indigo.indigo3, text: indigo.indigo11 },
+//   skunk:  { primary: crimson.crimson3, text: crimson.crimson11 },
+//   rodent: { primary: tomato.tomato3, text: tomato.tomato11 },
+//   person: { primary: mint.mint3, text: mint.mint11 },
+//   empty:  { primary: gray.gray3, text: gray.gray11 },
+//   default: { primary: mint.mint3, text: mint.mint11 },
+// };
 
 export const labelColors = (label) => (
   labelColorMap[label] || labelColorMap.default
