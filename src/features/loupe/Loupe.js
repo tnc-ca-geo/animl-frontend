@@ -120,7 +120,7 @@ const Loupe = () => {
             <MetadataPane>
               <MetadataList>
                 <Item label='Date created' value={image.dateTimeOriginal}/>
-                <Item label='Camera' value={image.cameraSn}/>
+                <Item label='Camera' value={image.cameraId}/>
                 <Item label='Deployment' value={image.deploymentName}/>
                 <Item label='File name' value={image.originalFileName}/>
               </MetadataList>

@@ -44,7 +44,7 @@ const ValidationButtons = ({
       lblId: label._id,
       validated,
     }));
-    setShowLabelButtons(false);
+    // setShowLabelButtons(false);
   };
 
   return (
