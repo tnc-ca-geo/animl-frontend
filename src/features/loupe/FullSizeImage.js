@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
+// import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
+import { selectWorkingImages, labelValidated, markedEmpty } from '../review/reviewSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
-// import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
-import { selectWorkingImages, labelValidated, markedEmpty } from '../review/reviewSlice';
-import { selectUserUsername } from '../user/userSlice';
 import Button from '../../components/Button';
 
 const MarkEmptyButton = styled(Button, {
@@ -55,6 +56,7 @@ const ImageWrapper = styled('div', {
 });
 
 const FullSizeImage = ({ image, focusIndex }) => {
+  const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const containerEl = useRef(null);
@@ -147,14 +149,16 @@ const FullSizeImage = ({ image, focusIndex }) => {
         </SpinnerOverlay>
       }*/}
       <FullImage src={image.url} /*onLoad={handleImgLoaded}*//>
-      <EditObjectButtons>
-        <MarkEmptyButton onClick={handleMarkEmptyButtonClick} size='large' >
-          <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
-        </MarkEmptyButton>
-        <AddObjectButton onClick={handleAddObjectButtonClick} size='large' >
-          <FontAwesomeIcon icon={['fas', 'plus']} /> Add object
-        </AddObjectButton>
-      </EditObjectButtons>
+      {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+        <EditObjectButtons>
+          <MarkEmptyButton onClick={handleMarkEmptyButtonClick} size='large' >
+            <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
+          </MarkEmptyButton>
+          <AddObjectButton onClick={handleAddObjectButtonClick} size='large' >
+            <FontAwesomeIcon icon={['fas', 'plus']} /> Add object
+          </AddObjectButton>
+        </EditObjectButtons>
+      }
     </ImageWrapper>
   );
 };

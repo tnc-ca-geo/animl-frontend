@@ -1,5 +1,7 @@
 import React, { useEffect, useState }from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, WRITE_CAMERA_REGISTRATION_ROLES } from '../../auth/roles';
 import {
   selectCamerasLoading,
   selectCameras,
@@ -14,6 +16,7 @@ import { selectSelectedProject } from '../projects/projectsSlice';
 
 const CameraAdminModal = () => {
   const project = useSelector(selectSelectedProject);
+  const userRoles = useSelector(selectUserCurrentRoles);
   const [ showSaveDepForm, setShowSaveDepForm ] = useState(false);
   const [ showDeleteDeptForm, setShowDeleteDepForm ] = useState(false);
   const [ cameraSelected, setCameraSelected ] = useState();
@@ -79,7 +82,9 @@ const CameraAdminModal = () => {
                 handleSaveDepClick={handleSaveDepClick}
                 handleDeleteDepClick={handleDeleteDepClick}
               />
-              <RegisterCameraForm />
+              {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && 
+                <RegisterCameraForm />
+              }
             </>
       }
     </div>

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
- import { selectRouterLocation } from '../images/imagesSlice';
+import { selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, QUERY_WITH_CUSTOM_FILTER } from '../../auth/roles';
 import PanelHeader from '../../components/PanelHeader';
 import DeploymentFilter from './DeploymentFilter';
 import ReviewFilter from './ReviewFilter';
@@ -30,13 +31,7 @@ const StyledFiltersPanel = styled('div', {
 
 
 const FiltersPanel = ({ toggleFiltersPanel }) => {
-  const router = useSelector(selectRouterLocation);
-
-  const [ showCustomFilter, setShowCustomFilter ] = useState(false);
-  useEffect(() => {
-    const showFilt = ('cf' in router.query) && (router.query['cf'] === 'true');
-    setShowCustomFilter(showFilt);
-  }, [ router ]);
+  const userRoles = useSelector(selectUserCurrentRoles);
 
   return (
     <StyledFiltersPanel>
@@ -51,7 +46,7 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
         <ReviewFilter/>
         <DateFilter type='created'/>
         <DateFilter type='added'/>
-        {showCustomFilter &&
+        {hasRole(userRoles, QUERY_WITH_CUSTOM_FILTER) &&
           <CustomFilter />
         }
       </PanelBody>

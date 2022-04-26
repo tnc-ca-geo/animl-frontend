@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config';
 import _ from 'lodash';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
+import { selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { bboxUpdated, setFocus } from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
@@ -44,11 +46,26 @@ const DragHandle = styled('div', {
   margin: '$3',
   width: 'calc(100% - 32px)', // stitches bug w/ parsing variables in calc
   height: 'calc(100% - 32px)',
-  '&:hover': {
-    cursor: 'grab',
-  },
-  '&:user-select': {
-    cursor: 'grabbing',
+
+  variants: {
+    disabled: {
+      true: {
+        '&:hover': {
+          cursor: 'default',
+        },
+        '&:user-select': {
+          cursor: 'default',
+        }
+      },
+      false: {
+        '&:hover': {
+          cursor: 'grab',
+        },
+        '&:user-select': {
+          cursor: 'grabbing',
+        },
+      },
+    },
   }
 });
 
@@ -82,6 +99,8 @@ const BoundingBox = ({
   focusIndex,
   setTempObject
 }) => {
+  const userRoles = useSelector(selectUserCurrentRoles);
+  const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
   const handleRef = useRef(null);
   const dispatch = useDispatch();
 
@@ -182,19 +201,21 @@ const BoundingBox = ({
     <Draggable
       bounds='parent'
       handle='.drag-handle'
-      // position={{ x: left + 1, y: top - 1 }}
       position={{ x: left, y: top }}
       onStart={onDragStart}
       onDrag={onDrag}
       onStop={onDragEnd}
-      disabled={object.locked}
+      disabled={!isAuthorized || object.locked}
     >
       <StyledResizableBox
         width={width}
         height={height}
         minConstraints={[0, 0]}
         maxConstraints={[constraintX, constraintY]}
-        resizeHandles={['sw', 'se', 'nw', 'ne']}
+        resizeHandles={isAuthorized && !object.locked 
+          ? ['sw', 'se', 'nw', 'ne']
+          : []
+        }
         handle={(location) => (
           <ResizeHandle location={location} ref={(el) => {
             if (location === 'se') { handleRef.current = el }
@@ -229,9 +250,13 @@ const BoundingBox = ({
               ? 'right' 
               : 'left'
             }
+            isAuthorized={isAuthorized}
           />
         }
-        <DragHandle className='drag-handle'/>
+        <DragHandle
+          className='drag-handle'
+          disabled={!isAuthorized || object.locked}
+        />
       </StyledResizableBox>
     </Draggable>
   )

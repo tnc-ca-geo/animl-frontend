@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { selectUserCurrentRoles } from '../user/userSlice';
+import {
+  hasRole,
+  WRITE_AUTOMATION_RULES_ROLES,
+  WRITE_VIEWS_ROLES,
+} from '../../auth/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -51,6 +57,7 @@ const modalContentMap = {
 
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const [modalContent, setModalContent] = useState();
+  const userRoles = useSelector(selectUserCurrentRoles);
   const modalOpen = useSelector(selectModalOpen);
   const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
@@ -86,34 +93,40 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       />
 
       {/* configure automation rules */}
-      <SidebarNavItem 
-        state={modalOpen && (modalContent === 'automation-rules-form') 
-          ? 'active' 
-          : ''
-        }
-        disabled={!selectedProject}
-        handleClick={() => handleModalToggle('automation-rules-form')}
-        icon={<FontAwesomeIcon icon={['fas', 'robot']} />}
-        tooltipContent='Configure automation'
-      />
+      {hasRole(userRoles, WRITE_AUTOMATION_RULES_ROLES) &&
+        <SidebarNavItem 
+          state={modalOpen && (modalContent === 'automation-rules-form') 
+            ? 'active' 
+            : ''
+          }
+          disabled={!selectedProject}
+          handleClick={() => handleModalToggle('automation-rules-form')}
+          icon={<FontAwesomeIcon icon={['fas', 'robot']} />}
+          tooltipContent='Configure automation'
+        />
+      }
 
       {/* save view */}
-      <SidebarNavItem 
-        state={modalOpen && (modalContent === 'save-view-form') ? 'active' : ''}
-        disabled={!selectedView}
-        handleClick={() => handleModalToggle('save-view-form')}
-        icon={<FontAwesomeIcon icon={['fas', 'save']} />}
-        tooltipContent='Save view'
-      />
+      {hasRole(userRoles, WRITE_VIEWS_ROLES) &&
+        <SidebarNavItem 
+          state={modalOpen && (modalContent === 'save-view-form') ? 'active' : ''}
+          disabled={!selectedView}
+          handleClick={() => handleModalToggle('save-view-form')}
+          icon={<FontAwesomeIcon icon={['fas', 'save']} />}
+          tooltipContent='Save view'
+        />
+      }
       
       {/* delete view */}
-      <SidebarNavItem 
-        state={modalOpen && (modalContent === 'delete-view-form') ? 'active' : ''}
-        disabled={!selectedView || !selectedView.editable}
-        handleClick={() => handleModalToggle('delete-view-form')}
-        icon={<FontAwesomeIcon icon={['fas', 'trash-alt']} />}
-        tooltipContent='Delete view'
-      />
+      {hasRole(userRoles, WRITE_VIEWS_ROLES) &&
+        <SidebarNavItem 
+          state={modalOpen && (modalContent === 'delete-view-form') ? 'active' : ''}
+          disabled={!selectedView || !selectedView.editable}
+          handleClick={() => handleModalToggle('delete-view-form')}
+          icon={<FontAwesomeIcon icon={['fas', 'trash-alt']} />}
+          tooltipContent='Delete view'
+        />
+      }
       
       {modalOpen &&
         <Modal 

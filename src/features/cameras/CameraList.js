@@ -1,5 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectUserCurrentRoles } from '../user/userSlice';
+import {
+  hasRole,
+  WRITE_CAMERA_REGISTRATION_ROLES,
+  WRITE_DEPLOYMENTS_ROLES
+} from '../../auth/roles';
 import { styled } from '../../theme/stitches.config';
 import moment from 'moment';
 import { unregisterCamera, selectCamerasLoading } from './camerasSlice';
@@ -121,6 +127,7 @@ const ActiveState = ({ active }) => (
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const format = (date) => moment(date, EXIF).format(DFRS);
   const camerasLoading = useSelector(selectCamerasLoading);
+  const userRoles = useSelector(selectUserCurrentRoles);
   const dispatch = useDispatch();
 
   const handleUnregisterClick = (cameraId) => {
@@ -145,19 +152,24 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                 headerButtons={
                   <>
                     <ActiveState active={cam.active} />
-                    <ManageCamButton
-                      onClick={() => handleSaveDepClick({ cameraId: cam._id })}
-                    >
-                      Add deployment
-                      <FontAwesomeIcon icon={['fas', 'plus']}/>
-                    </ManageCamButton>
-                    {cam.active && 
+                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && 
                       <ManageCamButton
-                        onClick={() => handleUnregisterClick({ cameraId: cam._id })}
+                        onClick={() => handleSaveDepClick({ cameraId: cam._id })}
                       >
-                        Release
-                        <FontAwesomeIcon icon={['fas', 'times']}/>
+                        Add deployment
+                        <FontAwesomeIcon icon={['fas', 'plus']}/>
                       </ManageCamButton>
+                    }
+                    {(hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && 
+                      cam.active) && 
+                        <ManageCamButton
+                          onClick={() => handleUnregisterClick({
+                            cameraId: cam._id 
+                          })}
+                        >
+                          Release
+                          <FontAwesomeIcon icon={['fas', 'times']}/>
+                        </ManageCamButton>
                     }
                   </>
                 }s
@@ -178,30 +190,32 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                         : <Bookend>today</Bookend>
                       }</Date>
                     </DepDates>
-                    <DepButtons>
-                      <IconButton
-                        variant='ghost'
-                        size='small'
-                        onClick={() => handleSaveDepClick({
-                          cameraId: cam._id,
-                          deployment: dep,
-                        })}
-                        disabled={dep.editable === false}
-                      >
-                        <FontAwesomeIcon icon={['fas', 'pen']}/>
-                      </IconButton>
-                      <IconButton
-                        variant='ghost'
-                        size='small'
-                        onClick={() => handleDeleteDepClick({
-                          cameraId: cam._id,
-                          deployment: dep,
-                        })}
-                        disabled={dep.editable === false}
-                      >
-                        <FontAwesomeIcon icon={['fas', 'times']}/>
-                      </IconButton>
-                    </DepButtons>
+                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && 
+                      <DepButtons>
+                        <IconButton
+                          variant='ghost'
+                          size='small'
+                          onClick={() => handleSaveDepClick({
+                            cameraId: cam._id,
+                            deployment: dep,
+                          })}
+                          disabled={dep.editable === false}
+                        >
+                          <FontAwesomeIcon icon={['fas', 'pen']}/>
+                        </IconButton>
+                        <IconButton
+                          variant='ghost'
+                          size='small'
+                          onClick={() => handleDeleteDepClick({
+                            cameraId: cam._id,
+                            deployment: dep,
+                          })}
+                          disabled={dep.editable === false}
+                        >
+                          <FontAwesomeIcon icon={['fas', 'times']}/>
+                        </IconButton>
+                      </DepButtons>
+                    }
                   </DeploymentItem>
                 ))}
               </Accordion>

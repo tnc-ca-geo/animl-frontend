@@ -129,6 +129,7 @@ const BoundingBoxLabel = ({
   setTempObject,
   verticalPos,
   horizontalPos, 
+  isAuthorized,
 }) => {
   const username = useSelector(selectUserUsername);
   const dispatch = useDispatch();
@@ -163,17 +164,20 @@ const BoundingBoxLabel = ({
     // but couldn't get it working
     const handleKeyDown = (e) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
-      if (selected && (e.ctrlKey || e.metaKey) && charCode === 'e') {
+      if (((e.ctrlKey || e.metaKey) && charCode === 'e') &&
+          isAuthorized &&
+          selected
+        ) {
         dispatch(addLabelStart());
       }
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ selected, dispatch ]);
+  }, [ isAuthorized, selected, dispatch ]);
 
   const handleLabelClick = (e) => {
     e.stopPropagation();
-    if (!object.locked && !catSelectorOpen) {
+    if (!object.locked && isAuthorized && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
       dispatch(addLabelStart());
     }
@@ -214,7 +218,7 @@ const BoundingBoxLabel = ({
               className='react-select'
               classNamePrefix='react-select'
               isLoading={availLabels.isLoading}
-              isDisabled={availLabels.isLoading}
+              isDisabled={availLabels.isLoading || !isAuthorized}
               onChange={handleCategoryChange}
               onCreateOption={handleCategoryChange}
               value={createOption(label.category)}
@@ -226,14 +230,14 @@ const BoundingBoxLabel = ({
             </LabelDisplay>
         }
       </div>
-      {(showLabelButtons && !catSelectorOpen) &&
+      {(showLabelButtons && !catSelectorOpen && isAuthorized) &&
         <ValidationButtons 
           imgId={imgId}
           object={object}
           label={label}
           labelColor={labelColor}
           username={username}
-          setShowLabelButtons={setShowLabelButtons}
+          setshowLabelButtons={setShowLabelButtons}
         />
       }
     </StyledBoundingBoxLabel>
