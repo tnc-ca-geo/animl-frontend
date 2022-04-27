@@ -223,7 +223,6 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                     }
                     touched={touched.timezone}
                     options={timezoneOptions}
-                    isSearchable={true}
                   />
                 </FormFieldWrapper>
                 {/*<FormFieldWrapper>

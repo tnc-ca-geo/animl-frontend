@@ -23,7 +23,6 @@ const CameraAdminModal = () => {
   const [ deploymentSelected, setDeploymentSelected ] = useState();
   const dispatch = useDispatch();
 
-  // fetch cameras
   const cameras = useSelector(selectCameras);
   const camerasLoading = useSelector(selectCamerasLoading);
   useEffect(() => {
@@ -33,7 +32,6 @@ const CameraAdminModal = () => {
     }
   }, [cameras.length, camerasLoading, dispatch]);
 
-  // enrich camera configs with active/inactive state
   let enrichedCams = [];
   if (project.cameraConfigs.length && cameras.length) {
     enrichedCams = project.cameraConfigs.map((camConfig) => {

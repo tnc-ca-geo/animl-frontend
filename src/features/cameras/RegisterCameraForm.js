@@ -89,7 +89,6 @@ const RegisterCameraForm = () => {
                     }
                     touched={touched.make}
                     options={makeOptions}
-                    isSearchable={false}
                   />
                 </FormFieldWrapper>
               </FieldRow>
