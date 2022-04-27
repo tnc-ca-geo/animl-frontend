@@ -19,7 +19,7 @@ const contentShow = keyframes({
 });
 
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
-  zIndex: '$2',
+  zIndex: '$4',
   backgroundColor: blackA.blackA9,
   position: 'fixed',
   inset: 0,
@@ -29,7 +29,7 @@ const StyledOverlay = styled(DialogPrimitive.Overlay, {
 });
 
 const StyledContent = styled(DialogPrimitive.Content, {
-  zIndex: '$3',
+  zIndex: '$5',
   backgroundColor: 'white',
   borderRadius: '$2',
   boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',

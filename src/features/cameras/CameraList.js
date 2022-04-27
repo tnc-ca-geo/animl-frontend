@@ -7,12 +7,13 @@ import {
   WRITE_DEPLOYMENTS_ROLES
 } from '../../auth/roles';
 import { styled } from '../../theme/stitches.config';
+import { green } from '@radix-ui/colors';
 import moment from 'moment';
 import { unregisterCamera, selectCamerasLoading } from './camerasSlice';
 import Accordion from '../../components/Accordion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton';
+import { PlusIcon, Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
   DATE_FORMAT_READABLE_SHORT as DFRS,
   DATE_FORMAT_EXIF as EXIF,
@@ -23,15 +24,25 @@ const StyledCameraList = styled('div', {
   borderBottom: 'none',
 });
 
-const ManageCamButton = styled(Button, {
+const ManageCamButtons = styled('div', {
+  position: 'absolute',
+  right: '$3',
+})
+
+const ManageCamButton = styled('button', {
   border: 'none',
-  backgroundColor: '$loContrast',
-  paddingLeft: '$2',
+  backgroundColor: '$gray300',
+  borderRadius: '$1',
+  padding: '$1 $2',
   color: '$hiContrast',
+  marginLeft: '$2',
   '&:hover': {
     color: '$hiContrast',
     backgroundColor: '$gray400',
     cursor: 'pointer',
+  },
+  '&:active': {
+    backgroundColor: '$gray500',
   },
 
   svg: {
@@ -93,18 +104,16 @@ const DeploymentItem = styled('div', {
 
 const StyledActiveState = styled('div', {
   padding: '$0 $2',
-  borderRadius: '$2',
+  borderRadius: '$1',
   variants: {
     active: {
       true: {
-        backgroundColor: '$green100',
-        color: '$green700',
+        color: green.green11,
+        backgroundColor: green.green4,
       },
       false: {
-        backgroundColor: 'gainsboro',
-        '&:hover': {
-          backgroundColor: 'lightgray',
-        },
+        color: '$gray600',
+        backgroundColor: '$gray200',
       },
     },
   },
@@ -123,6 +132,17 @@ const ActiveState = ({ active }) => (
   </StyledActiveState>
 );
 
+// {(hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && 
+//   cam.active) && 
+//     <ManageCamButton
+//       onClick={() => handleUnregisterClick({
+//         cameraId: cam._id 
+//       })}
+//     >
+//       Release
+//       <Cross2Icon/>
+//     </ManageCamButton>
+// }
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const format = (date) => moment(date, EXIF).format(DFRS);
@@ -131,7 +151,6 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const dispatch = useDispatch();
 
   const handleUnregisterClick = (cameraId) => {
-    console.log('handleUnregisterClick: ', cameraId);
     dispatch(unregisterCamera(cameraId));
   };
   
@@ -152,25 +171,25 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                 headerButtons={
                   <>
                     <ActiveState active={cam.active} />
-                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && 
-                      <ManageCamButton
-                        onClick={() => handleSaveDepClick({ cameraId: cam._id })}
-                      >
-                        Add deployment
-                        <FontAwesomeIcon icon={['fas', 'plus']}/>
-                      </ManageCamButton>
-                    }
-                    {(hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && 
-                      cam.active) && 
+                    <ManageCamButtons>
+                      {(hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && 
+                        cam.active) && 
+                          <ManageCamButton
+                            onClick={() => handleUnregisterClick({
+                              cameraId: cam._id 
+                            })}
+                          >
+                            Release
+                          </ManageCamButton>
+                      }
+                      {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && 
                         <ManageCamButton
-                          onClick={() => handleUnregisterClick({
-                            cameraId: cam._id 
-                          })}
+                          onClick={() => handleSaveDepClick({ cameraId: cam._id })}
                         >
-                          Release
-                          <FontAwesomeIcon icon={['fas', 'times']}/>
+                          Add deployment
                         </ManageCamButton>
-                    }
+                      }
+                    </ManageCamButtons>
                   </>
                 }s
               >
@@ -201,7 +220,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           })}
                           disabled={dep.editable === false}
                         >
-                          <FontAwesomeIcon icon={['fas', 'pen']}/>
+                          <Pencil1Icon/>
                         </IconButton>
                         <IconButton
                           variant='ghost'
@@ -212,7 +231,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           })}
                           disabled={dep.editable === false}
                         >
-                          <FontAwesomeIcon icon={['fas', 'times']}/>
+                          <Cross2Icon/>
                         </IconButton>
                       </DepButtons>
                     }

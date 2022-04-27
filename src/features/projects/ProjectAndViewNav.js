@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
-import { DotFilledIcon } from '@radix-ui/react-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconButton from '../../components/IconButton';
 import {
   fetchProjects,
   selectProjects,
@@ -21,15 +18,15 @@ import {
   preFocusImageStart,
 } from '../images/imagesSlice';
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuItemIndicator,
-  DropdownMenuLabel,
-  DropdownMenuArrow,
-} from '../../components/Dropdown';
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuLink,
+  NavigationMenuContent,
+  NavigationMenuViewport,
+  NavigationMenuIndicator,
+} from '../../components/NavigationMenu';
 
 
 const NoneFoundAlert = styled('div', {
@@ -43,46 +40,6 @@ const NoneFoundAlert = styled('div', {
   }
 });
 
-const Crumb = styled('span', {
-  color: '$hiContrast',
-  fontWeight: '$3',
-  position: 'relative',
-  paddingRight: '$2',
-  '&:last-child': {
-    paddingRight: '$1',
-  },
-  '&:not(:first-child)': {
-    paddingLeft: '$2',
-  },
-  '&:hover': {
-    borderColor: '$gray700',
-    cursor: 'pointer',
-  },
-
-  '&[data-state="open"]': {
-    color: '$blue500',
-  },
-  
-  variants: {
-    edited: {
-      true: {
-        color: '$gray500',
-        '&::after': {
-          // bug with stitches pseudo elements:
-          // https://github.com/modulz/stitches/issues/313
-          content: "' *'",
-        },
-      }
-    },
-  }
-});
-
-const Breadcrumbs = styled('div', {
-  fontSize: '$4',
-  fontWeight: '$2',
-  color: '$gray600',
-});
-
 const StyledProjectAndViewNav = styled('div', {
   display: 'flex',
   alignItems: 'center',
@@ -90,6 +47,88 @@ const StyledProjectAndViewNav = styled('div', {
   padding: '$0 $4',
   backgroundColor: '$loContrast',
   // zIndex: '$5',
+});
+
+const ContentList = styled('ul', {
+  display: 'grid',
+  padding: 22,
+  margin: 0,
+  columnGap: 10,
+  listStyle: 'none',
+
+  variants: {
+    layout: {
+      one: {
+        '@media only screen and (min-width: 600px)': {
+          width: 500,
+          gridTemplateColumns: '.75fr 1fr',
+        },
+      },
+      two: {
+        '@media only screen and (min-width: 600px)': {
+          width: 600,
+          gridAutoFlow: 'column',
+          gridTemplateRows: 'repeat(3, 1fr)',
+        },
+      },
+    },
+  },
+});
+
+const ListItem = styled('li', {});
+
+const LinkTitle = styled('div', {
+  fontWeight: 500,
+  lineHeight: 1.2,
+  marginBottom: 5,
+  color: '$hiContrast',
+
+  variants: {
+    selected: {
+      true: {
+        color: '$blue500',
+      }
+    }
+  }
+});
+
+const LinkText = styled('p', {
+  all: 'unset',
+  color: '$gray600',
+  lineHeight: 1.4,
+  fontWeight: 'initial',
+});
+
+const ContentListItem = React.forwardRef(
+  ({ children, title, selected, ...props }, forwardedRef) => (
+    <ListItem>
+      <NavigationMenuLink
+        {...props}
+        ref={forwardedRef}
+        selected={selected}
+        css={{
+          padding: 12,
+          borderRadius: '$2',
+          '&:hover': { backgroundColor: '$gray200' },
+        }}
+      >
+        <LinkTitle selected={selected}>
+          {title}
+        </LinkTitle>
+        <LinkText>{children}</LinkText>
+      </NavigationMenuLink>
+    </ListItem>
+  )
+);
+
+const ViewportPosition = styled('div', {
+  position: 'absolute',
+  display: 'flex',
+  justifyContent: 'center',
+  width: '100%',
+  top: '100%',
+  left: 0,
+  perspective: '2000px',
 });
 
 
@@ -100,7 +139,6 @@ const ProjectAndViewNav = () => {
   const views = useSelector(selectViews);
   const selectedView = useSelector(selectSelectedView);
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
-  const [expandedMenu, setExpandedMenu] = useState(false);
   const dispatch = useDispatch();
 
   // fetch projects
@@ -174,68 +212,61 @@ const ProjectAndViewNav = () => {
         </NoneFoundAlert>
       }
       {selectedView &&
-        <>
-          <Breadcrumbs>
-            <DropdownMenu onOpenChange={setExpandedMenu}>
-              <DropdownMenuTrigger asChild>
-                <Crumb>
-                  {selectedProj.name}
-                </Crumb>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent sideOffset={5}>
-                <DropdownMenuLabel>Projects</DropdownMenuLabel>
-                <DropdownMenuRadioGroup
-                  value={selectedProj._id}
-                  onValueChange={handleProjectMenuItemClick}
-                >
+        <NavigationMenu>
+          <NavigationMenuList>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                {selectedProj.name}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ContentList layout="one">
                   {projects.map((proj) => (
-                    <DropdownMenuRadioItem value={proj._id} key={proj._id}>
-                      <DropdownMenuItemIndicator>
-                        <DotFilledIcon />
-                      </DropdownMenuItemIndicator>
-                      {proj.name}
-                    </DropdownMenuRadioItem>
+                    <ContentListItem
+                      key={proj._id}
+                      title={proj.name}
+                      selected={proj.selected}
+                      onClick={() => handleProjectMenuItemClick(proj._id)}
+                    >
+                      {proj.description}
+                    </ContentListItem>
                   ))}
-                </DropdownMenuRadioGroup>
-                <DropdownMenuArrow offset={12} />
-              </DropdownMenuContent>
-            </DropdownMenu>
-            /
-            <DropdownMenu onOpenChange={setExpandedMenu}>
-              <DropdownMenuTrigger asChild>
-                <Crumb edited={unsavedViewChanges}>
-                  {selectedView.name}
-                </Crumb>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent sideOffset={5}>
-                <DropdownMenuLabel>Views</DropdownMenuLabel>
-                <DropdownMenuRadioGroup
-                  value={selectedView._id}
-                  onValueChange={handleViewMenuItemClick}
-                >
+                </ContentList>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+    
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                {selectedView.name}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ContentList layout="two">
                   {views.map((view) => (
-                    <DropdownMenuRadioItem value={view._id} key={view._id}>
-                      <DropdownMenuItemIndicator>
-                        <DotFilledIcon />
-                      </DropdownMenuItemIndicator>
-                      {view.name}
-                    </DropdownMenuRadioItem>
+                    <ContentListItem
+                      key={view._id}
+                      title={view.name}
+                      selected={view.selected}
+                      onClick={() => handleViewMenuItemClick(view._id)}
+                    >
+                      {view.description}
+                    </ContentListItem>
                   ))}
-                </DropdownMenuRadioGroup>
-                <DropdownMenuArrow offset={12} />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </Breadcrumbs>
-          <IconButton variant='ghost'>
-            <FontAwesomeIcon icon={ 
-              expandedMenu ? ['fas', 'angle-up'] : ['fas', 'angle-down']
-            }/>
-          </IconButton>
-        </>
+                </ContentList>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+    
+            <NavigationMenuIndicator />
+          </NavigationMenuList>
+    
+          <ViewportPosition>
+            <NavigationMenuViewport />
+          </ViewportPosition>
+        </NavigationMenu>
       }
     </StyledProjectAndViewNav>
   );
 };
+
 
 function checkIfValidMD5Hash(hash) {
   const regexExp = /^[a-f0-9]{32}$/gi;

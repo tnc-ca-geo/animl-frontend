@@ -40,6 +40,7 @@ const AccordionHeader = styled('div', {
   borderBottom: '1px solid $gray400',
   padding: '$0 $2 $0 $2',
   pointerEvents: 'auto',
+  position: 'relative',
   '&:hover': {
     cursor: 'pointer',
   },

@@ -11,24 +11,42 @@ import { selectWorkingImages, labelValidated, markedEmpty } from '../review/revi
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
-import Button from '../../components/Button';
+// import Button from '../../components/Button';
 
-const MarkEmptyButton = styled(Button, {
+const EditObjectButton = styled('button', {
   border: 'none',
   borderRadius: '$0',
+  fontFamily: 'roboto',
   backgroundColor: '$loContrast',
   color: '$hiContrast',
+  height: '$6',
+  fontWeight: '$3',
+  fontSize: '$2',
+  paddingLeft: '$4',
+  paddingRight: '$4',
+  textTransform: 'uppercase',
+  transition: 'all 40ms linear',
   zIndex: '$3',
   '&:hover': {
     color: '$hiContrast',
     backgroundColor: '$gray400',
     cursor: 'pointer',
   },
+
+  svg: {
+    paddingRight: '$2'
+  },
 });
 
-const AddObjectButton = styled(Button, {
+const AddObjectButton = styled('Button', {
   border: 'none',
   borderRadius: '$0',
+  backgroundColor: '$hiContrast',
+  color: '$loContrast',
+  height: '$5',
+  fontWeight: '$3',
+  textTransform: 'uppercase',
+  transition: 'all 40ms linear',
   zIndex: '$3',
   '&:hover': {
     color: '$hiContrast',
@@ -151,12 +169,20 @@ const FullSizeImage = ({ image, focusIndex }) => {
       <FullImage src={image.url} /*onLoad={handleImgLoaded}*//>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
-          <MarkEmptyButton onClick={handleMarkEmptyButtonClick} size='large' >
+          <EditObjectButton
+            onClick={handleMarkEmptyButtonClick}
+          >
             <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
-          </MarkEmptyButton>
-          <AddObjectButton onClick={handleAddObjectButtonClick} size='large' >
+          </EditObjectButton>
+          <EditObjectButton
+            onClick={handleAddObjectButtonClick}
+            css={{
+              color: '$loContrast',
+              backgroundColor: '$hiContrast',
+            }}
+          >
             <FontAwesomeIcon icon={['fas', 'plus']} /> Add object
-          </AddObjectButton>
+          </EditObjectButton>
         </EditObjectButtons>
       }
     </ImageWrapper>

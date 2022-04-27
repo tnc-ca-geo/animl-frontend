@@ -63,12 +63,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
-  console.log('modalContent: ', modalContent);
-  console.log('modalOpen: ', modalOpen);
-
-
   const handleModalToggle = (content) => {
-    console.log('handleModalToggle - content: ', content)
     dispatch(setModalOpen(!modalOpen));
     setModalContent(content);
   };
