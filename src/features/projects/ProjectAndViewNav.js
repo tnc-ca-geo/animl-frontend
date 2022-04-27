@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
-import { red } from '@radix-ui/colors';
+import { DotFilledIcon } from '@radix-ui/react-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import {
@@ -20,68 +20,27 @@ import {
   fetchImageContext,
   preFocusImageStart,
 } from '../images/imagesSlice';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuItemIndicator,
+  DropdownMenuLabel,
+  DropdownMenuArrow,
+} from '../../components/Dropdown';
+
 
 const NoneFoundAlert = styled('div', {
-  // fontSize: '$3',
-  // padding: '$2 $3',
-  // fontFamily: '$roboto',
   fontSize: '$4',
   fontWeight: '$3',
   color: '$hiContrast',
-  // backgroundColor: red.red2,
-  // borderRadius: '$1',
-  // boxShadow: `inset 0 0 0 1px ${red.red7}`,
-  // '&:hover': { boxShadow: `inset 0 0 0 1px ${red.red8}` },
-  // '&:focus': { boxShadow: `0 0 0 2px ${red.red8}` },
   '&::after': {
     content: '\\1F400',
     paddingLeft: '$2',
     fontSize: '20px'
   }
-});
-
-const ViewMenuItem = styled('li', {
-  color: '$hiContrast',
-  padding: '$2 $3',
-  fontWeight: '$2',
-
-  '&:not(:last-child)': {
-    borderBottom: '1px solid $gray400',
-  },
-
-  '&:hover': {
-    color: '$blue500',
-    backgroundColor: '$gray200',
-  },
-
-  variants: {
-    selected: {
-      true: {
-        color: '$blue500',
-        backgroundColor: '$blue200',
-      }
-    }
-  },
-
-});
-
-const DropDownMenu = styled('div', {
-  position: 'absolute',
-  zIndex: '$5',
-  width: '250px',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  top: '$5',
-  background: '$loContrast',
-  border: '1px solid $gray400',
-  borderRadius: '$2',
-  boxShadow: `rgba(22, 23, 24, 0.35) 0px 10px 38px -10px, 
-   rgba(22, 23, 24, 0.2) 0px 10px 20px -15px`,
-  ul: {
-   listStyleType: 'none',
-   margin: '$0',
-   paddingLeft: '$0',
-  },
 });
 
 const Crumb = styled('span', {
@@ -99,6 +58,10 @@ const Crumb = styled('span', {
     borderColor: '$gray700',
     cursor: 'pointer',
   },
+
+  '&[data-state="open"]': {
+    color: '$blue500',
+  },
   
   variants: {
     edited: {
@@ -111,11 +74,6 @@ const Crumb = styled('span', {
         },
       }
     },
-    isExpanded: {
-      true: {
-        color: '$blue500',
-      }
-    }
   }
 });
 
@@ -142,7 +100,7 @@ const ProjectAndViewNav = () => {
   const views = useSelector(selectViews);
   const selectedView = useSelector(selectSelectedView);
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
-  const [expandedMenu, setExpandedMenu] = useState(null);
+  const [expandedMenu, setExpandedMenu] = useState(false);
   const dispatch = useDispatch();
 
   // fetch projects
@@ -159,7 +117,6 @@ const ProjectAndViewNav = () => {
     const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
     const projIdInPath = paths[0];
     const viewIdInPath = paths[1];
-
     const projectsReady = !projectsLoading.isLoading && projects.length;
     const idsInPath = projIdInPath && viewIdInPath;
 
@@ -179,7 +136,6 @@ const ProjectAndViewNav = () => {
     let paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
     let projId = paths[0];
     let viewId = paths[1];
-
     const projectsReady = !projectsLoading.isLoading && projects.length;
     const idsInPath = projId && viewId;
 
@@ -197,34 +153,16 @@ const ProjectAndViewNav = () => {
     }
   }, [projects.length, projectsLoading, routerLocation, dispatch]);
 
-  useEffect(() => {
-    const handleWindowClick = (e) => { 
-      if (!e.target.dataset.menu) setExpandedMenu(null);
-    };
-    expandedMenu 
-      ? window.addEventListener('click', handleWindowClick)
-      : window.removeEventListener('click', handleWindowClick);
-    return () => window.removeEventListener('click', handleWindowClick);
-  }, [expandedMenu, setExpandedMenu]);
-
-  const handleBreadCrumbClick = (e) => {
-    setExpandedMenu(e.target.dataset.menu);
+  const handleProjectMenuItemClick = (projId) => {
+    if (projId === selectedProj._id) return;
+    const project = projects.find((p) => p._id === projId);
+    const viewId = project.views.find((v) => v.name === 'All images')._id;
+    dispatch(push(`/${projId}/${viewId}`));
   };
 
-  const handleProjectMenuItemClick = (e) => {
-    const projId = e.target.dataset.projId;
-    if (projId !== selectedProj._id) {
-      const project = projects.find((p) => p._id === projId);
-      const viewId = project.views.find((v) => v.name === 'All images')._id;
-      dispatch(push(`/${projId}/${viewId}`));
-    }
-  };
-
-  const handleViewMenuItemClick = (e) => {
-    const viewId = e.target.dataset.viewId;
-    if (viewId !== selectedView._id) {
-      dispatch(push(`/${selectedProj._id}/${viewId}`));
-    }
+  const handleViewMenuItemClick = (viewId) => {
+    if (viewId === selectedView._id) return;
+    dispatch(push(`/${selectedProj._id}/${viewId}`));
   };
 
   return (
@@ -238,54 +176,55 @@ const ProjectAndViewNav = () => {
       {selectedView &&
         <>
           <Breadcrumbs>
-            <Crumb 
-              data-menu='project'
-              onClick={handleBreadCrumbClick}
-              isExpanded={expandedMenu === 'project'}
-            >
-              {selectedProj.name}
-              {expandedMenu === 'project' &&
-                <DropDownMenu>
-                  <ul>
-                    {projects.map((proj) => (
-                      <ViewMenuItem
-                        key={proj._id}
-                        selected={proj.selected}
-                        data-proj-id={proj._id}
-                        onClick={handleProjectMenuItemClick}
-                      >
-                        {proj.name}
-                      </ViewMenuItem>
-                    ))}
-                  </ul>
-                </DropDownMenu>
-              }
-            </Crumb>
+            <DropdownMenu onOpenChange={setExpandedMenu}>
+              <DropdownMenuTrigger asChild>
+                <Crumb>
+                  {selectedProj.name}
+                </Crumb>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent sideOffset={5}>
+                <DropdownMenuLabel>Projects</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={selectedProj._id}
+                  onValueChange={handleProjectMenuItemClick}
+                >
+                  {projects.map((proj) => (
+                    <DropdownMenuRadioItem value={proj._id} key={proj._id}>
+                      <DropdownMenuItemIndicator>
+                        <DotFilledIcon />
+                      </DropdownMenuItemIndicator>
+                      {proj.name}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+                <DropdownMenuArrow offset={12} />
+              </DropdownMenuContent>
+            </DropdownMenu>
             /
-            <Crumb
-              data-menu='view'
-              onClick={handleBreadCrumbClick}
-              isExpanded={expandedMenu === 'view'}
-              edited={unsavedViewChanges}
-            >
-              {selectedView.name}
-              {expandedMenu === 'view' &&
-                <DropDownMenu>
-                  <ul>
-                    {views.map((view) => (
-                      <ViewMenuItem
-                        key={view._id}
-                        selected={view.selected}
-                        data-view-id={view._id}
-                        onClick={handleViewMenuItemClick}
-                      >
-                        {view.name}
-                      </ViewMenuItem>
-                    ))}
-                  </ul>
-                </DropDownMenu>
-              }
-            </Crumb>
+            <DropdownMenu onOpenChange={setExpandedMenu}>
+              <DropdownMenuTrigger asChild>
+                <Crumb edited={unsavedViewChanges}>
+                  {selectedView.name}
+                </Crumb>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent sideOffset={5}>
+                <DropdownMenuLabel>Views</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={selectedView._id}
+                  onValueChange={handleViewMenuItemClick}
+                >
+                  {views.map((view) => (
+                    <DropdownMenuRadioItem value={view._id} key={view._id}>
+                      <DropdownMenuItemIndicator>
+                        <DotFilledIcon />
+                      </DropdownMenuItemIndicator>
+                      {view.name}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+                <DropdownMenuArrow offset={12} />
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Breadcrumbs>
           <IconButton variant='ghost'>
             <FontAwesomeIcon icon={ 
