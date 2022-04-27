@@ -121,6 +121,13 @@ const ContentListItem = React.forwardRef(
   )
 );
 
+const MenuTitle = styled('div', {
+  color: '$gray600',
+  fontWeight: '$2',
+  paddingLeft: '$5',
+  paddingTop: '$5',
+});
+
 const ViewportPosition = styled('div', {
   position: 'absolute',
   display: 'flex',
@@ -220,6 +227,7 @@ const ProjectAndViewNav = () => {
                 {selectedProj.name}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
+                <MenuTitle>Projects</MenuTitle>
                 <ContentList layout="one">
                   {projects.map((proj) => (
                     <ContentListItem
@@ -240,6 +248,7 @@ const ProjectAndViewNav = () => {
                 {selectedView.name}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
+                <MenuTitle>Views</MenuTitle>
                 <ContentList layout="two">
                   {views.map((view) => (
                     <ContentListItem
