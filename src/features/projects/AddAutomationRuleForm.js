@@ -166,6 +166,7 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
                   { value: 'image-added', label: 'Image added' },
                   { value: 'label-added', label: 'Label added' },
                 ]}
+                isSearchable={false}
               />
             </FormFieldWrapper>
             {values.event.type.value === 'label-added' && (
