@@ -27,7 +27,7 @@ const PulseCircle = styled('div', {
 
 export const PulseSpinner = () => (
   <PulseCircle className='spinner' />
-)
+);
 
 const circleAnimation = keyframes({
   '0%, 80%, 100%': {

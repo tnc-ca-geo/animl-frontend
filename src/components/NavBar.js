@@ -54,9 +54,7 @@ const NavBar = () => {
           width='126'
         />
       </Logo>
-      <ProjectAndViewNavWrapper>
-        <ProjectAndViewNav />
-      </ProjectAndViewNavWrapper>
+      <ProjectAndViewNav />
       <Button
         onClick={handleSignOutButtonClick}
         size='small'

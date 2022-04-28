@@ -13,8 +13,8 @@ import ErrorAlerts from '../../components/ErrorAlerts';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
-  // zIndex: '$1',
 });
+
 
 const ViewExplorer = () => {
   const selectedView = useSelector(selectSelectedView);
@@ -41,17 +41,14 @@ const ViewExplorer = () => {
         filtersPanelOpen={filtersPanelOpen}
       />
       {filtersPanelOpen && 
-        <FiltersPanel 
-          toggleFiltersPanel={toggleFiltersPanel}
-        />
+        <FiltersPanel toggleFiltersPanel={toggleFiltersPanel}/>
       }
       <ImagesPanel />
-      {loupeOpen &&
-        <Loupe />
-      }
+      {loupeOpen && <Loupe />}
       <ErrorAlerts />
     </ViewExplorerWrapper>
   );
 };
+
 
 export default ViewExplorer;

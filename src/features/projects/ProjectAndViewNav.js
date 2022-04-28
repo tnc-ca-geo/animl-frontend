@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
@@ -38,15 +38,6 @@ const NoneFoundAlert = styled('div', {
     paddingLeft: '$2',
     fontSize: '20px'
   }
-});
-
-const StyledProjectAndViewNav = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '$0 $4',
-  backgroundColor: '$loContrast',
-  // zIndex: '$5',
 });
 
 const ContentList = styled('ul', {
@@ -211,7 +202,7 @@ const ProjectAndViewNav = () => {
   };
 
   return (
-    <StyledProjectAndViewNav>
+    <>
       {projectsLoading.isLoading && 'Loading projects...'}
       {projectsLoading.noneFound && 
         <NoneFoundAlert>
@@ -272,7 +263,7 @@ const ProjectAndViewNav = () => {
           </ViewportPosition>
         </NavigationMenu>
       }
-    </StyledProjectAndViewNav>
+    </>
   );
 };
 

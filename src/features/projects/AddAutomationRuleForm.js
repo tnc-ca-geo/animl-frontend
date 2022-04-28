@@ -86,54 +86,39 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
 
+  // fetch model source records
   useEffect(() => {
     if (!models || !models.length) {
       dispatch(fetchModels({ _ids: availableModels}));
     }
   }, [models, availableModels, dispatch]);
 
+  // save rule
   const handleSaveRulesSubmit = ({name, event, action}) => {
-    let newRule = {
-      name,
-      event: {
-        type: event.type.value,
-        ...(event.label && { label: event.label }),
-      },
-      action: { type: action.type.value },
-    };
-
-    if (action.type.value === 'run-inference') {
-      newRule.action.mlModel = action.model.value;
-      newRule.action.categoryConfig = action.categoryConfig;
-    }
-    else if (action.type.value === 'send-alert') {
-      const recipients = action.alertRecipients.replace(/\s/g, '').split(',');
-      newRule.action.alertRecipients = recipients;
-    }
-
+    const newRule = buildRule(name, event, action);
     const rules = view.automationRules.concat(newRule);
-    const payload = {
+    dispatch(editView('update', {
       viewId: view._id,
       diffs: { automationRules: rules }
-    };
-    
-    dispatch(editView('update', payload));
+    }));
     hideAddRuleForm();
   };
 
+  // discard rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
 
   return (
     <FormWrapper>
       <Formik
-        initialValues={{
-          ...emptyRule
-        }}
+        initialValues={{ ...emptyRule }}
         validationSchema={addRuleSchema} 
         onSubmit={handleSaveRulesSubmit}
       >
-      {({ values, errors, touched, setFieldValue, setFieldTouched, isValid, dirty }) => (
+      {({ values, errors, touched, setFieldValue, setFieldTouched, 
+        isValid, dirty }) => (
         <Form>
+
+          {/* name */}
           <FieldRow>
             <FormFieldWrapper>
               <label htmlFor='rule-name'>Rule name</label>
@@ -149,7 +134,8 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
               />
             </FormFieldWrapper>
           </FieldRow>
-          {/*<p>What event or condition should trigger your rule?</p>*/}
+
+          {/* trigger */}
           <FieldRow>
             <FormFieldWrapper>
               <SelectField
@@ -166,6 +152,7 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
                   { value: 'image-added', label: 'Image added' },
                   { value: 'label-added', label: 'Label added' },
                 ]}
+                isSearchable={false}
               />
             </FormFieldWrapper>
             {values.event.type.value === 'label-added' && (
@@ -183,7 +170,8 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
               </FormFieldWrapper>
             )}
           </FieldRow>
-          {/*<p>What action would you like to take?</p>*/}
+
+          {/* action */}
           <FieldRow>
             <FormFieldWrapper>
               <SelectField
@@ -194,7 +182,6 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
                   setFieldValue(name, value);
                   if (value.value === 'send-alert') {
                     setFieldValue('action.categoryConfig', {});
-                    // setFieldValue('action.confThreshold', null);
                   } 
                   else if (value.value === 'run-inference') {
                     setFieldValue('action.model', null);
@@ -209,6 +196,7 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
                   { value: 'run-inference', label: 'Run inference' },
                   { value: 'send-alert', label: 'Send alert' },
                 ]}
+                isSearchable={false}
               />
             </FormFieldWrapper>
             {values.action.type.value === 'run-inference' && (
@@ -240,6 +228,7 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
                     value: model,
                     label: `${model}`,
                   }))}
+                  isSearchable={false}
                 />
               </FormFieldWrapper>
             )}
@@ -262,7 +251,8 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
               </FormFieldWrapper>
             )}
           </FieldRow>
-          {/* Category configurations */}
+
+          {/* category configurations */}
           {Object.entries(values.action.categoryConfig).length > 0 && 
             <label>Confidence thresholds</label>
           }
@@ -273,6 +263,7 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
               ))}
             </>
           </FieldArray>
+          
           <ButtonRow>
             <Button
               type='button'
@@ -295,5 +286,30 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
     </FormWrapper>
   );
 };
+
+
+function buildRule(name, event, action) {
+
+  let newRule = {
+    name,
+    event: {
+      type: event.type.value,
+      ...(event.label && { label: event.label }),
+    },
+    action: { type: action.type.value },
+  };
+
+  if (action.type.value === 'run-inference') {
+    newRule.action.mlModel = action.model.value;
+    newRule.action.categoryConfig = action.categoryConfig;
+  }
+  else if (action.type.value === 'send-alert') {
+    const recipients = action.alertRecipients.replace(/\s/g, '').split(',');
+    newRule.action.alertRecipients = recipients;
+  }
+
+  return newRule;
+}
+
 
 export default AddAutomationRuleForm;

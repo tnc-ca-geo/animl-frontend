@@ -23,6 +23,7 @@ const CameraAdminModal = () => {
   const [ deploymentSelected, setDeploymentSelected ] = useState();
   const dispatch = useDispatch();
 
+  // fetch camera source records
   const cameras = useSelector(selectCameras);
   const camerasLoading = useSelector(selectCamerasLoading);
   useEffect(() => {
@@ -32,6 +33,7 @@ const CameraAdminModal = () => {
     }
   }, [cameras.length, camerasLoading, dispatch]);
 
+  // enrich camera config records with active state
   let enrichedCams = [];
   if (project.cameraConfigs.length && cameras.length) {
     enrichedCams = project.cameraConfigs.map((camConfig) => {
@@ -44,7 +46,6 @@ const CameraAdminModal = () => {
   }
 
   const handleSaveDepClick = ({ cameraId, deployment }) => {
-    console.log('handleSaveDepClick: ', cameraId)
     setShowSaveDepForm(true);
     setCameraSelected(cameraId);
     setDeploymentSelected(deployment);
@@ -58,8 +59,6 @@ const CameraAdminModal = () => {
 
   const handleCancelEditClick = () => setShowSaveDepForm(false);
   const handleCancelDeleteClick = () => setShowDeleteDepForm(false);
-
-  // TODO AUTH: move spinner overlay to this component and remove from forms
 
   return (
     <div>

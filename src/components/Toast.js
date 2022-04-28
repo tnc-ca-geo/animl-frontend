@@ -1,7 +1,7 @@
 
 
 import { styled, keyframes } from '@stitches/react';
-import { violet, blackA, mauve, slate, red } from '@radix-ui/colors';
+import { slate, red } from '@radix-ui/colors';
 import * as ToastPrimitive from '@radix-ui/react-toast';
 
 const VIEWPORT_PADDING = 25;

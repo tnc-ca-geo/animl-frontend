@@ -13,7 +13,11 @@ import {
   ButtonRow,
   HelperText,
 } from '../../components/Form';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import {
+  PulseSpinner,
+  SpinnerOverlay
+} from '../../components/Spinner';
+
 
 const DepName = styled('span', {
   fontWeight: '$5',
@@ -24,10 +28,10 @@ const deleteDeploymentSchema = Yup.object().shape({
   deploymentId: Yup.string().required('A deployment ID is required'),
 });
 
+
 const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   const [queuedForClose, setQueuedForClose ] = useState(false);
   const depsLoading = useSelector(selectDeploymentsLoading);
-  
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
@@ -51,22 +55,16 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
         <Formik
           initialValues={{ cameraId: cameraId, deploymentId: deployment._id }}
           validationSchema={deleteDeploymentSchema}
-          onSubmit={(values) => { handleDeleteDeploymentSubmit(values)}}
+          onSubmit={(values) => { handleDeleteDeploymentSubmit(values) }}
         >
-          {({ errors, touched }) => (
+          {() => (
             <Form>
               <HelperText>
                 Are you sure you'd like to delete 
                 the <DepName>{deployment.name}</DepName> deployment?
               </HelperText>
-              <Field
-                name='cameraId'
-                type='hidden'
-              />
-              <Field
-                name='deploymentId'
-                type='hidden'
-              />
+              <Field name='cameraId' type='hidden' />
+              <Field name='deploymentId' type='hidden' />
               <ButtonRow>
                 <Button
                   type='button'
@@ -84,9 +82,9 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
         </Formik>
       </FormWrapper>
     </div>
-
   );
 };
+
 
 export default DeleteDeploymentForm;
 

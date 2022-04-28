@@ -70,22 +70,22 @@ const SaveViewForm = ({ handleClose }) => {
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
   const dispatch = useDispatch();
 
+  // handle closing
   useEffect(() => {
     if (queuedForClose && !viewsLoading.isLoading) handleClose();
   }, [queuedForClose, viewsLoading.isLoading, handleClose]);
 
-  const handleSaveModeSelection = (mode) => {
-    setSaveMode(mode);
-  };
-
+  // handle saving and updating view
   const handleSaveViewSubmit = (operation, selectedView, formVals) => {
-    const payload = (operation === 'update')
-      ? {
-          viewId: selectedView._id,
-          diffs: { filters: formVals.filters }
-        }
-      : formVals;
-    dispatch(editView(operation, payload));
+    if (operation === 'create') {
+      dispatch(editView(operation, formVals));
+    }
+    else if (operation === 'update') {
+      dispatch(editView(operation, {
+        viewId: selectedView._id,
+        diffs: { filters: formVals.filters }
+      }));    
+    }
     setQueuedForClose(true);
   };
 
@@ -102,7 +102,7 @@ const SaveViewForm = ({ handleClose }) => {
             size='large'
             disabled={!selectedView.editable || !unsavedViewChanges}
             active={saveMode === 'update' ? true : false}
-            onClick={() => handleSaveModeSelection('update')}
+            onClick={() => setSaveMode('update')}
           >
             <FontAwesomeIcon icon={['fas', 'edit']} />
             Update current view
@@ -110,105 +110,101 @@ const SaveViewForm = ({ handleClose }) => {
           <SaveModeTab
             size='large'
             active={saveMode === 'create' ? 'true' : 'false'}
-            onClick={() => handleSaveModeSelection('create')}
+            onClick={() => setSaveMode('create')}
           >
             <FontAwesomeIcon icon={['fas', 'plus']} />
             Create new view
           </SaveModeTab>
         </FieldRow>
-          {(saveMode === 'update') &&
-            <FormWrapper>
-              <Formik
-                initialValues={{ filters: activeFilters }}
-                onSubmit={(values) => {
-                  handleSaveViewSubmit(saveMode, selectedView, values);
-                }}
-              >
-                {({ errors, touched }) => (
-                  <Form>
-                    <HelperText>
-                      Are you sure you'd like to overwrite the filters for 
-                      the <ViewName>{selectedView.name}</ViewName> view?
-                    </HelperText>
-                    <Field
-                      name='filters'
-                      type='hidden'
-                    />
-                    <ButtonRow>
-                      <Button size='large' type='submit'>
-                        Save view
-                      </Button>
-                    </ButtonRow>
-                  </Form>
-                )}
-              </Formik>
-            </FormWrapper>
-          }
-          {(saveMode === 'create') &&
-            <FormWrapper>
-              <Formik
-                initialValues={{
-                  name: '',
-                  description: '',
-                  filters: activeFilters,
-                  editable: true,
-                }}
-                validationSchema={newViewSchema}
-                onSubmit={(values) => {
-                  handleSaveViewSubmit(saveMode, selectedView, values);
-                }}              >
-                {({ errors, touched, isValid, dirty }) => (
-                  <Form>
-                    <FieldRow>
-                      <FormFieldWrapper>
-                        <label htmlFor='name'>Name</label>
-                        <Field
-                          name='name'
-                          id='name'
-                        />
-                        <ErrorMessage component={FormError} name='name' />
-                      </FormFieldWrapper>
-                    </FieldRow>
-                    <FieldRow>
-                      <FormFieldWrapper>
-                        <label htmlFor='description'>Description</label>
-                        <Field
-                          name='description'
-                          id='description'
-                          component='textarea'
-                        />
-                        <ErrorMessage
-                          component={FormError}
-                          name='description'
-                        />
-                      </FormFieldWrapper>
-                    </FieldRow>
-                    <Field
-                      name='filters'
-                      type='hidden'
-                    />
-                    <Field
-                      name='editable'
-                      type='hidden'
-                    />
-                    <ButtonRow>
-                      <Button 
-                        type='submit'
-                        size='large'
-                        disabled={!isValid || !dirty}
-                      >
-                        Save view
-                      </Button>
-                    </ButtonRow>
-                  </Form>
-                )}
-              </Formik>
-            </FormWrapper>
-          }
+        {(saveMode === 'update') &&
+          <FormWrapper>
+            <Formik
+              initialValues={{ filters: activeFilters }}
+              onSubmit={(values) => {
+                handleSaveViewSubmit(saveMode, selectedView, values);
+              }}
+            >
+              {() => (
+                <Form>
+                  <HelperText>
+                    Are you sure you'd like to overwrite the filters for 
+                    the <ViewName>{selectedView.name}</ViewName> view?
+                  </HelperText>
+                  <Field name='filters' type='hidden'/>
+                  <ButtonRow>
+                    <Button size='large' type='submit'>
+                      Update view
+                    </Button>
+                  </ButtonRow>
+                </Form>
+              )}
+            </Formik>
+          </FormWrapper>
+        }
+        {(saveMode === 'create') &&
+          <FormWrapper>
+            <Formik
+              initialValues={{
+                name: '',
+                description: '',
+                filters: activeFilters,
+                editable: true,
+              }}
+              validationSchema={newViewSchema}
+              onSubmit={(values) => {
+                handleSaveViewSubmit(saveMode, selectedView, values);
+              }}              
+            >
+              {({ isValid, dirty }) => (
+                <Form>
+
+                  {/* name */}
+                  <FieldRow>
+                    <FormFieldWrapper>
+                      <label htmlFor='name'>Name</label>
+                      <Field name='name' id='name'/>
+                      <ErrorMessage component={FormError} name='name' />
+                    </FormFieldWrapper>
+                  </FieldRow>
+
+                  {/* description */}
+                  <FieldRow>
+                    <FormFieldWrapper>
+                      <label htmlFor='description'>Description</label>
+                      <Field
+                        name='description'
+                        id='description'
+                        component='textarea'
+                      />
+                      <ErrorMessage component={FormError} name='description'/>
+                    </FormFieldWrapper>
+                  </FieldRow>
+
+                  {/* filters */}
+                  <Field name='filters' type='hidden'/>
+
+                  {/* editable */}
+                  <Field name='editable' type='hidden'/>
+
+                  <ButtonRow>
+                    <Button 
+                      type='submit'
+                      size='large'
+                      disabled={!isValid || !dirty}
+                    >
+                      Save view
+                    </Button>
+                  </ButtonRow>
+                </Form>
+              )}
+            </Formik>
+          </FormWrapper>
+        }
       </div>
     </div>
   );
 };
+
 
 export default SaveViewForm;
 

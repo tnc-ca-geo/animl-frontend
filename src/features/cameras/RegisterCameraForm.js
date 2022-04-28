@@ -15,7 +15,6 @@ import {
   FieldRow,
   FormFieldWrapper,
   ButtonRow,
-  FormError
 } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { SUPPORTED_CAM_MAKES  } from '../../config.js';
@@ -31,13 +30,13 @@ const registerCameraSchema = Yup.object().shape({
   }),
 });
 
+
 const RegisterCameraForm = () => {
   const camerasLoading = useSelector(selectCamerasLoading);
   const makeOptions = SUPPORTED_CAM_MAKES.map((m) => ({ value: m, label: m }));
   const dispatch = useDispatch();
 
   const handleRegisterCameraSubmit = (formVals) => {
-    console.log('handleRegisterCameraSubmit() - formVals: ', formVals);
     dispatch(registerCamera({
       cameraId: formVals.cameraId,
       make: formVals.make.value,
@@ -58,12 +57,10 @@ const RegisterCameraForm = () => {
             make: makeOptions[0]
           }}
           validationSchema={registerCameraSchema}
-          onSubmit={(values) => { 
-            console.log('onSubmit firing')
-            handleRegisterCameraSubmit(values)
-          }}
+          onSubmit={(values) => handleRegisterCameraSubmit(values)}
         >
-          {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
+          {({ values, errors, touched, isValid, dirty, setFieldValue, 
+            setFieldTouched }) => (
             <Form>
               <FormSubheader>
                 Register a new camera
@@ -71,10 +68,7 @@ const RegisterCameraForm = () => {
               <FieldRow>
                 <FormFieldWrapper>
                   <label htmlFor='name'>Camera Serial Number</label>
-                  <Field
-                    name='cameraId'
-                    id='cameraId'
-                  />
+                  <Field name='cameraId' id='cameraId'/>
                   {/*<ErrorMessage component={FormError} name='cameraId' />*/}
                 </FormFieldWrapper>
                 <FormFieldWrapper>
@@ -84,11 +78,10 @@ const RegisterCameraForm = () => {
                     value={values.make}
                     onChange={setFieldValue}
                     onBlur={setFieldTouched}
-                    error={_.has(errors, 'make.value') &&
-                      errors.make.value
-                    }
+                    error={_.has(errors, 'make.value') && errors.make.value}
                     touched={touched.make}
                     options={makeOptions}
+                    isSearchable={false}
                   />
                 </FormFieldWrapper>
               </FieldRow>
@@ -101,11 +94,6 @@ const RegisterCameraForm = () => {
                   Register Camera
                 </Button>
               </ButtonRow>
-              {/*{camerasLoading.errors && 
-                camerasLoading.errors.map((err, i) => (
-                  <FormError key={i}>{err.message}</FormError>
-                ))
-              }*/}
             </Form>
           )}
         </Formik>

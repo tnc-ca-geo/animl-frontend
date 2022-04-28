@@ -2,12 +2,12 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import { editView, selectViewsLoading } from '../projects/projectsSlice';
 import IconButton from '../../components/IconButton';
 import Button from '../../components/Button';
 import { ButtonRow } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+
 
 const Rule = styled('li', {
   display: 'flex',
@@ -36,9 +36,9 @@ const StyledRuleDescription = styled('div', {
   }
 });
 
+
 const RuleDescription = ({ rule, availableModels }) => {
   const model = availableModels.find((m) => m === rule.action.mlModel);
-
   return (
     <StyledRuleDescription>
       <RuleTitle>{rule.name}</RuleTitle>
@@ -58,6 +58,7 @@ const RuleDescription = ({ rule, availableModels }) => {
   );
 };
 
+
 const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
   const viewsLoading = useSelector(selectViewsLoading);
   const dispatch = useDispatch();
@@ -67,13 +68,10 @@ const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
     const rules = view.automationRules.filter((rule) => (
       rule._id.toString() !== ruleToRemove
     ));
-    const payload = {
+    dispatch(editView('update', {
       viewId: view._id,
-      diffs: {
-        automationRules: rules,
-      }
-    };
-    dispatch(editView('update', payload));
+      diffs: { automationRules: rules }
+    }));
   };
 
   return (
@@ -114,6 +112,7 @@ const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
     </div>
   );
 };
+
 
 export default AutomationRulesList;
 

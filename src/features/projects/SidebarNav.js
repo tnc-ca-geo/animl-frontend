@@ -55,6 +55,7 @@ const modalContentMap = {
   },
 };
 
+
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const [modalContent, setModalContent] = useState();
@@ -137,20 +138,9 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         {modalContent && modalContentMap[modalContent].content}
       </Modal>
 
-      {/*
-      {modalOpen &&
-        <Modal 
-          handleClose={handleModalToggle}
-          title={modalContentMap[modalContent].title}
-          size={modalContentMap[modalContent].size}
-        >
-          {modalContentMap[modalContent].content}
-        </Modal>
-      }
-    */}
-
     </StyledSidebarNav>
   );
 };
+
 
 export default SidebarNav;

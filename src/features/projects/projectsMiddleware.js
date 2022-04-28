@@ -19,6 +19,7 @@ import {
   deleteViewSuccess
 } from './projectsSlice'
 
+
 // enrich newly selected project and view payload
 export const enrichProjAndViewPayload = store => next => action => {
 

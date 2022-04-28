@@ -7,6 +7,7 @@ import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 
+
 const StyledFieldRow = styled(FieldRow, {
   paddingTop: '$2',
 });
@@ -102,6 +103,7 @@ export function fieldToSlider({
   };
 };
 
+
 const Slider = (props) => (
   <StyledSlider
     {...fieldToSlider(props)}
@@ -119,7 +121,6 @@ const DisabledCheckbox = (props) => {
   const handleCheckboxChange = () => {
     props.form.setFieldValue(props.field.name, !props.field.value);
   };
-
   return (
     <Checkbox
       checked={!props.value}
@@ -132,6 +133,7 @@ const DisabledCheckbox = (props) => {
 const Track = (props, state) => <StyledTrack {...props} index={state.index} />;
 const Thumb = (props, state) => <StyledThumb {...props} />;
 
+
 const CategoryConfigForm = ({ catName, config }) => {
   return (
     <StyledFieldRow key={catName}>
@@ -142,7 +144,10 @@ const CategoryConfigForm = ({ catName, config }) => {
             name={`action.categoryConfig.${catName}.disabled`}
             value={config.disabled}
           />
-          <CategoryName checked={!config.disabled} active={!config.disabled}>
+          <CategoryName
+            checked={!config.disabled}
+            active={!config.disabled}
+          >
             {catName}
           </CategoryName>
         </label>
@@ -163,5 +168,6 @@ const CategoryConfigForm = ({ catName, config }) => {
     </StyledFieldRow>
   );
 };
+
 
 export default CategoryConfigForm;

@@ -51,7 +51,7 @@ const DeleteViewForm = ({ handleClose }) => {
           validationSchema={deleteViewSchema}
           onSubmit={(values) => handleDeleteViewSubmit(values)}
         >
-          {({ errors, touched }) => (
+          {() => (
             <Form>
               <HelperText>
                 Are you sure you'd like to delete 
@@ -73,6 +73,7 @@ const DeleteViewForm = ({ handleClose }) => {
     </div>
   );
 };
+
 
 export default DeleteViewForm;
 

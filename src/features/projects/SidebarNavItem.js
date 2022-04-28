@@ -1,7 +1,13 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import IconButton from '../../components/IconButton';
-import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger} from '../../components/Tooltip';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../components/Tooltip';
+
 
 const MenuButton = styled(IconButton, {
   fontSize: '$4',
@@ -9,8 +15,9 @@ const MenuButton = styled(IconButton, {
   borderRadius: '$2',
 });
 
-const SidebarNavItem = ({ state, disabled, handleClick, icon, tooltipContent }) => {
 
+const SidebarNavItem = (props) => {
+  const { state, disabled, handleClick, icon, tooltipContent } = props;
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -30,5 +37,6 @@ const SidebarNavItem = ({ state, disabled, handleClick, icon, tooltipContent }) 
     </Tooltip>
   );
 };
+
 
 export default SidebarNavItem;
