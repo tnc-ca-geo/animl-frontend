@@ -203,7 +203,7 @@ const ProjectAndViewNav = () => {
 
   return (
     <>
-      {projectsLoading.isLoading && 'Loading projects...'}
+      {projectsLoading.isLoading && <div>Loading projects...</div>}
       {projectsLoading.noneFound && 
         <NoneFoundAlert>
           Rats! You don't have access to any projects yet!

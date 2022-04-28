@@ -7,16 +7,9 @@ import logo from '../assets/animl-logo.svg';
 import Button from './Button';
 
 const Logo = styled(Link, {
-  position: 'absolute',
   display: 'flex',
   alignItems: 'center',
   paddingLeft: '$1',
-});
-
-const ProjectAndViewNavWrapper = styled('div', {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
 });
 
 const StyledNav = styled('nav', {
@@ -24,6 +17,7 @@ const StyledNav = styled('nav', {
   width: '100%',
   height: '$8',
   display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
   padding: '$0 $3',
   borderBottom: '1px solid $gray400',
