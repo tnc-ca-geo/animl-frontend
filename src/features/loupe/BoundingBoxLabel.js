@@ -184,6 +184,7 @@ const BoundingBoxLabel = ({
   };
 
   const handleCategoryChange = (newValue) => {
+    if (!newValue) return;
     const category = newValue.value || newValue;
     if (newValue) {
       setTempObject(null);

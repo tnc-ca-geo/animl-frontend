@@ -36,6 +36,9 @@ const ManageCamButton = styled('button', {
   padding: '$1 $3',
   color: '$gray600',
   marginLeft: '$2',
+  textTransform: 'uppercase',
+  fontSize: '$2',
+  fontWeight: '600',
   '&:hover': {
     color: '$hiContrast',
     backgroundColor: '$gray400',

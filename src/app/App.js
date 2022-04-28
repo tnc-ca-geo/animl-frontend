@@ -83,6 +83,7 @@ const App = () => {
   const user = useSelector(selectUserUsername);
   const dispatch = useDispatch();
 
+  // check for maintenance mode
   const router = useSelector(selectRouterLocation);
   const [ maintenanceMode, setMaintenanceMode ] = useState(IN_MAINTENANCE_MODE);
   useEffect(() => {
@@ -91,8 +92,7 @@ const App = () => {
     }
   }, [ router ]);
 
-  console.log('maintenance mode: ', maintenanceMode)
-
+  // set auth state
   useEffect(() => {
     return onAuthUIStateChange((nextAuthState, authData) => {
       const payload = { nextAuthState };

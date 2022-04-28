@@ -71,9 +71,8 @@ export const enrichProjAndViewPayload = store => next => action => {
 
 // track whether active filters match selected view filters
 export const diffFilters = store => next => action => {
-  console.log('projectsMiddleware() - difFiltersMiddleware: ', action.payload);
-
   if (
+    setActiveFilters.match(action) ||
     bulkSelectToggled.match(action) ||
     checkboxFilterToggled.match(action) ||
     dateFilterChanged.match(action) ||
@@ -85,10 +84,15 @@ export const diffFilters = store => next => action => {
     deleteViewSuccess.match(action)
   ) {
 
+    console.log('projectsMiddleware() - difFiltersMiddleware - payload: ', action.payload);
+
     next(action);
     const activeFilters = selectActiveFilters(store.getState());
     const selectedView = selectSelectedView(store.getState());
     if (activeFilters && selectedView) {
+      console.log('projectsMiddleware() - difFiltersMiddleware - activeFilters: ', activeFilters)
+      console.log('projectsMiddleware() - difFiltersMiddleware - selectedView filters: ', selectedView.filters)
+
       const match = _.isEqual(activeFilters, selectedView.filters);
       store.dispatch(setUnsavedViewChanges(!match));
     }
@@ -101,6 +105,8 @@ export const diffFilters = store => next => action => {
 };
 
 // clear undo/redo history and apply selected view's filters to active filters
+// TODO: should we also do this when user clicks 'refresh button'? 
+// e.g. if any action reversions depend on focus index we should.
 export const setActiveFiltersToSelectedView = store => next => action => {
 
   if (setSelectedProjAndView.match(action)) {

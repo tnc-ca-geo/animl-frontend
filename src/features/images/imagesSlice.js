@@ -209,17 +209,17 @@ export const fetchImageContext = (imgId) => {
           throw new Error(`Failed to find image with Id: ${imgId}`);
         }
 
-        // Fetch all images from the image's camera with a createdStart date of 
+        // Fetch all images from the image's deployment w/ a createdStart date 
         // 5 mins before dateTimeOriginal of image-to-focus
         const dto = res.image.dateTimeOriginal;
         const startDate = moment(dto, EXIF).subtract(5, 'minutes').format(EXIF);
         const filters = {
           addedEnd: null,
           addedStart: null,
-          cameras: [res.image.cameraId],
+          cameras: null,
           createdEnd: null,
           createdStart: startDate,
-          deployments: null,
+          deployments: [res.image.deploymentId],
           labels: null,
           reviewed: null,
           custom: null,
