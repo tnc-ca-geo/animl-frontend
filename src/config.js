@@ -22,4 +22,4 @@ export const IMAGE_QUERY_LIMITS = [10, 50, 100];
 
 export const SUPPORTED_CAM_MAKES = ['BuckEyeCam'];
 
-export const IN_MAINTENANCE_MODE = true;
+export const IN_MAINTENANCE_MODE = false;
