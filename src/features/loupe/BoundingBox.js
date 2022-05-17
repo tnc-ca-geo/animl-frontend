@@ -107,12 +107,31 @@ const BoundingBox = ({
   // track whether the object is focused
   const objectFocused = object.isTemp || focusIndex.object === objectIndex;
 
+  // // show first non-invalidated label in array
+  // let label = object.labels.find((label) => (
+  //   label.validation === null || label.validation.validated 
+  // ));
+  //  // unless object is being added
+  // if (object.isTemp) {
+  //   label = { category: '', conf: 0, index: 0 };
+  // }
+  // // or obj & label are focused
+  // else if (objectFocused && focusIndex.label) {
+  //   label = object.labels[focusIndex.label];
+  // }
+
   // show first non-invalidated label in array
-  let label = object.labels.find((label) => (
-    label.validation === null || label.validation.validated 
+  let label = object.labels.find((lbl) => (
+    lbl.validation === null || lbl.validation.validated 
   ));
-   // unless object is being added
-  if (object.isTemp) {
+  // unless object is locked, in which case show first validated label
+  if (object.locked) {
+    label = object.labels.find((lbl) => (
+      lbl.validation && lbl.validation.validated
+    ));
+  }
+  // or object is being added
+  else if (object.isTemp) {
     label = { category: '', conf: 0, index: 0 };
   }
   // or obj & label are focused
