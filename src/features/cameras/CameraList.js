@@ -22,6 +22,8 @@ import {
 const StyledCameraList = styled('div', {
   border: '1px solid $gray400',
   borderBottom: 'none',
+  maxHeight: '50vh',
+  overflowY: 'scroll',
 });
 
 const ManageCamButtons = styled('div', {
@@ -138,7 +140,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   };
   
   return (
-    <div>
+    <>
       {camerasLoading.noneFound && 
         <NoneFoundAlert>
           There are currently no cameras associated with this project.
@@ -224,7 +226,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
           ))}
         </StyledCameraList>
       }
-    </div>
+    </>
   );
 };
 
