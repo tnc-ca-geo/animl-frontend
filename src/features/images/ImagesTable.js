@@ -494,8 +494,9 @@ function makeRows(workingImages, focusIndex) {
       imageIndex={imageIndex}
       focusIndex={focusIndex}
     />;
-    const hasUnlockedObj = image.objects.some((obj) => obj.locked === false);
-    const reviewed = hasUnlockedObj 
+    const hasObjs = image.objects.length > 0;
+    const hasUnlockedObjs = image.objects.some((obj) => obj.locked === false);
+    const reviewed = (!hasObjs || hasUnlockedObjs) 
       ? <ReviewedIcon reviewed={false} /> 
       : <ReviewedIcon reviewed={true} />;
 
