@@ -9,7 +9,7 @@ import {
 
 
 
-const ImagesStatsModal = ({ imgsCount, filters }) => {
+const ImagesStatsModal = ({ filters }) => {
   const dispatch = useDispatch();
 
   // fetch images stats

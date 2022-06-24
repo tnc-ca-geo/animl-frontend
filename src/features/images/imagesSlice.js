@@ -163,6 +163,15 @@ export const imagesSlice = createSlice({
       ls.errors = payload;
     },
 
+    clearStats: (state) => { 
+      state.imagesStats = null; 
+      state.loadingStates.stats = {
+        isLoading: false,
+        errors: null,
+        noneFound: false,
+      }
+    },
+
   },
 });
 
@@ -182,6 +191,7 @@ export const {
   getStatsStart,
   getStatsSuccess,
   getStatsFailure,
+  clearStats,
 } = imagesSlice.actions;
 
 // fetchImages thunk

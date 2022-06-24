@@ -3,7 +3,11 @@ import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, READ_STATS_ROLES } from '../../auth/roles';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectImagesCount, fetchImages } from '../images/imagesSlice';
+import {
+  selectImagesCount,
+  fetchImages,
+  clearStats
+} from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
 // import { selectModalOpen, setModalOpen } from '../projects/projectsSlice';
 import { Modal } from '../../components/Modal';
@@ -66,6 +70,7 @@ const FiltersPanelFooter = () => {
   };
 
   const handleModalToggle = () => {
+    dispatch(clearStats());
     setModalOpen(!modalOpen);
   };
 
@@ -94,14 +99,16 @@ const FiltersPanelFooter = () => {
         <FontAwesomeIcon icon={['fas', 'sync']}/>
       </IconButton>
       </RefreshButton>
-      <Modal 
-        open={modalOpen}
-        handleModalToggle={handleModalToggle}
-        title={'Stats'}
-        size={'md'}
-      >
-        <ImagesStatsModal imgsCount={imagesCount} filters={filters} />
-      </Modal>
+      {modalOpen && 
+        <Modal 
+          open={modalOpen}
+          handleModalToggle={handleModalToggle}
+          title={'Stats'}
+          size={'md'}
+        >
+          <ImagesStatsModal filters={filters} />
+        </Modal>
+      }
     </StyledFiltersPanelFooter>
   );
 };
