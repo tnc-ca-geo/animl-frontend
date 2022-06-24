@@ -9,6 +9,7 @@ export const WRITE_DEPLOYMENTS_ROLES =          [MANAGER];
 export const WRITE_AUTOMATION_RULES_ROLES =     [MANAGER];
 export const WRITE_CAMERA_REGISTRATION_ROLES =  [MANAGER];
 export const QUERY_WITH_CUSTOM_FILTER =         [MANAGER];
+export const READ_STATS_ROLES =                 [MANAGER];
 
 export const hasRole = (currRoles, targetRoles = []) => (
   currRoles && currRoles.some((role) => targetRoles.includes(role))

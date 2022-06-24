@@ -184,7 +184,7 @@ const queries = {
         paginatedField: pageInfo.paginatedField,
         sortAscending: pageInfo.sortAscending,
         limit: pageInfo.limit,
-        ...filters,
+        filters,
       }
     },
   }),
@@ -228,7 +228,28 @@ const queries = {
       variables: { input: input },
     }
   },
-  
+
+  getStats: ({ filters }) => ({
+    template: `
+      query GetStats($input: QueryStatsInput!) {
+        stats(input: $input) {
+          imageCount
+          reviewedCount {
+            reviewed
+            notReviewed
+          }
+          reviewerList {
+            userId
+            reviewedCount
+          }
+        }
+      }
+    `,
+    variables: {
+      input: { filters }
+    },
+  }),
+
   createView: (input) => ({
     template: `
       mutation CreateView($input: CreateViewInput!) {

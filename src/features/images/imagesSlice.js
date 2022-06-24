@@ -19,10 +19,15 @@ const initialState = {
     },
     imageContext: {
       isLoading: false,
-      operation: null,
       errors: null,
     },
+    stats: {
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    }
   },
+  imagesStats: null,
   preFocusImage: null,
   visibleRows: [],
   pageInfo: {
@@ -56,12 +61,14 @@ export const imagesSlice = createSlice({
       let ls = state.loadingStates.images;
       ls.isLoading = true;
       ls.operation = 'fetching';
+      ls.noneFound = false;
     },
 
     getImagesFailure: (state, { payload }) => {
       let ls = state.loadingStates.images;
       ls.isLoading = false;
       ls.operation = null;
+      ls.noneFound = false;
       ls.errors = payload;
     },
 
@@ -94,13 +101,13 @@ export const imagesSlice = createSlice({
     getImageContextStart: (state) => {
       let ls = state.loadingStates.imageContext;
       ls.isLoading = true;
-      ls.operation = 'fetching';
+      // ls.operation = 'fetching';
     },
 
     getImageContextSuccess: (state) => {
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
-      ls.operation = null;
+      // ls.operation = null;
       ls.errors = null;
     },
 
@@ -108,7 +115,7 @@ export const imagesSlice = createSlice({
       console.log('getImageContextFailure: ', payload);
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
-      ls.operation = null;
+      // ls.operation = null;
       ls.errors = payload;
     },
 
@@ -133,6 +140,29 @@ export const imagesSlice = createSlice({
       state.loadingStates.imageContext.errors.splice(index, 1);
     },
 
+    getStatsStart: (state) => {
+      let ls = state.loadingStates.stats;
+      ls.isLoading = true;
+      ls.noneFound = false;
+    },
+
+    getStatsSuccess: (state, { payload }) => {
+      console.log('getStatsSuccss: ', payload);
+      state.imagesStats = payload;
+      let ls = state.loadingStates.stats;
+      ls.isLoading = false;
+      ls.noneFound = payload.stats.imageCount === 0;
+      ls.errors = null;
+    },
+
+    getStatsFailure: (state, { payload }) => {
+      console.log('getStatsFailure: ', payload);
+      let ls = state.loadingStates.stats;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = payload;
+    },
+
   },
 });
 
@@ -149,6 +179,9 @@ export const {
   sortChanged,
   visibleRowsChanged,
   dismissImageContextError,
+  getStatsStart,
+  getStatsSuccess,
+  getStatsFailure,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -242,6 +275,34 @@ export const fetchImageContext = (imgId) => {
   };
 };
 
+// fetchStats thunk
+export const fetchStats = (filters) => {
+  return async (dispatch, getState) => {
+    console.log('iamgesSlice - fetchingStats() - filters: ', filters)
+    try {
+
+      dispatch(getStatsStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'getStats',
+          input: { filters },
+        });  
+        console.log('iamgesSlice - fetchStats() - res: ', res)
+        dispatch(getStatsSuccess(res));
+      }
+    } catch (err) {
+      dispatch(getStatsFailure(err));
+    }
+  };
+};
+
+
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
@@ -254,6 +315,9 @@ export const selectVisibleRows = state => state.images.visibleRows;
 export const selectPreFocusImage = state => state.images.preFocusImage;
 export const selectImageContextLoading = state => state.images.loadingStates.imageContext;
 export const selectImageContextErrors = state => state.images.loadingStates.imageContext.errors;
+export const selectImagesStats = state => state.images.imagesStats;
+export const selectStatsLoading = state => state.images.loadingStates.stats;
+
 
 // TODO: find a different place for this?
 export const selectRouterLocation = state => state.router.location;

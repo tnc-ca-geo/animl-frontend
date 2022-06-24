@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
+import { selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, READ_STATS_ROLES } from '../../auth/roles';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, fetchImages } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
+// import { selectModalOpen, setModalOpen } from '../projects/projectsSlice';
+import { Modal } from '../../components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
+import ImagesStatsModal from '../images/ImagesStatsModal';
 import IconButton from '../../components/IconButton';
 
 const RefreshButton = styled('div', {
@@ -11,13 +17,20 @@ const RefreshButton = styled('div', {
   borderLeft: '1px solid $gray400',
   display: 'flex',
   alignItems: 'center',
-  position: 'absolute',
-  right: '0',
   padding: '0 $1',
 });
 
+const InfoButton = styled('div', {
+  height: '100%',
+  borderLeft: '1px solid $gray400',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 $1',
+});
+
+
 const ImagesCount = styled('div', {
-  width: 'calc(100% - 50px)',
+  flexGrow: 1,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -42,28 +55,53 @@ const StyledFiltersPanelFooter = styled('div', {
 });
 
 const FiltersPanelFooter = () => {
+  const userRoles = useSelector(selectUserCurrentRoles);
   const filters = useSelector(selectActiveFilters);
-  const imagesCount = useSelector(selectImagesCount)
+  const imagesCount = useSelector(selectImagesCount);
+  const [ modalOpen, setModalOpen ] = useState(false);
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
     dispatch(fetchImages(filters));
-  }
+  };
+
+  const handleModalToggle = () => {
+    setModalOpen(!modalOpen);
+  };
 
   return (
     <StyledFiltersPanelFooter>
       <ImagesCount>
-        <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images
+        <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images 
       </ImagesCount>
+      {hasRole(userRoles, READ_STATS_ROLES) &&
+        <InfoButton>
+          <IconButton
+            variant='ghost'
+            size='large'
+            onClick={handleModalToggle}
+          >
+            <InfoCircledIcon />
+          </IconButton>
+        </InfoButton>
+      }
       <RefreshButton>
         <IconButton
-          variant='ghost'
-          size='large'
-          onClick={handleRefreshClick}
-        >
-          <FontAwesomeIcon icon={['fas', 'sync']}/>
-        </IconButton>
+        variant='ghost'
+        size='large'
+        onClick={handleRefreshClick}
+      >
+        <FontAwesomeIcon icon={['fas', 'sync']}/>
+      </IconButton>
       </RefreshButton>
+      <Modal 
+        open={modalOpen}
+        handleModalToggle={handleModalToggle}
+        title={'Stats'}
+        size={'md'}
+      >
+        <ImagesStatsModal imgsCount={imagesCount} filters={filters} />
+      </Modal>
     </StyledFiltersPanelFooter>
   );
 };
