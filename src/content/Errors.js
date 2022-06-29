@@ -1,5 +1,5 @@
 const errorContent = {
-  'INTERNAL_SERVER_ERROR': 'An error occurred and some of your recent ' +
+  'INTERNAL_SERVER_ERROR': 'An unknown error occurred and some of your recent ' +
       'actions may not have been saved. Please refresh your ' +
       'browser and try again.',
 

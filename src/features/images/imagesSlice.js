@@ -172,6 +172,11 @@ export const imagesSlice = createSlice({
       }
     },
 
+    dismissStatsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.stats.errors.splice(index, 1);
+    },
+
   },
 });
 
@@ -192,6 +197,7 @@ export const {
   getStatsSuccess,
   getStatsFailure,
   clearStats,
+  dismissStatsError,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -327,6 +333,7 @@ export const selectImageContextLoading = state => state.images.loadingStates.ima
 export const selectImageContextErrors = state => state.images.loadingStates.imageContext.errors;
 export const selectImagesStats = state => state.images.imagesStats;
 export const selectStatsLoading = state => state.images.loadingStates.stats;
+export const selectStatsErrors = state => state.images.loadingStates.stats.errors;
 
 
 // TODO: find a different place for this?

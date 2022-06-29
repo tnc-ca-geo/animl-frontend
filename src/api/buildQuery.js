@@ -242,6 +242,8 @@ const queries = {
             userId
             reviewedCount
           }
+          labelList
+          multiReviewerCount
         }
       }
     `,
