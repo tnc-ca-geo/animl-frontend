@@ -28,6 +28,8 @@ import {
   dismissCamerasError,
 } from '../features/cameras/camerasSlice';
 import {
+  selectImagesErrors,
+  dismissImagesError,
   selectImageContextErrors,
   dismissImageContextError,
   selectStatsErrors,
@@ -44,6 +46,7 @@ const ErrorAlerts = () => {
   const depsErrors = useSelector(selectDeploymentsErrors);
   const modelsErrors = useSelector(selectModelsErrors);
   const camerasErrors = useSelector(selectCamerasErrors);
+  const imagesErrors = useSelector(selectImagesErrors);
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
   
@@ -54,8 +57,9 @@ const ErrorAlerts = () => {
     enrichErrors(depsErrors, 'Deployment Error', 'deployments'),
     enrichErrors(modelsErrors, 'Model Error', 'models'),
     enrichErrors(camerasErrors, 'Camera Error', 'cameras'),
+    enrichErrors(imagesErrors, 'Error Fetching Images', 'images'),
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
-    enrichErrors(statsErrors, 'Stats Error', 'stats'),
+    enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
   ];
 
   const errors = enrichedErrors.reduce((acc, curr) => (
@@ -108,6 +112,7 @@ const dismissErrorActions = {
   'deployments': (i) => dismissDeploymentsError(i),
   'models': (i) => dismissModelsError(i),
   'cameras': (i) => dismissCamerasError(i),
+  'images': (i) => dismissImagesError(i),
   'imageContext': (i) => dismissImageContextError(i),
   'stats': (i) => dismissStatsError(i)
 };

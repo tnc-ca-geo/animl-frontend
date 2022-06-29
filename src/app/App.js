@@ -72,7 +72,7 @@ const MaintenanceAlert = () => (
       width='300'
     />
     <MainenanceMessage>
-      Animl is currently undergoing evolution. Check back soon!
+      Animl is undergoing evolution. Check back soon!
     </MainenanceMessage>
   </StyledMaintenanceAlert>
 );

@@ -90,6 +90,11 @@ export const imagesSlice = createSlice({
       state.images =  state.images.concat(payload.images.images);
     },
 
+    dismissImagesError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.image.errors.splice(index, 1);
+    },
+
     preFocusImageStart: (state, { payload }) => {
       state.preFocusImage = payload;
     },
@@ -185,6 +190,7 @@ export const {
   getImagesStart,
   getImagesSuccess,
   getImagesFailure,
+  dismissImagesError,
   preFocusImageStart,
   preFocusImageEnd,
   getImageContextStart,
@@ -327,6 +333,7 @@ export const selectHasNext = state => state.images.pageInfo.hasNext;
 export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectImagesLoading = state => state.images.loadingStates.images;
+export const selectImagesErrors = state => state.images.loadingStates.images.errors;
 export const selectVisibleRows = state => state.images.visibleRows;
 export const selectPreFocusImage = state => state.images.preFocusImage;
 export const selectImageContextLoading = state => state.images.loadingStates.imageContext;

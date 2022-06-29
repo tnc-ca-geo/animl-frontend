@@ -496,7 +496,10 @@ function makeRows(workingImages, focusIndex) {
     />;
     const hasObjs = image.objects.length > 0;
     const hasUnlockedObjs = image.objects.some((obj) => obj.locked === false);
-    const reviewed = (!hasObjs || hasUnlockedObjs) 
+    const hasAllInvalidatedLabels = !image.objects.some((obj) => (
+      obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated)
+    ));
+    const reviewed = (!hasObjs || hasUnlockedObjs || hasAllInvalidatedLabels) 
       ? <ReviewedIcon reviewed={false} /> 
       : <ReviewedIcon reviewed={true} />;
 
