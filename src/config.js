@@ -3,14 +3,14 @@ export const DATE_FORMAT_READABLE = 'MMM D, YYYY hh:mm:ss';
 export const DATE_FORMAT_READABLE_SHORT = 'MMM D, YYYY';
 
 const API_URLS = {
-  development: 'https://qxtg8jjpqf.execute-api.us-west-2.amazonaws.com/dev/external/',
-  staging: 'https://qxtg8jjpqf.execute-api.us-west-2.amazonaws.com/dev/external/',
+  development: 'https://jbl8ut0l50.execute-api.us-west-2.amazonaws.com/dev/external/',
+  staging: 'https://jbl8ut0l50.execute-api.us-west-2.amazonaws.com/dev/external/',
   production: 'https://ffblbru7zk.execute-api.us-west-2.amazonaws.com/prod/external/'
 };
 
 const IMAGES_URLS = {
-  development: 'https://d1zv5k0v4jdrjr.cloudfront.net/',
-  staging: 'https://d1zv5k0v4jdrjr.cloudfront.net/',
+  development: 'https://d2oo5vd7pe9mk4.cloudfront.net/',
+  staging: 'https://d2oo5vd7pe9mk4.cloudfront.net/',
   production: 'https://doo86afh9dk8g.cloudfront.net/'  
 };
 
