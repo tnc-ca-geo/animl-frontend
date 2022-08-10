@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { DateTime } from 'luxon';
 import { green, orange } from '@radix-ui/colors';
 import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
@@ -252,11 +253,11 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     },
     {
       Header: 'Date created',
-      accessor: 'dateTimeOriginal',
+      accessor: 'dtCreated',
     },
     {
       Header: 'Date added',
-      accessor: 'dateAdded',
+      accessor: 'dtAdded',
     },
     {
       Header: 'Reviewed',
@@ -486,17 +487,32 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 };
 
 function makeRows(workingImages, focusIndex) {
-  return workingImages.map((image, imageIndex) => {
+  return workingImages.map((img, imageIndex) => {
+    // thumbnails
     const isImageFocused = imageIndex === focusIndex.image;
-    const thumbnail = <Image selected={isImageFocused} src={image.thumbUrl} />;
+    const thumbnail = <Image selected={isImageFocused} src={img.thumbUrl} />;
+
+    // label pills
     const labelPills = <LabelPills
       objects={workingImages[imageIndex].objects}
       imageIndex={imageIndex}
       focusIndex={focusIndex}
     />;
-    const hasObjs = image.objects.length > 0;
-    const hasUnlockedObjs = image.objects.some((obj) => obj.locked === false);
-    const hasAllInvalidatedLabels = !image.objects.some((obj) => (
+
+    // date created
+    const dtCreated = DateTime
+      .fromISO(img.dateTimeOriginal)
+      .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+
+    // date added
+    const dtAdded = DateTime
+      .fromISO(img.dateAdded)
+      .toLocaleString(DateTime.DATE_SHORT);
+
+    // reviewed columns
+    const hasObjs = img.objects.length > 0;
+    const hasUnlockedObjs = img.objects.some((obj) => obj.locked === false);
+    const hasAllInvalidatedLabels = !img.objects.some((obj) => (
       obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated)
     ));
     const reviewed = (!hasObjs || hasUnlockedObjs || hasAllInvalidatedLabels) 
@@ -506,8 +522,10 @@ function makeRows(workingImages, focusIndex) {
     return {
       thumbnail,
       labelPills,
+      dtCreated,
+      dtAdded,
       reviewed,
-      ...image,
+      ...img,
     }
   })
 }

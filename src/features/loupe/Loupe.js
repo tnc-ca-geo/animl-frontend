@@ -4,6 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import { useSelector } from 'react-redux';
+import { DateTime } from 'luxon';
 import {
   selectWorkingImages,
   selectFocusIndex,
@@ -109,6 +110,11 @@ const Loupe = () => {
 
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
+  // format date created
+  const dtCreated = image && DateTime
+    .fromISO(image.dateTimeOriginal)
+    .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+
   return (
     <>
       <StyledLoupe>
@@ -119,7 +125,7 @@ const Loupe = () => {
           {image && 
             <MetadataPane>
               <MetadataList>
-                <Item label='Date created' value={image.dateTimeOriginal}/>
+                <Item label='Date created' value={dtCreated}/>
                 <Item label='Camera' value={image.cameraId}/>
                 <Item label='Deployment' value={image.deploymentName}/>
                 <Item label='File name' value={image.originalFileName}/>
