@@ -20,6 +20,7 @@ const DateFilter = ({ type }) => {
   const dispatch = useDispatch();
 
   const handleDatesChange = ({ startDate, endDate }) => {
+    console.log('dateFilteChanged: ', startDate)
     dispatch(dateFilterChanged({ startDate, endDate, type }));    
   };
 
@@ -29,8 +30,8 @@ const DateFilter = ({ type }) => {
       expandedDefault={false}
     >
       <DateRangePickerWrapper
-        sdate={start ? moment(start, EXIF) : null}
-        edate={end ? moment(end, EXIF) : null}
+        sdate={start || null}
+        edate={end || null}
         handleDatesChange={handleDatesChange}
       />
     </Accordion>

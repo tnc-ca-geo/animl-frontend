@@ -13,7 +13,7 @@ import { DATE_FORMAT_EXIF as EXIF } from '../config';
 const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
   const [focusedInput, setFocusedInput] = useState(null);
 
-  const [openDirection, setOpenDirection] = useState('down')
+  const [openDirection, setOpenDirection] = useState('down');
   const containerEl = useRef(null);
   const determineOpenDirection = () => {
     const viewportEquator = window.innerHeight / 2;
@@ -24,10 +24,11 @@ const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
   };
 
   const onDatesChange = (dates) => {
+    console.log('onDatesChange - dates.startDate: ', dates)
     for (const key of Object.keys(dates)) {
       if (dates[key]) {
         dates[key] = moment(dates[key]).startOf('day');
-        dates[key] = dates[key].format(EXIF);
+        dates[key] = dates[key].toISOString();
       }
     }
     handleDatesChange(dates);
@@ -41,9 +42,9 @@ const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
   return (
     <div ref={containerEl}>
       <DateRangePicker
-        startDate={sdate}
+        startDate={sdate ? moment(sdate) : null}
         startDateId='startDate'
-        endDate={edate}
+        endDate={edate ? moment(edate) : null}
         endDateId='endDate'
         onDatesChange={onDatesChange}
         focusedInput={focusedInput}

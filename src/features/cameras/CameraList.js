@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { DateTime } from 'luxon';
 import { styled } from '../../theme/stitches.config';
 import { green } from '@radix-ui/colors';
-import moment from 'moment';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { unregisterCamera, selectCamerasLoading } from './camerasSlice';
 import Accordion from '../../components/Accordion';
@@ -231,7 +231,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
 };
 
 function format(date) {
-  return moment(date, EXIF).format(DFRS);
+  return DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT);
 }
 
 export default CameraList;
