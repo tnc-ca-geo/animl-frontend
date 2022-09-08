@@ -9,8 +9,8 @@ const API_URLS = {
 };
 
 const IMAGES_URLS = {
-  development: 'https://d2oo5vd7pe9mk4.cloudfront.net/',
-  staging: 'https://d2oo5vd7pe9mk4.cloudfront.net/',
+  development: 'https://dh4emlc8kr8dr.cloudfront.net/',
+  staging: 'https://dh4emlc8kr8dr.cloudfront.net/',
   production: 'https://doo86afh9dk8g.cloudfront.net/'  
 };
 
