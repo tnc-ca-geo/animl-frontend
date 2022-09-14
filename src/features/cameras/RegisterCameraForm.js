@@ -67,11 +67,6 @@ const RegisterCameraForm = () => {
               </FormSubheader>
               <FieldRow>
                 <FormFieldWrapper>
-                  <label htmlFor='name'>Camera Serial Number</label>
-                  <Field name='cameraId' id='cameraId'/>
-                  {/*<ErrorMessage component={FormError} name='cameraId' />*/}
-                </FormFieldWrapper>
-                <FormFieldWrapper>
                   <SelectField
                     name='make'
                     label='Camera Make'
@@ -83,6 +78,15 @@ const RegisterCameraForm = () => {
                     options={makeOptions}
                     isSearchable={false}
                   />
+                </FormFieldWrapper>
+                <FormFieldWrapper>
+                  <label htmlFor='name'>{
+                    values.make.value === 'RidgeTec' 
+                      ? 'IMEI Number' 
+                      : 'Camera Serial Number'
+                  }</label>
+                  <Field name='cameraId' id='cameraId'/>
+                  {/*<ErrorMessage component={FormError} name='cameraId' />*/}
                 </FormFieldWrapper>
               </FieldRow>
               <ButtonRow>
