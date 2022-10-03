@@ -25,9 +25,15 @@ const initialState = {
       isLoading: false,
       errors: null,
       noneFound: false,
-    }
+    },
+    csvExport: {
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    },
   },
   imagesStats: null,
+  csvExport: null,
   preFocusImage: null,
   visibleRows: [],
   pageInfo: {
@@ -182,6 +188,33 @@ export const imagesSlice = createSlice({
       state.loadingStates.stats.errors.splice(index, 1);
     },
 
+    exportCSVStart: (state) => {
+      let ls = state.loadingStates.csvExport;
+      ls.isLoading = true;
+      ls.noneFound = false;
+    },
+
+    exportCSVSuccess: (state, { payload }) => {
+      console.log('exportCSV Success: ', payload);
+      state.csvExport = payload;
+      let ls = state.loadingStates.csvExport;
+      ls.isLoading = false;
+      ls.noneFound = payload.csv.imageCount === 0;
+      ls.errors = null;
+    },
+
+    exportCSVFailure: (state, { payload }) => {
+      console.log('export CSV fail: ', payload);
+      let ls = state.loadingStates.csvExport;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = payload;
+    },
+
+    dismissCSVExportError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.csvExport.errors.splice(index, 1);
+    },
   },
 });
 
@@ -204,6 +237,10 @@ export const {
   getStatsFailure,
   clearStats,
   dismissStatsError,
+  exportCSVStart,
+  exportCSVSuccess,
+  exportCSVFailure,
+  dismissCSVExportError,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -324,6 +361,32 @@ export const fetchStats = (filters) => {
   };
 };
 
+// exportCSV thunk
+export const exportCSV = (filters) => {
+  return async (dispatch, getState) => {
+    console.log('iamgesSlice - exportCSV() - filters: ', filters);
+    try {
+
+      dispatch(exportCSVStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'exportCSV',
+          input: { filters },
+        });  
+        console.log('iamgesSlice - exportCSV() - res: ', res)
+        dispatch(exportCSVSuccess(res));
+      }
+    } catch (err) {
+      dispatch(exportCSVFailure(err));
+    }
+  };
+};
 
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;
@@ -341,6 +404,9 @@ export const selectImageContextErrors = state => state.images.loadingStates.imag
 export const selectImagesStats = state => state.images.imagesStats;
 export const selectStatsLoading = state => state.images.loadingStates.stats;
 export const selectStatsErrors = state => state.images.loadingStates.stats.errors;
+export const selectCSVExport = state => state.images.csvExport;
+export const selectCSVExportLoading = state => state.images.loadingStates.csvExport;
+export const selectCSVExportErrors = state => state.images.loadingStates.csvExport.errors;
 
 
 // TODO: find a different place for this?

@@ -252,6 +252,23 @@ const queries = {
     },
   }),
 
+  exportCSV: ({ filters }) => ({
+    template: `
+      query ExportCSV($input: ExportCSVInput!) {
+        csv(input: $input) {
+          imageCount
+          reviewedCount {
+            reviewed
+            notReviewed
+          }
+        }
+      }
+    `,
+    variables: {
+      input: { filters }
+    },
+  }),
+
   createView: (input) => ({
     template: `
       mutation CreateView($input: CreateViewInput!) {

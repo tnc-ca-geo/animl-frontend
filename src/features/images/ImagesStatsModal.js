@@ -57,7 +57,7 @@ const ImagesStatsModal = ({ filters }) => {
   const imagesStatsLoading = useSelector(selectStatsLoading);
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
-    if (stats === null && !noneFound && !isLoading && !errors){
+    if (stats === null && !noneFound && !isLoading && !errors.length){
       dispatch(fetchStats(filters));
     }
   }, [stats, imagesStatsLoading, filters, dispatch]);
