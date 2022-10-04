@@ -196,7 +196,7 @@ export const imagesSlice = createSlice({
 
     exportCSVSuccess: (state, { payload }) => {
       console.log('exportCSV Success: ', payload);
-      state.csvExport = payload;
+      state.csvExport = payload.csv;
       let ls = state.loadingStates.csvExport;
       ls.isLoading = false;
       ls.noneFound = payload.csv.imageCount === 0;
@@ -209,6 +209,16 @@ export const imagesSlice = createSlice({
       ls.isLoading = false;
       ls.noneFound = false;
       ls.errors = payload;
+    },
+
+    clearCSVExport: (state) => { 
+      console.log('clearing csv export')
+      state.csvExport = null; 
+      state.loadingStates.csvExport = {
+        isLoading: false,
+        errors: null,
+        noneFound: false,
+      }
     },
 
     dismissCSVExportError: (state, { payload }) => {
@@ -240,6 +250,7 @@ export const {
   exportCSVStart,
   exportCSVSuccess,
   exportCSVFailure,
+  clearCSVExport,
   dismissCSVExportError,
 } = imagesSlice.actions;
 

@@ -256,6 +256,7 @@ const queries = {
     template: `
       query ExportCSV($input: ExportCSVInput!) {
         csv(input: $input) {
+          url
           imageCount
           reviewedCount {
             reviewed

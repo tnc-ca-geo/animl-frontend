@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../../auth/roles';
@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectImagesCount,
   fetchImages,
-  clearStats
+  clearStats,
+  selectCSVExport,
+  clearCSVExport,
 } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
 import { selectCSVExportLoading, exportCSV } from '../images/imagesSlice'
@@ -85,20 +87,17 @@ const FiltersPanelFooter = () => {
   };
 
 
-  // // fetch images stats
-  // const stats = useSelector(selectImagesStats);
-  // const imagesStatsLoading = useSelector(selectStatsLoading);
-  // useEffect(() => {
-  //   const { isLoading, errors, noneFound } = imagesStatsLoading;
-  //   if (stats === null && !noneFound && !isLoading && !errors){
-  //     dispatch(fetchStats(filters));
-  //   }
-  // }, [stats, imagesStatsLoading, filters, dispatch]);
+  // when we have a url for the exported CSV file, open it
+  const csvExport = useSelector(selectCSVExport);
+  useEffect(() => {
+    if (csvExport && csvExport.url) {
+      window.open(csvExport.url, '_blank');
+      dispatch(clearCSVExport());
+    }
+  }, [csvExport, dispatch]);
 
   const handleExportCSVClick = () => {
     const { isLoading, errors, noneFound } = CSVExportLoading;
-    console.log('handling export csv click')
-    console.log('csv export loading: ', CSVExportLoading)
     // TODO: fix bug here w/ errors.length. Probably exists w/ getStats too
     if (!noneFound && !isLoading && !errors) {
       console.log('dispatching export csv thunk')
