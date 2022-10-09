@@ -17,6 +17,12 @@ import { InfoCircledIcon, DownloadIcon } from '@radix-ui/react-icons';
 import ImagesStatsModal from '../images/ImagesStatsModal';
 import ExportModal from '../images/ExportModal.js';
 import IconButton from '../../components/IconButton';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../components/Tooltip';
 
 
 const RefreshButton = styled('div', {
@@ -104,36 +110,60 @@ const FiltersPanelFooter = () => {
         <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images 
       </ImagesCount>
       {hasRole(userRoles, READ_STATS_ROLES) &&
-        <InfoButton>
-          <IconButton
-            variant='ghost'
-            size='large'
-            onClick={() => handleModalToggle('stats-modal')}
-          >
-            <InfoCircledIcon />
-          </IconButton>
-        </InfoButton>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <InfoButton>
+              <IconButton
+                variant='ghost'
+                size='large'
+                onClick={() => handleModalToggle('stats-modal')}
+              >
+                <InfoCircledIcon />
+              </IconButton>
+            </InfoButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5} >
+            Get stats
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
       }
       {hasRole(userRoles, EXPORT_DATA_ROLES) &&
-        <ExportCSVButton>
-          <IconButton
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ExportCSVButton>
+              <IconButton
+                variant='ghost'
+                size='large'
+                onClick={() => handleModalToggle('export-modal')}
+              >
+                <DownloadIcon />
+              </IconButton>
+            </ExportCSVButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5} >
+            Export data
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      }
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <RefreshButton>
+            <IconButton
             variant='ghost'
             size='large'
-            onClick={() => handleModalToggle('export-modal')}
+            onClick={handleRefreshClick}
           >
-            <DownloadIcon />
+            <FontAwesomeIcon icon={['fas', 'sync']}/>
           </IconButton>
-        </ExportCSVButton>
-      }
-      <RefreshButton>
-        <IconButton
-        variant='ghost'
-        size='large'
-        onClick={handleRefreshClick}
-      >
-        <FontAwesomeIcon icon={['fas', 'sync']}/>
-      </IconButton>
-      </RefreshButton>
+          </RefreshButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Refresh data
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
       {modalContent &&
         <Modal 
           open={modalOpen}
