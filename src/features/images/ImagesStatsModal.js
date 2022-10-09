@@ -1,4 +1,4 @@
-import React, { useEffect, useState }from 'react';
+import React, { useEffect }from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -6,6 +6,7 @@ import {
   selectImagesStats,
   fetchStats
 } from './imagesSlice';
+import { selectActiveFilters  } from '../filters/filtersSlice.js';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const NoneFoundAlert = styled('div', {
@@ -49,18 +50,20 @@ const StatsDisclaimer = () => (
   </StyledStatsDisclaimer>
 )
 
-const ImagesStatsModal = ({ filters }) => {
+const ImagesStatsModal = ({ open }) => {
   const dispatch = useDispatch();
+  const filters = useSelector(selectActiveFilters);
 
   // fetch images stats
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
-    if (stats === null && !noneFound && !isLoading && !errors.length){
+    const noErrors = !errors || errors.length === 0;
+    if (open && stats === null && !noneFound && !isLoading && noErrors) {
       dispatch(fetchStats(filters));
     }
-  }, [stats, imagesStatsLoading, filters, dispatch]);
+  }, [open, stats, imagesStatsLoading, filters, dispatch]);
 
   return (
     <div>

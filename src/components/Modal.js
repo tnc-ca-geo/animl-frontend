@@ -103,6 +103,7 @@ export const Modal = ({ open, handleModalToggle, size, title, children }) => (
         {React.Children.map(
           children,
           (child) => React.cloneElement(child, {
+            open: open,
             handleClose: handleModalToggle
           })
         )}

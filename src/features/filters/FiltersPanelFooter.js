@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../../auth/roles';
@@ -7,16 +7,15 @@ import {
   selectImagesCount,
   fetchImages,
   clearStats,
-  selectCSVExport,
   clearCSVExport,
 } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
-import { selectCSVExportLoading, exportCSV } from '../images/imagesSlice'
-// import { selectModalOpen, setModalOpen } from '../projects/projectsSlice';
+import { selectModalOpen, setModalOpen } from '../projects/projectsSlice';
 import { Modal } from '../../components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { InfoCircledIcon, FileTextIcon } from '@radix-ui/react-icons';
+import { InfoCircledIcon, DownloadIcon } from '@radix-ui/react-icons';
 import ImagesStatsModal from '../images/ImagesStatsModal';
+import ExportModal from '../images/ExportModal.js';
 import IconButton from '../../components/IconButton';
 
 
@@ -73,35 +72,27 @@ const FiltersPanelFooter = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const filters = useSelector(selectActiveFilters);
   const imagesCount = useSelector(selectImagesCount);
-  const CSVExportLoading = useSelector(selectCSVExportLoading);
-  const [ modalOpen, setModalOpen ] = useState(false);
+  // TODO: consider re-thinking the current modal approach (see SidebarNav).
+  // The code for populating modal content is nearly the same & could 
+  // potentially be consolodated into a single component.
+  const [modalContent, setModalContent] = useState();
+  const modalOpen = useSelector(selectModalOpen);
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
     dispatch(fetchImages(filters));
   };
 
-  const handleModalToggle = () => {
-    dispatch(clearStats());
-    setModalOpen(!modalOpen);
-  };
-
-
-  // when we have a url for the exported CSV file, open it
-  const csvExport = useSelector(selectCSVExport);
-  useEffect(() => {
-    if (csvExport && csvExport.url) {
-      window.open(csvExport.url, '_blank');
-      dispatch(clearCSVExport());
+  const handleModalToggle = (content) => {
+    console.log('handleModalToggle: ', content)
+    const clearData = {
+      'stats-modal': () => { dispatch(clearStats()) },
+      'export-modal': () => { dispatch(clearCSVExport()) },
     }
-  }, [csvExport, dispatch]);
-
-  const handleExportCSVClick = () => {
-    const { isLoading, errors, noneFound } = CSVExportLoading;
-    // TODO: fix bug here w/ errors.length. Probably exists w/ getStats too
-    if (!noneFound && !isLoading && !errors) {
-      console.log('dispatching export csv thunk')
-      dispatch(exportCSV(filters));
+    dispatch(setModalOpen(!modalOpen));
+    setModalContent(content);
+    if (content) {
+      clearData[content]();
     }
   };
 
@@ -117,7 +108,7 @@ const FiltersPanelFooter = () => {
           <IconButton
             variant='ghost'
             size='large'
-            onClick={handleModalToggle}
+            onClick={() => handleModalToggle('stats-modal')}
           >
             <InfoCircledIcon />
           </IconButton>
@@ -128,9 +119,9 @@ const FiltersPanelFooter = () => {
           <IconButton
             variant='ghost'
             size='large'
-            onClick={handleExportCSVClick}
+            onClick={() => handleModalToggle('export-modal')}
           >
-            <FileTextIcon />
+            <DownloadIcon />
           </IconButton>
         </ExportCSVButton>
       }
@@ -143,18 +134,31 @@ const FiltersPanelFooter = () => {
         <FontAwesomeIcon icon={['fas', 'sync']}/>
       </IconButton>
       </RefreshButton>
-      {modalOpen && 
+      {modalContent &&
         <Modal 
           open={modalOpen}
-          handleModalToggle={handleModalToggle}
-          title={'Stats'}
-          size={'md'}
+          handleModalToggle={() => handleModalToggle(modalContent)}
+          title={modalContent && modalContentMap[modalContent].title}
+          size={modalContent && modalContentMap[modalContent].size}
         >
-          <ImagesStatsModal filters={filters} />
+          {modalContent && modalContentMap[modalContent].content}
         </Modal>
       }
     </StyledFiltersPanelFooter>
   );
+};
+
+const modalContentMap = {
+  'stats-modal': {
+    title: 'Stats',
+    size: 'md',
+    content: <ImagesStatsModal/>,
+  },
+  'export-modal': {
+    title: 'Export data',
+    size: 'md',
+    content: <ExportModal/>,
+  },
 };
 
 export default FiltersPanelFooter;
