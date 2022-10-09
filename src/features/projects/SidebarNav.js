@@ -129,14 +129,16 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         />
       }
 
-      <Modal 
-        open={modalOpen}
-        handleModalToggle={handleModalToggle}
-        title={modalContent && modalContentMap[modalContent].title}
-        size={modalContent && modalContentMap[modalContent].size}
-      >
-        {modalContent && modalContentMap[modalContent].content}
-      </Modal>
+      {modalContent &&
+        <Modal 
+          open={modalOpen}
+          handleModalToggle={handleModalToggle}
+          title={modalContent && modalContentMap[modalContent].title}
+          size={modalContent && modalContentMap[modalContent].size}
+        >
+          {modalContent && modalContentMap[modalContent].content}
+        </Modal>
+      }
 
     </StyledSidebarNav>
   );
