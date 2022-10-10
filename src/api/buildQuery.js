@@ -256,6 +256,20 @@ const queries = {
     template: `
       query ExportCSV($input: ExportCSVInput!) {
         csv(input: $input) {
+          documentId
+        }
+      }
+    `,
+    variables: {
+      input: { filters }
+    },
+  }),
+
+  getExportStatus: ({ documentId }) => ({
+    template: `
+      query GetExportStatus($input: ExportStatusInput!) {
+        exportStatus(input: $input) {
+          status
           url
           imageCount
           reviewedCount {
@@ -266,7 +280,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { filters }
+      input: { documentId }
     },
   }),
 

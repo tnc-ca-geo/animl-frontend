@@ -4,7 +4,8 @@ import { styled } from '../../theme/stitches.config';
 import {
   selectCSVExport,
   selectCSVExportLoading,
-  exportCSV
+  exportCSV,
+  getExportStatus,
 } from '../images/imagesSlice';
 import { selectActiveFilters  } from '../filters/filtersSlice.js';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -32,12 +33,22 @@ const ExportModal = () => {
   const CSVExportLoading = useSelector(selectCSVExportLoading);
   const dispatch = useDispatch();
 
+  console.log('csvExport: ', csvExport)
+
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
     if (csvExport && csvExport.url) {
+      console.log('opening presigned url: ', csvExport.url);
       window.open(csvExport.url, '_blank');
     }
   }, [csvExport, dispatch]);
+
+  useEffect(() => {
+    if (CSVExportLoading.isLoading && csvExport && csvExport.documentId) {
+      console.log('dispatching getExportStatus')
+      dispatch(getExportStatus(csvExport.documentId));
+    }
+  }, [CSVExportLoading.isLoading, csvExport, dispatch])
 
   const handleExportCSVClick = () => {
     const { isLoading, errors, noneFound } = CSVExportLoading;
@@ -68,11 +79,14 @@ const ExportModal = () => {
         CSV or <a href="https://github.com/microsoft/CameraTraps/blob/main/data_management/README.md" target="_blank" rel="noreferrer">
         COCO Camera Traps</a> format. Any images that have not been reviewed will be ignored.
       </HelperText>
-      {(csvExport && csvExport.reviewedCount.notReviewed > 0) &&
-        <NotReviewedWarning
-          imageCount={csvExport.imageCount}
-          reviewedCount={csvExport.reviewedCount}
-        />
+      {(!CSVExportLoading.isLoading &&
+        csvExport &&
+        csvExport.reviewedCount &&
+        csvExport.reviewedCount.notReviewed > 0) &&
+          <NotReviewedWarning
+            imageCount={csvExport.imageCount}
+            reviewedCount={csvExport.reviewedCount}
+          />
       }
       <ButtonRow>
         <Button 

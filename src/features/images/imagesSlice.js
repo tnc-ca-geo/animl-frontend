@@ -196,11 +196,16 @@ export const imagesSlice = createSlice({
 
     exportCSVSuccess: (state, { payload }) => {
       console.log('exportCSV Success: ', payload);
-      state.csvExport = payload.csv;
+      state.csvExport = payload;
       let ls = state.loadingStates.csvExport;
       ls.isLoading = false;
-      ls.noneFound = payload.csv.imageCount === 0;
+      ls.noneFound = payload.imageCount === 0;
       ls.errors = null;
+    },
+
+    exportCSVUpdate: (state, { payload }) => {
+      console.log('exportCSV update: ', payload);
+      state.csvExport = payload;
     },
 
     exportCSVFailure: (state, { payload }) => {
@@ -249,6 +254,7 @@ export const {
   dismissStatsError,
   exportCSVStart,
   exportCSVSuccess,
+  exportCSVUpdate,
   exportCSVFailure,
   clearCSVExport,
   dismissCSVExportError,
@@ -390,8 +396,40 @@ export const exportCSV = (filters) => {
           request: 'exportCSV',
           input: { filters },
         });  
-        console.log('iamgesSlice - exportCSV() - res: ', res)
-        dispatch(exportCSVSuccess(res));
+        console.log('iamgesSlice - exportCSV() - res: ', res);
+        dispatch(exportCSVUpdate({ documentId: res.csv.documentId }));
+      }
+    } catch (err) {
+      dispatch(exportCSVFailure(err));
+    }
+  };
+};
+
+// getExportStatus thunk
+export const getExportStatus = (documentId) => {
+  return async (dispatch, getState) => {
+    console.log('iamgesSlice - getExportStatus() - docId: ', documentId);
+    try {
+
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'getExportStatus',
+          input: { documentId },
+        });  
+        console.log('iamgesSlice - getExportStatus() - res: ', res)
+        
+        if (res.exportStatus.status === 'Success') {
+          dispatch(exportCSVSuccess(res.exportStatus));
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          dispatch(getExportStatus(documentId));
+        }
       }
     } catch (err) {
       dispatch(exportCSVFailure(err));
