@@ -34,6 +34,7 @@ const initialState = {
   },
   unsavedViewChanges: false,
   modalOpen: false,
+  modalContent: null,
 };
 
 export const projectsSlice = createSlice({
@@ -213,6 +214,10 @@ export const projectsSlice = createSlice({
       state.modalOpen = payload;
     },
 
+    setModalContent: (state, { payload }) => {
+      state.modalContent = payload;
+    },
+
     dismissModelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.models.errors.splice(index, 1);
@@ -269,6 +274,7 @@ export const {
   dismissModelsError,
 
   setModalOpen,
+  setModalContent,
 
 } = projectsSlice.actions;
 
@@ -447,6 +453,7 @@ export const selectViewsLoading = state => state.projects.loadingStates.views;
 export const selectDeploymentsLoading = state => state.projects.loadingStates.deployments;
 export const selectModelsLoadingState = state => state.projects.loadingStates.models;
 export const selectModalOpen = state => state.projects.modalOpen;
+export const selectModalContent = state => state.projects.modalContent;
 export const selectProjectsErrors = state => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = state => state.projects.loadingStates.views.errors;
 export const selectDeploymentsErrors = state => state.projects.loadingStates.deployments.errors;

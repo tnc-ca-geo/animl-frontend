@@ -1,21 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../../auth/roles';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectImagesCount,
-  fetchImages,
-  clearStats,
-  clearCSVExport,
-} from '../images/imagesSlice';
+import { selectImagesCount, fetchImages } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
-import { selectModalOpen, setModalOpen } from '../projects/projectsSlice';
-import { Modal } from '../../components/Modal';
+import { selectModalOpen, setModalOpen, setModalContent } from '../projects/projectsSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { InfoCircledIcon, DownloadIcon } from '@radix-ui/react-icons';
-import ImagesStatsModal from '../images/ImagesStatsModal';
-import ExportModal from '../images/ExportModal.js';
 import IconButton from '../../components/IconButton';
 import { 
   Tooltip, 
@@ -23,7 +15,6 @@ import {
   TooltipArrow, 
   TooltipTrigger
 } from '../../components/Tooltip';
-
 
 const RefreshButton = styled('div', {
   height: '100%',
@@ -78,10 +69,6 @@ const FiltersPanelFooter = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const filters = useSelector(selectActiveFilters);
   const imagesCount = useSelector(selectImagesCount);
-  // TODO: consider re-thinking the current modal approach (see SidebarNav).
-  // The code for populating modal content is nearly the same & could 
-  // potentially be consolodated into a single component.
-  const [modalContent, setModalContent] = useState();
   const modalOpen = useSelector(selectModalOpen);
   const dispatch = useDispatch();
 
@@ -90,19 +77,9 @@ const FiltersPanelFooter = () => {
   };
 
   const handleModalToggle = (content) => {
-    console.log('handleModalToggle: ', content)
-    const clearData = {
-      'stats-modal': () => { dispatch(clearStats()) },
-      'export-modal': () => { dispatch(clearCSVExport()) },
-    }
     dispatch(setModalOpen(!modalOpen));
-    setModalContent(content);
-    if (content) {
-      clearData[content]();
-    }
+    dispatch(setModalContent(content));
   };
-
-  // TODO: add tooltips to the footer buttons
 
   return (
     <StyledFiltersPanelFooter>
@@ -164,31 +141,8 @@ const FiltersPanelFooter = () => {
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>
-      {modalContent &&
-        <Modal 
-          open={modalOpen}
-          handleModalToggle={() => handleModalToggle(modalContent)}
-          title={modalContent && modalContentMap[modalContent].title}
-          size={modalContent && modalContentMap[modalContent].size}
-        >
-          {modalContent && modalContentMap[modalContent].content}
-        </Modal>
-      }
     </StyledFiltersPanelFooter>
   );
-};
-
-const modalContentMap = {
-  'stats-modal': {
-    title: 'Stats',
-    size: 'md',
-    content: <ImagesStatsModal/>,
-  },
-  'export-modal': {
-    title: 'Export data',
-    size: 'md',
-    content: <ExportModal/>,
-  },
 };
 
 export default FiltersPanelFooter;

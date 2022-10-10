@@ -9,12 +9,11 @@ import FiltersPanel from '../filters/FiltersPanel';
 import ImagesPanel from '../images/ImagesPanel';
 import Loupe from '../loupe/Loupe';
 import ErrorAlerts from '../../components/ErrorAlerts';
-
+import HydratedModal from '../../components/HydratedModal.js';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
 });
-
 
 const ViewExplorer = () => {
   const selectedView = useSelector(selectSelectedView);
@@ -45,6 +44,7 @@ const ViewExplorer = () => {
       }
       <ImagesPanel />
       {loupeOpen && <Loupe />}
+      <HydratedModal />
       <ErrorAlerts />
     </ViewExplorerWrapper>
   );

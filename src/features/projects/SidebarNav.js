@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import {
@@ -10,15 +10,12 @@ import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   setModalOpen,
+  setModalContent,
   selectSelectedProject,
   selectSelectedView,
   selectModalOpen,
+  selectModalContent,
 } from '../projects/projectsSlice';
-import { Modal } from '../../components/Modal';
-import CameraAdminModal from '../cameras/CameraAdminModal';
-import AutomationRulesForm from './AutomationRulesForm';
-import SaveViewForm from './SaveViewForm';
-import DeleteViewForm from './DeleteViewForm';
 import SidebarNavItem from './SidebarNavItem';
 
 
@@ -32,41 +29,17 @@ const StyledSidebarNav = styled('div', {
   borderRight: '1px solid $gray400',
 });
 
-const modalContentMap = {
-  'camera-admin-modal': {
-    title: 'Manage Cameras',
-    size: 'md',
-    content: <CameraAdminModal/>,
-  },
-  'automation-rules-form': {
-    title: 'Configure Automation Rules',
-    size: 'md',
-    content: <AutomationRulesForm/>,
-  },
-  'save-view-form': {
-    title: 'Save View',
-    size: 'sm',
-    content: <SaveViewForm/>,
-  },
-  'delete-view-form': {
-    title: 'Delete View',
-    size: 'sm',
-    content: <DeleteViewForm/>,
-  },
-};
-
-
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
-  const [modalContent, setModalContent] = useState();
   const modalOpen = useSelector(selectModalOpen);
+  const modalContent = useSelector(selectModalContent);
   const selectedProject = useSelector(selectSelectedProject);
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
   const handleModalToggle = (content) => {
     dispatch(setModalOpen(!modalOpen));
-    setModalContent(content);
+    dispatch(setModalContent(content));
   };
 
   return (
@@ -129,20 +102,8 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         />
       }
 
-      {modalContent &&
-        <Modal 
-          open={modalOpen}
-          handleModalToggle={handleModalToggle}
-          title={modalContent && modalContentMap[modalContent].title}
-          size={modalContent && modalContentMap[modalContent].size}
-        >
-          {modalContent && modalContentMap[modalContent].content}
-        </Modal>
-      }
-
     </StyledSidebarNav>
   );
 };
-
 
 export default SidebarNav;

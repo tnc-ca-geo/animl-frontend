@@ -21,7 +21,8 @@ const NoneFoundAlert = styled('div', {
 
 const NotReviewedWarning = ({ imageCount, reviewedCount }) => (
   <Warning>
-    {reviewedCount.notReviewed} of the {imageCount} images that matched 
+    {reviewedCount.notReviewed.toLocaleString('en-US')} of 
+    the {imageCount.toLocaleString('en-US')} images that matched 
     the current filters still need review and were not included in the 
     export file.
   </Warning>
@@ -33,13 +34,13 @@ const ExportModal = () => {
   const CSVExportLoading = useSelector(selectCSVExportLoading);
   const dispatch = useDispatch();
 
-  console.log('csvExport: ', csvExport)
+  console.log('csvExport: ', csvExport);
 
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
     if (csvExport && csvExport.url) {
       console.log('opening presigned url: ', csvExport.url);
-      window.open(csvExport.url, '_blank');
+      window.open(csvExport.url, 'downloadTab');
     }
   }, [csvExport, dispatch]);
 
@@ -75,9 +76,12 @@ const ExportModal = () => {
         </NoneFoundAlert>
       }
       <HelperText>
-        The data matching the current filters can be downloaded to 
+        <p>Reviewed images matching the current filters can be downloaded to 
         CSV or <a href="https://github.com/microsoft/CameraTraps/blob/main/data_management/README.md" target="_blank" rel="noreferrer">
-        COCO Camera Traps</a> format. Any images that have not been reviewed will be ignored.
+        COCO Camera Traps</a> format. Any images that have not been reviewed 
+        will be ignored.</p>
+        <p><em>Note: if you are exporting 10's of thousands of 
+        image records, this may take a few minutes.</em></p>
       </HelperText>
       {(!CSVExportLoading.isLoading &&
         csvExport &&

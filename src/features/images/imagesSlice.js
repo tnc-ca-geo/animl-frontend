@@ -33,6 +33,7 @@ const initialState = {
     },
   },
   imagesStats: null,
+  // TODO: rethink shape of csvExport
   csvExport: null,
   preFocusImage: null,
   visibleRows: [],
