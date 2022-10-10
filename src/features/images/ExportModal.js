@@ -19,13 +19,17 @@ const NoneFoundAlert = styled('div', {
   color: '$gray600',
 });
 
+const StyledWarning = styled(Warning, {
+  marginTop: '$0',
+});
+
 const NotReviewedWarning = ({ imageCount, reviewedCount }) => (
-  <Warning>
+  <StyledWarning>
     {reviewedCount.notReviewed.toLocaleString('en-US')} of 
     the {imageCount.toLocaleString('en-US')} images that matched 
     the current filters still need review and were not included in the 
     export file.
-  </Warning>
+  </StyledWarning>
 );
 
 const ExportModal = () => {
@@ -36,20 +40,27 @@ const ExportModal = () => {
 
   console.log('csvExport: ', csvExport);
 
+  const exportReady = !CSVExportLoading.isLoading && 
+                      !CSVExportLoading.errors && 
+                      csvExport && 
+                      csvExport.url;
+  
+  const exportPending = CSVExportLoading.isLoading && 
+                        csvExport && 
+                        csvExport.documentId;
+
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
-    if (csvExport && csvExport.url) {
-      console.log('opening presigned url: ', csvExport.url);
+    if (exportReady) {
       window.open(csvExport.url, 'downloadTab');
     }
-  }, [csvExport, dispatch]);
+  }, [exportReady, csvExport, dispatch]);
 
   useEffect(() => {
-    if (CSVExportLoading.isLoading && csvExport && csvExport.documentId) {
-      console.log('dispatching getExportStatus')
+    if (exportPending) {
       dispatch(getExportStatus(csvExport.documentId));
     }
-  }, [CSVExportLoading.isLoading, csvExport, dispatch])
+  }, [exportPending, csvExport, dispatch])
 
   const handleExportCSVClick = () => {
     const { isLoading, errors, noneFound } = CSVExportLoading;
@@ -80,11 +91,17 @@ const ExportModal = () => {
         CSV or <a href="https://github.com/microsoft/CameraTraps/blob/main/data_management/README.md" target="_blank" rel="noreferrer">
         COCO Camera Traps</a> format. Any images that have not been reviewed 
         will be ignored.</p>
-        <p><em>Note: if you are exporting 10's of thousands of 
-        image records, this may take a few minutes.</em></p>
+        {!exportReady && 
+          <p><em>Note: if you are exporting 10's of thousands of 
+          image records, this may take a few minutes.</em></p>
+        }
+        {exportReady && 
+          <p><em>Note: if your download did not start automatically, 
+          click <a href={csvExport.url} target="downloadTab">this link</a> to 
+          initiate it.</em></p>
+        }
       </HelperText>
-      {(!CSVExportLoading.isLoading &&
-        csvExport &&
+      {(exportReady &&
         csvExport.reviewedCount &&
         csvExport.reviewedCount.notReviewed > 0) &&
           <NotReviewedWarning

@@ -276,6 +276,7 @@ const queries = {
             reviewed
             notReviewed
           }
+          error
         }
       }
     `,

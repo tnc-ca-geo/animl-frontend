@@ -33,7 +33,6 @@ const initialState = {
     },
   },
   imagesStats: null,
-  // TODO: rethink shape of csvExport
   csvExport: null,
   preFocusImage: null,
   visibleRows: [],
@@ -211,6 +210,7 @@ export const imagesSlice = createSlice({
 
     exportCSVFailure: (state, { payload }) => {
       console.log('export CSV fail: ', payload);
+      state.csvExport = null; 
       let ls = state.loadingStates.csvExport;
       ls.isLoading = false;
       ls.noneFound = false;
@@ -411,24 +411,25 @@ export const getExportStatus = (documentId) => {
   return async (dispatch, getState) => {
     console.log('iamgesSlice - getExportStatus() - docId: ', documentId);
     try {
-
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        const res = await call({
+        const { exportStatus } = await call({
           projId: selectedProj._id,
           request: 'getExportStatus',
           input: { documentId },
         });  
-        console.log('iamgesSlice - getExportStatus() - res: ', res)
+        console.log('iamgesSlice - getExportStatus() - exportStatus: ', exportStatus)
         
-        if (res.exportStatus.status === 'Success') {
-          dispatch(exportCSVSuccess(res.exportStatus));
+        if (exportStatus.status === 'Success') {
+          dispatch(exportCSVSuccess(exportStatus));
+        } else if (exportStatus.status === 'Error' && exportStatus.error) {
+          dispatch(exportCSVFailure(exportStatus.error));
         } else {
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          await new Promise(resolve => setTimeout(resolve, 2000));
           dispatch(getExportStatus(documentId));
         }
       }
