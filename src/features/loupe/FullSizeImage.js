@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useResizeObserver } from '../../app/utils';
@@ -81,7 +81,9 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const dims = useResizeObserver(containerEl);
   const dispatch = useDispatch();
 
-  /*
+  // console.log('fsimg component - image height: ', dims.height);
+
+
   // track image loading state
   // NOTE: currently not using this. Consider removing
   const [ imgLoaded, setImgLoaded ] = useState(false);
@@ -89,7 +91,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
     setImgLoaded(false);
   }, [ image ]);
   const handleImgLoaded = () => setImgLoaded(true);
-  */
+  console.log('image loaded: ', imgLoaded);
 
   const workingImages = useSelector(selectWorkingImages);
   const currImgObjects = workingImages[focusIndex.image].objects;
@@ -149,24 +151,27 @@ const FullSizeImage = ({ image, focusIndex }) => {
       {isDrawingBbox &&
         <DrawBboxOverlay imageDimensions={dims} setTempObject={setTempObject} />
       }
-      {objectsToRender && objectsToRender.map((object, i) => (
-        <BoundingBox
-          key={object._id}
-          imgId={image._id}
-          imageWidth={dims.width}
-          imageHeight={dims.height}
-          object={object}
-          objectIndex={!object.isTemp ? currImgObjects.indexOf(object) : null}
-          focusIndex={focusIndex}
-          setTempObject={setTempObject}
-        />
-      ))}
+      {imgLoaded && objectsToRender && objectsToRender.map((obj) => {
+        console.log('rendering BoundingBox')
+        return (
+          <BoundingBox
+            key={obj._id}
+            imgId={image._id}
+            imageWidth={dims.width}
+            imageHeight={dims.height}
+            object={obj}
+            objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
+            focusIndex={focusIndex}
+            setTempObject={setTempObject}
+          />
+        );
+      })}
       {/*{!imgLoaded &&
         <SpinnerOverlay css={{ background: 'none'}}>
           <CircleSpinner />
         </SpinnerOverlay>
       }*/}
-      <FullImage src={image.url} /*onLoad={handleImgLoaded}*//>
+      <FullImage src={image.url} onLoad={handleImgLoaded} />
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
           <EditObjectButton

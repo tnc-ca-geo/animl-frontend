@@ -37,12 +37,13 @@ export const useResizeObserver = (ref) => {
         setWidth(entry.contentRect.width);
       }
       if (height !== entry.contentRect.height) {
+        console.log('height changed')
         setHeight(entry.contentRect.height);
       }
     })
     resizeObserver.observe(element);
     return () => resizeObserver.disconnect(element);
-  }, []);
+  }, [height, ref, width]);
 
   // NOTE: Resize Observer entry's contentRect top/x left/y don't behave the  
   // same as getBoundingClientRect() (they're always 0),
@@ -52,7 +53,7 @@ export const useResizeObserver = (ref) => {
     const container = element.getBoundingClientRect();
     if (top !== container.top) setTop(container.top);
     if (left !== container.left) setLeft(container.left);
-  }, [width]);
+  }, [left, ref, top, width]);
 
   return { width, height, top, left };
 };
