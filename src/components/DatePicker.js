@@ -14,7 +14,7 @@ import { inViewportTopHalf } from '../app/utils';
 const DatePickerWithFormik = ({
   startDateId,
   endDateId,
-  form: { setFieldValue, setFieldTouched, values },
+  form: { setFieldValue, setFieldTouched, setFieldError, values },
   field,
   ...props
 }) => {
@@ -35,11 +35,17 @@ const DatePickerWithFormik = ({
   return (
     <div ref={containerEl}>
       <SingleDatePicker
+        placeholder='MM/DD/YYYY'
         date={values.startDate ? moment(values.startDate, EXIF) : null}
         onDateChange={(date) => {
-          date = moment(date).startOf('day');
-          date = date.format(EXIF);
-          setFieldValue('startDate', date);
+          setFieldTouched('startDate', true, false);
+          if (moment(date).isValid()) {
+            date = moment(date).startOf('day');
+            date = date.format(EXIF);
+            setFieldValue('startDate', date);
+          } else {
+            setFieldError('startDate', 'Enter date as MM/DD/YYYY')
+          }
         }}
         focused={focusedInput}
         onFocusChange={onFocusChange}
