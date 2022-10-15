@@ -120,7 +120,6 @@ export const filtersSlice = createSlice({
     },
 
     setActiveFilters: (state, { payload }) => {
-      console.log('filtersSlice.setActiveFilters(): ', payload);
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
       state.activeFilters = normalizedFilters;
     },
@@ -144,13 +143,23 @@ export const filtersSlice = createSlice({
           : activeIds.filter((id) => !managedIds.includes(id));
       }
 
-      state.activeFilters[payload.filterCat] = newActiveIds;
+      state.activeFilters[filterCat] = newActiveIds;
       state.activeFilters = normalizeFilters(
         state.activeFilters,
         state.availFilters,
         [filterCat]
       );
       
+    },
+
+    checkboxOnlyButtonClicked: (state, { payload }) => {
+      const { filterCat, managedIds } = payload;
+      state.activeFilters[filterCat] = managedIds;
+      state.activeFilters = normalizeFilters(
+        state.activeFilters,
+        state.availFilters,
+        [filterCat]
+      );
     },
 
   },
@@ -235,6 +244,7 @@ export const {
   dateFilterChanged,
   setActiveFilters,
   bulkSelectToggled,
+  checkboxOnlyButtonClicked,
 } = filtersSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 

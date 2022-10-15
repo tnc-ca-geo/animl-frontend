@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { truncateString } from '../../app/utils';
-import { checkboxFilterToggled } from './filtersSlice';
+import { checkboxFilterToggled, checkboxOnlyButtonClicked } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
@@ -116,6 +116,8 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
             showLabel={false}
           />
           <CameraCheckboxLabel 
+            filterCat='deployments'
+            managedIds={deployments.map((dep) => dep._id)}
             activeDepCount={activeDepCount}
             mostRecentActiveDep={mostRecentActiveDep}
           />
@@ -171,11 +173,18 @@ const OnlyButton = styled('div', {
   }
 });
 
-const CameraCheckboxLabel = ({ activeDepCount, mostRecentActiveDep }) => {
+const CameraCheckboxLabel = ({
+  filterCat,
+  managedIds,
+  activeDepCount,
+  mostRecentActiveDep,
+}) => {
   const [ showOnlyButton, setShowOnlyButton ] = useState(false);
+  const dispatch = useDispatch();
 
   const handleOnlyButtonClick = (e) => {
-    // TODO: handle only button click
+    e.preventDefault();
+    dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds }));
   };
 
   return (
