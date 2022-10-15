@@ -4,6 +4,7 @@ import moment from 'moment';
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import { DATE_FORMAT_EXIF as EXIF } from '../config';
+import { inViewportTopHalf } from '../app/utils';
 
 // NOTE: Date Picker style overrides are in theme/globalStyles.js
 // Had to override them there b/c the actual Date Picker element gets 
@@ -16,11 +17,8 @@ const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
   const [openDirection, setOpenDirection] = useState('down')
   const containerEl = useRef(null);
   const determineOpenDirection = () => {
-    const viewportEquator = window.innerHeight / 2;
-    const rect = containerEl.current.getBoundingClientRect();
-    const elVerticalCenter = rect.top + rect.height / 2;
-    const openDirection = elVerticalCenter > viewportEquator ? 'up' : 'down';
-    setOpenDirection(openDirection);
+    const od = inViewportTopHalf(containerEl.current) ? 'down' : 'up';
+    setOpenDirection(od);
   };
 
   const onDatesChange = (dates) => {

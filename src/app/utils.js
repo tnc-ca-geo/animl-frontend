@@ -112,3 +112,13 @@ export const relToAbs = (bbox, imageWidth, imageHeight) => {
   const height = (bbox[2] - bbox[0]) * imageHeight;
   return { left, top, width, height };
 };
+
+/*
+ * check if a DOM element is in the top half of the viewport
+ */
+export const inViewportTopHalf = (domElement) => {
+  const viewportEquator = window.innerHeight / 2;
+  const rect = domElement.getBoundingClientRect();
+  const elVerticalCenter = rect.top + rect.height / 2;
+  return elVerticalCenter < viewportEquator;
+};
