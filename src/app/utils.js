@@ -28,7 +28,6 @@ export const useResizeObserver = (ref) => {
 
   useEffect(() => {
     const element = ref.current;
-
     const resizeObserver = new ResizeObserver(entries => {
       if (!Array.isArray(entries)) return;
       if (!entries.length) return;
@@ -37,13 +36,12 @@ export const useResizeObserver = (ref) => {
         setWidth(entry.contentRect.width);
       }
       if (height !== entry.contentRect.height) {
-        console.log('height changed')
         setHeight(entry.contentRect.height);
       }
     })
     resizeObserver.observe(element);
     return () => resizeObserver.disconnect(element);
-  }, [height, ref, width]);
+  }, [ref, height, width]);
 
   // NOTE: Resize Observer entry's contentRect top/x left/y don't behave the  
   // same as getBoundingClientRect() (they're always 0),

@@ -138,9 +138,6 @@ const BoundingBox = ({
     object: objectIndex,
     label: labelIndex 
   };
-  
-  // track bbox
-  // console.log('bbox component - image height: ', imageHeight);
 
   const [ bbox, setBbox ] = useState(object.bbox);
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);

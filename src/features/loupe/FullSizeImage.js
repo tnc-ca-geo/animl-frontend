@@ -65,7 +65,7 @@ const EditObjectButtons = styled('div', {
 
 const FullImage = styled(Image, {
   maxWidth: '100%',
-  height: 'auto',
+  height: 'fit-content',
 });
 
 const ImageWrapper = styled('div', {
@@ -81,17 +81,12 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const dims = useResizeObserver(containerEl);
   const dispatch = useDispatch();
 
-  // console.log('fsimg component - image height: ', dims.height);
-
-
   // track image loading state
-  // NOTE: currently not using this. Consider removing
   const [ imgLoaded, setImgLoaded ] = useState(false);
   useEffect(() => {
     setImgLoaded(false);
-  }, [ image ]);
+  }, [ image._id ]);
   const handleImgLoaded = () => setImgLoaded(true);
-  console.log('image loaded: ', imgLoaded);
 
   const workingImages = useSelector(selectWorkingImages);
   const currImgObjects = workingImages[focusIndex.image].objects;
@@ -152,7 +147,6 @@ const FullSizeImage = ({ image, focusIndex }) => {
         <DrawBboxOverlay imageDimensions={dims} setTempObject={setTempObject} />
       }
       {imgLoaded && objectsToRender && objectsToRender.map((obj) => {
-        console.log('rendering BoundingBox')
         return (
           <BoundingBox
             key={obj._id}
@@ -171,7 +165,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
           <CircleSpinner />
         </SpinnerOverlay>
       }*/}
-      <FullImage src={image.url} onLoad={handleImgLoaded} />
+      <FullImage src={image.url} onLoad={() => handleImgLoaded()} />
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
           <EditObjectButton

@@ -106,10 +106,8 @@ export const focusMiddleware = store => next => action => {
    */
 
   if (setFocus.match(action)) {
-    console.log('focusMiddleware.setFocus(): ', action.payload);
     // prevent any focus change while user isAddingLabel
     const isAddingLabel = selectIsAddingLabel(store.getState());
-    if (isAddingLabel) console.log('NOTE: preventing focus change b/c isAddingLabel === true');
     if (!isAddingLabel) next(action);
   }
 
@@ -139,7 +137,6 @@ export const focusMiddleware = store => next => action => {
     const delta = action.payload;
     const workingImages = selectWorkingImages(store.getState());
     const focusIndex = selectFocusIndex(store.getState());
-    console.log(`${delta}ing with focusIndex: `, focusIndex);
     const focusedOnFirstImg = focusIndex.image === 0;
     const focusedOnLastImg = focusIndex.image === workingImages.length - 1;
 
