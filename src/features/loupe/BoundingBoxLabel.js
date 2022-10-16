@@ -136,7 +136,7 @@ const BoundingBoxLabel = ({
 
   // update selctor options when new labels become available
   const createOption = (category) => ({
-    value: category.toLowerCase().replace(/\W/g, ''),
+    value: category.toLowerCase(),
     label: category,
   });
   const availLabels = useSelector(selectAvailLabels);
