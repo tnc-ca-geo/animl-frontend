@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
+import { createFilter } from 'react-select';
 import { selectAvailLabels } from '../filters/filtersSlice';
 import { selectUserUsername } from '../user/userSlice.js';
 import { labelAdded, setFocus } from '../review/reviewSlice';
@@ -224,6 +225,7 @@ const BoundingBoxLabel = ({
               onCreateOption={handleCategoryChange}
               value={createOption(label.category)}
               options={options}
+              filterOption={createFilter({ matchFrom: 'start' })}
             />
           : <LabelDisplay>
               <Category>{label.category}</Category>
