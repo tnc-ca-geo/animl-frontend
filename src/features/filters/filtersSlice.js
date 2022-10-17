@@ -110,7 +110,6 @@ export const filtersSlice = createSlice({
     },
 
     customFilterChanged: (state, { payload }) => {
-      console.log('filtersSlice.customFilterApplied() - ', payload);
       state.activeFilters.custom = payload;
     },
 
@@ -178,7 +177,6 @@ export const filtersSlice = createSlice({
         loadingState.errors = payload;
       })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
-        console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
         const { cameraConfigs, labels } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);
@@ -187,7 +185,6 @@ export const filtersSlice = createSlice({
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
       .addCase(registerCameraSuccess, (state, { payload }) => {
-        console.log('filtersSlice() - registerCameraSuccess extra reducer: ', payload)
         const { cameraConfigs } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);

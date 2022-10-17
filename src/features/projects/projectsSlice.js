@@ -43,19 +43,16 @@ export const projectsSlice = createSlice({
   reducers: {
 
     getProjectsStart: (state) => {
-      console.log('projectSlice.getProjectsStart()');
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.projects = ls;
     },
 
     getProjectsFailure: (state, { payload }) => {
-      console.log('projectSlice.getProjectsFailure() - payload: ', payload);
       const ls = { isLoading: false, operation: null, errors: payload };  
       state.loadingStates.projects = ls;
     },
 
     getProjectsSuccess: (state, { payload }) => {
-      console.log('projectSlice.getProjectsSucces() - payload: ', payload);
       const noneFound = !payload.projects || payload.projects.length === 0;
       const ls = { isLoading: false, operation: null, errors: null, noneFound };
       state.loadingStates.projects = ls;
@@ -76,7 +73,6 @@ export const projectsSlice = createSlice({
     },
 
     setSelectedProjAndView: (state, { payload }) => {
-      console.log('projectSlice.setSelectedProjAndView() - _id: ', payload);
       let selectedProj = state.projects.find((p) => p.selected);
 
       if (payload.newProjSelected) {
@@ -105,7 +101,6 @@ export const projectsSlice = createSlice({
     /* Views CRUD */
 
     editViewStart: (state) => { 
-      console.log('editViewStart')
       const ls = { isLoading: true, operation: 'updating', errors: null };  
       state.loadingStates.views = ls;
     },
@@ -118,7 +113,6 @@ export const projectsSlice = createSlice({
     // TODO AUTH - instead of passing in projectId to payload, we could also 
     // just search all views in all projects for the project Id
     saveViewSuccess: (state, { payload }) => {
-      console.log('saveViewSuccess')
       const ls = { isLoading: false, operation: null, errors: null };  
       state.loadingStates.views = ls;
 
@@ -136,7 +130,6 @@ export const projectsSlice = createSlice({
     },
 
     deleteViewSuccess: (state, { payload }) => {
-      console.log('projectSlice - deleteViewSuccess() - ', payload);
       const ls = { isLoading: false, operation: null, errors: null };  
       state.loadingStates.views = ls;
 
@@ -163,7 +156,6 @@ export const projectsSlice = createSlice({
     },
 
     editDeploymentsSuccess: (state, { payload }) => {
-      console.log('projectSlice - editDeploymentSucces() - ', payload);
       const ls = { isLoading: false, operation: null, errors: null };  
       state.loadingStates.deployments = ls;
 
@@ -193,13 +185,11 @@ export const projectsSlice = createSlice({
     },
 
     getModelsFailure: (state, { payload }) => {
-      console.log('projectSlice - getModelsFailure() - ', payload);
       const ls = { isLoading: false, operation: null, errors: payload };  
       state.loadingStates.deployments = ls;
     },
 
     getModelsSuccess: (state, { payload }) => {
-      console.log('projectSlice - getModelsSucces() - ', payload);
       const ls = { isLoading: false, operation: null, errors: null };  
       state.loadingStates.deployments = ls;
 
@@ -228,12 +218,10 @@ export const projectsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(registerCameraSuccess, (state, { payload }) => {
-        console.log('projectSlice() - registerCameraSuccess extra reducer: ', payload);
         const proj = state.projects.find((p) => p._id === payload.project._id);
         proj.cameraConfigs = payload.project.cameraConfigs;
       })
       .addCase(unregisterCameraSuccess, (state, { payload }) => {
-        console.log('projectSlice() - unregisterCameraSuccess extra reducer: ', payload);
         // if a project is returned & it's the default_project 
         // update the default_project's cameraConfig array in state
         if (payload.project && payload.project._id === 'default_project') {
