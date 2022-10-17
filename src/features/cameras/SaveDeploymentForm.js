@@ -9,10 +9,7 @@ import { ObjectID } from 'bson';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { DATE_FORMAT_EXIF as EXIF } from '../../config';
-import {
-  editDeployments,
-  selectDeploymentsLoading
-} from '../projects/projectsSlice';
+import { editDeployments, selectDeploymentsLoading } from '../projects/projectsSlice';
 import Button from '../../components/Button';
 import SelectField from '../../components/SelectField';
 import {
@@ -49,14 +46,16 @@ const newDeploymentSchema = Yup.object().shape({
     'Coordinates must be in decimal degrees',
     value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/), 
   ),
-  startDate: Yup.date().transform((value, originalValue) => {
-    // console.log('validating startDate value: ', value);
-    // console.log('validating startDate originalValue: ', originalValue);
-    // value = DateTime.fromISO(originalValue);
-    // return value.isValid ? value.toJSDate() : new Date('');
-    return originalValue && originalValue.isValid() 
-      ? originalValue.toDate() 
-      : new Date('');
+  startDate: Yup.date().transform((value, originalValue, context) => {
+    if (context.isType(value)) return value;
+    // the default coercion failed so let's try it with Moment.js instead
+    value = moment(originalValue, EXIF);
+    // if it's valid return the date object, otherwise return an `InvalidDate`
+    return value.isValid() ? value.toDate() : new Date('');
+    // NOTE: this is what I had previously w/ timezone-fix:
+    // return originalValue && originalValue.isValid() 
+    // ? originalValue.toDate() 
+    // : new Date('');
   }).required(),
 });
 

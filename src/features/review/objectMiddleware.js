@@ -15,7 +15,6 @@ export const objectMiddleware = store => next => action => {
   /* bboxUpdated */
 
   if (bboxUpdated.match(action)) {
-    console.log('objectMiddleware.bboxUpdated()');
     next(action);
     const { imgId, objId, bbox } = action.payload;
     store.dispatch(editLabel('update', 'object', {
@@ -28,7 +27,6 @@ export const objectMiddleware = store => next => action => {
  /* objectRemoved */
 
   else if (objectRemoved.match(action)) {
-    console.log('objectMiddleware.objectRemoved(): ', action.payload);
     const { imgId, objId } = action.payload;
     store.dispatch(editLabel('delete', 'object', {
       imageId: imgId,
@@ -40,7 +38,6 @@ export const objectMiddleware = store => next => action => {
   /* objectLocked */
 
   else if (objectLocked.match(action)) {
-    console.log('objectMiddleware.objectLocked() - ', action.payload);
     next(action);
     const { imgId, objId, locked } = action.payload;
     store.dispatch(editLabel('update', 'object', {
@@ -53,7 +50,6 @@ export const objectMiddleware = store => next => action => {
   /* objectManuallyUnlocked */
 
   else if (objectManuallyUnlocked.match(action)) {
-    console.log('objectMiddleware.objectManuallyUnlocked()');
     next(action);
     const { imgId, objId } = action.payload;
     store.dispatch(objectLocked({ imgId, objId, locked: false }));
@@ -62,7 +58,6 @@ export const objectMiddleware = store => next => action => {
   /* markedEmpty */
 
   else if (markedEmpty.match(action)) {
-    console.log('objectMiddleware.markedEmpty(): ', action.payload);
     const { imgId, userId } = action.payload;
 
     action.payload.newObject = action.payload.newObject || {
@@ -90,7 +85,6 @@ export const objectMiddleware = store => next => action => {
   /* markedEmpty */
 
   else if (markedEmptyReverted.match(action)) {
-    console.log('objectMiddleware.markedEmptyReverted(): ', action.payload);
     const { imgId, newObject } = action.payload;
     if (newObject) {
       store.dispatch(objectRemoved({ imgId, objId: newObject._id }));

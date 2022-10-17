@@ -63,6 +63,7 @@ export const FieldRow = styled('div', {
 
 export const ButtonRow = styled(FieldRow, {
   justifyContent: 'flex-end',
+  paddingTop: '$3',
   button: {
     marginRight: '$3',
     '&:last-child': {
@@ -87,5 +88,13 @@ export const FormError = styled('div', {
 });
 
 export const HelperText = styled('div', {
-  padding: '$2 $3 $3 $3',
+  padding: '$3',
+
+  '& p': {
+    marginTop: '$0',
+    
+    '&:last-child': {
+      marginBottom: '$0',
+    }
+  }
 });

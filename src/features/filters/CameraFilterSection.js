@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { truncateString } from '../../app/utils';
-import { checkboxFilterToggled } from './filtersSlice';
+import { checkboxFilterToggled, checkboxOnlyButtonClicked } from './filtersSlice';
 import Checkbox from '../../components/Checkbox';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
@@ -10,11 +10,11 @@ import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
-const AdditionalActiveDepCount = styled('span', {
+const AdditionalActiveDepCount = styled('div', {
   fontStyle: 'italic',
 });
 
-const ActiveDepLabel = styled('span', {
+const ActiveDepLabel = styled('div', {
 
 });
 
@@ -47,31 +47,55 @@ const StyledCameraFilterSection = styled('div', {
 
 const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const [expanded, setExpanded] = useState(false);
-  const [mostRecentActiveDep, setMostRecentActiveDep] = useState();
-  const [activeDepCount, setActiveDepCount] = useState();
+  // const [mostRecentActiveDep, setMostRecentActiveDep] = useState();
+  // const [activeDepCount, setActiveDepCount] = useState();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // get most recent active deployment name
-    let depName = '';
-    for (const dep of camConfig.deployments) {
-      if ((activeDeps && activeDeps.includes(dep._id)) || 
-          activeDeps === null) {
-        depName = dep.name;
-      }
-    }
-    depName = truncateString(depName, 16);
-    setMostRecentActiveDep(depName);
+  // format default deployment names
+  const deployments = camConfig.deployments.map((dep) => {
+    const name = dep.name === 'default' 
+      ? `${camConfig._id} (default)` 
+      : dep.name;
+    return { ...dep, name };
+  })
+
+  // useEffect(() => {
+  //   // get most recent active deployment name
+  //   let depName = '';
+  //   for (const dep of deployments) {
+  //     if ((activeDeps && activeDeps.includes(dep._id)) || 
+  //         activeDeps === null) {
+  //       depName = dep.name;
+  //     }
+  //   }
+  //   depName = truncateString(depName, 27);
+  //   setMostRecentActiveDep(depName);
     
-    // get active deplployment count
-    let actDepCount = camConfig.deployments.length;
-    if (activeDeps !== null) {
-      actDepCount = camConfig.deployments.filter((dep) => (
-        activeDeps.includes(dep._id)
-      )).length;
+  //   // get active deplployment count
+  //   let actDepCount = deployments.length;
+  //   if (activeDeps !== null) {
+  //     actDepCount = deployments.filter((dep) => (
+  //       activeDeps.includes(dep._id)
+  //     )).length;
+  //   }
+  //   setActiveDepCount(actDepCount);
+  // }, [ deployments, activeDeps ]);
+
+  let mostRecentActiveDep = '';
+  // let depName = '';
+  for (const dep of deployments) {
+    if ((activeDeps && activeDeps.includes(dep._id)) || 
+        activeDeps === null) {
+      mostRecentActiveDep = truncateString(dep.name, 27);
     }
-    setActiveDepCount(actDepCount);
-  }, [ camConfig, activeDeps ])
+  }
+
+  let activeDepCount = deployments.length;
+  if (activeDeps !== null) {
+    activeDepCount = deployments.filter((dep) => (
+      activeDeps.includes(dep._id)
+    )).length;
+  }
 
   const handleCheckboxChange = (e) => {
     dispatch(checkboxFilterToggled({
@@ -88,22 +112,15 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
         <label>
           <BulkSelectCheckbox
             filterCat='deployments'
-            managedIds={camConfig.deployments.map((dep) => dep._id)}
+            managedIds={deployments.map((dep) => dep._id)}
             showLabel={false}
           />
-          <CheckboxLabel
-            active={activeDepCount > 0}>
-            <CameraId>{camConfig._id}</CameraId>
-            <ActiveDepLabel>{` - ${mostRecentActiveDep}`}</ActiveDepLabel>
-            <AdditionalActiveDepCount>
-              {activeDepCount - 1 > 0 
-                  ? `, +${activeDepCount - 1}`
-                  : activeDepCount === 0
-                    ? `no deployments selected`
-                    : ''
-              }
-            </AdditionalActiveDepCount>
-          </CheckboxLabel>
+          <CameraCheckboxLabel 
+            filterCat='deployments'
+            managedIds={deployments.map((dep) => dep._id)}
+            activeDepCount={activeDepCount}
+            mostRecentActiveDep={mostRecentActiveDep}
+          />
           <ExpandButton onClick={handleExpandCameraButtonClick}>
             <IconButton size='small' variant='ghost'>
               <FontAwesomeIcon icon={ 
@@ -116,24 +133,24 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
 
       {expanded && 
         <Deployments>
-          {camConfig.deployments.map((deployment) => {
+          {deployments.map((dep) => {
             const depChecked = activeDeps === null || 
-                              activeDeps.includes(deployment._id);
+                              activeDeps.includes(dep._id);
             return (
-              <DeploymentCheckboxWrapper key={deployment._id}>
+              <DeploymentCheckboxWrapper key={dep._id}>
                 <label>
                   <Checkbox
                     checked={depChecked}
                     active={depChecked}
                     data-filter-cat={'deployments'}
-                    data-sn={deployment._id}
+                    data-sn={dep._id}
                     onChange={handleCheckboxChange}
                   />
                   <CheckboxLabel
                     checked={depChecked}
                     active={depChecked}
                   >
-                    {deployment.name}
+                    {truncateString(dep.name, 27)}
                   </CheckboxLabel>
                 </label>
               </DeploymentCheckboxWrapper>
@@ -144,5 +161,52 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
     </StyledCameraFilterSection>
   );
 };
+
+const OnlyButton = styled('div', {
+  position: 'absolute',
+  right: '32px',
+  background: '$gray200',
+  padding: '$0 $2',
+  fontWeight: '$5',
+  '&:hover': {
+    textDecoration: 'underline',
+  }
+});
+
+const CameraCheckboxLabel = ({
+  filterCat,
+  managedIds,
+  activeDepCount,
+  mostRecentActiveDep,
+}) => {
+  const [ showOnlyButton, setShowOnlyButton ] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleOnlyButtonClick = (e) => {
+    e.preventDefault();
+    dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds }));
+  };
+
+  return (
+    <CheckboxLabel
+      active={activeDepCount > 0}
+      onMouseEnter={() => setShowOnlyButton(true)}
+      onMouseLeave={() => setShowOnlyButton(false)}
+    >
+      <ActiveDepLabel>{mostRecentActiveDep}</ActiveDepLabel>
+      <AdditionalActiveDepCount>
+        {activeDepCount - 1 > 0 
+            ? `, +${activeDepCount - 1}`
+            : activeDepCount === 0
+              ? `no deployments selected`
+              : ''
+        }
+      </AdditionalActiveDepCount>
+      {showOnlyButton &&
+        <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>
+      }
+    </CheckboxLabel>
+  )
+}
 
 export default CameraFilterSection;

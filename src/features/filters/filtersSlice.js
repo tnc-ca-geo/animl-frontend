@@ -110,7 +110,6 @@ export const filtersSlice = createSlice({
     },
 
     customFilterChanged: (state, { payload }) => {
-      console.log('filtersSlice.customFilterApplied() - ', payload);
       state.activeFilters.custom = payload;
     },
 
@@ -120,7 +119,6 @@ export const filtersSlice = createSlice({
     },
 
     setActiveFilters: (state, { payload }) => {
-      console.log('filtersSlice.setActiveFilters(): ', payload);
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
       state.activeFilters = normalizedFilters;
     },
@@ -144,13 +142,23 @@ export const filtersSlice = createSlice({
           : activeIds.filter((id) => !managedIds.includes(id));
       }
 
-      state.activeFilters[payload.filterCat] = newActiveIds;
+      state.activeFilters[filterCat] = newActiveIds;
       state.activeFilters = normalizeFilters(
         state.activeFilters,
         state.availFilters,
         [filterCat]
       );
       
+    },
+
+    checkboxOnlyButtonClicked: (state, { payload }) => {
+      const { filterCat, managedIds } = payload;
+      state.activeFilters[filterCat] = managedIds;
+      state.activeFilters = normalizeFilters(
+        state.activeFilters,
+        state.availFilters,
+        [filterCat]
+      );
     },
 
   },
@@ -169,7 +177,6 @@ export const filtersSlice = createSlice({
         loadingState.errors = payload;
       })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
-        console.log('filtersSlice() - setSelectedProjAndView extra reducer: ', payload);
         const { cameraConfigs, labels } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);
@@ -178,7 +185,6 @@ export const filtersSlice = createSlice({
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
       .addCase(registerCameraSuccess, (state, { payload }) => {
-        console.log('filtersSlice() - registerCameraSuccess extra reducer: ', payload)
         const { cameraConfigs } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);
@@ -235,6 +241,7 @@ export const {
   dateFilterChanged,
   setActiveFilters,
   bulkSelectToggled,
+  checkboxOnlyButtonClicked,
 } = filtersSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 

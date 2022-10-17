@@ -20,7 +20,6 @@ export const labelMiddleware = store => next => action => {
   /* labelAdded */
 
   if (labelAdded.match(action)) {
-    console.log('labelMiddleware.labelAdded(): ', action.payload);
     const { newLabel, bbox, userId, category } = action.payload;
     const { objIsTemp, imgId, objId, newObject } = action.payload;
 
@@ -48,14 +47,12 @@ export const labelMiddleware = store => next => action => {
     next(action);
 
     if (objIsTemp) {
-      console.log('NOTE: object isTemp, so creating object + label');
       store.dispatch(editLabel('create', 'object', {
         object: action.payload.newObject,
         imageId: imgId,
       }));
     }
     else {
-      console.log('NOTE: object exists, so just creating label');
       store.dispatch(editLabel('create', 'label', {
         labels: [action.payload.newLabel],
         imageId: imgId,
@@ -88,14 +85,12 @@ export const labelMiddleware = store => next => action => {
   /* labelRemoved */
 
   else if (labelRemoved.match(action)) {
-    console.log('labelMiddleware.labelRemoved(): ', action.payload);
     const { imgId, objId, newLabel } = action.payload;
 
     // remove object if there's only one label left
     const workingImages = selectWorkingImages(store.getState());
     const object = findObject(workingImages, imgId, objId);
     if (object.labels.length <= 1) {
-      console.log('NOTE: removing objects last label, so just deleting object')
       store.dispatch(editLabel('delete', 'object', {
         imageId: imgId,
         objectId: objId,
@@ -119,7 +114,6 @@ export const labelMiddleware = store => next => action => {
   /* labelValidated */
 
   else if (labelValidated.match(action)) {
-    console.log('labelMiddleware.labelValidated() - ', action);
     const { userId, imgId, objId, lblId, validated } = action.payload;
     next(action);
 
@@ -145,7 +139,6 @@ export const labelMiddleware = store => next => action => {
   /* labelValidationReverted */
 
   else if (labelValidationReverted.match(action)) {
-    console.log('labelMiddleware.labelValidationReverted() - ', action);
     next(action);
     const { imgId, objId, lblId, oldValidation, oldLocked } = action.payload;
 

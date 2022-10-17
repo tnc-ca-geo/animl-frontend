@@ -225,10 +225,14 @@ const ProjectAndViewNav = () => {
           <NavigationMenuList>
 
             <NavigationMenuItem>
-              <NavigationMenuTrigger>
+              <NavigationMenuTrigger
+                onPointerMove={(e) => e.preventDefault()}
+              >
                 {selectedProj.name}
               </NavigationMenuTrigger>
-              <NavigationMenuContent>
+              <NavigationMenuContent
+                onPointerMove={(e) => e.preventDefault()}
+              >
                 <MenuTitle>Projects</MenuTitle>
                 <ContentList layout="one">
                   {projects.map((proj) => (
@@ -246,10 +250,15 @@ const ProjectAndViewNav = () => {
             </NavigationMenuItem>
     
             <NavigationMenuItem>
-              <NavigationMenuTriggerViews edited={unsavedViewChanges}>
+              <NavigationMenuTriggerViews
+                onPointerMove={(e) => e.preventDefault()}
+                edited={unsavedViewChanges}
+              >
                 {selectedView.name}
               </NavigationMenuTriggerViews>
-              <NavigationMenuContent>
+              <NavigationMenuContent
+                onPointerMove={(e) => e.preventDefault()}
+              >
                 <MenuTitle>Views</MenuTitle>
                 <ContentList layout="two">
                   {views.map((view) => (

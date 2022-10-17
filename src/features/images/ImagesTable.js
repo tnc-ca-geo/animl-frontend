@@ -219,7 +219,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const imagesLoading = useSelector(selectImagesLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
-  const paginatedFiled = useSelector(selectPaginatedField);
+  const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useScrollbarSize();
   // const [ visibleRows, setVisibleRows ] = useState([null, null]);
@@ -289,7 +289,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const initialState = {
     sortBy: [
       {
-        id: paginatedFiled,
+        id: paginatedField,
         desc: !sortAscending,
       }
     ],

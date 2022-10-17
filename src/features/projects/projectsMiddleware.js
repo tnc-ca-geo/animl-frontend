@@ -24,8 +24,6 @@ import {
 export const enrichProjAndViewPayload = store => next => action => {
 
   if (setSelectedProjAndView.match(action)) {
-    console.log('projectsMiddleware() - enrichProjectAndViewPayload: ', action.payload);
-
     let { projId, viewId } = action.payload;
 
     // add project to payload (used in filtersSlice extraReducers)
@@ -84,15 +82,10 @@ export const diffFilters = store => next => action => {
     deleteViewSuccess.match(action)
   ) {
 
-    console.log('projectsMiddleware() - difFiltersMiddleware - payload: ', action.payload);
-
     next(action);
     const activeFilters = selectActiveFilters(store.getState());
     const selectedView = selectSelectedView(store.getState());
     if (activeFilters && selectedView) {
-      console.log('projectsMiddleware() - difFiltersMiddleware - activeFilters: ', activeFilters)
-      console.log('projectsMiddleware() - difFiltersMiddleware - selectedView filters: ', selectedView.filters)
-
       const match = _.isEqual(activeFilters, selectedView.filters);
       store.dispatch(setUnsavedViewChanges(!match));
     }
@@ -110,7 +103,6 @@ export const diffFilters = store => next => action => {
 export const setActiveFiltersToSelectedView = store => next => action => {
 
   if (setSelectedProjAndView.match(action)) {
-    console.log('projectsMiddleware() - setActiveViewFilters: ', action.payload);
     store.dispatch(undoActions.clear());
 
     next(action);

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
+import { createFilter } from 'react-select';
 import { selectAvailLabels } from '../filters/filtersSlice';
 import { selectUserUsername } from '../user/userSlice.js';
 import { labelAdded, setFocus } from '../review/reviewSlice';
@@ -136,7 +137,7 @@ const BoundingBoxLabel = ({
 
   // update selctor options when new labels become available
   const createOption = (category) => ({
-    value: category.toLowerCase().replace(/\W/g, ''),
+    value: category.toLowerCase(),
     label: category,
   });
   const availLabels = useSelector(selectAvailLabels);
@@ -218,6 +219,7 @@ const BoundingBoxLabel = ({
               isSearchable
               className='react-select'
               classNamePrefix='react-select'
+              filterOption={createFilter({ matchFrom: 'start' })}
               isLoading={availLabels.isLoading}
               isDisabled={availLabels.isLoading || !isAuthorized}
               onChange={handleCategoryChange}

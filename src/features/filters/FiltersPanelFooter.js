@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, READ_STATS_ROLES } from '../../auth/roles';
+import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../../auth/roles';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectImagesCount,
-  fetchImages,
-  clearStats
-} from '../images/imagesSlice';
+import { selectImagesCount, fetchImages } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
-// import { selectModalOpen, setModalOpen } from '../projects/projectsSlice';
-import { Modal } from '../../components/Modal';
+import { selectModalOpen, setModalOpen, setModalContent } from '../projects/projectsSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
-import ImagesStatsModal from '../images/ImagesStatsModal';
+import { InfoCircledIcon, DownloadIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../components/Tooltip';
 
 const RefreshButton = styled('div', {
   height: '100%',
@@ -32,6 +32,13 @@ const InfoButton = styled('div', {
   padding: '0 $1',
 });
 
+const ExportCSVButton = styled('div', {
+  height: '100%',
+  borderLeft: '1px solid $gray400',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 $1',
+});
 
 const ImagesCount = styled('div', {
   flexGrow: 1,
@@ -62,16 +69,16 @@ const FiltersPanelFooter = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const filters = useSelector(selectActiveFilters);
   const imagesCount = useSelector(selectImagesCount);
-  const [ modalOpen, setModalOpen ] = useState(false);
+  const modalOpen = useSelector(selectModalOpen);
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
     dispatch(fetchImages(filters));
   };
 
-  const handleModalToggle = () => {
-    dispatch(clearStats());
-    setModalOpen(!modalOpen);
+  const handleModalToggle = (content) => {
+    dispatch(setModalOpen(!modalOpen));
+    dispatch(setModalContent(content));
   };
 
   return (
@@ -80,35 +87,60 @@ const FiltersPanelFooter = () => {
         <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images 
       </ImagesCount>
       {hasRole(userRoles, READ_STATS_ROLES) &&
-        <InfoButton>
-          <IconButton
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <InfoButton>
+              <IconButton
+                variant='ghost'
+                size='large'
+                onClick={() => handleModalToggle('stats-modal')}
+              >
+                <InfoCircledIcon />
+              </IconButton>
+            </InfoButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5} >
+            Get stats
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      }
+      {hasRole(userRoles, EXPORT_DATA_ROLES) &&
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ExportCSVButton>
+              <IconButton
+                variant='ghost'
+                size='large'
+                onClick={() => handleModalToggle('export-modal')}
+              >
+                <DownloadIcon />
+              </IconButton>
+            </ExportCSVButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5} >
+            Export data
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      }
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <RefreshButton>
+            <IconButton
             variant='ghost'
             size='large'
-            onClick={handleModalToggle}
+            onClick={handleRefreshClick}
           >
-            <InfoCircledIcon />
+            <FontAwesomeIcon icon={['fas', 'sync']}/>
           </IconButton>
-        </InfoButton>
-      }
-      <RefreshButton>
-        <IconButton
-        variant='ghost'
-        size='large'
-        onClick={handleRefreshClick}
-      >
-        <FontAwesomeIcon icon={['fas', 'sync']}/>
-      </IconButton>
-      </RefreshButton>
-      {modalOpen && 
-        <Modal 
-          open={modalOpen}
-          handleModalToggle={handleModalToggle}
-          title={'Stats'}
-          size={'md'}
-        >
-          <ImagesStatsModal filters={filters} />
-        </Modal>
-      }
+          </RefreshButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Refresh data
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
     </StyledFiltersPanelFooter>
   );
 };

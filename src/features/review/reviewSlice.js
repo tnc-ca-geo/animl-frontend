@@ -87,10 +87,11 @@ export const reviewSlice = createSlice({
     },
 
     labelValidationReverted: (state, { payload }) => { // for undoing a validation
-      console.log('reviewSlice.labelValidationReverted() - ', payload);
-      const { imgId, objId, lblId } = payload;
+      const { imgId, objId, lblId, oldValidation, oldLocked } = payload;
+      const object = findObject(state.workingImages, imgId, objId);
+      object.locked = oldLocked;
       const label = findLabel(state.workingImages, imgId, objId, lblId);
-      label.validation = payload.oldValidation;
+      label.validation = oldValidation;
     },
 
     objectLocked: (state, { payload }) => {

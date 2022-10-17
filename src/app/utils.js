@@ -28,7 +28,6 @@ export const useResizeObserver = (ref) => {
 
   useEffect(() => {
     const element = ref.current;
-
     const resizeObserver = new ResizeObserver(entries => {
       if (!Array.isArray(entries)) return;
       if (!entries.length) return;
@@ -42,7 +41,7 @@ export const useResizeObserver = (ref) => {
     })
     resizeObserver.observe(element);
     return () => resizeObserver.disconnect(element);
-  }, []);
+  }, [ref, height, width]);
 
   // NOTE: Resize Observer entry's contentRect top/x left/y don't behave the  
   // same as getBoundingClientRect() (they're always 0),
@@ -52,7 +51,7 @@ export const useResizeObserver = (ref) => {
     const container = element.getBoundingClientRect();
     if (top !== container.top) setTop(container.top);
     if (left !== container.left) setLeft(container.left);
-  }, [width]);
+  }, [left, ref, top, width]);
 
   return { width, height, top, left };
 };
@@ -112,4 +111,14 @@ export const relToAbs = (bbox, imageWidth, imageHeight) => {
   const width = (bbox[3] - bbox[1]) * imageWidth;
   const height = (bbox[2] - bbox[0]) * imageHeight;
   return { left, top, width, height };
+};
+
+/*
+ * check if a DOM element is in the top half of the viewport
+ */
+export const inViewportTopHalf = (domElement) => {
+  const viewportEquator = window.innerHeight / 2;
+  const rect = domElement.getBoundingClientRect();
+  const elVerticalCenter = rect.top + rect.height / 2;
+  return elVerticalCenter < viewportEquator;
 };

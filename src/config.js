@@ -10,8 +10,8 @@ const API_URLS = {
 };
 
 const IMAGES_URLS = {
-  development: 'https://d2oo5vd7pe9mk4.cloudfront.net/',
-  staging: 'https://d2oo5vd7pe9mk4.cloudfront.net/',
+  development: 'https://dh4emlc8kr8dr.cloudfront.net/',
+  staging: 'https://dh4emlc8kr8dr.cloudfront.net/',
   production: 'https://doo86afh9dk8g.cloudfront.net/'  
 };
 
@@ -21,6 +21,6 @@ export const API_URL = API_URLS[stage];
 export const IMAGES_URL = IMAGES_URLS[stage];
 export const IMAGE_QUERY_LIMITS = [10, 50, 100];
 
-export const SUPPORTED_CAM_MAKES = ['BuckEyeCam'];
+export const SUPPORTED_CAM_MAKES = ['BuckEyeCam', 'RidgeTec'];
 
 export const IN_MAINTENANCE_MODE = false;

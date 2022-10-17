@@ -253,6 +253,39 @@ const queries = {
     },
   }),
 
+  exportCSV: ({ filters }) => ({
+    template: `
+      query ExportCSV($input: ExportCSVInput!) {
+        csv(input: $input) {
+          documentId
+        }
+      }
+    `,
+    variables: {
+      input: { filters }
+    },
+  }),
+
+  getExportStatus: ({ documentId }) => ({
+    template: `
+      query GetExportStatus($input: ExportStatusInput!) {
+        exportStatus(input: $input) {
+          status
+          url
+          imageCount
+          reviewedCount {
+            reviewed
+            notReviewed
+          }
+          error
+        }
+      }
+    `,
+    variables: {
+      input: { documentId }
+    },
+  }),
+
   createView: (input) => ({
     template: `
       mutation CreateView($input: CreateViewInput!) {
