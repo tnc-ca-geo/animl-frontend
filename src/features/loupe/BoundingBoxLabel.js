@@ -219,13 +219,13 @@ const BoundingBoxLabel = ({
               isSearchable
               className='react-select'
               classNamePrefix='react-select'
+              filterOption={createFilter({ matchFrom: 'start' })}
               isLoading={availLabels.isLoading}
               isDisabled={availLabels.isLoading || !isAuthorized}
               onChange={handleCategoryChange}
               onCreateOption={handleCategoryChange}
               value={createOption(label.category)}
               options={options}
-              filterOption={createFilter({ matchFrom: 'start' })}
             />
           : <LabelDisplay>
               <Category>{label.category}</Category>
