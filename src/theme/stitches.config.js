@@ -57,7 +57,10 @@ export const {
       blue500: '#003BD7',
       blue600: '#0002C7',
       blue700: '#161e2e', 
-
+    },
+    shadows: {
+      gray300: '#F0F0F0',
+      blue200: '#E8EFFF',//'#E7FCFF',
     },
     sizes: {
       0: '0px',

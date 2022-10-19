@@ -12,12 +12,16 @@ const textInput = {
   border: '1px solid',
   borderColor: '$gray400',
   borderRadius: '$1',
-  transition: 'all 0.2s ease',
   '&:focus': {
+    transition: 'all 0.2s ease',
     outline: 'none',
-    boxShadow: '0 0 0 3px $blue200',
-    borderColor: '$blue500',
-  }
+    boxShadow: '0 0 0 3px $gray300',
+    borderColor: '$hiContrast',
+    '&:hover': {
+      boxShadow: '0 0 0 3px $blue200',
+      borderColor: '$blue500',
+    },
+  },
 };
 
 const StyledFormWrapper = styled('div', {

@@ -4,46 +4,52 @@ import { styled } from '../theme/stitches.config';
 import Select from 'react-select';
 import { FormError } from './Form';
 
-const StyledSelect = styled(Select, {
-  '.react-select__control': {
-    padding: '$1 0',
+// TODO: refactor using radix select primative.
+// I don't love the incongruous approach to styling react-select forces
+
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    height: '52px',
     boxSizing: 'border-box',
     border: '1px solid',
-    borderColor: '$gray400',
-    borderRadius: '$1',
+    borderColor: 'var(--colors-gray400) !important',
+    borderRadius: 'var(--radii-1)',
     cursor: 'pointer',
-  },
-  '.react-select__value-container': {
-    fontSize: '$3',
-    fontFamily: '$sourceSansPro',
-    color: '$gray700',
-    height: '40px',
-    paddingLeft: '$3'
-  },
-  '.react-select__control--is-focused': {
-    transition: 'all 0.2s ease',
-    boxShadow: '0 0 0 3px $blue200',
-    borderColor: '$blue500',
-    '&:hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
-    },
-  },
-  '.react-select__menu': {
-    color: '$hiContrast',
-    fontSize: '$3',
-    '.react-select__option': {
-      cursor: 'pointer',
-    },
-    '.react-select__option--is-selected': {
-      color: '$blue500',
-      backgroundColor: '$blue200',
-    },
-    '.react-select__option--is-focused': {
-      backgroundColor: '$gray300',
-    },
-  }
-});
+    ...(state.isFocused && {
+      transition: 'all 0.2s ease',
+      boxShadow: '0 0 0 3px var(--colors-gray300)',
+      borderColor: 'var(--hi-contrast)',
+      '&:hover': {
+        boxShadow: '0 0 0 3px var(--colors-blue200)',
+        borderColor: 'var(--colors-blue500)',
+      },
+    })
+  }),
+  valueContainer: (provided, state) => ({
+    ...provided,
+    padding: '0px 16px',
+    fontSize: 'var(--fontSizes-3)',
+    fontFamily: 'var(--fonts-sourceSansPro)',
+    color: 'var(--colors-gray700)',
+  }),
+  menu: (provided, state) => ({
+    ...provided,
+    color: 'var(--colors-hiContrast)',
+    fontSize: 'var(--fontSizes-3)',
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    cursor: 'pointer',
+    ...(state.isSelected && {
+      color: 'var(--colors-blue500)',
+      backgroundColor: 'var(--colors-blue200)',
+    }),
+    ...(state.isFocused && {
+      backgroundColor: 'var(--colors-gray300)',
+    })
+  })
+};
 
 const SelectField = ({
   name,
@@ -68,7 +74,8 @@ const SelectField = ({
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
-      <StyledSelect
+      <Select
+        styles={customStyles}
         id={name}
         options={options}
         multi={true}
