@@ -1,11 +1,4 @@
-import moment from 'moment';
-import { DateTime } from 'luxon';
-import {
-  DATE_FORMAT_READABLE_SHORT as DFRS,
-  DATE_FORMAT_READABLE as DFR,
-  DATE_FORMAT_EXIF as EXIF,
-  IMAGES_URL, 
-} from '../../config';
+import { IMAGES_URL } from '../../config';
 
 const enrichImages = (res, camConfigs) => {
   for (const img of res.images.images) {

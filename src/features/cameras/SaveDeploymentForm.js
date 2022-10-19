@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
-import { DateTime } from 'luxon';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { timeZonesNames } from '@vvo/tzdb';
 import { styled } from '../../theme/stitches.config.js';
 import { ObjectID } from 'bson';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 import { editDeployments, selectDeploymentsLoading } from '../projects/projectsSlice';
 import Button from '../../components/Button';
 import SelectField from '../../components/SelectField';
@@ -49,21 +47,11 @@ const newDeploymentSchema = Yup.object().shape({
   startDate: Yup.date().transform((value, originalValue, context) => {
     if (context.isType(value)) return value;
     // the default coercion failed so let's try it with Moment.js instead
-    value = moment(originalValue, EXIF);
+    value = moment(originalValue);
     // if it's valid return the date object, otherwise return an `InvalidDate`
     return value.isValid() ? value.toDate() : new Date('');
-    // NOTE: this is what I had previously w/ timezone-fix:
-    // return originalValue && originalValue.isValid() 
-    // ? originalValue.toDate() 
-    // : new Date('');
   }).required(),
 });
-
-// TODO TIME: figure out if we want to keep start time in Formik state as 
-// ISO string? or as moment date time
-// also decide whether the date picker component should be responsible for 
-// the start-of-day conversion or not
-
 
 const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
   const operation = deployment ? 'updateDeployment' : 'createDeployment';
@@ -72,25 +60,24 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const dispatch = useDispatch();
   const initialValues = buildInitialValues(operation, deployment, project);
-  
+  updateGloablTimezone(initialValues.timezone);
+
   // handle closing
   useEffect(() => {
-    if (queuedForClose && !depsLoading.isLoading) handleClose();
+    if (queuedForClose && !depsLoading.isLoading) {
+      console.log('closing save deployment form, so resetting moment global timezone to local time!');
+      updateGloablTimezone();
+      handleClose();
+    }
   }, [queuedForClose, depsLoading, handleClose]);
 
   // handle saving and updating deployment
   const handleSaveDeploymentSubmit = (operation, formVals) => {
-
-    console.log('handleSaveDeploymentSubmit: ', formVals);
-
+    console.log('handleSaveDeploymentSubmit() - values: ', formVals);
     formVals.longitude = parseFloat(formVals.longitude);
     formVals.latitude = parseFloat(formVals.latitude);
     
     if (operation === 'createDeployment') {
-      console.log(`handleSaveDeploymentSubmit - initial startDate from fromt: ${formVals.startDate.format()}`)
-
-
-
       dispatch(editDeployments(operation, {
         cameraId,
         deployment: {
@@ -99,7 +86,8 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
           description: formVals.description,
           location: buildLocation(formVals.latitude, formVals.longitude),
           timezone: formVals.timezone.value,
-          startDate: startDateToString(formVals.startDate),
+          // startDate: startDateToString(formVals.startDate),
+          startDate: formVals.startDate,
           editable: formVals.editable,
         }
       }));
@@ -135,9 +123,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
         <Formik
           initialValues={initialValues}
           validationSchema={newDeploymentSchema}
-          onSubmit={(values) => {
-            handleSaveDeploymentSubmit(operation, values);
-          }}
+          onSubmit={(values) => handleSaveDeploymentSubmit(operation, values)}
         >
           {({ values, errors, touched, isValid, dirty, 
             setFieldValue, setFieldTouched }) => (
@@ -186,7 +172,19 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                     name='timezone'
                     label='Timezone'
                     value={values.timezone}
-                    onChange={setFieldValue}
+                    onChange={(name, value) => {
+                      const previousTZ = values.timezone.value;
+                      const newTZ = value.value;
+                      updateGloablTimezone(value);
+                      setFieldValue(name, value);
+                      // take current start date, shift it (while preserving local time)
+                      // to new timezone, format as ISO string and set it imperatively
+                      const startDate = moment(values.startDate).tz(previousTZ);
+                      console.log('curr startDate: ', startDate.toISOString());
+                      const newStartDate = startDate.tz(newTZ, true);
+                      console.log('new startDate: ', newStartDate.toISOString());
+                      setFieldValue('startDate', newStartDate.toISOString());
+                    }}
                     onBlur={setFieldTouched}
                     error={_.has(errors, 'timezone.value') &&
                       errors.timezone.value
@@ -213,7 +211,14 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
 
               <Field name='editable' type='hidden' />
               <ButtonRow>
-                <Button type='button' size='large' onClick={handleClose}>
+                <Button
+                  type='button'
+                  size='large'
+                  onClick={() => {
+                    console.log('closing save deployment form, so resetting moment global timezone to local time!');
+                    updateGloablTimezone();
+                    handleClose();
+                  }}>
                   Cancel
                 </Button>
                 <Button type='submit' size='large' disabled={!isValid || !dirty}>
@@ -251,13 +256,23 @@ function buildInitialValues(operation, deployment, project) {
       latitude: deployment.location.geometry.coordinates[1],
       longitude: deployment.location.geometry.coordinates[0],
       timezone: { value: deployment.timezone, label: deployment.timezone },
-      startDate: moment.tz(deployment.startDate, deployment.timezone),
+      startDate: deployment.startDate,
       editable: deployment.editable,
     };
   }
   console.log('buildingInitialVals - vals: ', vals);
   return vals;
-}
+};
+
+const updateGloablTimezone = (tz) => {
+  if (tz) {
+    console.log('updating moment timezone globally: ', tz);
+    moment.tz.setDefault(tz.value)
+  } else {
+    console.log('reverting moment global timezone to local timezone');
+    moment.tz.setDefault();
+  }
+};
 
 function buildLocation(lat, lon) {
   return {
@@ -267,30 +282,11 @@ function buildLocation(lat, lon) {
       coordinates: [lon, lat]
     }
   }
-}
-
-function startDateToString(startDate) {
-  // // shift timezone to TZ in form's select field
-  // let startDate = formVals.startDate.tz(formVals.timezone.value, true);
-  // console.log(`handleSaveDeploymentSubmit - date after TZ w/ keep local time set: ${startDate}`)
-
-  // shift to start of day (Moment's default is noon)
-  let sd = startDate.startOf('day');
-  console.log(`handleSaveDeploymentSubmit - date after startOfDay reset: ${sd}`)
-
-  // format as ISO string, but keep offset
-  sd = startDate.toISOString(true);
-  console.log(`handleSaveDeploymentSubmit - date after ISO string conversion: ${sd}`)
-
-  return sd;
-}
+};
 
 function diff(formVals, deployment) {
   const depLat = deployment.location.geometry.coordinates[1];
   const depLong = deployment.location.geometry.coordinates[0];
-  const startDateString = (formVals.startDate) 
-    ? startDateToString(formVals.startDate)
-    : null;
 
   let diffs = {};
   if (formVals.name !== deployment.name) {
@@ -302,14 +298,14 @@ function diff(formVals, deployment) {
   if (formVals.timezone.value !== deployment.timezone.value) {
     diffs.timezone = formVals.timezone.value;
   }
-  if (startDateString !== deployment.startDate) {
-    diffs.startDate = startDateString;
+  if (formVals.startDate !== deployment.startDate) {
+    diffs.startDate = formVals.startDate;
   }
   if ((formVals.latitude !== depLat) || (formVals.longitude !== depLong)) {
     diffs.location = buildLocation(formVals.latitude, formVals.longitude);
   }
   return diffs;
-}
+};
 
 
 export default SaveDeploymentForm;

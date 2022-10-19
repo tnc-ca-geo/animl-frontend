@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import moment from 'moment-timezone';
 import { Modal } from './Modal';
 import ImagesStatsModal from '../features/images/ImagesStatsModal';
 import ExportModal from '../features/images/ExportModal.js';
@@ -38,7 +39,10 @@ const HydratedModal = () => {
       title: 'Manage Cameras',
       size: 'md',
       content: <CameraAdminModal/>,
-      callBackOnClose: () => true,
+      callBackOnClose: () => { 
+        console.log('callBackOnClose() - reverting moment global timezone to local timezone');
+        moment.tz.setDefault();
+      },
     },
     'automation-rules-form': {
       title: 'Configure Automation Rules',

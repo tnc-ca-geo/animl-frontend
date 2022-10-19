@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
 import {
   selectDateCreatedFilter,
   selectDateAddedFilter,
@@ -8,7 +7,6 @@ import {
 } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
-import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const selectorMap = {
   'created': selectDateCreatedFilter,

@@ -1,7 +1,5 @@
-// TODO TIME: we probably won't need these anymore after shifting to luxon
+// TODO TIMEZONE: we probably won't need these anymore after shifting to luxon
 export const DATE_FORMAT_EXIF = 'YYYY:MM:DD HH:mm:ss';
-export const DATE_FORMAT_READABLE = 'MMM D, YYYY hh:mm:ss';
-export const DATE_FORMAT_READABLE_SHORT = 'MMM D, YYYY';
 
 const API_URLS = {
   development: 'https://jbl8ut0l50.execute-api.us-west-2.amazonaws.com/dev/external/',

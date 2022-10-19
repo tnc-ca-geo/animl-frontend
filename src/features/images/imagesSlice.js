@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { push } from 'connected-react-router';
-import moment from 'moment';
+import moment from 'moment-timezone';  // TODO TIMEZONE: replace w/ luxon
 import { call } from '../../api';
 import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';

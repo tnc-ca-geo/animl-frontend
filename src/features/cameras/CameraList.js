@@ -9,10 +9,6 @@ import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
 import { Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
-  DATE_FORMAT_READABLE_SHORT as DFRS,
-  DATE_FORMAT_EXIF as EXIF,
-} from '../../config';
-import {
   hasRole,
   WRITE_CAMERA_REGISTRATION_ROLES,
   WRITE_DEPLOYMENTS_ROLES
