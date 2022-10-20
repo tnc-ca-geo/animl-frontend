@@ -253,7 +253,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     },
     {
       Header: 'Date created',
-      accessor: 'dtCreated',
+      accessor: 'dtOriginal',
     },
     {
       Header: 'Date added',
@@ -500,7 +500,7 @@ function makeRows(workingImages, focusIndex) {
     />;
 
     // date created
-    const dtCreated = DateTime
+    const dtOriginal = DateTime
       .fromISO(img.dateTimeOriginal)
       .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 
@@ -522,7 +522,7 @@ function makeRows(workingImages, focusIndex) {
     return {
       thumbnail,
       labelPills,
-      dtCreated,
+      dtOriginal,
       dtAdded,
       reviewed,
       ...img,

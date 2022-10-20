@@ -132,8 +132,12 @@ export const imagesSlice = createSlice({
 
     sortChanged: (state, { payload }) => {
       if (!payload.length) return;
+      const fieldMappings = {
+        'dtOriginal': 'dateTimeOriginal',
+        'dtAdded': 'dateAdded'
+      };
       const sortAscending = !payload[0].desc;
-      const sortField = payload[0].id;
+      let sortField = fieldMappings[payload[0].id] || payload[0].id ;
       if (state.pageInfo.paginatedField !== sortField) {
         state.pageInfo.paginatedField = sortField;
       }
