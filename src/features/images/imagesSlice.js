@@ -324,20 +324,15 @@ export const fetchImageContext = (imgId) => {
 
         // Fetch all images from the image's deployment w/ a createdStart date 
         // 5 mins before dateTimeOriginal of image-to-focus
-
-        // TODO: now that we've changed the default image sorting order to
-        // reverse-chronological order (newest to oldest), this approach
-        // of setting the filter w/ a start date of five mins before the focused
-        // image doesn't have such a great UX. Consider forcing a sort order
-        // change?
       
         const dto = DateTime.fromISO(res.image.dateTimeOriginal);
         const startDate = dto.minus({ minutes: 5 }).toISO();
+        const endDate = dto.plus({ minutes: 5 }).toISO();
         const filters = {
           addedEnd: null,
           addedStart: null,
           cameras: null,
-          createdEnd: null,
+          createdEnd: endDate,
           createdStart: startDate,
           deployments: [res.image.deploymentId],
           labels: null,
