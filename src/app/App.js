@@ -5,6 +5,7 @@ import { styled } from '../theme/stitches.config.js';
 import { Switch, Route } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import HomePage from '../pages/HomePage';
+import AppPage from '../pages/AppPage';
 import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
 import { AmplifyAuthenticator } from "@aws-amplify/ui-react";
@@ -108,32 +109,30 @@ const App = () => {
   return (
     <>
       {maintenanceMode === true
-        ? <MaintenanceAlert/>
-        : authState === AuthState.SignedIn && user ? (
-            <Tooltip.Provider>
-              <Toast.Provider>
-                <AppContainer>
-                  <NavBar />
-                  <Switch>
-                    <Route path="/">
-                      <HomePage />
-                    </Route>
-                  </Switch>
-                </AppContainer>
-              </Toast.Provider>
-            </Tooltip.Provider>
-          ) : (
-            <LoginScreen>
-              <Logo>
-                <img
-                  alt='Animl'
-                  src={logo}
-                  width='300'
-                />
-              </Logo>
-              <AmplifyAuthenticator hideDefault={true}/>
-            </LoginScreen>
-          )
+        ? (<MaintenanceAlert/>)
+        : (<Tooltip.Provider>
+            <Toast.Provider>
+              <AppContainer>
+                <NavBar />
+                <Switch>
+                  <Route exact path="/" component={HomePage} />
+                  <Route path="/app" component={AppPage} />
+
+                  {/*<Route component={NoMatch} />*/}
+                  {/*<Route path="/app">
+                    app
+                    {authState === AuthState.SignedIn && user
+                      ? (<AppPage />)
+                      : (<LoginScreen>
+                          <AmplifyAuthenticator hideDefault={true}/>
+                        </LoginScreen>)
+                    }
+                  </Route>*/}
+                </Switch>
+              </AppContainer>
+
+            </Toast.Provider>
+          </Tooltip.Provider>)
       }
     </>  
   );

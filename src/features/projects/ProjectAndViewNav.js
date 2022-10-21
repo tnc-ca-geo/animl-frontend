@@ -147,6 +147,10 @@ const ProjectAndViewNav = () => {
   const views = useSelector(selectViews);
   const selectedView = useSelector(selectSelectedView);
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
+  const routerLocation = useSelector(selectRouterLocation);
+  const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
+  const appActive = paths[0] === 'app';
+  const query = routerLocation.query;
   const dispatch = useDispatch();
 
   // fetch projects
@@ -158,58 +162,59 @@ const ProjectAndViewNav = () => {
   }, [projects, projectsLoading, dispatch]);
 
   // push initial selected project & view to URL
-  const routerLocation = useSelector(selectRouterLocation);
   useEffect(() => {
-    const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
-    const projIdInPath = paths[0];
-    const viewIdInPath = paths[1];
-    const projectsReady = !projectsLoading.isLoading && projects.length;
-    const idsInPath = projIdInPath && viewIdInPath;
-
-    if (projectsReady && !idsInPath && !unsavedViewChanges) {
-      // TODO: check that there are projects & views in state that match the Ids
-      const projId = projIdInPath || projects[0]._id;
-      const proj = projects.find((p) => p._id === projId);
-      const defaultView = proj.views.find((v) => v.name === 'All images');
-      const viewId = viewIdInPath || defaultView._id;
-      dispatch(push(`/${projId}/${viewId}`));
+    if (appActive) {
+      const projIdInPath = paths[1];
+      const viewIdInPath = paths[2];
+      const projectsReady = !projectsLoading.isLoading && projects.length;
+      const idsInPath = projIdInPath && viewIdInPath;
+  
+      if (projectsReady && !idsInPath && !unsavedViewChanges) {
+        // TODO: check that there are projects & views in state that match the Ids
+        const projId = projIdInPath || projects[0]._id;
+        const proj = projects.find((p) => p._id === projId);
+        const defaultView = proj.views.find((v) => v.name === 'All images');
+        const viewId = viewIdInPath || defaultView._id;
+        dispatch(push(`/app/${projId}/${viewId}`));
+      }
     }
+  }, [projects, projectsLoading, unsavedViewChanges, paths, appActive, dispatch]);
 
-  }, [projects, projectsLoading, unsavedViewChanges, routerLocation, dispatch]);
 
   // react to changes in URL & dispatch selected project and view to state
   useEffect(() => {      
-    let paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
-    let projId = paths[0];
-    let viewId = paths[1];
-    const projectsReady = !projectsLoading.isLoading && projects.length;
-    const idsInPath = projId && viewId;
-
-    if (projectsReady && idsInPath) {
-      // TODO: check that there are projects & views in state that match the Ids
-      dispatch(setSelectedProjAndView({ projId, viewId }));
-
-      // if 'img' detected in query params, 
-      // kick off pre-focused-image initialization sequence
-      const query = routerLocation.query;
-      if ('img' in query && checkIfValidMD5Hash(query.img)) {
-        console.log('img found in query');
-        dispatch(preFocusImageStart(query.img));
-        dispatch(fetchImageContext(query.img));
+    if (appActive) {
+      console.log('we are headed to the app')
+      let projId = paths[1];
+      let viewId = paths[2];
+      const projectsReady = !projectsLoading.isLoading && projects.length;
+      const idsInPath = projId && viewId;
+  
+      if (projectsReady && idsInPath) {
+        // TODO: check that there are projects & views in state that match the Ids
+        dispatch(setSelectedProjAndView({ projId, viewId }));
+  
+        // if 'img' detected in query params, 
+        // kick off pre-focused-image initialization sequence
+        if ('img' in query && checkIfValidMD5Hash(query.img)) {
+          console.log('img found in query');
+          dispatch(preFocusImageStart(query.img));
+          dispatch(fetchImageContext(query.img));
+        }
       }
     }
-  }, [projects.length, projectsLoading, routerLocation, dispatch]);
+  }, [projects.length, projectsLoading, paths, query, appActive, dispatch]);
 
   const handleProjectMenuItemClick = (projId) => {
     if (projId === selectedProj._id) return;
     const project = projects.find((p) => p._id === projId);
     const viewId = project.views.find((v) => v.name === 'All images')._id;
-    dispatch(push(`/${projId}/${viewId}`));
+    dispatch(push(`/app/${projId}/${viewId}`));
   };
 
   const handleViewMenuItemClick = (viewId) => {
     if (viewId === selectedView._id) return;
-    dispatch(push(`/${selectedProj._id}/${viewId}`));
+    dispatch(push(`/app/${selectedProj._id}/${viewId}`));
   };
 
   return (

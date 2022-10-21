@@ -1,14 +1,13 @@
 import React from 'react';
 import { Page } from '../components/Page';
-import ViewExplorer from '../features/projects/ViewExplorer';
 
 
-const HomePage = () => {
+const AppPage = () => {
   return (
     <Page>
-      <ViewExplorer />
+      homepage
     </Page>
   );
 };
 
-export default HomePage;
+export default AppPage;
