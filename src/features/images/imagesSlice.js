@@ -1,12 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { push } from 'connected-react-router';
-import moment from 'moment-timezone';  // TODO TIMEZONE: replace w/ luxon
+import { DateTime } from 'luxon';
 import { call } from '../../api';
 import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
-import { DATE_FORMAT_EXIF as EXIF } from '../../config';
 
 const initialState = {
   images: [], // we aren't using this... consider removing?
@@ -325,8 +324,15 @@ export const fetchImageContext = (imgId) => {
 
         // Fetch all images from the image's deployment w/ a createdStart date 
         // 5 mins before dateTimeOriginal of image-to-focus
-        const dto = res.image.dateTimeOriginal;
-        const startDate = moment(dto, EXIF).subtract(5, 'minutes').format(EXIF);
+
+        // TODO: now that we've changed the default image sorting order to
+        // reverse-chronological order (newest to oldest), this approach
+        // of setting the filter w/ a start date of five mins before the focused
+        // image doesn't have such a great UX. Consider forcing a sort order
+        // change?
+      
+        const dto = DateTime.fromISO(res.image.dateTimeOriginal);
+        const startDate = dto.minus({ minutes: 5 }).toISO();
         const filters = {
           addedEnd: null,
           addedStart: null,

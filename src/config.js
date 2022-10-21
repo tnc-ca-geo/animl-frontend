@@ -1,6 +1,3 @@
-// TODO TIMEZONE: we probably won't need these anymore after shifting to luxon
-export const DATE_FORMAT_EXIF = 'YYYY:MM:DD HH:mm:ss';
-
 const API_URLS = {
   development: 'https://jbl8ut0l50.execute-api.us-west-2.amazonaws.com/dev/external/',
   staging: 'https://jbl8ut0l50.execute-api.us-west-2.amazonaws.com/dev/external/',
