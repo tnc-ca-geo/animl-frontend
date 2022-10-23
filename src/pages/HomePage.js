@@ -75,8 +75,8 @@ const Subheader = styled('div', {
 });
 
 const Screenshot = styled('div', {
-  width: '80%',
-  margin: '$5 auto',
+  width: '90%',
+  margin: '$1 auto',
   'img': {
     maxWidth: '100%',
     borderRadius: '$2',
@@ -133,7 +133,7 @@ const AppPage = () => {
         Animl is an open-source, cloud-based platform for managing camera trap data, built and used by <a href="https://nature.org" target="_blank" rel="noreferrer">The Nature Conervancy</a>
         </Subheader>
       </Hero>
-      <Screenshot>
+      <Screenshot css={{ '@bp1': { width: '80%', margin: '$5 auto' }}}>
         <img src={screenshot} alt='animl user interface screenshot'/>
       </Screenshot>
       <Container size="3">
