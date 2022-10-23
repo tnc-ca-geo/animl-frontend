@@ -101,20 +101,24 @@ export const imagesSlice = createSlice({
     },
 
     preFocusImageStart: (state, { payload }) => {
+      console.log('prefocus image start')
       state.preFocusImage = payload;
     },
 
     preFocusImageEnd: (state) => {
+      console.log('prefocus image end')
       state.preFocusImage = null;
     },
 
     getImageContextStart: (state) => {
+      console.log('get image context start')
       let ls = state.loadingStates.imageContext;
       ls.isLoading = true;
       // ls.operation = 'fetching';
     },
 
     getImageContextSuccess: (state) => {
+      console.log('get image context success')
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
       // ls.operation = null;

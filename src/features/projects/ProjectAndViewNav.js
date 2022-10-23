@@ -150,7 +150,6 @@ const ProjectAndViewNav = () => {
   const routerLocation = useSelector(selectRouterLocation);
   const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
   const appActive = paths[0] === 'app';
-  const query = routerLocation.query;
   const dispatch = useDispatch();
 
   // fetch projects
@@ -164,8 +163,7 @@ const ProjectAndViewNav = () => {
   // push initial selected project & view to URL
   useEffect(() => {
     if (appActive) {
-      const projIdInPath = paths[1];
-      const viewIdInPath = paths[2];
+      const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
   
@@ -178,24 +176,25 @@ const ProjectAndViewNav = () => {
         dispatch(push(`/app/${projId}/${viewId}`));
       }
     }
-  }, [projects, projectsLoading, unsavedViewChanges, paths, appActive, dispatch]);
-
+  }, [projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
 
   // react to changes in URL & dispatch selected project and view to state
   useEffect(() => {      
     if (appActive) {
-      console.log('we are headed to the app')
-      let projId = paths[1];
-      let viewId = paths[2];
+      const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
       const projectsReady = !projectsLoading.isLoading && projects.length;
-      const idsInPath = projId && viewId;
+      const idsInPath = projIdInPath && viewIdInPath;
   
       if (projectsReady && idsInPath) {
         // TODO: check that there are projects & views in state that match the Ids
-        dispatch(setSelectedProjAndView({ projId, viewId }));
+        dispatch(setSelectedProjAndView({
+          projId: projIdInPath,
+          viewId: viewIdInPath
+        }));
   
         // if 'img' detected in query params, 
         // kick off pre-focused-image initialization sequence
+        const query = routerLocation.query;
         if ('img' in query && checkIfValidMD5Hash(query.img)) {
           console.log('img found in query');
           dispatch(preFocusImageStart(query.img));
@@ -203,7 +202,7 @@ const ProjectAndViewNav = () => {
         }
       }
     }
-  }, [projects.length, projectsLoading, paths, query, appActive, dispatch]);
+  }, [projects.length, projectsLoading, routerLocation, appActive, dispatch]);
 
   const handleProjectMenuItemClick = (projId) => {
     if (projId === selectedProj._id) return;
@@ -292,11 +291,15 @@ const ProjectAndViewNav = () => {
   );
 };
 
-
 function checkIfValidMD5Hash(hash) {
   const regexExp = /^[a-f0-9]{32}$/gi;
   return regexExp.test(hash);
-}
+};
+
+function getIdsFromPath(routerLocation) {
+  let paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
+  return { projIdInPath: paths[1], viewIdInPath: paths[2] };
+};
 
 export default ProjectAndViewNav;
 

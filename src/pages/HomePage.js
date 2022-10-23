@@ -2,21 +2,11 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { Box } from '../components/Box';
 import screenshot from '../assets/animl-screenshot.png';
-import { MagicWandIcon, LapTimerIcon, GlobeIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { MagicWandIcon, LapTimerIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { violet } from '@radix-ui/colors';
 import { Grid } from '../components/Grid';
 import { Container } from '../components/Container';
 import Footer from '../components/Footer';
-
-const Rings = styled('div', {
-  boxSizing: 'border-box',
-  position: 'relative',
-  boxShadow: 'white 0px 0px 0px 80px, rgb(204, 231, 255) 0px 0px 0px 81px, rgb(245, 250, 255) 0px 0px 0px 160px, rgb(214, 236, 255) 0px 0px 0px 161px, white 0px 0px 0px 240px, rgb(214, 236, 255) 0px 0px 0px 241px, rgb(250, 253, 255) 0px 0px 0px 320px, rgb(224, 241, 255) 0px 0px 0px 321px, white 0px 0px 0px 400px, rgb(224, 241, 255) 0px 0px 0px 401px, rgb(250, 253, 255) 0px 0px 0px 480px, rgb(235, 245, 255) 0px 0px 0px 481px, white 0px 0px 0px 560px, rgb(235, 245, 255) 0px 0px 0px 561px, rgb(250, 253, 255) 0px 0px 0px 640px, rgb(235, 245, 255) 0px 0px 0px 641px, white 0px 0px 0px 720px, rgb(235, 245, 255) 0px 0px 0px 721px',
-  borderRadius: '50%',
-  zIndex: -1,
-  width: '100px',
-  height: '100px'
-});
 
 const Gradient = styled(Box, {
   width: '100vw',
@@ -28,22 +18,8 @@ const Gradient = styled(Box, {
   bottom: '0px',
   backgroundRepeat: 'no-repeat',
   backgroundImage: 'radial-gradient(circle at 15% 50%, #ede9fe, rgba(255, 255, 255, 0) 25%), radial-gradient(circle at 85% 30%, #d8f3f6, rgba(255, 255, 255, 0) 25%)',
-  //backgroundImage: 'radial-gradient(circle 800px at 700px 200px, lightblue, var(---transparent)), radial-gradient(circle 600px at calc(100% - 300px) 300px, lightsalmon, var(---transparent)), radial-gradient(circle 800px at right center, aqua, var(---transparent)), radial-gradient(circle 800px at right bottom, lightsalmon, var(---transparent)), radial-gradient(circle 800px at calc(50% - 600px) calc(100% - 100px), aqua, lightblue, var(---transparent))',
   '---transparent': '#FDFCFD00'
-})
-// const Background = styled('div', {
-//   boxSizing: 'border-box',
-//   display: 'flex',
-//   position: 'absolute',
-//   top: 0,
-//   left: 0,
-//   width: '100%',
-//   height: '100%',
-//   '-moz-box-align': 'center',
-//   alignItems: 'center',
-//   '-moz-box-pack': 'center',
-//   justifyContent: 'center',
-// });
+});
 
 const Background = styled(Box, {
   position: 'absolute',
