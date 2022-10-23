@@ -5,6 +5,7 @@ import { styled } from '../theme/stitches.config.js';
 import { Switch, Route } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import HomePage from '../pages/HomePage';
+import CaseStudiesPage from '../pages/CaseStudiesPage';
 import AppPage from '../pages/AppPage';
 import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports';
@@ -117,6 +118,7 @@ const App = () => {
                 <Switch>
                   <Route exact path="/" component={HomePage} />
                   <Route path="/app" component={AppPage} />
+                  <Route path="/case-studies" component={CaseStudiesPage} />
 
                   {/*<Route component={NoMatch} />*/}
                   {/*<Route path="/app">

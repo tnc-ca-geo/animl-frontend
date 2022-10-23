@@ -9,6 +9,7 @@ import { AuthState } from '@aws-amplify/ui-components';
 import { Auth, Hub } from 'aws-amplify';
 import logo from '../assets/animl-logo.svg';
 import Button from './Button';
+import { ExternalLinkIcon } from '@radix-ui/react-icons';
 
 const Logo = styled(Link, {
   display: 'flex',
@@ -16,9 +17,31 @@ const Logo = styled(Link, {
   paddingLeft: '$1',
 });
 
+const LinkWithIcon = styled('span', {
+  position: 'relative',
+  'svg': {
+    paddingLeft: '$2',
+    margin: 0,
+    position: 'absolute',
+    top: '50%',
+    '-ms-transform': 'translateY(-50%)',
+    transform: 'translateY(-50%)',
+  }
+});
+
 const NavLinks = styled('div', {
+  paddingRight: '$3',
   'a': {
-    paddingLeft: '$3',
+    marginLeft: '$3',
+    marginRight: '$3',
+    paddingBottom: '$1',
+    textDecoration: 'none',
+    fontFamily: '$roboto',
+    color: '$gray600',
+    '&:hover': {
+      color: '$gray700',
+      borderBottom: '1px solid $gray400',
+    }
   }
 });
 
@@ -30,8 +53,7 @@ const StyledNav = styled('nav', {
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '$0 $3',
-  borderBottom: '1px solid $gray400',
-  backgroundColor: '$loContrast',
+  backgroundColor: 'none',
 });
 
 
@@ -80,8 +102,9 @@ const NavBar = () => {
       {!appActive && 
         <NavLinks>
           <Link to='/app'>Application</Link>
+          {/*<Link to='/case-studies'>Case studies</Link>*/}
           <a href='https://github.com/tnc-ca-geo/animl-frontend/' target="_blank" rel="noreferrer">
-            Github
+            <LinkWithIcon>GitHub <ExternalLinkIcon/></LinkWithIcon>
           </a>
         </NavLinks>
       }

@@ -94,6 +94,8 @@ export const {
       3: '14px',
       4: '16px',
       5: '20px',
+      6: '24px',
+      7: '36px'
     },
     fonts: {
       sourceSansPro: `Source Sans Pro`, 
@@ -131,9 +133,12 @@ export const {
     },
     // transitions: {},
   },
-  // media: {
-  //   bp1: '(min-width: 480px)',
-  // },
+  media: {
+    bp1: '(min-width: 640px)',
+    bp2: '(min-width: 768px)',
+    bp3: '(min-width: 1024px)',
+    bp4: '(min-width: 1280px)',
+  },
   // utils: {
   //   marginX: (value) => ({ marginLeft: value, marginRight: value }),
   // },
