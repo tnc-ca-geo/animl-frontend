@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { Box } from '../components/Box';
 import screenshot from '../assets/animl-screenshot.png';
-import { MagicWandIcon, TimerIcon, GlobeIcon, BellIcon } from '@radix-ui/react-icons';
+import { MagicWandIcon, LapTimerIcon, GlobeIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { violet } from '@radix-ui/colors';
 import { Grid } from '../components/Grid';
 import { Container } from '../components/Container';
@@ -54,7 +54,7 @@ const Background = styled(Box, {
 });
 
 const Header = styled('div', {
-  fontSize: '64px',
+  fontSize: '42px',
   fontWeight: '$5',
   fontFamily: '$roboto',
   color: '$hiContrast',
@@ -128,7 +128,7 @@ const AppPage = () => {
         <Gradient />
       </Background>
       <Hero>
-        <Header>Tame your wildlife data</Header>
+        <Header css={{ '@bp3': { fontSize: '64px' }}}>Tame your wildlife data</Header>
         <Subheader>
         Animl is an open-source, cloud-based platform for managing camera trap data, built and used by <a href="https://nature.org" target="_blank" rel="noreferrer">The Nature Conervancy</a>
         </Subheader>
@@ -154,17 +154,17 @@ const AppPage = () => {
           }}
         >
           <Feature>
-            <FeatureIcon><TimerIcon/></FeatureIcon>
+            <FeatureIcon><LapTimerIcon/></FeatureIcon>
             <FeatureHeading>Real-time data</FeatureHeading>
             <FeatureText>Ingest and process images in real-time from wireless and cellular camera traps.</FeatureText>
           </Feature>
           <Feature>
             <FeatureIcon><MagicWandIcon/></FeatureIcon>
             <FeatureHeading>Object detection</FeatureHeading>
-            <FeatureText>Configure machine learning pipelines to automatically predict what’s in the images – and weed out empty images if nothing is detected.</FeatureText>
+            <FeatureText>Configure custom machine learning pipelines to automatically predict what’s in the images – and weed out empty images if nothing is detected.</FeatureText>
           </Feature>
           <Feature>
-            <FeatureIcon><GlobeIcon/></FeatureIcon>
+            <FeatureIcon><MagnifyingGlassIcon/></FeatureIcon>
             <FeatureHeading>Advanced querying</FeatureHeading>
             <FeatureText>Filter, analyze, and export data using advanced querying capabilities.</FeatureText>
           </Feature>
