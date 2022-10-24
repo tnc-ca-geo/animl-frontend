@@ -19,3 +19,11 @@ export const IMAGE_QUERY_LIMITS = [10, 50, 100];
 export const SUPPORTED_CAM_MAKES = ['BuckEyeCam', 'RidgeTec'];
 
 export const IN_MAINTENANCE_MODE = false;
+
+export const GA_CONFIG = {
+  trackingId: 'G-V6NSBLL83L',
+  gaOptions: {
+    cookieDomain: 'none',
+    cookieFlags: 'SameSite=None; Secure'
+  }
+};

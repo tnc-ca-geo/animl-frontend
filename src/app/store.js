@@ -12,6 +12,7 @@ import { focusMiddleware } from '../features/review/focusMiddleware';
 import { labelMiddleware } from '../features/review/labelMiddleware';
 import { objectMiddleware } from '../features/review/objectMiddleware';
 import { undoMiddleware } from '../features/review/undoMiddleware';
+import { trackingMiddleware } from '../features/tracking/trackingMiddleware';
 
 export const history = createBrowserHistory();
 
@@ -28,6 +29,7 @@ const store = configureStore({
       .concat(labelMiddleware)
       .concat(objectMiddleware)
       .concat(undoMiddleware)
+      .concat(trackingMiddleware)
   ),
 });
 
