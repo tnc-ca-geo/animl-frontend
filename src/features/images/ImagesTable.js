@@ -60,11 +60,10 @@ const Table = styled('div', {
 });
 
 const TableRow = styled('div', {
-  backgroundColor: 'white',
+  backgroundColor: '$backgroundLight',
   '&:hover': {
-    backgroundColor: '$backgroundLight',
+    backgroundColor: '$backgroundMedium',
     cursor: 'pointer',
-    // boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
   },
   '&:last-child': {
     '.td': {
@@ -117,13 +116,11 @@ const DataCell = styled(TableCell, {
   alignItems: 'center',
   fontSize: '$3',
   color: '$textDark',
-  backgroundColor: '$backgroundLight',
   borderBottom: '1px solid $border',
-
   variants: {
     selected: {
       true: {
-        backgroundColor: '$gray3',
+        backgroundColor: '$backgroundDark',
         // '&:first-child': {
         //   borderLeft: '4px solid $blue500',
         //   paddingLeft: '12px',
