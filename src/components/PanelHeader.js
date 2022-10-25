@@ -28,9 +28,10 @@ const StyledHeader = styled('div', {
   // justifyContent: 'space-between',
   padding: '$0 $2 $0 $3',
   height: '$7',
-  borderBottom: '1px solid $gray400',
+  borderBottom: '1px solid $border',
+  backgroundColor: '$backgroundLight',
   fontWeight: '$5',
-  color: '$hiContrast',
+  color: '$textDark',
 });
 
 const PanelHeader = (props) => (

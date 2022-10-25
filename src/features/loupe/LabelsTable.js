@@ -3,7 +3,7 @@ import { styled } from '../../theme/stitches.config';
 import { useTable } from 'react-table';
 
 const LabelPill = styled('span', {
-  backgroundColor: '$gray300',
+  backgroundColor: '$gray3',
   padding: '$1 $2',
   borderRadius: '4px',
 });
@@ -27,7 +27,7 @@ const Styles = styled('div', {
       'tr': {
         backgroundColor: '$loContrast',
         '&:hover': {
-          backgroundColor: '$gray300',
+          backgroundColor: '$gray3',
           cursor: 'pointer',
         },
       },
@@ -56,7 +56,7 @@ const Styles = styled('div', {
       },
     },
     'td': {
-      borderBottom: '$2 solid $gray200',
+      borderBottom: '$2 solid $border',
     }
   }
 });
@@ -64,7 +64,7 @@ const Styles = styled('div', {
 const TableHeader = styled('div', {
   fontSize: '$2',
   fontWeight: '$3',
-  color: '$gray500',
+  color: '$gray5',
 });
 
 const makeRows = (labels) => {

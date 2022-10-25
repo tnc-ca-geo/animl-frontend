@@ -13,12 +13,12 @@ const customStyles = {
     height: '52px',
     boxSizing: 'border-box',
     border: '1px solid',
-    borderColor: 'var(--colors-gray400) !important',
+    borderColor: 'var(--colors-border) !important',
     borderRadius: 'var(--radii-1)',
     cursor: 'pointer',
     ...(state.isFocused && {
       transition: 'all 0.2s ease',
-      boxShadow: '0 0 0 3px var(--colors-gray300)',
+      boxShadow: '0 0 0 3px var(--colors-gray3)',
       borderColor: 'var(--hi-contrast)',
       '&:hover': {
         boxShadow: '0 0 0 3px var(--colors-blue200)',
@@ -31,7 +31,7 @@ const customStyles = {
     padding: '0px 16px',
     fontSize: 'var(--fontSizes-3)',
     fontFamily: 'var(--fonts-sourceSansPro)',
-    color: 'var(--colors-gray700)',
+    color: 'var(--colors-gray7)',
   }),
   menu: (provided, state) => ({
     ...provided,
@@ -46,7 +46,7 @@ const customStyles = {
       backgroundColor: 'var(--colors-blue200)',
     }),
     ...(state.isFocused && {
-      backgroundColor: 'var(--colors-gray300)',
+      backgroundColor: 'var(--colors-gray3)',
     })
   })
 };

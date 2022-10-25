@@ -22,12 +22,12 @@ import LoupeFooter from './LoupeFooter';
 const ItemValue = styled('div', {
   fontSize: '$3',
   fontFamily: '$sourceSansPro',
-  color: '$hiContrast',
+  color: '$textDark',
 });
 
 const ItemLabel = styled('div', {
   fontSize: '$1',
-  color: '$gray600',
+  color: '$textLight',
   fontFamily: '$mono',
   marginBottom: '$1',
 });
@@ -80,8 +80,8 @@ const StyledLoupe = styled('div', {
   boxSizing: 'border-box',
   flexGrow: '1',
   position: 'relative',
-  backgroundColor: '$loContrast',
-  borderLeft: '1px solid $gray400',
+  backgroundColor: '$backgroundLight',
+  borderLeft: '1px solid $border',
 });
 
 const Loupe = () => {

@@ -14,7 +14,7 @@ const pulse = keyframes({
 const PulseCircle = styled('div', {
   width: '$10',
   height: '$10',
-  backgroundColor: '$gray500',
+  backgroundColor: '$gray5',
   borderRadius: '100%',
   animation: `${pulse} 1.2s infinite cubic-bezier(0.455, 0.03, 0.515, 0.955)`,
   // width: '40px',

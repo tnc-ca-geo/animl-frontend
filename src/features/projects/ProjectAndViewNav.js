@@ -32,7 +32,7 @@ import {
 const NoneFoundAlert = styled('div', {
   fontSize: '$4',
   fontWeight: '$3',
-  color: '$hiContrast',
+  color: '$textDark',
   '&::after': {
     content: '\\1F400',
     paddingLeft: '$2',
@@ -72,7 +72,7 @@ const LinkTitle = styled('div', {
   fontWeight: 500,
   lineHeight: 1.2,
   marginBottom: 5,
-  color: '$hiContrast',
+  color: '$textDark',
 
   variants: {
     selected: {
@@ -85,7 +85,7 @@ const LinkTitle = styled('div', {
 
 const LinkText = styled('p', {
   all: 'unset',
-  color: '$gray600',
+  color: '$textMedium',
   lineHeight: 1.4,
   fontWeight: 'initial',
 });
@@ -100,7 +100,6 @@ const ContentListItem = React.forwardRef(
         css={{
           padding: 12,
           borderRadius: '$2',
-          '&:hover': { backgroundColor: '$gray200' },
         }}
       >
         <LinkTitle selected={selected}>
@@ -116,14 +115,14 @@ const NavigationMenuTriggerViews = styled(NavigationMenuTrigger, {
   variants: {
     edited: {
       true: {
-        color: '$gray500',
+        color: '$textLight',
       }
     }
   }
 });
 
 const MenuTitle = styled('div', {
-  color: '$gray600',
+  color: '$textMedium',
   fontWeight: '$2',
   paddingLeft: '$5',
   paddingTop: '$5',

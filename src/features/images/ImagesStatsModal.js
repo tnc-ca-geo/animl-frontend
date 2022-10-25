@@ -8,15 +8,10 @@ import {
 } from './imagesSlice';
 import { selectActiveFilters  } from '../filters/filtersSlice.js';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
-
-const NoneFoundAlert = styled('div', {
-  fontSize: '$3',
-  fontFamily: '$roboto',
-  color: '$gray600',
-});
+import NoneFoundAlert from '../../components/NoneFoundAlert';
 
 const StatsDisplay = styled('div', {
-  border: '1px solid $gray400',
+  border: '1px solid $border',
   maxHeight: '50vh',
   overflowY: 'scroll',
 });
@@ -24,7 +19,7 @@ const StatsDisplay = styled('div', {
 const StyledStatsDisclaimer = styled('div', {
   paddingTop: 10,
   fontSize: '$3',
-  color: '$gray600',
+  color: '$textMedium',
 });
 
 const StatsDisclaimer = () => (

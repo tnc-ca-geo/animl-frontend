@@ -26,7 +26,8 @@ const StyledSidebarNav = styled('div', {
   flexGrow: '0',
   flexShrink: '0',
   flexBasis: '$9',
-  borderRight: '1px solid $gray400',
+  borderRight: '1px solid $border',
+  backgroundColor: '$backgroundLight',
 });
 
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {

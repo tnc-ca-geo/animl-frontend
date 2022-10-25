@@ -5,7 +5,6 @@ import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
-// import { selectUserUsername } from '../user/userSlice';
 import { selectImagesCount } from '../images/imagesSlice';
 import { selectModalOpen } from '../projects/projectsSlice.js';
 import { selectIsAddingLabel, selectReviewMode } from './loupeSlice';
@@ -20,29 +19,27 @@ const IndexDisplay = styled('div', {
   fontSize: '$3',
   fontWeight: '$1',
   marginLeft: '$3',
-  // minWidth: '200px',
   display: 'flex',
   justifyContent: 'right',
   alignItems: 'center',
   flexGrow: '0',
   flexShrink: '0',
-  // flexBasis: '160px',
 });
 
 const Index = styled('span', {
-  color: '$hiContrast',
+  color: '$textDark',
   marginRight: '$3',
 })
 
 const IndexUnit = styled('span', {
-  color: '$gray600',
+  color: '$gray6',
   fontSize: '$2',
 });
 
 const ProgressBar = styled('div', {
   height: '$1',
   width: '100%',
-  backgroundColor: '$gray300',
+  backgroundColor: '$gray3',
   position: 'relative',
   borderRadius: '$2',
 });
@@ -73,11 +70,10 @@ const StyledLoupeFooter = styled('div', {
   position: 'absolute',
   bottom: 0,
   width: '100%',
-  // padding: '$0 $2 $0 $3',
   height: '$7',
-  borderTop: '1px solid $gray400',
+  borderTop: '1px solid $border',
   fontWeight: '$5',
-  color: '$hiContrast',
+  color: '$textDark',
 });
 
 const LoupeFooter = ({ image }) => {

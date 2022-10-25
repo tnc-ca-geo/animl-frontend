@@ -6,7 +6,7 @@ export const CheckboxLabel = styled('div', {
   width: '100%',
   fontFamily: '$mono',
   fontSize: '$2',
-  color: '$gray600',
+  color: '$gray6',
   '&:hover': {
     cursor: 'pointer',
   },
@@ -14,18 +14,18 @@ export const CheckboxLabel = styled('div', {
   variants: {
     checked: {
       true: {
-        color: '$hiContrast',
+        color: '$textDark',
       },
       false: {
-        color: '$gray600',
+        color: '$textMedium',
       },
     },
     active: {
       true: {
-        color: '$hiContrast',
+        color: '$textDark',
       },
       false: {
-        color: '$gray600',
+        color: '$textMedium',
       },
     },
   },
@@ -35,7 +35,7 @@ export const CheckboxLabel = styled('div', {
       checked: true,
       active: false,
       css: {
-        color: '$gray600',
+        color: '$gray6',
       },
     },
   ],

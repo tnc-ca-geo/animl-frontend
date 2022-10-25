@@ -56,13 +56,13 @@ const Table = styled('div', {
   maxWidth: '100%',
   display: 'inline-block',
   borderSpacing: '$0',
-  backgroundColor: '$gray200',
+  backgroundColor: '$backgroundDark',
 });
 
 const TableRow = styled('div', {
   backgroundColor: 'white',
   '&:hover': {
-    backgroundColor: '$gray200',
+    backgroundColor: '$backgroundLight',
     cursor: 'pointer',
     // boxShadow: '0 0.16rem 0.36rem 0 rgba(0, 0, 0, 0.13), 0 0.03rem 0.09rem 0 rgba(0, 0, 0, 0.11)',
   },
@@ -103,11 +103,11 @@ const TableCell = styled('div', {
 });
 
 const HeaderCell = styled(TableCell, {
-  backgroundColor: '$gray200',
-  borderBottom: '1px solid $gray400',
+  backgroundColor: '$backgroundDark',
+  borderBottom: '1px solid $border',
   '&:hover': {
     cursor: 'auto',
-    color: '$hiContrast',
+    color: '$textDark',
   },
 });
 
@@ -116,16 +116,14 @@ const DataCell = styled(TableCell, {
   display: 'flex',
   alignItems: 'center',
   fontSize: '$3',
-  // backgroundColor: '$loContrast',
-
-  borderBottom: '1px solid $gray400',
-  // borderTop: '3px solid $gray200',
-  // borderBottom: '3px solid $gray200',
+  color: '$textDark',
+  backgroundColor: '$backgroundLight',
+  borderBottom: '1px solid $border',
 
   variants: {
     selected: {
       true: {
-        backgroundColor: '$gray300',
+        backgroundColor: '$gray3',
         // '&:first-child': {
         //   borderLeft: '4px solid $blue500',
         //   paddingLeft: '12px',
@@ -138,30 +136,30 @@ const DataCell = styled(TableCell, {
 const TableHeader = styled('div', {
   paddingTop: '$2',
   paddingBottom: '$2',
-  backgroundColor: '$gray200',
+  backgroundColor: '$backgroundDark',
   fontSize: '$3',
   'svg': {
     marginLeft: '$3',
     'path': {
-      fill: '$gray600',
+      fill: '$gray6',
     }
   },
   variants: {
     issorted: {
       true: {
-        color: '$hiContrast',
-        'svg path': { fill: '$hiContrast' },
+        color: '$textDark',
+        'svg path': { fill: '$textDark' },
       },
       false: {
-        color: '$gray600',
-        'svg path': { fill: '$gray600' },
+        color: '$textMedium',
+        'svg path': { fill: '$textMedium' },
       },
     },
     cansort: {
       true: {
         '&:hover': {
-          color: '$hiContrast',
-          'svg path': { fill: '$hiContrast' },
+          color: '$textDark',
+          'svg path': { fill: '$textDark' },
         }
       }
     }
@@ -174,7 +172,7 @@ const NoneFoundAlert = styled('div', {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: '$gray200',
+  backgroundColor: '$backgroundDark',
   fontWeight: '$3',
   fontSize: '$5',
 
@@ -196,12 +194,12 @@ const StyledReviewIcon = styled('div', {
   variants: {
     reviewed: {
       true: {
-        color: green.green11,
-        backgroundColor: green.green4,
+        color: '$successText',
+        backgroundColor: '$successBg',
       },
       false: {
-        color: orange.orange11,
-        backgroundColor: orange.orange4,
+        color: '$warnringText',
+        backgroundColor: '$warningBg',
       }
     }
   }

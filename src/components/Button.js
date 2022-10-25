@@ -34,14 +34,14 @@ const Button = styled('button', {
   transition: 'all 40ms linear',
   '&:hover': {
     color: '$hiContrast',
-    backgroundColor: '$gray300',
+    backgroundColor: '$gray3',
     cursor: 'pointer',
   },
   '&:disabled': {
     pointerEvents: 'none',
     backgroundColor: 'transparent',
-    color: '$gray500',
-    borderColor: '$gray500',
+    color: '$gray5',
+    borderColor: '$gray5',
   },
   svg: {
     paddingRight: '$2'
@@ -56,7 +56,7 @@ const Button = styled('button', {
     // backgroundColor: '$hiContrast',
     // color: '$loContrast',
     // '&:hover': {
-    //   backgroundColor: '$gray300',
+    //   backgroundColor: '$gray3',
     //   color: '$hiContrast',
     // }
 

@@ -19,12 +19,12 @@ const ActiveDepLabel = styled('div', {
 });
 
 const CameraId = styled('span', {
-  // color: '$gray600',
+  // color: '$gray6',
 });
 
 const Deployments = styled('div', {
   marginLeft: '$2',
-  borderLeft: '1px solid $gray400',
+  borderLeft: '1px solid $border',
 });
 
 const CameraCheckboxWrapper = styled(CheckboxWrapper, {
@@ -165,7 +165,7 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
 const OnlyButton = styled('div', {
   position: 'absolute',
   right: '32px',
-  background: '$gray200',
+  background: '$gray3',
   padding: '$0 $2',
   fontWeight: '$5',
   '&:hover': {

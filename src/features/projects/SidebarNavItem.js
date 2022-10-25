@@ -25,8 +25,8 @@ const SidebarNavItem = (props) => {
           variant='ghost'
           disabled={disabled}
           state={state}
-          onClick={handleClick
-        }>
+          onClick={handleClick}
+        >
           {icon}
         </MenuButton>
       </TooltipTrigger>

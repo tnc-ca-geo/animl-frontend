@@ -41,7 +41,7 @@ const StyledCheckbox = styled('div', {
 
   '&:hover': {
     cursor: 'pointer',
-    background: '$gray300',
+    background: '$gray3',
   },
 
   [`& ${HiddenCheckbox}`]: {
@@ -51,7 +51,7 @@ const StyledCheckbox = styled('div', {
   },
 
   background: '$loContrast',
-  borderColor: '$gray600',
+  borderColor: '$gray6',
 
   // for some reason you need to have variants defined here (even if empty)
   // if you want to use compountVarients
@@ -67,7 +67,7 @@ const StyledCheckbox = styled('div', {
       indeterminate: false,
       css: {
         background: '$loContrast',
-        borderColor: '$gray600',
+        borderColor: '$gray6',
       },
     },
     {
@@ -85,10 +85,10 @@ const StyledCheckbox = styled('div', {
       checked: true,
       active: false,
       css: {
-        background: '$gray600',
-        borderColor: '$gray600',
+        background: '$gray6',
+        borderColor: '$gray6',
         '&:hover': {
-          background: '$gray600',
+          background: '$gray6',
         },
       },
     },
@@ -107,10 +107,10 @@ const StyledCheckbox = styled('div', {
       indeterminate: true,
       active: false,
       css: {
-        background: '$gray600',
-        borderColor: '$gray600',
+        background: '$gray6',
+        borderColor: '$gray6',
         '&:hover': {
-          background: '$gray600',
+          background: '$gray6',
         },
       },
     },

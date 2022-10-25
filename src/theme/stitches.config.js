@@ -1,5 +1,5 @@
 import { createStitches } from '@stitches/react';
-// import { yellow, indigo, crimson, tomato, mint, gray } from '@radix-ui/colors';
+import { yellow, indigo, crimson, tomato, mint, gray, slate, green, orange } from '@radix-ui/colors';
 
 // Mapping label ids/categories to colors
 const labelColorMap = {
@@ -14,13 +14,13 @@ const labelColorMap = {
 
 // experimenting with radix colors...
 // const labelColorMap = {
-//   animal: { primary: yellow.yellow3, text: yellow.yellow11 },
-//   fox:    { primary: indigo.indigo3, text: indigo.indigo11 },
-//   skunk:  { primary: crimson.crimson3, text: crimson.crimson11 },
-//   rodent: { primary: tomato.tomato3, text: tomato.tomato11 },
-//   person: { primary: mint.mint3, text: mint.mint11 },
-//   empty:  { primary: gray.gray3, text: gray.gray11 },
-//   default: { primary: mint.mint3, text: mint.mint11 },
+//   animal: { primary: yellow.yellow3, text: yellow.yellow11, border: yellow.yellow7 },
+//   fox:    { primary: indigo.indigo3, text: indigo.indigo11, border: indigo.indigo7 },
+//   skunk:  { primary: crimson.crimson3, text: crimson.crimson11, border: crimson.crimson7 },
+//   rodent: { primary: tomato.tomato3, text: tomato.tomato11, border: tomato.tomato7 },
+//   person: { primary: mint.mint3, text: mint.mint11, border: mint.mint7 },
+//   empty:  { primary: gray.gray3, text: gray.gray11, border: gray.gray7 },
+//   default: { primary: mint.mint3, text: mint.mint11, border: mint.mint7 },
 // };
 
 export const labelColors = (label) => (
@@ -39,17 +39,45 @@ export const {
 } = createStitches({
   theme: {
     colors: {
-      hiContrast: '#000000', //'#031b4e', // black
-      loContrast: '#FFFFFF', // white
-      warning: '#E04040',
-      green100: '#E6F9EE',
-      green700: '#26561D',
+      hiContrast: slate.slate12, //'#000000', //'#031b4e', // black
+      loContrast: slate.slate1, // '#FFFFFF', // white
 
-      gray200: '#FAFAFA',
-      gray300: '#F0F0F0',
-      gray400: '#DEDEDE',
-      gray500: '#B1B1B1',
-      gray600: '#7B7B7B',
+      successBg: green.green4,
+      successText: green.green11,
+      warningBg: orange.orange4,
+      warnringText: orange.orange11,
+      errorBg: tomato.tomato4,
+      errorText: tomato.tomato11,
+      disabled: slate.slate8,
+
+      // text
+      textDark: slate.slate12,
+      textMedium: slate.slate11,
+      textLight: slate.slate9,
+
+      // backgrounds
+      backgroundDark: slate.slate3,
+      backgroundMedium: slate.slate2,
+      backgroundLight: slate.slate1,
+
+      border: slate.slate7,
+      
+      gray1:  slate.slate1,
+      gray2:  slate.slate2,
+      gray3:  slate.slate3,
+      gray4:  slate.slate4,
+      gray5:  slate.slate5,
+      gray6:  slate.slate6,
+      gray7:  slate.slate7,
+      gray8:  slate.slate8,
+      gray9:  slate.slate9,
+      gray10: slate.slate10,
+      gray11: slate.slate11,
+      gray12: slate.slate12,
+
+      // TODO: redesign our accent color scale.
+      // Maybe it doesn't need to be a scale? use blue500 for accent and 
+      // jsut use radix indigo scale for all other blue??
 
       blue200: '#E8EFFF',//'#E7FCFF',
       blue300: '#86EAFA',
@@ -59,7 +87,7 @@ export const {
       blue700: '#161e2e', 
     },
     shadows: {
-      gray300: '#F0F0F0',
+      gray3: '#F0F0F0',
       blue200: '#E8EFFF',//'#E7FCFF',
     },
     sizes: {

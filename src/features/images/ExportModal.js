@@ -12,12 +12,7 @@ import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
 import Button from '../../components/Button';
 import Warning from '../../components/Warning';
-
-const NoneFoundAlert = styled('div', {
-  fontSize: '$3',
-  fontFamily: '$roboto',
-  color: '$gray600',
-});
+import NoneFoundAlert from '../../components/NoneFoundAlert';
 
 const StyledWarning = styled(Warning, {
   marginTop: '$0',
@@ -37,8 +32,6 @@ const ExportModal = () => {
   const csvExport = useSelector(selectCSVExport);
   const CSVExportLoading = useSelector(selectCSVExportLoading);
   const dispatch = useDispatch();
-
-  console.log('csvExport: ', csvExport);
 
   const exportReady = !CSVExportLoading.isLoading && 
                       !CSVExportLoading.errors && 

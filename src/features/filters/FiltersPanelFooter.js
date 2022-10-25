@@ -7,7 +7,7 @@ import { selectImagesCount, fetchImages } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
 import { selectModalOpen, setModalOpen, setModalContent } from '../projects/projectsSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { InfoCircledIcon, DownloadIcon } from '@radix-ui/react-icons';
+import { InfoCircledIcon, DownloadIcon, SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton';
 import { 
   Tooltip, 
@@ -18,7 +18,7 @@ import {
 
 const RefreshButton = styled('div', {
   height: '100%',
-  borderLeft: '1px solid $gray400',
+  borderLeft: '1px solid $border',
   display: 'flex',
   alignItems: 'center',
   padding: '0 $1',
@@ -26,7 +26,7 @@ const RefreshButton = styled('div', {
 
 const InfoButton = styled('div', {
   height: '100%',
-  borderLeft: '1px solid $gray400',
+  borderLeft: '1px solid $border',
   display: 'flex',
   alignItems: 'center',
   padding: '0 $1',
@@ -34,7 +34,7 @@ const InfoButton = styled('div', {
 
 const ExportCSVButton = styled('div', {
   height: '100%',
-  borderLeft: '1px solid $gray400',
+  borderLeft: '1px solid $border',
   display: 'flex',
   alignItems: 'center',
   padding: '0 $1',
@@ -46,9 +46,9 @@ const ImagesCount = styled('div', {
   alignItems: 'center',
   justifyContent: 'center',
   fontSize: '$2',
-  color: '$gray600',
+  color: '$textLight',
   'span': {
-    color: '$hiContrast',
+    color: '$textDark',
     paddingRight: '$2',
   }
 });
@@ -60,9 +60,10 @@ const StyledFiltersPanelFooter = styled('div', {
   bottom: 0,
   width: '100%',
   height: '$7',
-  borderTop: '1px solid $gray400',
+  borderTop: '1px solid $border',
+  backgroundColor: '$backgroundLight',
   fontWeight: '$5',
-  color: '$hiContrast',
+  color: '$textDark',
 });
 
 const FiltersPanelFooter = () => {
@@ -128,11 +129,11 @@ const FiltersPanelFooter = () => {
         <TooltipTrigger asChild>
           <RefreshButton>
             <IconButton
-            variant='ghost'
-            size='large'
-            onClick={handleRefreshClick}
-          >
-            <FontAwesomeIcon icon={['fas', 'sync']}/>
+              variant='ghost'
+              size='large'
+              onClick={handleRefreshClick}
+            >
+            <SymbolIcon />
           </IconButton>
           </RefreshButton>
         </TooltipTrigger>

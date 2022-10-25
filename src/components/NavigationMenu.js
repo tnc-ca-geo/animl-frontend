@@ -57,7 +57,7 @@ const StyledList = styled(NavigationMenuPrimitive.List, {
   all: 'unset',
   display: 'flex',
   justifyContent: 'center',
-  backgroundColor: 'white',
+  backgroundColor: '$backgroundLight',
   padding: 4,
   borderRadius: '$2',
   listStyle: 'none',
@@ -72,9 +72,10 @@ const itemStyles = {
   lineHeight: 1,
   borderRadius: '$2',
   fontSize: 15,
-  color: '$hiContrast',
+  color: '$textDark',
   '&:focus': { position: 'relative', boxShadow: `0 0 0 2px ${indigo.indigo7}` },
-  '&:hover': { backgroundColor: '$blue200' },
+  '&:hover': { backgroundColor: '$gray3' },
+  '&:active': { backgroundColor: '$gray5' },
 };
 
 const StyledTrigger = styled(NavigationMenuPrimitive.Trigger, {
@@ -84,6 +85,7 @@ const StyledTrigger = styled(NavigationMenuPrimitive.Trigger, {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  cursor: 'pointer',
   gap: 2,
   '&[data-state="open"]': {
     color: '$blue500',
@@ -112,13 +114,15 @@ const StyledLink = styled(NavigationMenuPrimitive.Link, {
   ...itemStyles,
   display: 'block',
   textDecoration: 'none',
-  fontSize: 15,
+  fontSize: '$3',
   lineHeight: 1,
   cursor: 'pointer',
+  '&:hover': { backgroundColor: '$gray3' },
   variants: {
     selected: {
       true: {
-        backgroundColor: '$gray200',
+        backgroundColor: '$gray4',
+        '&:hover': { backgroundColor: '$gray5' },
       },
     }
   }
@@ -159,7 +163,7 @@ const StyledIndicator = styled(NavigationMenuPrimitive.Indicator, {
 const StyledArrow = styled('div', {
   position: 'relative',
   top: '70%',
-  backgroundColor: 'white',
+  backgroundColor: '$backgroundLight',
   width: 10,
   height: 10,
   transform: 'rotate(45deg)',
@@ -177,7 +181,7 @@ const StyledViewport = styled(NavigationMenuPrimitive.Viewport, {
   transformOrigin: 'top center',
   marginTop: 10,
   width: '100%',
-  backgroundColor: 'white',
+  backgroundColor: '$backgroundLight',
   borderRadius: '$2',
   overflow: 'hidden',
   boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',

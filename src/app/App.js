@@ -21,6 +21,7 @@ import { IN_MAINTENANCE_MODE, GA_CONFIG } from '../config';
 Amplify.configure(awsconfig);
 
 const AppContainer = styled('div', {
+  position: 'relative',
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
   gridTemplateColumns: '100%',

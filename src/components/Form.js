@@ -6,17 +6,17 @@ const textInput = {
   width: '100%',
   fontSize: '$3',
   fontFamily: '$sourceSansPro',
-  color: '$gray700',
+  color: '$textMedium',
   padding: '$3',
   boxSizing: 'border-box',
   border: '1px solid',
-  borderColor: '$gray400',
+  borderColor: '$border',
   borderRadius: '$1',
   '&:focus': {
     transition: 'all 0.2s ease',
     outline: 'none',
-    boxShadow: '0 0 0 3px $gray300',
-    borderColor: '$hiContrast',
+    boxShadow: '0 0 0 3px $gray3',
+    borderColor: '$textDark',
     '&:hover': {
       boxShadow: '0 0 0 3px $blue200',
       borderColor: '$blue500',
@@ -32,7 +32,7 @@ const StyledFormWrapper = styled('div', {
     width: '100%',
     fontSize: '$3',
     fontWeight: '$3',
-    color: '$hiContrast',
+    color: '$textDark',
     marginBottom: '$2',
   },
   input: textInput,
@@ -44,7 +44,7 @@ const StyledFormWrapper = styled('div', {
     ...textInput
   },
   p: {
-    color: '$gray600',
+    color: '$textMedium',
     fontSize: '$3',
   }
 });
@@ -86,14 +86,14 @@ export const FormFieldWrapper = styled('div', {
 });
 
 export const FormError = styled('div', {
-  color: '$warning',
+  color: '$errorText',
   fontSize: '$3',
   marginTop: '$2',
 });
 
 export const HelperText = styled('div', {
   padding: '$3',
-
+  color: '$textDark',
   '& p': {
     marginTop: '$0',
     

@@ -78,7 +78,7 @@ const CategorySelector = styled(CreatableSelect, {
     // height: '24px',
     minHeight: 'unset',
     border: '1px solid',
-    borderColor: '$gray400',
+    borderColor: '$border',
     borderRadius: '0',
     cursor: 'pointer',
   },
@@ -102,7 +102,7 @@ const CategorySelector = styled(CreatableSelect, {
     },
   },
   '.react-select__menu': {
-    color: '$hiContrast',
+    color: '$textDark',
     fontSize: '$3',
     '.react-select__option': {
       cursor: 'pointer',
@@ -112,7 +112,7 @@ const CategorySelector = styled(CreatableSelect, {
       backgroundColor: '$blue200',
     },
     '.react-select__option--is-focused': {
-      backgroundColor: '$gray300',
+      backgroundColor: '$gray3',
     },
   }
 });

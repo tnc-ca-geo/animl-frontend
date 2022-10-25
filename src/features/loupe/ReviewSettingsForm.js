@@ -9,7 +9,7 @@ const CheckboxLabel = styled('span', {
   marginLeft: '$2',
   fontWeight: '$3',
   fontSize: '$3',
-  color: '$hiContrast',
+  color: '$textDark',
   '&:hover': {
     cursor: 'pointer',
   },
@@ -27,8 +27,8 @@ const StyledReviewSettings = styled('div', {
   fontFamily: '$sourceSansPro',
   fontSize: '$3',
   fontWeight: '$3',
-  color: '$gray600',
-})
+  color: '$textMedium',
+});
 
 const ReviewSettingsForm = ({ handleModalToggle }) => {
   const iterationOptions = useSelector(selectIterationOptions);

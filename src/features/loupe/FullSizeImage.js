@@ -29,29 +29,12 @@ const EditObjectButton = styled('button', {
   zIndex: '$3',
   '&:hover': {
     color: '$hiContrast',
-    backgroundColor: '$gray400',
+    backgroundColor: '$gray4',
     cursor: 'pointer',
   },
 
   svg: {
     paddingRight: '$2'
-  },
-});
-
-const AddObjectButton = styled('Button', {
-  border: 'none',
-  borderRadius: '$0',
-  backgroundColor: '$hiContrast',
-  color: '$loContrast',
-  height: '$5',
-  fontWeight: '$3',
-  textTransform: 'uppercase',
-  transition: 'all 40ms linear',
-  zIndex: '$3',
-  '&:hover': {
-    color: '$hiContrast',
-    backgroundColor: '$gray400',
-    cursor: 'pointer',
   },
 });
 

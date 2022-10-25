@@ -13,6 +13,7 @@ import FiltersPanelFooter from './FiltersPanelFooter';
 
 
 const PanelBody = styled('div', {
+  backgroundColor: '$backgroundLight',
   height: 'calc(100% - $7 - $7)', // 2x $7's to account for header + footer
   overflowY: 'scroll',
   position: 'absolute',
@@ -21,7 +22,7 @@ const PanelBody = styled('div', {
 
 const StyledFiltersPanel = styled('div', {
   position: 'relative',
-  borderRight: '1px solid $gray400',
+  borderRight: '1px solid $border',
   flexGrow: '0',
   flexShrink: '0',
   flexBasis: '330px',

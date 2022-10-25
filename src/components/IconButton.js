@@ -27,22 +27,22 @@ const IconButton = styled('button', {
 
   // Custom
   backgroundColor: '$loContrast',
-  border: '1px solid $gray600',
+  border: '1px solid $border',
   borderRadius: '$round',
   height: '$5',
   width: '$5',
   transition: 'all 40ms linear',
   '&:hover': {
-    borderColor: '$gray700',
+    borderColor: '$gray7',
     cursor: 'pointer',
   },
   '&:active': {
-    backgroundColor: '$gray100',
+    backgroundColor: '$gray5',
   },
   '&:disabled': {
     pointerEvents: 'none',
     backgroundColor: 'transparent',
-    color: '$gray500',
+    color: '$disabled',
   },
 
   variants: {
@@ -73,10 +73,10 @@ const IconButton = styled('button', {
         backgroundColor: 'transparent',
         borderWidth: '0',
         '&:hover': {
-          backgroundColor: '$gray300',
+          backgroundColor: '$gray4',
         },
         '&:active': {
-          backgroundColor: '$gray400',
+          backgroundColor: '$gray5',
         },
       },
       raised: {
@@ -85,29 +85,29 @@ const IconButton = styled('button', {
           boxShadow: '0 16px 32px hsl(206deg 12% 5% / 25%), 0 3px 5px hsl(0deg 0% 0% / 10%)',
         },
         '&:active': {
-          backgroundColor: '$gray300',
+          backgroundColor: '$gray3',
         },
       },
     },
     state: {
       active: {
-        backgroundColor: '$gray300',
+        backgroundColor: '$gray4',
         color: '$blue500',
         '&:hover': {
           // boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
         },
         '&:active': {
-          backgroundColor: '$gray300',
+          backgroundColor: '$gray4',
         },
       },
       waiting: {
-        backgroundColor: '$gray300',
+        backgroundColor: '$gray3',
         boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
         '&:hover': {
           boxShadow: 'inset 0 0 0 1px hsl(206,10%,76%)',
         },
         '&:active': {
-          backgroundColor: '$gray300',
+          backgroundColor: '$gray3',
         },
       },
     },

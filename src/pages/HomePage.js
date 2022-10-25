@@ -2,10 +2,10 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { Box } from '../components/Box';
 import screenshot from '../assets/animl-screenshot.png';
-import { MagicWandIcon, LapTimerIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { violet } from '@radix-ui/colors';
 import { Grid } from '../components/Grid';
 import { Container } from '../components/Container';
+import { MagicWandIcon, LapTimerIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import Footer from '../components/Footer';
 
 const Gradient = styled(Box, {
@@ -33,20 +33,20 @@ const Header = styled('div', {
   fontSize: '42px',
   fontWeight: '$5',
   fontFamily: '$roboto',
-  color: '$hiContrast',
+  color: '$textDark',
 });
 
 const Subheader = styled('div', {
   fontSize: '$5',
   fontWeight: '$2',
   fontFamily: '$roboto',
-  color: '$gray600',
+  color: '$textMedium',
   paddingTop: '$3',
   maxWidth: 700,
   margin: '0 auto',
   'a': {
     textDecoration: 'none',
-    color: '$hiContrast'
+    color: '$textDark'
   }
 });
 
@@ -88,18 +88,18 @@ const FeatureHeading = styled('div', {
   fontSize: '$5',
   fontWeight: '$4',
   marginBottom: '$2',
+  color: '$textDark',
 });
 
 const FeatureText = styled('div', {
   fontSize: '$4',
   fontWeight: '$2',
-  color: '$gray600',
+  color: '$textMedium',
 });
-
 
 const AppPage = () => {
   return (
-    <Box css={{ position: 'relative' }}>
+    <Box>
       <Background>
         <Gradient />
       </Background>

@@ -7,7 +7,7 @@ const StyledFooter = styled(Container, {
   textAlign: 'center',
   fontSize: '$4',
   fontWeight: '$2',
-  color: '$gray600',
+  color:'$textLight',
 })
 
 const Footer = () => {

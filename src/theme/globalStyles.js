@@ -46,7 +46,7 @@ const globalStyles = globalCss({
     // wrapper element)
 
     '.DateInput_input': {
-      color: '$hiContrast',
+      color: '$textDark',
       fontFamily: '$mono',
       fontWeight: '$2',
     },
@@ -60,10 +60,10 @@ const globalStyles = globalCss({
       zIndex: '$5',
     },
     '.DateRangePickerInput_clearDates_default:focus': {
-      backgroundColor: '$gray300',
+      backgroundColor: '$gray3',
     },
     '.DateRangePickerInput_clearDates_default:hover': {
-      backgroundColor: '$gray200',
+      backgroundColor: '$gray4',
     },
     '.CalendarDay__default': {
       border: 'none',
@@ -73,8 +73,8 @@ const globalStyles = globalCss({
     },
     '.CalendarDay__selected_span': {
       background: '$blue200',
-      color: '$hiContrast',
-      border: '1px solid $gray400',
+      color: '$textDark',
+      border: '1px solid $border',
     },
     '.CalendarDay__selected': {
       background: '$blue600',
@@ -91,8 +91,8 @@ const globalStyles = globalCss({
       border: '1px solid $blue200',
     },
     '.CalendarDay__hovered_span': {
-      background: '$gray200',
-      color: '$hiContrast',
+      background: '$gray2',
+      color: '$textDark',
       borderLeft: 'none',
       borderRight: 'none',
       borderTop: '$2 solid $loContrast',

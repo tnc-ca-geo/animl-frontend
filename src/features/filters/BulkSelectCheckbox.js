@@ -13,7 +13,7 @@ const StyledBulkSelectCheckbox = styled('div', {
     display: 'flex',
   },
   textTransform: 'uppercase',
-  borderBottom: '1px solid $gray400',
+  borderBottom: '1px solid $border',
 });
 
 const BulkSelectCheckbox = ({ filterCat, managedIds, showLabel }) => {

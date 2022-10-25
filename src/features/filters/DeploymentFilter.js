@@ -1,19 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { styled } from '../../theme/stitches.config.js';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { selectActiveFilters, selectAvailDeployments } from './filtersSlice';
 import Accordion from '../../components/Accordion';
+import NoneFoundAlert from '../../components/NoneFoundAlert';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import CameraFilterSection from './CameraFilterSection';
-
-
-const NoneFoundAlert = styled('div', {
-  fontSize: '$3',
-  fontFamily: '$roboto',
-  color: '$gray600',
-});
-
 
 const DeploymentFilter = () => {
   const selectedProject = useSelector(selectSelectedProject);

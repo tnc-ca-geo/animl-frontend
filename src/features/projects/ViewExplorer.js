@@ -13,7 +13,8 @@ import HydratedModal from '../../components/HydratedModal.js';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
-  borderTop: '1px solid $gray400',
+  borderTop: '1px solid $border',
+  backgroundColor: '$backgroundLight',
 });
 
 const ViewExplorer = () => {

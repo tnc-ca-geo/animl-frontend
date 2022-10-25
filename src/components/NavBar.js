@@ -37,10 +37,11 @@ const NavLinks = styled('div', {
     paddingBottom: '$1',
     textDecoration: 'none',
     fontFamily: '$roboto',
-    color: '$gray600',
+    color: '$gray11',
+    borderWidth: 'thin',
     '&:hover': {
-      color: '$gray700',
-      borderBottom: '1px solid $gray400',
+      color: '$gray12',
+      borderBottom: '1px solid $gray7',
     }
   }
 });
@@ -54,6 +55,14 @@ const StyledNav = styled('nav', {
   alignItems: 'center',
   padding: '$0 $3',
   backgroundColor: 'none',
+
+  variants: {
+    appActive: {
+      true: {
+        backgroundColor: '$backgroundLight',
+      }
+    }
+  }
 });
 
 
@@ -80,7 +89,7 @@ const NavBar = () => {
   };
 
   return (
-    <StyledNav>
+    <StyledNav appActive={appActive}>
       <Logo to='/'>
         <img
           alt='Animl'

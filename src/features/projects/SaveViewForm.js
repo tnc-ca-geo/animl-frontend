@@ -24,11 +24,11 @@ import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 const SaveModeTab = styled(Button, {
-  color: '$hiContrast',
+  color: '$textDark',
   backgroundColor: '$loContrast',
   margin: '$0 $2',
   '&:hover': {
-    backgroundColor: '$gray300',
+    backgroundColor: '$gray4',
     cursor: 'pointer',
   },
   variants: {

@@ -5,8 +5,10 @@ import { styled } from '../../theme/stitches.config';
 import { green } from '@radix-ui/colors';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { unregisterCamera, selectCamerasLoading } from './camerasSlice';
+import Button from '../../components/Button';
 import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
+import NoneFoundAlert from '../../components/NoneFoundAlert';
 import { Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
   hasRole,
@@ -16,7 +18,7 @@ import {
 
 
 const StyledCameraList = styled('div', {
-  border: '1px solid $gray400',
+  border: '1px solid $border',
   borderBottom: 'none',
   maxHeight: '50vh',
   overflowY: 'scroll',
@@ -27,23 +29,23 @@ const ManageCamButtons = styled('div', {
   right: '$3',
 })
 
-const ManageCamButton = styled('button', {
+const ManageCamButton = styled('Button', {
   border: 'none',
-  backgroundColor: '$gray300',
+  backgroundColor: '$gray3',
   borderRadius: '$3',
   padding: '$1 $3',
-  color: '$gray600',
+  color: '$textMedium',
   marginLeft: '$2',
   textTransform: 'uppercase',
   fontSize: '$2',
   fontWeight: '600',
   '&:hover': {
-    color: '$hiContrast',
-    backgroundColor: '$gray400',
+    color: '$textDark',
+    backgroundColor: '$gray4',
     cursor: 'pointer',
   },
   '&:active': {
-    backgroundColor: '$gray500',
+    backgroundColor: '$gray5',
   },
 });
 
@@ -52,7 +54,7 @@ const DepButtons = styled('div', {});
 const DateDash = styled('span', {
   paddingLeft: '$2',
   paddingRight: '$2',
-})
+});
 
 const Date = styled('span', {
   width: '120px',
@@ -70,12 +72,13 @@ const Date = styled('span', {
 
 const Bookend = styled('span', {
   fontStyle: 'italic',
-  color: '$gray600',
+  color: '$textMedium',
 });
 
 const DepDates = styled('div', {
   display: 'flex',
   alignItems: 'center',
+  color: '$textDark',
 });
 
 const DepName = styled('div', {
@@ -89,9 +92,10 @@ const DeploymentItem = styled('div', {
   paddingTop: '$2',
   paddingBottom: '$2',
   display: 'flex',
+  color: '$textDark',
   justifyContent: 'space-between',
   '&:not(:last-child)': {
-    borderBottom: '1px solid $gray400',
+    borderBottom: '1px solid $gray4',
   }
 });
 
@@ -101,30 +105,22 @@ const StyledActiveState = styled('div', {
   variants: {
     active: {
       true: {
-        color: green.green11,
-        backgroundColor: green.green4,
+        color: '$successText',
+        backgroundColor: '$successBg',
       },
       false: {
-        color: '$gray600',
-        backgroundColor: '$gray200',
+        color: '$textMedium',
+        backgroundColor: '$backgroundDark',
       },
     },
   },
 });
-
-const NoneFoundAlert = styled('div', {
-  fontSize: '$3',
-  fontFamily: '$roboto',
-  color: '$gray600',
-});
-
 
 const ActiveState = ({ active }) => (
   <StyledActiveState active={active.toString()}>
     { active ? 'active' : 'inactive'}
   </StyledActiveState>
 );
-
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const camerasLoading = useSelector(selectCamerasLoading);

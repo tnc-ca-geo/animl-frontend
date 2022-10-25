@@ -6,9 +6,7 @@ import { toggleOpenLoupe } from '../loupe/loupeSlice';
 
 
 const LabelPill = styled('div', {
-  // backgroundColor: '$gray300',
-  // border: '1px solid $hiContrast',
-  color: '$hiContrast',
+  color: '$textDark',
   fontSize: '$2',
   fontFamily: '$mono',
   padding: '$1 $3',
@@ -17,7 +15,6 @@ const LabelPill = styled('div', {
   },
   borderRadius: '$3',
   border: '1px solid rgba(0,0,0,0)',
-  // textTransform: 'uppercase',
   transition: 'all 0.2s ease',
   variants: {
     focused: {
@@ -33,7 +30,7 @@ const LabelPill = styled('div', {
 const ObjectPill = styled('div', {
   display: 'flex',
   padding: '$1',
-  border: '1px solid $gray400',
+  border: '1px solid $border',
   borderRadius: '$4',
   margin: '$1',
   variants: {

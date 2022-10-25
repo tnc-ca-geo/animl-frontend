@@ -9,17 +9,10 @@ import {
 import Accordion from '../../components/Accordion';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
 import Checkbox from '../../components/Checkbox';
+import NoneFoundAlert from '../../components/NoneFoundAlert';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 import { selectLabelsLoading, checkboxOnlyButtonClicked } from '../filters/filtersSlice';
-
-
-const NoneFoundAlert = styled('div', {
-  fontSize: '$3',
-  fontFamily: '$roboto',
-  color: '$gray600',
-});
-
 
 const LabelFilter = () => {
   const availLabels = useSelector(selectAvailLabels);
@@ -80,7 +73,7 @@ const LabelFilter = () => {
 const OnlyButton = styled('div', {
   // position: 'absolute',
   // right: '16px',
-  background: '$gray200',
+  background: '$gray3',
   padding: '$0 $2',
   fontWeight: '$5',
   '&:hover': {

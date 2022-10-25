@@ -33,10 +33,10 @@ const StyledSlider = styled(ReactSlider, {
     disabledStyles: {
       true: {
         '.track': {
-          backgroundColor: '$gray400',
+          backgroundColor: '$gray4',
         },
         '.thumb': {
-          backgroundColor: '$gray400',
+          backgroundColor: '$gray4',
           cursor: 'default',
         }
       }
@@ -72,7 +72,7 @@ const ConfDisplay = styled('div', {
   variants: {
     disabled: {
       true: {
-        color: '$gray400',
+        color: '$gray4',
       }
     }
   }
