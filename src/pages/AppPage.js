@@ -1,18 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { styled } from '../theme/stitches.config.js';
 import { selectUserUsername, selectUserAuthStatus } from '../features/user/userSlice.js';
-import { Authenticator } from "@aws-amplify/ui-react";
 import { Page } from '../components/Page';
 import ViewExplorer from '../features/projects/ViewExplorer';
-import '@aws-amplify/ui-react/styles.css';
-
-const LoginScreen = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  backgroundColor: '$backgroundLight',
-});
+import LoginForm from '../features/user/LoginForm';
 
 const AppPage = () => {
   const authStatus = useSelector(selectUserAuthStatus);
@@ -21,16 +12,7 @@ const AppPage = () => {
 
   return (
     <Page>
-      {signedIn
-        ? (<ViewExplorer />)
-        : (<LoginScreen>
-            <Authenticator
-              loginMechanisms={['email']}
-              hideDefault={true}
-              hideSignUp={true}
-            />
-          </LoginScreen>)
-      }
+      {signedIn ? <ViewExplorer /> : <LoginForm />}
     </Page>
   );
 };
