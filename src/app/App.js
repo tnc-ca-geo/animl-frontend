@@ -8,17 +8,16 @@ import HomePage from '../pages/HomePage';
 import CaseStudiesPage from '../pages/CaseStudiesPage';
 import AppPage from '../pages/AppPage';
 import { Amplify } from 'aws-amplify';
-import awsconfig from '../aws-exports';
-import { onAuthUIStateChange } from '@aws-amplify/ui-components';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Toast from '@radix-ui/react-toast';
 import { initTracking } from '../features/tracking/trackingSlice';
 import { selectRouterLocation } from '../features/images/imagesSlice';
 import { userAuthStateChanged } from '../features/user/userSlice';
 import logo from '../assets/animl-logo.svg';
-import { IN_MAINTENANCE_MODE, GA_CONFIG } from '../config';
+import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG } from '../config';
 
-Amplify.configure(awsconfig);
+Amplify.configure(AWS_AUTH_CONFIG);
 
 const AppContainer = styled('div', {
   position: 'relative',
@@ -77,19 +76,33 @@ const App = () => {
     }
   }, [ router ]);
 
-  // set auth state
-  // TODO: move to to AppPage?
+  const { authStatus } = useAuthenticator(context => [context.authStatus]);
+  const { user } = useAuthenticator(context => [context.user]);
   useEffect(() => {
-    return onAuthUIStateChange((nextAuthState, authData) => {
-      const payload = { nextAuthState };
-      if (authData) {
-        const idToken = authData.signInUserSession.idToken.payload;
-        payload.username = idToken['cognito:username'];
-        payload.groups = idToken['cognito:groups'];
-      }
-      dispatch(userAuthStateChanged(payload));
-    });
-  }, [dispatch]);
+    const payload = { authStatus };
+    if (user && authStatus === 'authenticated') {
+      const idToken = user.signInUserSession.idToken.payload;
+      payload.username = idToken['cognito:username'];
+      payload.groups = idToken['cognito:groups'];
+    }
+    dispatch(userAuthStateChanged(payload));
+  }, [user, authStatus, dispatch]);
+
+  // // set auth state
+  // // TODO: move to to AppPage?
+  // useEffect(() => {
+  //   return onAuthUIStateChange((nextAuthState, authData) => {
+  //     console.log('auth state changed; nextAuthState: ', nextAuthState);
+  //     console.log('authdata: ', authData);
+  //     const payload = { nextAuthState };
+  //     if (authData) {
+  //       const idToken = authData.signInUserSession.idToken.payload;
+  //       payload.username = idToken['cognito:username'];
+  //       payload.groups = idToken['cognito:groups'];
+  //     }
+  //     dispatch(userAuthStateChanged(payload));
+  //   });
+  // }, [dispatch]);
 
   useEffect(() => {
     dispatch(initTracking(GA_CONFIG));
@@ -99,7 +112,8 @@ const App = () => {
     <>
       {maintenanceMode === true
         ? (<MaintenanceAlert/>)
-        : (<Tooltip.Provider>
+        : (
+          <Tooltip.Provider>
             <Toast.Provider>
               <AppContainer>
                 <NavBar />
@@ -110,7 +124,6 @@ const App = () => {
                   {/*<Route component={NoMatch} />*/}
                 </Switch>
               </AppContainer>
-
             </Toast.Provider>
           </Tooltip.Provider>)
       }

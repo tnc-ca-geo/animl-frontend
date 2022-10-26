@@ -5,7 +5,7 @@ const initialState = {
   username: null,
   groups: [],
   projects: {},
-  authState: null,
+  authStatus: null,
 };
 
 export const userSlice = createSlice({
@@ -14,7 +14,7 @@ export const userSlice = createSlice({
   reducers: {
 
     userAuthStateChanged: (state, { payload }) => {
-      state.authState = payload.nextAuthState;
+      state.authStatus = payload.authStatus;
       state.username = payload.username || null;
       state.groups = payload.groups || null;
       if (payload.groups) {
@@ -45,7 +45,7 @@ export const {
 } = userSlice.actions;
 
 // Selectors
-export const selectUserAuthState = state => state.user.authState;
+export const selectUserAuthStatus = state => state.user.authStatus;
 export const selectUserGroups = state => state.user.groups;
 export const selectUserUsername = state => state.user.username;
 export const selectUserProjects = state => state.user.projects;

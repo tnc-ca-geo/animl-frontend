@@ -2,11 +2,10 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../theme/stitches.config.js';
 import { Link } from 'react-router-dom';
-import { selectUserUsername, selectUserAuthState } from '../features/user/userSlice.js';
+import { selectUserUsername, selectUserAuthStatus } from '../features/user/userSlice.js';
 import { selectRouterLocation } from '../features/images/imagesSlice';
 import ProjectAndViewNav from '../features/projects/ProjectAndViewNav';
-import { AuthState } from '@aws-amplify/ui-components';
-import { Auth, Hub } from 'aws-amplify';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 import logo from '../assets/animl-logo.svg';
 import Button from './Button';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
@@ -65,28 +64,14 @@ const StyledNav = styled('nav', {
   }
 });
 
-
 const NavBar = () => {
-  const authState = useSelector(selectUserAuthState);
+  const { signOut } = useAuthenticator((context) => [context.user]);
+  const authStatus = useSelector(selectUserAuthStatus);
   const user = useSelector(selectUserUsername);
-  const signedIn = authState === AuthState.SignedIn && user;
+  const signedIn = authStatus === 'authenticated' && user;
   const routerLocation = useSelector(selectRouterLocation);
   const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
   const appActive = paths[0] === 'app';
-
-  console.log('router location: ', routerLocation);
-
-  const handleSignOutButtonClick = async () => {
-    try {
-      await Auth.signOut();
-      Hub.dispatch('UI Auth', { 
-        event: 'AuthStateChange',
-        message: 'signedout'
-      });
-    } catch (error) {
-      console.log('error signing out: ', error);
-    }
-  };
 
   return (
     <StyledNav appActive={appActive}>
@@ -101,7 +86,7 @@ const NavBar = () => {
         <>
           <ProjectAndViewNav />
           <Button
-            onClick={handleSignOutButtonClick}
+            onClick={signOut}
             size='small'
           >
             Sign out
