@@ -86,6 +86,14 @@ const StyledResizableBox = styled(ResizableBox, {
       false: {
         // opacity: '0.85',
       },
+    },
+    locked: {
+      true: {
+        borderStyle: 'solid',
+      },
+      false: {
+        borderStyle: 'dashed'
+      }
     }
   }
 });
@@ -217,10 +225,7 @@ const BoundingBox = ({
         height={height}
         minConstraints={[0, 0]}
         maxConstraints={[constraintX, constraintY]}
-        resizeHandles={isAuthorized && !object.locked 
-          ? ['sw', 'se', 'nw', 'ne']
-          : []
-        }
+        resizeHandles={isAuthorized && !object.locked ? ['sw', 'se', 'nw', 'ne'] : []}
         handle={(location) => (
           <ResizeHandle location={location} ref={(el) => {
             if (location === 'se') { handleRef.current = el }
@@ -233,9 +238,10 @@ const BoundingBox = ({
         onMouseEnter={handleBBoxHover}
         onMouseLeave={handleBBoxMouseLeave}
         selected={objectFocused}
-        css={{ 
-          borderColor: labelColor.primary,
-          background: labelColor.primary + '0D',
+        locked={object.locked}
+        css={{
+          borderColor: labelColor.base,
+          background: labelColor.base + '0D',
         }}
       >
         {label &&

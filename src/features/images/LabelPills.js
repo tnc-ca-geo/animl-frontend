@@ -8,6 +8,7 @@ import { toggleOpenLoupe } from '../loupe/loupeSlice';
 const LabelPill = styled('div', {
   color: '$textDark',
   fontSize: '$2',
+  fontWeight: '$5',
   fontFamily: '$mono',
   padding: '$1 $3',
   '&:not(:last-child)': {
@@ -30,7 +31,8 @@ const LabelPill = styled('div', {
 const ObjectPill = styled('div', {
   display: 'flex',
   padding: '$1',
-  border: '1px solid $border',
+  border: '1px solid transparent',
+  // backgroundColor: '$gray3',
   borderRadius: '$4',
   margin: '$1',
   variants: {
@@ -43,7 +45,12 @@ const ObjectPill = styled('div', {
     },
     locked: {
       true: {
-        borderColor: '$hiContrast',
+        backgroundColor: 'transparent',
+        // borderColor: '$gray10',
+      },
+      false: {
+        borderColor: '$gray10',
+        borderStyle: 'dashed',
       }
     }
   }
@@ -106,8 +113,9 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
                     }
                     onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
                     css={{
-                      backgroundColor: labelColors(label.category).primary + 'b3', 
-                      color: labelColors(label.category).text,
+                      backgroundColor: labelColors(label.category).bg, 
+                      borderColor: labelColors(label.category).border,
+                      color: labelColors(label.category).textDark,
                     }}
                   >
                     {label.category}

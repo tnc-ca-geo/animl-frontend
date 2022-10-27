@@ -54,8 +54,8 @@ const ValidationButtons = ({
             onClick={handleLockButtonClick}
             css={{
               color: '$loContrast',
-              backgroundColor: labelColor.primary,
-              borderColor: labelColor.primary,
+              backgroundColor: labelColor.base,
+              borderColor: labelColor.base,
               '&:hover': {
                 backgroundColor: '$loContrast',
                 color: '$hiContrast',
@@ -69,11 +69,11 @@ const ValidationButtons = ({
               css={{
                 backgroundColor: '#E04040',
                 color: '$loContrast',
-                borderColor: labelColor.primary,
+                borderColor: labelColor.base,
                 '&:hover': {
                   color: '#E04040',
                   backgroundColor: '$loContrast',
-                  borderColor: labelColor.primary,
+                  borderColor: labelColor.base,
                 }
               }}
             >
@@ -84,11 +84,11 @@ const ValidationButtons = ({
               css={{
                 backgroundColor: '#00C797',
                 color: '$loContrast',
-                borderColor: labelColor.primary,
+                borderColor: labelColor.base,
                 '&:hover': {
                   color: '#00C797',
                   backgroundColor: '$loContrast',
-                  borderColor: labelColor.primary,
+                  borderColor: labelColor.base,
                 }
               }}
             >

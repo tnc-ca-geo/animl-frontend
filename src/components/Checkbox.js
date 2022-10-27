@@ -51,7 +51,7 @@ const StyledCheckbox = styled('div', {
   },
 
   background: '$loContrast',
-  borderColor: '$gray6',
+  borderColor: '$gray9',
 
   // for some reason you need to have variants defined here (even if empty)
   // if you want to use compountVarients

@@ -21,7 +21,7 @@ const StyledBoundingBoxLabel = styled('div', {
   variants: {
     verticalPos: {
       top: {
-        top: '-24px',
+        top: '-26px',
       },
       bottom: {
         top: '-2px',
@@ -132,6 +132,7 @@ const BoundingBoxLabel = ({
   horizontalPos, 
   isAuthorized,
 }) => {
+  const textColor = labelColor.isLowContrast ? labelColor.textDark : labelColor.textLight;
   const username = useSelector(selectUserUsername);
   const dispatch = useDispatch();
 
@@ -207,8 +208,8 @@ const BoundingBoxLabel = ({
       catSelectorOpen={catSelectorOpen}
       selected={selected}
       css={{
-        backgroundColor: labelColor.primary,
-        color: labelColor.text
+        backgroundColor: labelColor.base,
+        color: textColor,// labelColor.bg  
       }}
     >
       <div onClick={handleLabelClick}>
