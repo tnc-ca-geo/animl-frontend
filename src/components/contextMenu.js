@@ -47,6 +47,7 @@ const itemStyles = {
   position: 'relative',
   paddingLeft: 25,
   userSelect: 'none',
+  cursor: 'pointer',
 
   '&[data-disabled]': {
     color: mauve.mauve8,
@@ -92,12 +93,22 @@ const StyledItemIndicator = styled(ContextMenuPrimitive.ItemIndicator, {
   justifyContent: 'center',
 });
 
+const StyledMenuItemIconLeft = styled('span', {
+  position: 'absolute',
+  left: 0,
+  width: 25,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
 // Exports
 export const ContextMenu = ContextMenuPrimitive.Root;
 export const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 export const ContextMenuContent = Content;
 export const ContextMenuItem = StyledItem;
 export const ContextMenuCheckboxItem = StyledCheckboxItem;
+export const ContextMenuItemIconLeft = StyledMenuItemIconLeft;
 export const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup;
 export const ContextMenuRadioItem = StyledRadioItem;
 export const ContextMenuItemIndicator = StyledItemIndicator;

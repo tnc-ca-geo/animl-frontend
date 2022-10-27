@@ -97,10 +97,13 @@ export const {
       loContrast: slate.slate1, // '#FFFFFF', // white
 
       successBg: green.green4,
+      successBase: green.green9,
       successText: green.green11,
       warningBg: orange.orange4,
+      warningBase: orange.orange9,
       warnringText: orange.orange11,
       errorBg: tomato.tomato4,
+      errorBase: tomato.tomato9,
       errorText: tomato.tomato11,
       disabled: slate.slate8,
 

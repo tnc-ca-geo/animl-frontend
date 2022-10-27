@@ -11,7 +11,9 @@ import {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
-  ContextMenuItem
+  ContextMenuItem,
+  ContextMenuItemIndicator,
+  ContextMenuItemIconLeft
 } from '../../components/contextMenu';
 import { 
   bboxUpdated,
@@ -22,6 +24,7 @@ import {
 } from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
+import { CheckIcon, Cross2Icon, LockOpen1Icon } from '@radix-ui/react-icons';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -309,17 +312,40 @@ const BoundingBox = ({
           ? (<ContextMenuItem
               onClick={handleLockButtonClick}
             >
+              <ContextMenuItemIconLeft>
+                <LockOpen1Icon />
+              </ContextMenuItemIconLeft>
               Unlock
             </ContextMenuItem>)
           : (<div>
               <ContextMenuItem
                 onClick={(e) => handleValidationButtonClick(e, true)}
+                css={{
+                  color: '$successText',
+                  '&[data-highlighted]': {
+                    backgroundColor: '$successBase',
+                    color: '$successBg',
+                  },
+                }}
               >
+                <ContextMenuItemIconLeft>
+                  <CheckIcon />
+                </ContextMenuItemIconLeft>
                 Validate
               </ContextMenuItem>
               <ContextMenuItem
                 onClick={(e) => handleValidationButtonClick(e, false)}
+                css={{
+                  color: '$errorText',
+                  '&[data-highlighted]': {
+                    backgroundColor: '$errorBase',
+                    color: '$errorBg',
+                  },
+                }}
               >
+                <ContextMenuItemIconLeft>
+                  <Cross2Icon />
+                </ContextMenuItemIconLeft>
                 Invalidate
               </ContextMenuItem>
             </div>)
