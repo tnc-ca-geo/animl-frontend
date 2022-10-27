@@ -106,7 +106,7 @@ const AppPage = () => {
       <Hero>
         <Header css={{ '@bp3': { fontSize: '64px' }}}>Tame your wildlife data</Header>
         <Subheader>
-        Animl is an open-source, cloud-based platform for managing camera trap data, built and used by <a href="https://nature.org" target="_blank" rel="noreferrer">The Nature Conervancy</a>
+        Animl is an open-source, cloud-based platform for managing camera trap data, built and used by <a href="https://nature.org" target="_blank" rel="noreferrer">The Nature Conservancy</a>
         </Subheader>
       </Hero>
       <Screenshot css={{ '@bp1': { width: '80%', margin: '$5 auto' }}}>
