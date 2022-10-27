@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, keyframes } from '@stitches/react';
+import { styled, keyframes } from '../theme/stitches.config.js';
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { CaretDownIcon } from '@radix-ui/react-icons';
 import { violet, indigo } from '@radix-ui/colors';

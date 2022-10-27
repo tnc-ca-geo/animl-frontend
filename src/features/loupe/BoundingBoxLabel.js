@@ -4,7 +4,6 @@ import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
 import { createFilter } from 'react-select';
 import { selectAvailLabels } from '../filters/filtersSlice';
-import { selectUserUsername } from '../user/userSlice.js';
 import { labelAdded, setFocus } from '../review/reviewSlice';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice';
 import ValidationButtons from './ValidationButtons.js';
@@ -131,9 +130,9 @@ const BoundingBoxLabel = ({
   verticalPos,
   horizontalPos, 
   isAuthorized,
+  username,
 }) => {
   const textColor = labelColor.isLowContrast ? labelColor.textDark : labelColor.textLight;
-  const username = useSelector(selectUserUsername);
   const dispatch = useDispatch();
 
   // update selctor options when new labels become available

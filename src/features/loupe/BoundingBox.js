@@ -5,9 +5,21 @@ import _ from 'lodash';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectUserCurrentRoles } from '../user/userSlice';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
-import { bboxUpdated, setFocus } from '../review/reviewSlice';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem
+} from '../../components/contextMenu';
+import { 
+  bboxUpdated,
+  labelValidated, 
+  objectLocked,
+  setFocus,
+  objectManuallyUnlocked
+} from '../review/reviewSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
 
@@ -108,6 +120,7 @@ const BoundingBox = ({
   setTempObject
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
+  const username = useSelector(selectUserUsername);
   const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
   const handleRef = useRef(null);
   const dispatch = useDispatch();
@@ -210,66 +223,109 @@ const BoundingBox = ({
   const handleBBoxMouseLeave = () => setShowLabelButtons(false);
   const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
+  const handleValidationButtonClick = (e, validated) => {
+    e.stopPropagation();
+    dispatch(labelValidated({
+      userId: username,
+      imgId,
+      objId: object._id,
+      lblId: label._id,
+      validated,
+    }));
+    // setShowLabelButtons(false);
+  };
+
+  const handleLockButtonClick = (e) => {
+    e.stopPropagation();
+    dispatch(objectManuallyUnlocked({ imgId, objId: object._id }));
+  };
+
   return (
-    <Draggable
-      bounds='parent'
-      handle='.drag-handle'
-      position={{ x: left, y: top }}
-      onStart={onDragStart}
-      onDrag={onDrag}
-      onStop={onDragEnd}
-      disabled={!isAuthorized || object.locked}
-    >
-      <StyledResizableBox
-        width={width}
-        height={height}
-        minConstraints={[0, 0]}
-        maxConstraints={[constraintX, constraintY]}
-        resizeHandles={isAuthorized && !object.locked ? ['sw', 'se', 'nw', 'ne'] : []}
-        handle={(location) => (
-          <ResizeHandle location={location} ref={(el) => {
-            if (location === 'se') { handleRef.current = el }
-          }}/>
-        )}
-        onResize={onResize}
-        onResizeStop={onResizeStop}
-        onClick={handleBBoxClick}
-        onMouseOver={handleBBoxHover}
-        onMouseEnter={handleBBoxHover}
-        onMouseLeave={handleBBoxMouseLeave}
-        selected={objectFocused}
-        locked={object.locked}
-        css={{
-          borderColor: labelColor.base,
-          background: labelColor.base + '0D',
-        }}
-      >
-        {label &&
-          <BoundingBoxLabel
-            imgId={imgId}
-            index={index}
-            object={object}
-            label={label}
-            labelColor={labelColor}
-            conf={conf}
-            selected={objectFocused}
-            showLabelButtons={showLabelButtons}
-            setShowLabelButtons={setShowLabelButtons}
-            setTempObject={setTempObject}
-            verticalPos={(top > 30) ? 'top' : 'bottom'}
-            horizontalPos={((imageWidth - left - width) < 75) 
-              ? 'right' 
-              : 'left'
-            }
-            isAuthorized={isAuthorized}
-          />
-        }
-        <DragHandle
-          className='drag-handle'
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <Draggable
+          bounds='parent'
+          handle='.drag-handle'
+          position={{ x: left, y: top }}
+          onStart={onDragStart}
+          onDrag={onDrag}
+          onStop={onDragEnd}
           disabled={!isAuthorized || object.locked}
-        />
-      </StyledResizableBox>
-    </Draggable>
+        >
+          <StyledResizableBox
+            width={width}
+            height={height}
+            minConstraints={[0, 0]}
+            maxConstraints={[constraintX, constraintY]}
+            resizeHandles={isAuthorized && !object.locked ? ['sw', 'se', 'nw', 'ne'] : []}
+            handle={(location) => (
+              <ResizeHandle location={location} ref={(el) => {
+                if (location === 'se') { handleRef.current = el }
+              }}/>
+            )}
+            onResize={onResize}
+            onResizeStop={onResizeStop}
+            onClick={handleBBoxClick}
+            onMouseOver={handleBBoxHover}
+            onMouseEnter={handleBBoxHover}
+            onMouseLeave={handleBBoxMouseLeave}
+            selected={objectFocused}
+            locked={object.locked}
+            css={{
+              borderColor: labelColor.base,
+              background: labelColor.base + '0D',
+            }}
+          >
+            {label &&
+              <BoundingBoxLabel
+                imgId={imgId}
+                index={index}
+                object={object}
+                label={label}
+                labelColor={labelColor}
+                conf={conf}
+                selected={objectFocused}
+                showLabelButtons={showLabelButtons}
+                setShowLabelButtons={setShowLabelButtons}
+                setTempObject={setTempObject}
+                verticalPos={(top > 30) ? 'top' : 'bottom'}
+                horizontalPos={((imageWidth - left - width) < 75) 
+                  ? 'right' 
+                  : 'left'
+                }
+                isAuthorized={isAuthorized}
+                username={username}
+              />
+            }
+            <DragHandle
+              className='drag-handle'
+              disabled={!isAuthorized || object.locked}
+            />
+          </StyledResizableBox>
+        </Draggable>
+      </ContextMenuTrigger>
+      <ContextMenuContent sideOffset={5} align="end">
+        {object.locked 
+          ? (<ContextMenuItem
+              onClick={handleLockButtonClick}
+            >
+              Unlock
+            </ContextMenuItem>)
+          : (<div>
+              <ContextMenuItem
+                onClick={(e) => handleValidationButtonClick(e, true)}
+              >
+                Validate
+              </ContextMenuItem>
+              <ContextMenuItem
+                onClick={(e) => handleValidationButtonClick(e, false)}
+              >
+                Invalidate
+              </ContextMenuItem>
+            </div>)
+        }
+      </ContextMenuContent>
+    </ContextMenu>
   )
 };
 
