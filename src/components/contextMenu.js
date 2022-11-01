@@ -5,7 +5,7 @@ import { DotFilledIcon, CheckIcon, ChevronRightIcon } from '@radix-ui/react-icon
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu';
 
 const contentStyles = {
-  minWidth: 220,
+  minWidth: 170,
   backgroundColor: 'white',
   borderRadius: 6,
   overflow: 'hidden',

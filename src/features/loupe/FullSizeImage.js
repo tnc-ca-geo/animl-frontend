@@ -11,6 +11,14 @@ import { selectWorkingImages, labelValidated, markedEmpty } from '../review/revi
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuItemIconLeft,
+} from '../../components/contextMenu';
+import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
 // import Button from '../../components/Button';
 
 const EditObjectButton = styled('button', {
@@ -148,7 +156,29 @@ const FullSizeImage = ({ image, focusIndex }) => {
           <CircleSpinner />
         </SpinnerOverlay>
       }*/}
-      <FullImage src={image.url} onLoad={() => handleImgLoaded()} />
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <FullImage src={image.url} onLoad={() => handleImgLoaded()} />
+        </ContextMenuTrigger>
+        <ContextMenuContent sideOffset={5} align="end">
+          <ContextMenuItem
+            onClick={handleAddObjectButtonClick}
+          >
+            <ContextMenuItemIconLeft>
+              <Pencil1Icon />
+            </ContextMenuItemIconLeft>
+            Add object
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={handleMarkEmptyButtonClick}
+          >
+            <ContextMenuItemIconLeft>
+              <ValueNoneIcon />
+            </ContextMenuItemIconLeft>
+            Mark empty
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
           <EditObjectButton
