@@ -4,6 +4,8 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import { indigo } from '@radix-ui/colors';
 import Button from '../../components/Button';
 import '@aws-amplify/ui-react/styles.css';
+import { useSelector } from 'react-redux';
+import { selectUserUsername } from './userSlice.js';
 
 const LoginScreen = styled('div', {
   display: 'flex',
@@ -149,6 +151,7 @@ const StyledButton = styled(Button, {
 
 const LoginForm = () => {
   const { route, toSignIn } = useAuthenticator(context => [context.route]);
+  const userName = useSelector(selectUserUsername);
 
   const helperText = {
     'confirmResetPassword': 'Reset your password',
@@ -159,7 +162,7 @@ const LoginForm = () => {
   return (
     <LoginScreen>
       <Header css={{ '@bp3': { fontSize: '64px' }}}>Welcome back</Header>
-      <Subheader>{helperText[route] || 'Default'}</Subheader>
+      <Subheader>{helperText[route] || userName || ''}</Subheader>
       <StyledAuthenticator
         loginMechanisms={['email']}
         hideDefault={true}
