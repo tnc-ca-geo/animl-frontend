@@ -2,9 +2,9 @@ import React, { useEffect }from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
-  selectCSVExport,
-  selectCSVExportLoading,
-  exportCSV,
+  selectExport,
+  selectExportLoading,
+  exportData,
   getExportStatus,
 } from '../images/imagesSlice';
 import { selectActiveFilters  } from '../filters/filtersSlice.js';
@@ -29,52 +29,49 @@ const NotReviewedWarning = ({ imageCount, reviewedCount }) => (
 
 const ExportModal = () => {
   const filters = useSelector(selectActiveFilters);
-  const csvExport = useSelector(selectCSVExport);
-  const CSVExportLoading = useSelector(selectCSVExportLoading);
+  const dataExport = useSelector(selectExport);
+  const exportLoading = useSelector(selectExportLoading);
   const dispatch = useDispatch();
 
-  const exportReady = !CSVExportLoading.isLoading && 
-                      !CSVExportLoading.errors && 
-                      csvExport && 
-                      csvExport.url;
+  const exportReady = !exportLoading.isLoading && 
+                      !exportLoading.errors && 
+                      dataExport && 
+                      dataExport.url;
   
-  const exportPending = CSVExportLoading.isLoading && 
-                        csvExport && 
-                        csvExport.documentId;
+  const exportPending = exportLoading.isLoading && 
+                        dataExport && 
+                        dataExport.documentId;
 
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
     if (exportReady) {
-      window.open(csvExport.url, 'downloadTab');
+      window.open(dataExport.url, 'downloadTab');
     }
-  }, [exportReady, csvExport, dispatch]);
+  }, [exportReady, dataExport, dispatch]);
 
   useEffect(() => {
     if (exportPending) {
-      dispatch(getExportStatus(csvExport.documentId));
+      dispatch(getExportStatus(dataExport.documentId));
     }
-  }, [exportPending, csvExport, dispatch])
+  }, [exportPending, dataExport, dispatch])
 
-  const handleExportCSVClick = () => {
-    const { isLoading, errors, noneFound } = CSVExportLoading;
+  const handleExportButtonClick = (e) => {
+    const { isLoading, errors, noneFound } = exportLoading;
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
-      dispatch(exportCSV(filters));
+      const format = e.target.dataset.format;
+      dispatch(exportData({ format, filters }));
     }
-  };
-
-  const handleExportCOCOClick = () => {
-    // TODO: implement COCO Camera Traps export
   };
 
   return (
     <div>
-      {CSVExportLoading.isLoading &&
+      {exportLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>
       }
-      {CSVExportLoading.noneFound &&
+      {exportLoading.noneFound &&
         <NoneFoundAlert>
           We couldn't find any images that matched this set of filters.
         </NoneFoundAlert>
@@ -90,32 +87,34 @@ const ExportModal = () => {
         }
         {exportReady && 
           <p><em>Note: if your download did not start automatically, 
-          click <a href={csvExport.url} target="downloadTab">this link</a> to 
+          click <a href={dataExport.url} target="downloadTab">this link</a> to 
           initiate it.</em></p>
         }
       </HelperText>
       {(exportReady &&
-        csvExport.reviewedCount &&
-        csvExport.reviewedCount.notReviewed > 0) &&
+        dataExport.reviewedCount &&
+        dataExport.reviewedCount.notReviewed > 0) &&
           <NotReviewedWarning
-            imageCount={csvExport.imageCount}
-            reviewedCount={csvExport.reviewedCount}
+            imageCount={dataExport.imageCount}
+            reviewedCount={dataExport.reviewedCount}
           />
       }
       <ButtonRow>
         <Button 
           type='submit'
           size='large'
-          disabled={true}
-          onClick={() => handleExportCOCOClick()}
+          disabled={exportLoading.isLoading}
+          data-format='coco'
+          onClick={handleExportButtonClick}
         >
           Export to COCO (coming soon!)
         </Button>
         <Button 
           type='submit'
           size='large'
-          disabled={CSVExportLoading.isLoading}
-          onClick={() => handleExportCSVClick()}
+          disabled={exportLoading.isLoading}
+          data-format='csv'
+          onClick={handleExportButtonClick}
         >
           Export to CSV
         </Button>

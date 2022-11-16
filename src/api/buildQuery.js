@@ -253,16 +253,16 @@ const queries = {
     },
   }),
 
-  exportCSV: ({ filters }) => ({
+  export: ({ format, filters }) => ({
     template: `
-      query ExportCSV($input: ExportCSVInput!) {
-        csv(input: $input) {
+      query Export($input: ExportInput!) {
+        export(input: $input) {
           documentId
         }
       }
     `,
     variables: {
-      input: { filters }
+      input: { format, filters }
     },
   }),
 

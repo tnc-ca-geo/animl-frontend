@@ -34,8 +34,8 @@ import {
   dismissImageContextError,
   selectStatsErrors,
   dismissStatsError,
-  selectCSVExportErrors,
-  dismissCSVExportError,
+  selectExportErrors,
+  dismissExportError,
 } from '../features/images/imagesSlice';
 import getErrorContent from '../content/Errors';
 
@@ -51,7 +51,7 @@ const ErrorAlerts = () => {
   const imagesErrors = useSelector(selectImagesErrors);
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
-  const csvExportErrors = useSelector(selectCSVExportErrors);
+  const exportErrors = useSelector(selectExportErrors);
 
   
   const enrichedErrors = [
@@ -64,7 +64,7 @@ const ErrorAlerts = () => {
     enrichErrors(imagesErrors, 'Error Fetching Images', 'images'),
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
-    enrichErrors(csvExportErrors, 'Error Exporting CSV', 'csv'),
+    enrichErrors(exportErrors, 'Error Exporting Data', 'data'),
 
   ];
 
@@ -121,7 +121,7 @@ const dismissErrorActions = {
   'images': (i) => dismissImagesError(i),
   'imageContext': (i) => dismissImageContextError(i),
   'stats': (i) => dismissStatsError(i),
-  'csv': (i) => dismissCSVExportError(i),
+  'data': (i) => dismissExportError(i),
 };
 
 function enrichErrors(errors, title, entity) {

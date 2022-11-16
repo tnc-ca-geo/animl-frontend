@@ -25,14 +25,14 @@ const initialState = {
       errors: null,
       noneFound: false,
     },
-    csvExport: {
+    export: {
       isLoading: false,
       errors: null,
       noneFound: false,
     },
   },
   imagesStats: null,
-  csvExport: null,
+  export: null,
   preFocusImage: null,
   visibleRows: [],
   pageInfo: {
@@ -195,48 +195,48 @@ export const imagesSlice = createSlice({
       state.loadingStates.stats.errors.splice(index, 1);
     },
 
-    exportCSVStart: (state) => {
-      let ls = state.loadingStates.csvExport;
+    exportStart: (state) => {
+      let ls = state.loadingStates.export;
       ls.isLoading = true;
       ls.noneFound = false;
     },
 
-    exportCSVSuccess: (state, { payload }) => {
-      console.log('exportCSV Success: ', payload);
-      state.csvExport = payload;
-      let ls = state.loadingStates.csvExport;
+    exportSuccess: (state, { payload }) => {
+      console.log('export Success: ', payload);
+      state.export = payload;
+      let ls = state.loadingStates.export;
       ls.isLoading = false;
       ls.noneFound = payload.imageCount === 0;
       ls.errors = null;
     },
 
-    exportCSVUpdate: (state, { payload }) => {
-      console.log('exportCSV update: ', payload);
-      state.csvExport = payload;
+    exportUpdate: (state, { payload }) => {
+      console.log('export update: ', payload);
+      state.export = payload;
     },
 
-    exportCSVFailure: (state, { payload }) => {
-      console.log('export CSV fail: ', payload);
-      state.csvExport = null; 
-      let ls = state.loadingStates.csvExport;
+    exportFailure: (state, { payload }) => {
+      console.log('export fail: ', payload);
+      state.export = null; 
+      let ls = state.loadingStates.export;
       ls.isLoading = false;
       ls.noneFound = false;
       ls.errors = payload;
     },
 
-    clearCSVExport: (state) => { 
-      console.log('clearing csv export')
-      state.csvExport = null; 
-      state.loadingStates.csvExport = {
+    clearExport: (state) => { 
+      console.log('clearing export')
+      state.export = null; 
+      state.loadingStates.export = {
         isLoading: false,
         errors: null,
         noneFound: false,
       }
     },
 
-    dismissCSVExportError: (state, { payload }) => {
+    dismissExportError: (state, { payload }) => {
       const index = payload;
-      state.loadingStates.csvExport.errors.splice(index, 1);
+      state.loadingStates.export.errors.splice(index, 1);
     },
   },
 });
@@ -260,12 +260,12 @@ export const {
   getStatsFailure,
   clearStats,
   dismissStatsError,
-  exportCSVStart,
-  exportCSVSuccess,
-  exportCSVUpdate,
-  exportCSVFailure,
-  clearCSVExport,
-  dismissCSVExportError,
+  exportStart,
+  exportSuccess,
+  exportUpdate,
+  exportFailure,
+  clearExport,
+  dismissExportError,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -388,13 +388,13 @@ export const fetchStats = (filters) => {
   };
 };
 
-// exportCSV thunk
-export const exportCSV = (filters) => {
+// export thunk
+export const exportData = ({ format, filters }) => {
   return async (dispatch, getState) => {
-    console.log('iamgesSlice - exportCSV() - filters: ', filters);
+    console.log(`imagesSlice - exportData() - exporting ${format} with filters: `, filters);
     try {
 
-      dispatch(exportCSVStart());
+      dispatch(exportStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -403,14 +403,14 @@ export const exportCSV = (filters) => {
       if (token && selectedProj) {
         const res = await call({
           projId: selectedProj._id,
-          request: 'exportCSV',
-          input: { filters },
+          request: 'export',
+          input: { format, filters },
         });  
-        console.log('iamgesSlice - exportCSV() - res: ', res);
-        dispatch(exportCSVUpdate({ documentId: res.csv.documentId }));
+        console.log('imagesSlice() - exportData() - res: ', res);
+        dispatch(exportUpdate({ documentId: res.export.documentId }));
       }
     } catch (err) {
-      dispatch(exportCSVFailure(err));
+      dispatch(exportFailure(err));
     }
   };
 };
@@ -418,7 +418,7 @@ export const exportCSV = (filters) => {
 // getExportStatus thunk
 export const getExportStatus = (documentId) => {
   return async (dispatch, getState) => {
-    console.log('iamgesSlice - getExportStatus() - docId: ', documentId);
+    console.log('imagesSlice() - getExportStatus() - docId: ', documentId);
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -431,19 +431,19 @@ export const getExportStatus = (documentId) => {
           request: 'getExportStatus',
           input: { documentId },
         });  
-        console.log('iamgesSlice - getExportStatus() - exportStatus: ', exportStatus)
+        console.log('imagesSlice() - getExportStatus() - exportStatus: ', exportStatus)
         
         if (exportStatus.status === 'Success') {
-          dispatch(exportCSVSuccess(exportStatus));
+          dispatch(exportSuccess(exportStatus));
         } else if (exportStatus.status === 'Error' && exportStatus.error) {
-          dispatch(exportCSVFailure(exportStatus.error));
+          dispatch(exportFailure(exportStatus.error));
         } else {
           await new Promise(resolve => setTimeout(resolve, 2000));
           dispatch(getExportStatus(documentId));
         }
       }
     } catch (err) {
-      dispatch(exportCSVFailure(err));
+      dispatch(exportFailure(err));
     }
   };
 };
@@ -464,9 +464,9 @@ export const selectImageContextErrors = state => state.images.loadingStates.imag
 export const selectImagesStats = state => state.images.imagesStats;
 export const selectStatsLoading = state => state.images.loadingStates.stats;
 export const selectStatsErrors = state => state.images.loadingStates.stats.errors;
-export const selectCSVExport = state => state.images.csvExport;
-export const selectCSVExportLoading = state => state.images.loadingStates.csvExport;
-export const selectCSVExportErrors = state => state.images.loadingStates.csvExport.errors;
+export const selectExport = state => state.images.export;
+export const selectExportLoading = state => state.images.loadingStates.export;
+export const selectExportErrors = state => state.images.loadingStates.export.errors;
 
 
 // TODO: find a different place for this?

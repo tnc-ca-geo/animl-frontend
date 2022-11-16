@@ -8,7 +8,7 @@ import CameraAdminModal from '../features/cameras/CameraAdminModal';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm';
 import SaveViewForm from '../features/projects/SaveViewForm';
 import DeleteViewForm from '../features/projects/DeleteViewForm';
-import { clearCSVExport, clearStats } from '../features/images/imagesSlice';
+import { clearExport, clearStats } from '../features/images/imagesSlice';
 import {
   selectModalOpen,
   selectModalContent,
@@ -33,7 +33,7 @@ const HydratedModal = () => {
       title: 'Export data',
       size: 'md',
       content: <ExportModal/>,
-      callBackOnClose: () => dispatch(clearCSVExport()),
+      callBackOnClose: () => dispatch(clearExport()),
     },
     'camera-admin-modal': {
       title: 'Manage Cameras',
