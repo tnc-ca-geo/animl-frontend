@@ -40,6 +40,7 @@ const initialState = {
     addedStart: null,
     addedEnd: null,
     reviewed: null,
+    notReviewed: null,
     custom: null,
   },
 };
@@ -102,11 +103,14 @@ export const filtersSlice = createSlice({
       }
     },
 
-    reviewFilterToggled: (state, { payload }) => {
+    reviewedFilterToggled: (state, { payload }) => {
       const reviewedFilter = state.activeFilters[payload.type];
-      state.activeFilters[payload.type] = reviewedFilter === null 
-        ? false 
-        : null;
+      state.activeFilters[payload.type] = (reviewedFilter === null) ? false : null;
+    },
+
+    notReviewedFilterToggled: (state, { payload }) => {
+      const notReviewedFilter = state.activeFilters[payload.type];
+      state.activeFilters[notReviewedFilter] = (notReviewedFilter === null) ? false : null;
     },
 
     customFilterChanged: (state, { payload }) => {
@@ -236,7 +240,8 @@ export const {
   getLabelsFailure,
   getModelsSuccess,
   checkboxFilterToggled,
-  reviewFilterToggled,
+  reviewedFilterToggled,
+  notReviewedFilterToggled,
   customFilterChanged,
   dateFilterChanged,
   setActiveFilters,
@@ -275,6 +280,7 @@ export const selectAvailDeployments = state => state.filters.availFilters.deploy
 export const selectAvailLabels = state => state.filters.availFilters.labels;
 export const selectLabelsLoading = state => state.filters.availFilters.labels.loadingState;
 export const selectReviewed = state => state.filters.activeFilters.reviewed;
+export const selectNotReviewed = state => state.filters.activeFilters.notReviewed;
 export const selectCustomFilter = state => state.filters.activeFilters.custom;
 export const selectDateAddedFilter = state => ({
   start: state.filters.activeFilters.addedStart,

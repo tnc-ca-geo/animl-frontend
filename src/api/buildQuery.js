@@ -92,6 +92,7 @@ const viewFields = `
     addedStart
     addedEnd
     reviewed
+    notReviewed
     custom
   }
   automationRules {
@@ -271,7 +272,7 @@ const queries = {
       query GetExportStatus($input: ExportStatusInput!) {
         exportStatus(input: $input) {
           status
-          url
+          urls
           imageCount
           reviewedCount {
             reviewed

@@ -203,7 +203,10 @@ export const imagesSlice = createSlice({
 
     exportSuccess: (state, { payload }) => {
       console.log('export Success: ', payload);
-      state.export = payload;
+      state.export = {
+        ...state.export,
+        ...payload
+      }
       let ls = state.loadingStates.export;
       ls.isLoading = false;
       ls.noneFound = payload.imageCount === 0;

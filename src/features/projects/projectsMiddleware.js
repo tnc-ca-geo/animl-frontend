@@ -5,7 +5,8 @@ import {
   bulkSelectToggled,
   checkboxFilterToggled,
   dateFilterChanged,
-  reviewFilterToggled,
+  reviewedFilterToggled,
+  notReviewedFilterToggled,
   selectActiveFilters,
   customFilterChanged,
 } from '../filters/filtersSlice';
@@ -74,7 +75,8 @@ export const diffFilters = store => next => action => {
     bulkSelectToggled.match(action) ||
     checkboxFilterToggled.match(action) ||
     dateFilterChanged.match(action) ||
-    reviewFilterToggled.match(action) ||
+    reviewedFilterToggled.match(action) ||
+    notReviewedFilterToggled.match(action) ||
     customFilterChanged.match(action) ||
     setSelectedProjAndView.match(action) ||
     editDeploymentsSuccess.match(action) ||
