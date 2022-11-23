@@ -27,56 +27,25 @@ const NotReviewedWarning = ({ imageCount, reviewedCount }) => (
   </StyledWarning>
 );
 
-const ManualDocumentDownload = ({ urls, documentId }) => {
-  console.log('urls: ', urls);
-  let ret = (
-    <p><em>Note: if your download did not start automatically, 
-    click <a href={urls[0]} target="downloadTab">this link</a> to 
-    initiate it.</em></p>
-  );
-
-  if (urls.length > 1) {
-    ret = (
-      <div>
-        <p><em>Your export is ready. Click the links below to download the files:</em></p>
-        <ul>{urls.map((url) => {
-          const docName = url.split('/')[3].split('?')[0];
-          return (
-            <li key={url}>
-              <a href={url} target="downloadTab">{docName}</a>
-            </li>
-          )
-        })}
-        </ul>
-      </div>
-    );
-  }
-  return ret;
-};
-
 const ExportModal = () => {
   const filters = useSelector(selectActiveFilters);
   const dataExport = useSelector(selectExport);
   const exportLoading = useSelector(selectExportLoading);
   const dispatch = useDispatch();
 
-  console.log('dataExport: ', dataExport)
-
   const exportReady = !exportLoading.isLoading && 
                       !exportLoading.errors && 
                       dataExport && 
-                      dataExport.urls;
+                      dataExport.url;
   
   const exportPending = exportLoading.isLoading && 
                         dataExport && 
                         dataExport.documentId;
 
-  // when we have a url for the exported file, open it
+  // when we have a url for the exported CSV file, open it
   useEffect(() => {
-    if (exportReady && dataExport.urls === 1) {
-      for (const url of dataExport.urls) {
-        window.open(url, 'downloadTab');
-      }
+    if (exportReady) {
+      window.open(dataExport.url, 'downloadTab');
     }
   }, [exportReady, dataExport, dispatch]);
 
@@ -116,11 +85,10 @@ const ExportModal = () => {
           <p><em>Note: if you are exporting 10's of thousands of 
           image records, this may take a few minutes.</em></p>
         }
-        {exportReady &&
-          <ManualDocumentDownload 
-            urls={dataExport.urls}
-            documentId={dataExport.documentId}
-          />
+        {exportReady && 
+          <p><em>Note: if your download did not start automatically, 
+          click <a href={dataExport.url} target="downloadTab">this link</a> to 
+          initiate it.</em></p>
         }
       </HelperText>
       {(exportReady &&

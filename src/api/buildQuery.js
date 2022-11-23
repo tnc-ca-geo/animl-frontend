@@ -272,7 +272,7 @@ const queries = {
       query GetExportStatus($input: ExportStatusInput!) {
         exportStatus(input: $input) {
           status
-          urls
+          url
           imageCount
           reviewedCount {
             reviewed
