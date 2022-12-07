@@ -18,14 +18,17 @@ const StyledWarning = styled(Warning, {
   marginTop: '$0',
 });
 
-const NotReviewedWarning = ({ imageCount, reviewedCount }) => (
-  <StyledWarning>
-    {reviewedCount.notReviewed.toLocaleString('en-US')} of 
-    the {imageCount.toLocaleString('en-US')} images that matched 
-    the current filters still need review and were not included in the 
-    export file.
-  </StyledWarning>
-);
+const NotReviewedWarning = ({ reviewedCount }) => {
+  const total = reviewedCount.notReviewed + reviewedCount.reviewed;
+  return (
+    <StyledWarning>
+      {reviewedCount.notReviewed.toLocaleString('en-US')} of 
+      the {total.toLocaleString('en-US')} images that matched 
+      the current filters still need review and were not included in the 
+      export file.
+    </StyledWarning>
+  );
+};
 
 const ExportModal = () => {
   const filters = useSelector(selectActiveFilters);
@@ -95,7 +98,6 @@ const ExportModal = () => {
         dataExport.reviewedCount &&
         dataExport.reviewedCount.notReviewed > 0) &&
           <NotReviewedWarning
-            imageCount={dataExport.imageCount}
             reviewedCount={dataExport.reviewedCount}
           />
       }
