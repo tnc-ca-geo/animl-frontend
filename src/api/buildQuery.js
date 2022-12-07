@@ -278,7 +278,9 @@ const queries = {
             reviewed
             notReviewed
           }
-          error
+          error {
+            message
+          }
         }
       }
     `,

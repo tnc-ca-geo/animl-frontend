@@ -86,8 +86,8 @@ const ExportModal = () => {
           image records, this may take a few minutes.</em></p>
         }
         {exportReady && 
-          <p><em>Note: if your download did not start automatically, 
-          click <a href={dataExport.url} target="downloadTab">this link</a> to 
+          <p><em>Success! Your export is ready for download. If the download 
+          did not start automatically, click <a href={dataExport.url} target="downloadTab">this link</a> to 
           initiate it.</em></p>
         }
       </HelperText>
@@ -103,7 +103,7 @@ const ExportModal = () => {
         <Button 
           type='submit'
           size='large'
-          disabled={exportLoading.isLoading}
+          disabled={exportLoading.isLoading || exportReady}
           data-format='coco'
           onClick={handleExportButtonClick}
         >
@@ -112,7 +112,7 @@ const ExportModal = () => {
         <Button 
           type='submit'
           size='large'
-          disabled={exportLoading.isLoading}
+          disabled={exportLoading.isLoading || exportReady}
           data-format='csv'
           onClick={handleExportButtonClick}
         >
