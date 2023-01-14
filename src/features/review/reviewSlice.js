@@ -27,7 +27,6 @@ export const reviewSlice = createSlice({
   reducers: {
 
     setFocus: (state, { payload }) => {
-      console.log('reviewSlice.setFocus(): ', payload);
       state.focusIndex = { ...state.focusIndex, ...payload.index };
       state.focusChangeType = payload.type;
     },
@@ -40,7 +39,6 @@ export const reviewSlice = createSlice({
     },
 
     objectRemoved: (state, { payload }) => {
-      console.log('reviewSlice.objectRemoved(): ', payload);
       const image = findImage(state.workingImages, payload.imgId);
       const objectIndex = image.objects.findIndex((obj) => (
         obj._id === payload.objId
@@ -49,7 +47,6 @@ export const reviewSlice = createSlice({
     },
 
     labelAdded: (state, { payload }) => {
-      console.log('reviewSlice.labelAdded(): ', payload);
       const { imgId, objId, objIsTemp, newObject, newLabel } = payload;
       const image = findImage(state.workingImages, imgId);
       if (objIsTemp && newObject) {
@@ -62,7 +59,6 @@ export const reviewSlice = createSlice({
     },
 
     labelRemoved: (state, { payload }) => {
-      console.log('reviewSlice.labelRemoved(): ', payload);
       const { imgId, objId, newLabel } = payload;
       const image = findImage(state.workingImages, imgId);
       const object = image.objects.find((obj) => obj._id === objId);
@@ -73,14 +69,12 @@ export const reviewSlice = createSlice({
 
       // remove object if there aren't any labels left 
       if (!object.labels.length) {
-        console.log('INFO: no more labels on object, so removing it');
         const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
         image.objects.splice(objectIndex, 1);
       }
     },
 
     labelValidated: (state, { payload }) => {
-      console.log('reviewSlice.labelValidated() - ', payload);
       const { userId, imgId, objId, lblId, validated } = payload;
       const label = findLabel(state.workingImages, imgId, objId, lblId);
       label.validation = { validated, userId };
@@ -95,7 +89,6 @@ export const reviewSlice = createSlice({
     },
 
     objectLocked: (state, { payload }) => {
-      console.log('reviewSlice.objectLocked()');
       const { imgId, objId } = payload;
       const object = findObject(state.workingImages, imgId, objId);
       object.locked = payload.locked;
@@ -178,9 +171,6 @@ export const editLabel = (operation, entity, payload, projId) => {
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects
       const selectedProj = projects.find((proj) => proj.selected);
-      console.groupCollapsed(`editLabel() - ${operation} ${entity}`);
-      console.log(`payload: `, payload);
-      console.groupEnd();
 
       if (token && selectedProj) {
         // TODO: do we really need to pass in the operation and entity separately?
@@ -193,7 +183,6 @@ export const editLabel = (operation, entity, payload, projId) => {
         });
         const mutation = Object.keys(res)[0];
         const image = res[mutation].image;
-        console.log(`editLabel() - ${operation} ${entity} SUCCESS`, image);
         dispatch(editLabelSuccess(image));
       }
 

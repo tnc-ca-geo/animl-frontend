@@ -132,7 +132,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
   return (
-    <ImageWrapper ref={containerEl}>
+    <ImageWrapper ref={containerEl} className='full-size-image'>
       {isDrawingBbox &&
         <DrawBboxOverlay imageDimensions={dims} setTempObject={setTempObject} />
       }

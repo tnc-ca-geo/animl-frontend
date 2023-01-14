@@ -1,7 +1,6 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { violet, mauve } from '@radix-ui/colors';
-import { DotFilledIcon, CheckIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu';
 
 const contentStyles = {

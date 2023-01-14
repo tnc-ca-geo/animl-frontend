@@ -177,7 +177,7 @@ const BoundingBox = ({
   const [ lastBbox, setLastBbox ] = useState(object.bbox);
   const onDragStart = (event, data) => {
     setLastBbox(bbox);
-  }
+  };
   
   const onDragEnd = () => {
     if (!_.isEqual(lastBbox, bbox)){ 
@@ -245,7 +245,7 @@ const BoundingBox = ({
     <ContextMenu>
       <ContextMenuTrigger>
         <Draggable
-          bounds='parent'
+          bounds='.full-size-image'
           handle='.drag-handle'
           position={{ x: left, y: top }}
           onStart={onDragStart}
@@ -277,6 +277,7 @@ const BoundingBox = ({
               background: labelColor.base + '0D',
             }}
           >
+          
             {label &&
               <BoundingBoxLabel
                 imgId={imgId}
