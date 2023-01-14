@@ -69,7 +69,7 @@ export const labelMiddleware = store => next => action => {
 
     // TODO: no longer have a fetchLabels query handler in API 
     // (we're fetching labels as a field level resolver for Project)
-    // so we either need to to refetch this entire project, or rewirte a 
+    // so we either need to to refetch this entire project, or rewrite a 
     // fetchLabels(projectId) handler again and insert them into the project slice
 
     // const availLabels = selectAvailLabels(store.getState());

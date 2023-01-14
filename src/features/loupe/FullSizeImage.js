@@ -17,7 +17,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuItemIconLeft,
-} from '../../components/contextMenu';
+} from '../../components/ContextMenu';
 import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
 
 const EditObjectButton = styled('button', {

@@ -12,13 +12,12 @@ import {
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuItemIndicator,
+  ContextMenuSeparator,
   ContextMenuItemIconLeft
-} from '../../components/contextMenu';
+} from '../../components/ContextMenu';
 import { 
   bboxUpdated,
   labelValidated, 
-  objectLocked,
   setFocus,
   objectManuallyUnlocked
 } from '../review/reviewSlice';
@@ -235,7 +234,6 @@ const BoundingBox = ({
       lblId: label._id,
       validated,
     }));
-    // setShowLabelButtons(false);
   };
 
   const handleLockButtonClick = (e) => {
@@ -308,48 +306,48 @@ const BoundingBox = ({
         </Draggable>
       </ContextMenuTrigger>
       <ContextMenuContent sideOffset={5} align="end">
-        {object.locked 
-          ? (<ContextMenuItem
-              onClick={handleLockButtonClick}
-            >
-              <ContextMenuItemIconLeft>
-                <LockOpen1Icon />
-              </ContextMenuItemIconLeft>
-              Unlock
-            </ContextMenuItem>)
-          : (<div>
-              <ContextMenuItem
-                onClick={(e) => handleValidationButtonClick(e, true)}
-                css={{
-                  color: '$successText',
-                  '&[data-highlighted]': {
-                    backgroundColor: '$successBase',
-                    color: '$successBg',
-                  },
-                }}
-              >
-                <ContextMenuItemIconLeft>
-                  <CheckIcon />
-                </ContextMenuItemIconLeft>
-                Validate
-              </ContextMenuItem>
-              <ContextMenuItem
-                onClick={(e) => handleValidationButtonClick(e, false)}
-                css={{
-                  color: '$errorText',
-                  '&[data-highlighted]': {
-                    backgroundColor: '$errorBase',
-                    color: '$errorBg',
-                  },
-                }}
-              >
-                <ContextMenuItemIconLeft>
-                  <Cross2Icon />
-                </ContextMenuItemIconLeft>
-                Invalidate
-              </ContextMenuItem>
-            </div>)
-        }
+        <ContextMenuItem
+          onClick={(e) => handleValidationButtonClick(e, true)}
+          disabled={object.locked}
+          css={{
+            color: '$successText',
+            '&[data-highlighted]': {
+              backgroundColor: '$successBase',
+              color: '$successBg',
+            },
+          }}
+        >
+          <ContextMenuItemIconLeft>
+            <CheckIcon />
+          </ContextMenuItemIconLeft>
+          Validate
+        </ContextMenuItem>
+        <ContextMenuItem
+          onClick={(e) => handleValidationButtonClick(e, false)}
+          disabled={object.locked}
+          css={{
+            color: '$errorText',
+            '&[data-highlighted]': {
+              backgroundColor: '$errorBase',
+              color: '$errorBg',
+            },
+          }}
+        >
+          <ContextMenuItemIconLeft>
+            <Cross2Icon />
+          </ContextMenuItemIconLeft>
+          Invalidate
+        </ContextMenuItem>
+        <ContextMenuSeparator/>
+        <ContextMenuItem
+          onClick={handleLockButtonClick}
+          disabled={!object.locked}
+        >
+          <ContextMenuItemIconLeft>
+            <LockOpen1Icon />
+          </ContextMenuItemIconLeft>
+          Unlock
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )

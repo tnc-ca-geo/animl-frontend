@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { actions as undoActions } from 'redux-undo-redo';
 import { styled } from '../../theme/stitches.config.js';
@@ -94,69 +94,70 @@ const LoupeFooter = ({ image }) => {
   const isAddingLabel = useSelector(selectIsAddingLabel);
   const modalOpen = useSelector(selectModalOpen);
   // const username = useSelector(selectUserUsername);
+  const handleKeyDown = useCallback((e) => {
+    if (!image || isAddingLabel || modalOpen) return;
+    let charCode = String.fromCharCode(e.which).toLowerCase();
+
+    // key listeners for increment/decrement
+    const delta = (e.code === 'ArrowLeft' || charCode === 'a')
+      ? 'decrement'
+      : (e.code === 'ArrowRight' || charCode === 'd')
+        ? 'increment'
+        : null;
+
+    if (delta) {
+      reviewMode
+        ? dispatch(incrementFocusIndex(delta))
+        : dispatch(incrementImage(delta));
+    }
+
+    // TODO: review this. it looks like it could be buggy (in reviewMode)
+
+    // // handle return, left/right arrows (invalidate/validate)
+    // const object = image.objects[focusIndex.object];
+    // if (reviewMode && object && !object.locked && focusIndex.label) {
+    //   const label = object[focusIndex.label];
+    //   let validated;
+    //   if (e.code === 'ArrowRight' || e.code === 'Enter') validated = true;
+    //   if (e.code === 'ArrowLeft') validated = false;
+    //   if (typeof variable == 'boolean') {
+    //     dispatch(labelValidated({
+    //       userId: username,
+    //       imageId: image._id,
+    //       objId: object._id,
+    //       labelId: label._id,
+    //       validated,
+    //     }));
+    //     dispatch(incrementFocusIndex('increment'));
+    //   }
+    // }
+
+    // handle ctrl-z/shift-ctrl-z (undo/redo)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
+      dispatch(undoActions.redo());
+      // dispatch(UndoActionCreators.redo());
+    }
+    else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
+      dispatch(undoActions.undo());
+      // dispatch(UndoActionCreators.undo());
+    }
+
+    // // handle ctrl-a (add object)
+    // if (reviewMode) {
+    //   let charCode = String.fromCharCode(e.which).toLowerCase();
+    //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
+    //     e.stopPropagation();
+    //     dispatch(drawBboxStart());
+    //   }
+    // }
+  }, [dispatch, image, isAddingLabel, modalOpen, reviewMode]);
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!image || isAddingLabel || modalOpen) return;
-
-      let charCode = String.fromCharCode(e.which).toLowerCase();
-
-      // key listeners for increment/decrement
-      const delta = (e.code === 'ArrowLeft' || charCode === 'a')
-        ? 'decrement'
-        : (e.code === 'ArrowRight' || charCode === 'd')
-          ? 'increment'
-          : null;
-  
-      if (delta) {
-        reviewMode
-          ? dispatch(incrementFocusIndex(delta))
-          : dispatch(incrementImage(delta));
-      }
-
-      // TODO: review this. it looks like it could be buggy (in reviewMode)
-
-      // // handle return, left/right arrows (invalidate/validate)
-      // const object = image.objects[focusIndex.object];
-      // if (reviewMode && object && !object.locked && focusIndex.label) {
-      //   const label = object[focusIndex.label];
-      //   let validated;
-      //   if (e.code === 'ArrowRight' || e.code === 'Enter') validated = true;
-      //   if (e.code === 'ArrowLeft') validated = false;
-      //   if (typeof variable == 'boolean') {
-      //     dispatch(labelValidated({
-      //       userId: username,
-      //       imageId: image._id,
-      //       objId: object._id,
-      //       labelId: label._id,
-      //       validated,
-      //     }));
-      //     dispatch(incrementFocusIndex('increment'));
-      //   }
-      // }
-
-      // handle ctrl-z/shift-ctrl-z (undo/redo)
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
-        dispatch(undoActions.redo());
-        // dispatch(UndoActionCreators.redo());
-      }
-      else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
-        dispatch(undoActions.undo());
-        // dispatch(UndoActionCreators.undo());
-      }
-
-      // // handle ctrl-a (add object)
-      // if (reviewMode) {
-      //   let charCode = String.fromCharCode(e.which).toLowerCase();
-      //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
-      //     e.stopPropagation();
-      //     dispatch(drawBboxStart());
-      //   }
-      // }
-    };
-
     window.addEventListener('keydown', handleKeyDown);
-    return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ isAddingLabel, modalOpen, reviewMode, focusIndex, image, dispatch ]);
+    return () => { 
+      window.removeEventListener('keydown', handleKeyDown) 
+    }
+  }, [ handleKeyDown ]);
 
   const handleIncrementClick = (delta) => {
     reviewMode
