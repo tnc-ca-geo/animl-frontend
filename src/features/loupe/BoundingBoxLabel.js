@@ -125,17 +125,17 @@ const BoundingBoxLabel = ({
   conf,
   selected,
   showLabelButtons,
-  setShowLabelButtons,
   setTempObject,
   verticalPos,
-  horizontalPos, 
+  horizontalPos,
+  catSelectorRef,
   isAuthorized,
   username,
 }) => {
   const textColor = labelColor.isLowContrast ? labelColor.textDark : labelColor.textLight;
   const dispatch = useDispatch();
 
-  // update selctor options when new labels become available
+  // update selector options when new labels become available
   const createOption = (category) => ({
     value: category.toLowerCase(),
     label: category,
@@ -143,16 +143,24 @@ const BoundingBoxLabel = ({
   const availLabels = useSelector(selectAvailLabels);
   const options = availLabels.ids.map((id) => createOption(id));
 
-  // manage catagory selector state (open/closed)
+  // manage category selector state (open/closed)
   const addingLabel = useSelector(selectIsAddingLabel);
   const catSelectorOpen = (addingLabel && selected);
+
+  // manually focus catSelector if it's open
+  useEffect(() => {
+    if (catSelectorOpen) catSelectorRef.current.focus();
+  }, [catSelectorRef, catSelectorOpen])
 
   // stop adding label if user clicks out of it
   useEffect(() => {
     const handleWindowClick = (e) => {
       if (object.isTemp) setTempObject(null);
-      dispatch(addLabelEnd());
-    }
+      // unless the last click was on the "edit label" context menu item
+      if (!targetIsEditLabelMenuItem(e)) { 
+        dispatch(addLabelEnd());
+      }
+    };
     addingLabel
       ? window.addEventListener('click', handleWindowClick)
       : window.removeEventListener('click', handleWindowClick);
@@ -161,8 +169,6 @@ const BoundingBoxLabel = ({
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
-    // TODO: should be able to use react synthetic onKeyDown events,
-    // but couldn't get it working
     const handleKeyDown = (e) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
       if (((e.ctrlKey || e.metaKey) && charCode === 'e') &&
@@ -171,7 +177,7 @@ const BoundingBoxLabel = ({
         ) {
         dispatch(addLabelStart());
       }
-    }
+    };
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ isAuthorized, selected, dispatch ]);
@@ -212,26 +218,28 @@ const BoundingBoxLabel = ({
       }}
     >
       <div onClick={handleLabelClick}>
-        {catSelectorOpen
-          ? <CategorySelector
-              autoFocus
-              isClearable
-              isSearchable
-              className='react-select'
-              classNamePrefix='react-select'
-              filterOption={createFilter({ matchFrom: 'start' })}
-              isLoading={availLabels.isLoading}
-              isDisabled={availLabels.isLoading || !isAuthorized}
-              onChange={handleCategoryChange}
-              onCreateOption={handleCategoryChange}
-              value={createOption(label.category)}
-              options={options}
-            />
-          : <LabelDisplay>
-              <Category>{label.category}</Category>
-              {!object.locked && <Confidence>{conf}%</Confidence>}
-            </LabelDisplay>
-        }
+        <CategorySelector
+          autoFocus
+          isClearable
+          isSearchable
+          className='react-select'
+          classNamePrefix='react-select'
+          ref={catSelectorRef}
+          filterOption={createFilter({ matchFrom: 'start' })}
+          isLoading={availLabels.isLoading}
+          isDisabled={availLabels.isLoading || !isAuthorized}
+          onChange={handleCategoryChange}
+          onCreateOption={handleCategoryChange}
+          value={createOption(label.category)}
+          options={options}
+          css={{ display: catSelectorOpen ? 'block' : 'none' }}
+        />
+        <LabelDisplay
+          css={{ display: catSelectorOpen ? 'none' : 'block' }}
+        >
+          <Category>{label.category}</Category>
+          {!object.locked && <Confidence>{conf}%</Confidence>}
+        </LabelDisplay>
       </div>
       {(showLabelButtons && !catSelectorOpen && isAuthorized) &&
         <ValidationButtons 
@@ -240,11 +248,22 @@ const BoundingBoxLabel = ({
           label={label}
           labelColor={labelColor}
           username={username}
-          setshowLabelButtons={setShowLabelButtons}
         />
       }
     </StyledBoundingBoxLabel>
   );
+};
+
+const targetIsEditLabelMenuItem = (e) => {
+  let isEditLabelMenuItem = false;
+  const composedPath = e.composedPath();
+  composedPath.forEach((el) => {
+    if (el.classList && 
+        el.classList.contains('edit-label-menu-item')) {
+      isEditLabelMenuItem = true;
+    }
+  });
+  return isEditLabelMenuItem;
 };
 
 export default BoundingBoxLabel;

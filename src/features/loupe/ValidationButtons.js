@@ -26,7 +26,6 @@ const ValidationButtons = ({
   label,
   labelColor,
   username,
-  setShowLabelButtons
 }) => {
   const dispatch = useDispatch();
 

@@ -21,9 +21,10 @@ import {
   setFocus,
   objectManuallyUnlocked
 } from '../review/reviewSlice';
+import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
-import { CheckIcon, Cross2Icon, LockOpen1Icon } from '@radix-ui/react-icons';
+import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -125,31 +126,30 @@ const BoundingBox = ({
   const username = useSelector(selectUserUsername);
   const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
   const handleRef = useRef(null);
+  const catSelectorRef = useRef(null);
+  const focusRef = useRef(null);
   const dispatch = useDispatch();
 
   // track whether the object is focused
   const objectFocused = object.isTemp || focusIndex.object === objectIndex;
 
   // show first non-invalidated label in array
-  let label = object.labels.find((lbl) => (
-    lbl.validation === null || lbl.validation.validated 
-  ));
-  // unless object is locked, in which case show first validated label
+  let label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
   if (object.locked) {
+    // unless object is locked, in which case show first validated label
     label = object.labels.find((lbl) => (
       lbl.validation && lbl.validation.validated
     ));
-  }
-  // or object is being added
-  else if (object.isTemp) {
+  } else if (object.isTemp) {
+    // or object is being added
     label = { category: '', conf: 0, index: 0 };
-  }
-  // or obj & label are focused
-  else if (objectFocused && focusIndex.label) {
+  } else if (objectFocused && focusIndex.label) {
+    // or obj & label are focused
     label = object.labels[focusIndex.label];
   }
 
-  // set label color and confidence - maybe this belongs in label component?
+  // set label color and confidence
+  // TODO: maybe this belongs in label component?
   const conf = Number.parseFloat(label.conf * 100).toFixed(1);
   const labelColor = labelColors(label.category);
 
@@ -162,6 +162,7 @@ const BoundingBox = ({
     label: labelIndex 
   };
 
+  // track bounding box dimensions
   const [ bbox, setBbox ] = useState(object.bbox);
   let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
   useEffect(() => {
@@ -199,7 +200,7 @@ const BoundingBox = ({
         const deltaWidth = size.width - width;
         left -= deltaWidth;
       }
-    }
+    };
 
     // Prevent box from going out of bounds
     const right = imageWidth - size.width - left;  
@@ -220,12 +221,14 @@ const BoundingBox = ({
     dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
   };
 
+  // manage label validation button state
   const [ showLabelButtons, setShowLabelButtons ] = useState(false);
   const handleBBoxHover = () => setShowLabelButtons(true);
   const handleBBoxMouseLeave = () => setShowLabelButtons(false);
+
   const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
-  const handleValidationButtonClick = (e, validated) => {
+  const handleValidationMenuItemClick = (e, validated) => {
     e.stopPropagation();
     dispatch(labelValidated({
       userId: username,
@@ -236,14 +239,25 @@ const BoundingBox = ({
     }));
   };
 
-  const handleLockButtonClick = (e) => {
+  const handleEditLabelMenuItemClick = (e) => {
+    e.stopPropagation();
+    // NOTE: if user selects the "edit label" item, we need to force
+    // focus to shift to the react-select category selector component.
+    // see https://github.com/radix-ui/primitives/issues/1446
+    focusRef.current = catSelectorRef.current;
+    const newIndex = { image: focusIndex.image, object: objectIndex, label: null }
+    dispatch(setFocus({ index: newIndex, type: 'manual'}));
+    dispatch(addLabelStart());
+  };
+  
+  const handleUnlockMenuItemClick = (e) => {
     e.stopPropagation();
     dispatch(objectManuallyUnlocked({ imgId, objId: object._id }));
   };
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger>
+      <ContextMenuTrigger disabled={!isAuthorized}>
         <Draggable
           bounds='.full-size-image'
           handle='.drag-handle'
@@ -277,7 +291,6 @@ const BoundingBox = ({
               background: labelColor.base + '0D',
             }}
           >
-          
             {label &&
               <BoundingBoxLabel
                 imgId={imgId}
@@ -288,13 +301,10 @@ const BoundingBox = ({
                 conf={conf}
                 selected={objectFocused}
                 showLabelButtons={showLabelButtons}
-                setShowLabelButtons={setShowLabelButtons}
                 setTempObject={setTempObject}
                 verticalPos={(top > 30) ? 'top' : 'bottom'}
-                horizontalPos={((imageWidth - left - width) < 75) 
-                  ? 'right' 
-                  : 'left'
-                }
+                horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left'}
+                catSelectorRef={catSelectorRef}
                 isAuthorized={isAuthorized}
                 username={username}
               />
@@ -306,9 +316,21 @@ const BoundingBox = ({
           </StyledResizableBox>
         </Draggable>
       </ContextMenuTrigger>
-      <ContextMenuContent sideOffset={5} align="end">
+      <ContextMenuContent
+        onCloseAutoFocus={(e) => {
+          // NOTE: if user selects the "edit label" item, we need to force
+          // focus to shift to the react-select category selector component
+          if (focusRef.current) {
+            e.preventDefault();
+            focusRef.current.focus();
+            focusRef.current = null;
+          }
+        }}
+        sideOffset={5}
+        align='end'
+      >
         <ContextMenuItem
-          onClick={(e) => handleValidationButtonClick(e, true)}
+          onClick={(e) => handleValidationMenuItemClick(e, true)}
           disabled={object.locked}
           css={{
             color: '$successText',
@@ -324,7 +346,7 @@ const BoundingBox = ({
           Validate
         </ContextMenuItem>
         <ContextMenuItem
-          onClick={(e) => handleValidationButtonClick(e, false)}
+          onSelect={(e) => handleValidationMenuItemClick(e, false)}
           disabled={object.locked}
           css={{
             color: '$errorText',
@@ -339,9 +361,19 @@ const BoundingBox = ({
           </ContextMenuItemIconLeft>
           Invalidate
         </ContextMenuItem>
+        <ContextMenuItem
+          className='edit-label-menu-item'
+          onSelect={handleEditLabelMenuItemClick}
+          disabled={object.locked}
+        >
+          <ContextMenuItemIconLeft>
+            <Pencil1Icon />
+          </ContextMenuItemIconLeft>
+          Edit label
+        </ContextMenuItem>
         <ContextMenuSeparator/>
         <ContextMenuItem
-          onClick={handleLockButtonClick}
+          onSelect={handleUnlockMenuItemClick}
           disabled={!object.locked}
         >
           <ContextMenuItemIconLeft>

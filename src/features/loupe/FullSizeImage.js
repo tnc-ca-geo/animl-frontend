@@ -156,12 +156,14 @@ const FullSizeImage = ({ image, focusIndex }) => {
         </SpinnerOverlay>
       }*/}
       <ContextMenu>
-        <ContextMenuTrigger>
+        <ContextMenuTrigger 
+          disabled={!hasRole(userRoles, WRITE_OBJECTS_ROLES)}
+        >
           <FullImage src={image.url} onLoad={() => handleImgLoaded()} />
         </ContextMenuTrigger>
         <ContextMenuContent sideOffset={5} align="end">
           <ContextMenuItem
-            onClick={handleAddObjectButtonClick}
+            onSelect={handleAddObjectButtonClick}
           >
             <ContextMenuItemIconLeft>
               <Pencil1Icon />
@@ -169,7 +171,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
             Add object
           </ContextMenuItem>
           <ContextMenuItem
-            onClick={handleMarkEmptyButtonClick}
+            onSelect={handleMarkEmptyButtonClick}
           >
             <ContextMenuItemIconLeft>
               <ValueNoneIcon />
@@ -180,13 +182,11 @@ const FullSizeImage = ({ image, focusIndex }) => {
       </ContextMenu>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
-          <EditObjectButton
-            onClick={handleMarkEmptyButtonClick}
-          >
+          <EditObjectButton onClick={handleMarkEmptyButtonClick}>
             <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
           </EditObjectButton>
           <EditObjectButton
-            onClick={handleAddObjectButtonClick}
+            onSelect={handleAddObjectButtonClick}
             css={{
               color: '$loContrast',
               backgroundColor: '$hiContrast',
