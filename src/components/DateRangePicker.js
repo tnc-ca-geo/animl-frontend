@@ -20,15 +20,10 @@ const DateRangePickerWrapper = ({ sdate, edate, handleDatesChange }) => {
     setOpenDirection(od);
   };
 
-  const onDatesChange = (dates) => {
-    console.log('onDatesChange - dates.startDate: ', dates)
-    for (const key of Object.keys(dates)) {
-      if (dates[key]) {
-        dates[key] = moment(dates[key]).startOf('day');
-        dates[key] = dates[key].toISOString();
-      }
-    }
-    handleDatesChange(dates);
+  const onDatesChange = ({startDate, endDate}) => {
+    if (startDate) { startDate = moment(startDate).startOf('day').toISOString() }
+    if (endDate) { endDate = moment(endDate).endOf('day').toISOString() }
+    handleDatesChange({startDate, endDate});
   };
 
   const onFocusChange = (focusedInput) => {

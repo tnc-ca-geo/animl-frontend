@@ -18,7 +18,6 @@ const DateFilter = ({ type }) => {
   const dispatch = useDispatch();
 
   const handleDatesChange = ({ startDate, endDate }) => {
-    console.log('dateFilteChanged: ', startDate)
     dispatch(dateFilterChanged({ startDate, endDate, type }));    
   };
 
