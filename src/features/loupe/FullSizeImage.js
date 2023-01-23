@@ -186,7 +186,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
             <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
           </EditObjectButton>
           <EditObjectButton
-            onSelect={handleAddObjectButtonClick}
+            onClick={handleAddObjectButtonClick}
             css={{
               color: '$loContrast',
               backgroundColor: '$hiContrast',
