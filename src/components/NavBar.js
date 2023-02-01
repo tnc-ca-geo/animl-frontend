@@ -19,8 +19,7 @@ const Logo = styled(Link, {
 const LinkWithIcon = styled('span', {
   position: 'relative',
   'svg': {
-    paddingLeft: '$2',
-    margin: 0,
+    marginLeft: '$2',
     position: 'absolute',
     top: '50%',
     '-ms-transform': 'translateY(-50%)',
@@ -85,6 +84,11 @@ const NavBar = () => {
       {(signedIn && appActive) && (
         <>
           <ProjectAndViewNav />
+          <NavLinks>
+            <a href='https://docs.animl.camera' target="_blank" rel="noreferrer">
+              Documentation
+            </a>
+          </NavLinks>
           <Button
             onClick={signOut}
             size='small'
@@ -97,6 +101,9 @@ const NavBar = () => {
         <NavLinks>
           <Link to='/app'>Application</Link>
           {/*<Link to='/case-studies'>Case studies</Link>*/}
+          <a href='https://docs.animl.camera' target="_blank" rel="noreferrer">
+            Documentation
+          </a>
           <a href='https://github.com/tnc-ca-geo/animl-frontend/' target="_blank" rel="noreferrer">
             <LinkWithIcon>GitHub <ExternalLinkIcon/></LinkWithIcon>
           </a>
