@@ -8,6 +8,7 @@ import CameraAdminModal from '../features/cameras/CameraAdminModal';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm';
 import SaveViewForm from '../features/projects/SaveViewForm';
 import DeleteViewForm from '../features/projects/DeleteViewForm';
+import BulkUploadForm from '../features/projects/BulkUploadForm';
 import { clearExport, clearStats } from '../features/images/imagesSlice';
 import {
   selectModalOpen,
@@ -60,6 +61,12 @@ const HydratedModal = () => {
       title: 'Delete View',
       size: 'sm',
       content: <DeleteViewForm/>,
+      callBackOnClose: () => true,
+    },
+    'bulk-upload-form': {
+      title: 'Bulk upload',
+      size: 'md',
+      content: <BulkUploadForm/>,
       callBackOnClose: () => true,
     },
   };
