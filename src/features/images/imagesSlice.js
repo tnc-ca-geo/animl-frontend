@@ -344,6 +344,7 @@ export const fetchImageContext = (imgId) => {
           deployments: [res.image.deploymentId],
           labels: null,
           reviewed: null,
+          notReviewed: null,
           custom: null,
         };
         dispatch(setActiveFilters(filters));

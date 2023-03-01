@@ -23,7 +23,7 @@ const CameraId = styled('span', {
 });
 
 const Deployments = styled('div', {
-  marginLeft: '$2',
+  marginLeft: '6px',
   borderLeft: '1px solid $border',
 });
 
@@ -53,9 +53,7 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
 
   // format default deployment names
   const deployments = camConfig.deployments.map((dep) => {
-    const name = dep.name === 'default' 
-      ? `${camConfig._id} (default)` 
-      : dep.name;
+    const name = dep.name === 'default' ? `${camConfig._id} (default)` : dep.name;
     return { ...dep, name };
   })
 
@@ -134,8 +132,7 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
       {expanded && 
         <Deployments>
           {deployments.map((dep) => {
-            const depChecked = activeDeps === null || 
-                              activeDeps.includes(dep._id);
+            const depChecked = activeDeps === null || activeDeps.includes(dep._id);
             return (
               <DeploymentCheckboxWrapper key={dep._id}>
                 <label>
