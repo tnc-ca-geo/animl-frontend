@@ -36,6 +36,7 @@ const StyledURLInput = styled('input', {
   borderRadius: '$1',
   color: '$textMedium',
   marginRight: '$1',
+  padding: '0 $2'
 });
 
 const ShareImageButton = ({ imageId }) => {

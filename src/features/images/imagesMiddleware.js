@@ -1,4 +1,3 @@
-// import { push } from 'connected-react-router';
 import { selectWorkingImages, setFocus } from '../review/reviewSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import {
@@ -22,7 +21,6 @@ export const preFocusImage = store => next => action => {
       store.dispatch(setFocus({ index: { image: imgIndex }, type: 'auto'}));
       store.dispatch(toggleOpenLoupe(true));
       store.dispatch(preFocusImageEnd());
-      // store.dispatch(push({ search: '' })); // remove URL query string 
     };
     
   }
