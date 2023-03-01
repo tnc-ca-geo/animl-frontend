@@ -1,7 +1,7 @@
 
 
 import { styled, keyframes } from '@stitches/react';
-import { slate, red } from '@radix-ui/colors';
+import { slate, red, green } from '@radix-ui/colors';
 import * as ToastPrimitive from '@radix-ui/react-toast';
 
 const VIEWPORT_PADDING = 25;
@@ -75,7 +75,12 @@ const StyledToast = styled(ToastPrimitive.Root, {
         boxShadow: `inset 0 0 0 1px ${red.red7}`,
         // '&:hover': { boxShadow: `inset 0 0 0 1px ${red.red8}` },
         // '&:focus': { boxShadow: `0 0 0 2px ${red.red8}` },
-      },  
+      },
+      green: {
+        backgroundColor: green.green2,
+        color: '$successText',
+        boxShadow: `inset 0 0 0 1px ${green.green7}`,
+      }
     }
   }
 });
@@ -90,8 +95,11 @@ const StyledTitle = styled(ToastPrimitive.Title, {
   variants: {
     variant: {
       red: {
-        color: red.red11,
+        color: '$errorText',
       },  
+      green: {
+        color: '$successText',
+      }
     }
   }
 });

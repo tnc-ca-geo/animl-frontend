@@ -57,6 +57,19 @@ export const {
   iterationOptionsChanged,
 } = loupeSlice.actions;
 
+// editLabel thunk
+export const copyUrlToClipboard = (url) => {
+  return async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      console.log('Content copied to clipboard: ', url);
+    } catch (err) {
+      console.log(`error attempting to copy to clipboard: `, err);
+    }
+  };
+};
+
+
 // Selectors
 export const selectLoupeOpen = state => state.loupe.open;
 export const selectReviewMode = state => state.loupe.reviewMode;

@@ -1,61 +1,69 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-import IconButton from '../../components/IconButton';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Label from '@radix-ui/react-label';
-import { ClipboardIcon } from '@radix-ui/react-icons';
+import { ClipboardCopyIcon } from '@radix-ui/react-icons';
 import {
-  selectSelectedProject
-} from '../projects/projectsSlice'
-
-
-// const StyledShareImageButton = styled(Button, {
-//   color: 'red'
-// });
-
-const StyledShareImageButton = styled('Button', {
-  border: 'none',
-  backgroundColor: '$gray3',
-  borderRadius: '$3',
-  padding: '$1 $3',
-  color: '$textMedium',
-  marginLeft: '$2',
-  textTransform: 'uppercase',
-  fontSize: '$2',
-  fontWeight: '600',
-  '&:hover': {
-    color: '$textDark',
-    backgroundColor: '$gray4',
-    cursor: 'pointer',
-  },
-  '&:active': {
-    backgroundColor: '$gray5',
-  },
-});
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastAction,
+  ToastViewport
+} from '../../components/Toast';
+import { selectSelectedProject } from '../projects/projectsSlice'
+import { copyUrlToClipboard } from './loupeSlice';
+import IconButton from '../../components/IconButton';
+import { truncateString } from '../../app/utils';
 
 const ShareImageButton = ({ imageId }) => {
   const selectedProject = useSelector(selectSelectedProject);
   const allImagesView = selectedProject.views.find((v) => v.name === 'All images');
-  const shareURL = `https://animl.camera/app/${selectedProject._id}/${allImagesView._id}?img=${imageId}`;
+  const baseUrl = `https://animl.camera/app`;
+  const shareURL = `${baseUrl}/${selectedProject._id}/${allImagesView._id}?img=${imageId}`;
+  const dispatch = useDispatch();
 
-  const handleCopyToClipboard = (e) => {
-    console.log('copying to clipboard: ', e)
+  const [ showToast, setShowToast ] = useState(false);
+  const handleCopyToClipboard = () => {
+    dispatch(copyUrlToClipboard(shareURL));
+    setShowToast(true);
   };
 
+  const StyledLabel = styled(Label.Root, {
+    fontSize: '$2',
+    fontWeight: '$3',
+  });
 
   return (
     <div
-      style={{ display: 'flex', padding: '0 20px', flexWrap: 'wrap', gap: 15, alignItems: 'center' }}
+      style={{ display: 'flex', flexWrap: 'wrap', gap: 15, alignItems: 'center' }}
     >
-      <Label.Root className="LabelRoot" htmlFor="shareUrl">Share</Label.Root>
-      <input className="Input" type="text" id="shareUrl" readonly="readonly" defaultValue={shareURL} />
+      <StyledLabel htmlFor="shareURL">SHARE</StyledLabel>
+      <input type="text" id="shareURL" readonly="readonly" defaultValue={shareURL} />
       <IconButton 
         variant='ghost'
         onClick={handleCopyToClipboard}
       >
-        <ClipboardIcon/>
+        <ClipboardCopyIcon/>
       </IconButton>
+      <Toast
+        open={showToast}
+        duration={2000}
+        onOpenChange={(e) => setShowToast(false)}
+      >
+        <ToastTitle variant="green" css={{ marginBottom: 0 }}>
+          URL copied to clipboard
+        </ToastTitle>
+        <ToastDescription asChild>
+          <div>{truncateString(shareURL, 40)}</div>
+        </ToastDescription>
+        <ToastAction asChild altText="Dismiss">
+          <IconButton variant='ghost'>
+            <FontAwesomeIcon icon={['fas', 'times']}/>
+          </IconButton>
+        </ToastAction>
+      </Toast>
+      <ToastViewport />
     </div>
   );
 };
