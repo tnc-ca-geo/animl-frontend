@@ -11,10 +11,32 @@ import {
   ToastAction,
   ToastViewport
 } from '../../components/Toast';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../components/Tooltip';
 import { selectSelectedProject } from '../projects/projectsSlice'
 import { copyUrlToClipboard } from './loupeSlice';
 import IconButton from '../../components/IconButton';
 import { truncateString } from '../../app/utils';
+
+const StyledLabel = styled(Label.Root, {
+  fontSize: '$2',
+  fontWeight: '$3',
+  marginRight: '$3',
+  textTransform: 'uppercase'
+});
+
+const StyledURLInput = styled('input', {
+  fontFamily: '$mono',
+  fontSize: '$2',
+  border: '1px solid $border',
+  borderRadius: '$1',
+  color: '$textMedium',
+  marginRight: '$1',
+});
 
 const ShareImageButton = ({ imageId }) => {
   const selectedProject = useSelector(selectSelectedProject);
@@ -29,23 +51,26 @@ const ShareImageButton = ({ imageId }) => {
     setShowToast(true);
   };
 
-  const StyledLabel = styled(Label.Root, {
-    fontSize: '$2',
-    fontWeight: '$3',
-  });
-
   return (
     <div
-      style={{ display: 'flex', flexWrap: 'wrap', gap: 15, alignItems: 'center' }}
+      style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}
     >
-      <StyledLabel htmlFor="shareURL">SHARE</StyledLabel>
-      <input type="text" id="shareURL" readonly="readonly" defaultValue={shareURL} />
-      <IconButton 
-        variant='ghost'
-        onClick={handleCopyToClipboard}
-      >
-        <ClipboardCopyIcon/>
-      </IconButton>
+      <StyledLabel htmlFor="shareURL">Share: </StyledLabel>
+      <StyledURLInput type="text" id="shareURL" readonly="readonly" defaultValue={shareURL} />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <IconButton 
+            variant='ghost'
+            onClick={handleCopyToClipboard}
+          >
+            <ClipboardCopyIcon/>
+          </IconButton>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" sideOffset={5} >
+          Copy URL to clipboard
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
       <Toast
         open={showToast}
         duration={2000}

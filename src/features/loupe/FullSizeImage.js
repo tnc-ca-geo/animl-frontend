@@ -48,6 +48,8 @@ const EditObjectButton = styled('button', {
 
 const ShareImage = styled('div', {
   position: 'absolute',
+  display: 'flex',
+  height: '40px',
   bottom: '-40',
   left: '0',
   zIndex: '$3',
