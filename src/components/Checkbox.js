@@ -68,7 +68,7 @@ const StyledCheckbox = styled('div', {
       indeterminate: false,
       css: {
         background: '$loContrast',
-        borderColor: '$gray6',
+        borderColor: '$gray9',
       },
     },
     {
