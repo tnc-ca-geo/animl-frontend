@@ -10,12 +10,18 @@ import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 
-const AdditionalActiveDepCount = styled('div', {
+const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
-});
-
-const ActiveDepLabel = styled('div', {
-
+  variants: {
+    active: {
+      true: {
+        color: '$hiContrast',
+      },
+      false: {
+        color: '$textMedium'
+      }
+    }
+  }
 });
 
 const CameraId = styled('span', {
@@ -55,7 +61,12 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const deployments = camConfig.deployments.map((dep) => {
     const name = dep.name === 'default' ? `${camConfig._id} (default)` : dep.name;
     return { ...dep, name };
-  })
+  });
+
+  const managedIds = deployments.map((dep) => dep._id);
+
+  console.log('deployments: ', deployments)
+
 
   // useEffect(() => {
   //   // get most recent active deployment name
@@ -79,22 +90,6 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
   //   setActiveDepCount(actDepCount);
   // }, [ deployments, activeDeps ]);
 
-  let mostRecentActiveDep = '';
-  // let depName = '';
-  for (const dep of deployments) {
-    if ((activeDeps && activeDeps.includes(dep._id)) || 
-        activeDeps === null) {
-      mostRecentActiveDep = truncateString(dep.name, 27);
-    }
-  }
-
-  let activeDepCount = deployments.length;
-  if (activeDeps !== null) {
-    activeDepCount = deployments.filter((dep) => (
-      activeDeps.includes(dep._id)
-    )).length;
-  }
-
   const handleCheckboxChange = (e) => {
     dispatch(checkboxFilterToggled({
       filterCat: e.target.dataset.filterCat,
@@ -110,14 +105,16 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
         <label>
           <BulkSelectCheckbox
             filterCat='deployments'
-            managedIds={deployments.map((dep) => dep._id)}
+            managedIds={managedIds}
             isHeader={false}
           />
           <CameraCheckboxLabel 
             filterCat='deployments'
-            managedIds={deployments.map((dep) => dep._id)}
-            activeDepCount={activeDepCount}
-            mostRecentActiveDep={mostRecentActiveDep}
+            managedIds={managedIds}
+            deployments={deployments}
+            activeDeps={activeDeps}
+            // activeDepCount={activeDepCount}
+            // mostRecentActiveDep={mostRecentActiveDep}
           />
           <ExpandButton onClick={handleExpandCameraButtonClick}>
             <IconButton size='small' variant='ghost'>
@@ -170,14 +167,29 @@ const OnlyButton = styled('div', {
   }
 });
 
-const CameraCheckboxLabel = ({
-  filterCat,
-  managedIds,
-  activeDepCount,
-  mostRecentActiveDep,
-}) => {
+const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps }) => {
   const [ showOnlyButton, setShowOnlyButton ] = useState(false);
   const dispatch = useDispatch();
+
+  const mostRecentDep = truncateString(deployments[deployments.length - 1].name, 27);
+
+  let mostRecentActiveDep = '';
+  for (const dep of deployments) {
+    if ((activeDeps && activeDeps.includes(dep._id)) || activeDeps === null) {
+      mostRecentActiveDep = truncateString(dep.name, 27);
+    }
+  }
+
+  let activeDepCount = deployments.length;
+  if (activeDeps !== null) {
+    activeDepCount = deployments.filter((dep) => (
+      activeDeps.includes(dep._id)
+    )).length;
+  }
+
+  const someActive = activeDepCount > 0;
+
+  const inactiveDepCount = deployments.length - activeDepCount;
 
   const handleOnlyButtonClick = (e) => {
     e.preventDefault();
@@ -186,19 +198,18 @@ const CameraCheckboxLabel = ({
 
   return (
     <CheckboxLabel
-      active={activeDepCount > 0}
+      active={someActive}
       onMouseEnter={() => setShowOnlyButton(true)}
       onMouseLeave={() => setShowOnlyButton(false)}
     >
-      <ActiveDepLabel>{mostRecentActiveDep}</ActiveDepLabel>
-      <AdditionalActiveDepCount>
-        {activeDepCount - 1 > 0 
-            ? `, +${activeDepCount - 1}`
-            : activeDepCount === 0
-              ? `no deployments selected`
-              : ''
-        }
-      </AdditionalActiveDepCount>
+      <div>{someActive ? mostRecentActiveDep : mostRecentDep }</div>
+      <AdditionalDepCount active={true}>
+        {(someActive && activeDepCount - 1 > 0) && `, +${activeDepCount - 1}`}
+      </AdditionalDepCount>
+      <AdditionalDepCount active={false}>
+        {(!someActive && inactiveDepCount -1 > 0) && `, +${inactiveDepCount - 1}`}
+        {(someActive && inactiveDepCount > 0) && `, +${inactiveDepCount}`}
+      </AdditionalDepCount>
       {showOnlyButton &&
         <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>
       }
