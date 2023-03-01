@@ -18,6 +18,7 @@ import {
   ContextMenuItem,
   ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
+import ShareImageButton from './ShareImageButton';
 import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
 
 const EditObjectButton = styled('button', {
@@ -43,6 +44,13 @@ const EditObjectButton = styled('button', {
   svg: {
     paddingRight: '$2'
   },
+});
+
+const ShareImage = styled('div', {
+  position: 'absolute',
+  bottom: '-40',
+  left: '0',
+  zIndex: '$3',
 });
 
 const EditObjectButtons = styled('div', {
@@ -180,6 +188,9 @@ const FullSizeImage = ({ image, focusIndex }) => {
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+      <ShareImage>
+        <ShareImageButton imageId={image._id}/>
+      </ShareImage>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
           <EditObjectButton onClick={handleMarkEmptyButtonClick}>
