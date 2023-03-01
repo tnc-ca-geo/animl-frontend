@@ -12,11 +12,17 @@ const StyledBulkSelectCheckbox = styled('div', {
   'label': {
     display: 'flex',
   },
-  textTransform: 'uppercase',
-  borderBottom: '1px solid $border',
+  variants: {
+    isHeader: {
+      true: {
+        textTransform: 'uppercase',
+        borderBottom: '1px solid $border',
+      }
+    }
+  }
 });
 
-const BulkSelectCheckbox = ({ filterCat, managedIds, showLabel }) => {
+const BulkSelectCheckbox = ({ filterCat, managedIds, isHeader }) => {
   const activeFilters = useSelector(selectActiveFilters);
   const [ checkboxState, setCheckboxState ] = useState('someSelected');
   const dispatch = useDispatch();
@@ -71,7 +77,7 @@ const BulkSelectCheckbox = ({ filterCat, managedIds, showLabel }) => {
   };
 
   return (
-    <StyledBulkSelectCheckbox>
+    <StyledBulkSelectCheckbox isHeader={isHeader}>
       <label>
         <Checkbox
           checked={stateMap[checkboxState].checked}
@@ -79,7 +85,7 @@ const BulkSelectCheckbox = ({ filterCat, managedIds, showLabel }) => {
           indeterminate={stateMap[checkboxState].indeterminate}
           onChange={handleCheckboxChange}
         />
-        {showLabel &&
+        {isHeader &&
           <CheckboxLabel
             checked={stateMap[checkboxState].checked}
             active={stateMap[checkboxState].active}

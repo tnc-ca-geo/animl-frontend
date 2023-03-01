@@ -41,7 +41,7 @@ const LabelFilter = () => {
           <BulkSelectCheckbox
             filterCat='labels'
             managedIds={availLabels.ids}
-            showLabel={true}
+            isHeader={true}
           />
             {availLabels.ids.map((id) => {
               const checked = activeLabels === null || activeLabels.includes(id);

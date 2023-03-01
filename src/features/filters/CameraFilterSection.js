@@ -111,7 +111,7 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
           <BulkSelectCheckbox
             filterCat='deployments'
             managedIds={deployments.map((dep) => dep._id)}
-            showLabel={false}
+            isHeader={false}
           />
           <CameraCheckboxLabel 
             filterCat='deployments'

@@ -3,6 +3,7 @@ import { styled } from '../theme/stitches.config';
 
 const CheckboxContainer = styled('div', {
   display: 'flex',
+  alignItems: 'center',
   // display: 'inline-block',
   // verticalAlign: 'middle',
 });

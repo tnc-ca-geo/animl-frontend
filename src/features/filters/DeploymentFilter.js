@@ -27,7 +27,7 @@ const DeploymentFilter = () => {
           <BulkSelectCheckbox
             filterCat='deployments'
             managedIds={availDeps.ids}
-            showLabel={true}
+            isHeader={true}
           />
           <div>
             {selectedProject && selectedProject.cameraConfigs.map((camConfig) => (
