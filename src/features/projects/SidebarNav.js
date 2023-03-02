@@ -105,7 +105,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       }
 
       {/* bulk upload view */}
-      {hasRole(userRoles, BULK_UPLOAD_ROLES) &&
+      {/* {hasRole(userRoles, BULK_UPLOAD_ROLES) && */}
         <SidebarNavItem 
           state={modalOpen && (modalContent === 'bulk-upload-form') ? 'active' : ''}
           disabled={!selectedProject}
@@ -113,7 +113,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
           icon={<FontAwesomeIcon icon={['fas', 'upload']} />}
           tooltipContent='Bulk upload images'
         />
-      }
+      {/* } */}
 
     </StyledSidebarNav>
   );

@@ -31,6 +31,12 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    uploads: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+      progress: 0
+    }
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -41,6 +47,27 @@ export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
+    uploadStart: (state) => {
+      const ls = { isLoading: true, operation: 'uploading', errors: null, progress: 0 };
+      state.loadingStates.uploads = ls;
+    },
+
+    uploadFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, progress: 0 };  
+      state.loadingStates.uploads = ls;
+    },
+
+    uploadSuccess: (state, { payload }) => {
+      const { progress } = state.loadingStates.uploads
+      const ls = { isLoading: false, operation: null, errors: null, progress };
+      state.loadingStates.uploads = ls;
+    },
+
+    uploadProgress: (state, { payload }) => {
+      console.log(payload.progress)
+      const ls = { isLoading: true, operation: 'uploading', errors: null, progress: payload.progress };
+      state.loadingStates.uploads = ls;
+    },
 
     getProjectsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
@@ -64,7 +91,6 @@ export const projectsSlice = createSlice({
       //     state.projects.push(proj);
       //   }
       // });
-
     },
 
     dismissProjectsError: (state, { payload }) => {
@@ -245,6 +271,11 @@ export const {
   setUnsavedViewChanges,
   dismissProjectsError,
 
+  uploadStart,
+  uploadSuccess,
+  uploadFailure,
+  uploadProgress,
+
   editViewStart,
   saveViewSuccess,
   deleteViewSuccess,
@@ -284,6 +315,39 @@ export const fetchProjects = () => async dispatch => {
     dispatch(getProjectsFailure(err));
   }
 };
+
+// bulk upload thunk
+export const uploadFile = (payload) => async dispatch => {
+  try {
+    dispatch(uploadStart());
+    // TODO: get signed URL
+    const signedUrl = 'https://ae03e36e-3454-4e5e-a4e8-1afe525c0019.mock.pstmn.io/file-upload'; 
+
+    var data = new FormData()
+    data.append('images_zip', payload.images_zip)
+
+    const xhr = new XMLHttpRequest();
+    await new Promise((resolve) => {
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          dispatch(uploadProgress({ progress: event.loaded / event.total }))
+        }
+      });
+      xhr.addEventListener("loadend", () => {
+        resolve(xhr.readyState === 4 && xhr.status === 200);
+      });
+      // TODO: use signed URL
+      xhr.open('POST', signedUrl, true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+      xhr.send(data);
+    })
+
+    dispatch(uploadSuccess());
+  } catch (err) {
+    console.log('err: ', err)
+    dispatch(uploadFailure(err))
+  }
+}
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?
@@ -437,6 +501,7 @@ export const selectMLModels = createSelector([selectSelectedProject],
   (proj) => proj ? proj.mlModels : null
 );
 export const selectProjectsLoading = state => state.projects.loadingStates.projects;
+export const selectUploadsLoading = state => state.projects.loadingStates.uploads;
 export const selectViewsLoading = state => state.projects.loadingStates.views;
 export const selectDeploymentsLoading = state => state.projects.loadingStates.deployments;
 export const selectModelsLoadingState = state => state.projects.loadingStates.models;
