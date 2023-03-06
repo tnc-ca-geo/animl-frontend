@@ -8,7 +8,7 @@ import CameraAdminModal from '../features/cameras/CameraAdminModal';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm';
 import SaveViewForm from '../features/projects/SaveViewForm';
 import DeleteViewForm from '../features/projects/DeleteViewForm';
-import BulkUploadForm from '../features/projects/BulkUploadForm';
+import BulkUploadForm from '../features/upload/BulkUploadForm';
 import { clearExport, clearStats } from '../features/images/imagesSlice';
 import {
   selectModalOpen,

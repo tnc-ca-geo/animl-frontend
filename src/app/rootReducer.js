@@ -9,6 +9,7 @@ import reviewReducer from '../features/review/reviewSlice';
 import loupeReducer from '../features/loupe/loupeSlice';
 import projectReducer from '../features/projects/projectsSlice';
 import trackingReducer from '../features/tracking/trackingSlice';
+import uploadReducer from '../features/upload/uploadSlice';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -21,6 +22,7 @@ const createRootReducer = (history) => combineReducers({
   loupe: loupeReducer,
   undoHistory: undoHistoryReducer, 
   tracking: trackingReducer,
+  uploads: uploadReducer,
 });
 
 export default createRootReducer;

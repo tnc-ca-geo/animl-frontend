@@ -5,14 +5,14 @@ import { FormWrapper, ButtonRow, HelperText, FormError } from '../../components/
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
-import { uploadFile, selectUploadsLoading } from './projectsSlice';
+import { uploadFile, selectUploadsLoading } from './uploadSlice';
 
 const bulkUploadSchema = Yup.object().shape({
   images_zip: Yup.mixed().required('File is required'),
 });
 
 const BulkUploadForm = ({ handleClose }) => {
-  const { isLoading, progress } = useSelector(selectUploadsLoading);
+  const { isLoading, progress }  = useSelector(selectUploadsLoading);
   const percentUploaded = Math.round(progress * 100);
   const dispatch = useDispatch();
 
