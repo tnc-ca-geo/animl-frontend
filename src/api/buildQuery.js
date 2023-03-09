@@ -490,6 +490,16 @@ const queries = {
     variables: { input: input },
   }),
 
+  getSignedUrl: () => ({
+    template: `
+      mutation CreateUpload {
+        createUpload {
+          url
+        }
+      }
+    `
+  })
+
 };
 
 export default queries;

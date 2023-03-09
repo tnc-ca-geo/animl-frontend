@@ -1,4 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit";
+import { Auth } from 'aws-amplify';
+import { call } from '../../api';
 
 const initialState = {
   isLoading: false,
@@ -43,32 +45,41 @@ export const {
 } = uploadSlice.actions;
 
 // bulk upload thunk
-export const uploadFile = (payload) => async dispatch => {
+export const uploadFile = (payload) => async (dispatch, getState) => {
   try {
-    dispatch(uploadStart());
-    // TODO: get signed URL
-    const signedUrl = 'https://ae03e36e-3454-4e5e-a4e8-1afe525c0019.mock.pstmn.io/file-upload'; 
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      dispatch(uploadStart());
 
-    var data = new FormData()
-    data.append('images_zip', payload.images_zip)
-
-    const xhr = new XMLHttpRequest();
-    await new Promise((resolve) => {
-      xhr.upload.addEventListener("progress", (event) => {
-        if (event.lengthComputable) {
-          dispatch(uploadProgress({ progress: event.loaded / event.total }))
-        }
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const uploadUrl = await call({
+        request: 'getSignedUrl',
+        projId: selectedProj._id
       });
-      xhr.addEventListener("loadend", () => {
-        resolve(xhr.readyState === 4 && xhr.status === 200);
-      });
-      // TODO: use signed URL
-      xhr.open('POST', signedUrl, true);
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
-      xhr.send(data);
-    })
+      const signedUrl = uploadUrl.createUpload.url;
+      const { file } = payload;
 
-    dispatch(uploadSuccess());
+      const xhr = new XMLHttpRequest();
+      await new Promise((resolve) => {
+        xhr.upload.addEventListener("progress", (event) => {
+          if (event.lengthComputable) {
+            dispatch(uploadProgress({ progress: event.loaded / event.total }))
+          }
+        });
+        xhr.addEventListener("loadend", () => {
+          resolve(xhr.readyState === 4 && xhr.status === 200);
+        });
+
+        xhr.open('PUT', signedUrl, true);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+        xhr.send(file);
+      })
+
+      dispatch(uploadSuccess());
+    }
   } catch (err) {
     console.log('err: ', err)
     dispatch(uploadFailure(err))

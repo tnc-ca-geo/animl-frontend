@@ -16,7 +16,7 @@ const BulkUploadForm = ({ handleClose }) => {
   const percentUploaded = Math.round(progress * 100);
   const dispatch = useDispatch();
 
-  const handleSubmit = (values) => dispatch(uploadFile(values));
+  const handleSubmit = (values) => dispatch(uploadFile({ file: values.images_zip }));
 
   return (
     <div>

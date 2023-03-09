@@ -5,7 +5,7 @@ import {
   hasRole,
   WRITE_AUTOMATION_RULES_ROLES,
   WRITE_VIEWS_ROLES,
-  BULK_UPLOAD_ROLES,
+  WRITE_IMAGES_ROLES,
 } from '../../auth/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -105,7 +105,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       }
 
       {/* bulk upload view */}
-      {/* {hasRole(userRoles, BULK_UPLOAD_ROLES) && */}
+      {hasRole(userRoles, WRITE_IMAGES_ROLES) &&
         <SidebarNavItem 
           state={modalOpen && (modalContent === 'bulk-upload-form') ? 'active' : ''}
           disabled={!selectedProject}
@@ -113,7 +113,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
           icon={<FontAwesomeIcon icon={['fas', 'upload']} />}
           tooltipContent='Bulk upload images'
         />
-      {/* } */}
+      }
 
     </StyledSidebarNav>
   );
