@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { actions as undoActions } from 'redux-undo-redo';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import IconButton from '../../components/IconButton';
 import { selectImagesCount } from '../images/imagesSlice';
 import { selectModalOpen } from '../projects/projectsSlice.js';
@@ -13,6 +12,7 @@ import {
   incrementImage,
   selectFocusIndex,
 } from '../review/reviewSlice';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 
 const IndexDisplay = styled('div', {
   fontFamily: '$mono',
@@ -182,14 +182,14 @@ const LoupeFooter = ({ image }) => {
           size='large'
           onClick={() => handleIncrementClick('decrement')}
         >
-          <FontAwesomeIcon icon={['fas', 'angle-left']}/>
+          <ChevronLeftIcon/>
         </IconButton>
         <IconButton
           variant='ghost'
           size='large'
           onClick={() => handleIncrementClick('increment')}
         >
-          <FontAwesomeIcon icon={['fas', 'angle-right']}/>
+          <ChevronRightIcon/>
         </IconButton>
       </IncrementControls>
     </StyledLoupeFooter>

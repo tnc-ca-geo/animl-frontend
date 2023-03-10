@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Label from '@radix-ui/react-label';
 import { ClipboardCopyIcon } from '@radix-ui/react-icons';
 import {
@@ -20,6 +19,7 @@ import {
 import { selectSelectedProject } from '../projects/projectsSlice'
 import { copyUrlToClipboard } from './loupeSlice';
 import IconButton from '../../components/IconButton';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { truncateString } from '../../app/utils';
 
 const StyledLabel = styled(Label.Root, {
@@ -85,7 +85,7 @@ const ShareImageButton = ({ imageId }) => {
         </ToastDescription>
         <ToastAction asChild altText="Dismiss">
           <IconButton variant='ghost'>
-            <FontAwesomeIcon icon={['fas', 'times']}/>
+            <Cross2Icon/>
           </IconButton>
         </ToastAction>
       </Toast>

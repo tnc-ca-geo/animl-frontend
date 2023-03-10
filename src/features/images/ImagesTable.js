@@ -8,7 +8,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
 import { green, orange } from '@radix-ui/colors';
-import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons'
+import { CheckIcon, Cross2Icon, TriangleUpIcon, TriangleDownIcon } from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
@@ -16,7 +16,6 @@ import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-tabl
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   sortChanged,
   // visibleRowsChanged,
@@ -131,12 +130,14 @@ const DataCell = styled(TableCell, {
 });
 
 const TableHeader = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
   paddingTop: '$2',
   paddingBottom: '$2',
   backgroundColor: '$backgroundDark',
   fontSize: '$3',
   'svg': {
-    marginLeft: '$3',
+    marginLeft: '$2',
     'path': {
       fill: '$gray6',
     }
@@ -224,6 +225,21 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const isImageLoaded = useCallback((index) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
+
+  // // listen for shift + mousedown (selecting multiple rows)
+  // useEffect(() => {
+  //   const handleWindowClick = (e) => {
+  //     if (object.isTemp) setTempObject(null);
+  //     // unless the last click was on the "edit label" context menu item
+  //     if (!targetIsEditLabelMenuItem(e)) { 
+  //       dispatch(addLabelEnd());
+  //     }
+  //   };
+  //   addingLabel
+  //     ? window.addEventListener('click', handleWindowClick)
+  //     : window.removeEventListener('click', handleWindowClick);
+  //   return () => window.removeEventListener('click', handleWindowClick);
+  // }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
 
   const data = makeRows(workingImages, focusIndex);
 
@@ -345,10 +361,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
 
-  const handleRowClick = useCallback((id) => {
-    const newIndex = { image: Number(id), object: null, label: null }
-    dispatch(setFocus({ index: newIndex, type: 'manual'}));
-    dispatch(toggleOpenLoupe(true));
+  const handleRowClick = useCallback((e, id) => {
+    if (e.shiftKey) {
+      console.log('shift + click');
+      // TODO: allow for selection of mulitple images to perform bulk actions on
+    } else {
+      const newIndex = { image: Number(id), object: null, label: null }
+      dispatch(setFocus({ index: newIndex, type: 'manual'}));
+      dispatch(toggleOpenLoupe(true));
+    }
   }, [dispatch]);
 
   const RenderRow = useCallback(
@@ -359,7 +380,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         return (
           <TableRow
             {...row.getRowProps({ style })}
-            onClick={() => handleRowClick(row.id)}
+            onClick={(e) => handleRowClick(e, row.id)}
             selected={focusIndex.image === index}
           >
             {row.cells.map(cell => {
@@ -461,10 +482,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                     >
                       {column.render('Header')}
                       {column.canSort && 
-                        <FontAwesomeIcon icon={column.isSortedDesc 
-                            ? ['fas', 'caret-down'] 
-                            : ['fas', 'caret-up']
-                        }/>
+                        (column.isSortedDesc ? <TriangleDownIcon/> : <TriangleUpIcon/>)
                       }
                     </TableHeader>
                   </HeaderCell>

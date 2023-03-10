@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, fetchImages } from '../images/imagesSlice';
 import { selectActiveFilters  } from './filtersSlice.js';
 import { selectModalOpen, setModalOpen, setModalContent } from '../projects/projectsSlice';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { InfoCircledIcon, DownloadIcon, SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton';
 import { 

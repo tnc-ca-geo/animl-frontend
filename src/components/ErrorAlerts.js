@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
 import {
   Toast,
@@ -101,7 +101,7 @@ const ErrorAlerts = () => {
               variant='ghost'
               onClick={() => handleDismissError(err.index, err.entity)}
             >
-              <FontAwesomeIcon icon={['fas', 'times']}/>
+              <Cross2Icon />
             </IconButton>
           </ToastAction>
         </Toast>

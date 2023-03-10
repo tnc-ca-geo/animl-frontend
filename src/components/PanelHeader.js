@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
 
 const PanelTitle = styled('span', {
@@ -46,9 +46,7 @@ const PanelHeader = (props) => (
       position={props.closeButtonPosition || 'right'}
       variant='ghost'
       onClick={() => props.handlePanelClose()}>
-      <FontAwesomeIcon 
-        icon={['fas', 'times']}
-      />
+      <Cross2Icon />
     </ClosePanelButton>
   </StyledHeader>
 );

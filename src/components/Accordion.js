@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { styled } from '../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
 import { indigo } from '@radix-ui/colors';
 
@@ -60,9 +60,7 @@ const Accordion = (props) => {
       <AccordionHeader onClick={handleAccordionHeaderClick}>
         <ExpandButton>
           <IconButton variant='ghost'>
-            <FontAwesomeIcon icon={
-              expanded ? ['fas', 'angle-down'] : ['fas', 'angle-right']
-            }/>
+            {expanded ? <ChevronDownIcon/> : <ChevronRightIcon />}
           </IconButton>
         </ExpandButton>
         {props.label &&

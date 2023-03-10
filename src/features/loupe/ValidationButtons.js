@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Cross2Icon, CheckIcon, LockOpen1Icon } from '@radix-ui/react-icons';
 import { labelValidated, objectManuallyUnlocked } from '../review/reviewSlice';
 
 const LabelButton = styled('button', {
@@ -18,6 +18,8 @@ const LabelButton = styled('button', {
 
 const StyledValidationButtons = styled('div', {
   position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
 });
 
 const ValidationButtons = ({
@@ -51,6 +53,9 @@ const ValidationButtons = ({
         ? <LabelButton
             onClick={handleLockButtonClick}
             css={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               color: '$loContrast',
               backgroundColor: labelColor.base,
               borderColor: labelColor.base,
@@ -59,12 +64,15 @@ const ValidationButtons = ({
                 color: '$hiContrast',
               }
           }}>
-            <FontAwesomeIcon icon={['fas', 'unlock']}/>
+            <LockOpen1Icon/>
           </LabelButton>              
         : <>
             <LabelButton
               onClick={(e) => handleValidationButtonClick(e, false)}
               css={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 backgroundColor: '#E04040',
                 color: '$loContrast',
                 borderColor: labelColor.base,
@@ -75,11 +83,14 @@ const ValidationButtons = ({
                 }
               }}
             >
-              <FontAwesomeIcon icon={['fas', 'times']} />
+              <Cross2Icon />
             </LabelButton>
             <LabelButton
               onClick={(e) => handleValidationButtonClick(e, true)}
               css={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 backgroundColor: '#00C797',
                 color: '$loContrast',
                 borderColor: labelColor.base,
@@ -90,7 +101,7 @@ const ValidationButtons = ({
                 }
               }}
             >
-              <FontAwesomeIcon icon={['fas', 'check']} />
+              <CheckIcon />
             </LabelButton>
           </>
       }

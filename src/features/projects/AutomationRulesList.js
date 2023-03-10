@@ -1,12 +1,12 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { editView, selectViewsLoading } from '../projects/projectsSlice';
 import IconButton from '../../components/IconButton';
 import Button from '../../components/Button';
 import { ButtonRow } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { TrashIcon } from '@radix-ui/react-icons';
 
 
 const Rule = styled('li', {
@@ -93,7 +93,7 @@ const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
                   data-rule={rule._id}
                   onClick={handleRuleDeleteClick}
                 >
-                  <FontAwesomeIcon icon={['fas', 'trash-alt']} />
+                  <TrashIcon />
                 </IconButton>
               </Rule>
             )

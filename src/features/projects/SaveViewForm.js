@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PlusIcon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -104,7 +104,7 @@ const SaveViewForm = ({ handleClose }) => {
             active={saveMode === 'update' ? true : false}
             onClick={() => setSaveMode('update')}
           >
-            <FontAwesomeIcon icon={['fas', 'edit']} />
+            <Pencil2Icon />
             Update current view
           </SaveModeTab>
           <SaveModeTab
@@ -112,7 +112,7 @@ const SaveViewForm = ({ handleClose }) => {
             active={saveMode === 'create' ? 'true' : 'false'}
             onClick={() => setSaveMode('create')}
           >
-            <FontAwesomeIcon icon={['fas', 'plus']} />
+            <PlusIcon />
             Create new view
           </SaveModeTab>
         </FieldRow>

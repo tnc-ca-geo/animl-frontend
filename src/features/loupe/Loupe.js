@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import IconButton from '../../components/IconButton';
 import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import {

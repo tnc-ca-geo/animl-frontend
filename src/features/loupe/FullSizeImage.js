@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -22,6 +22,8 @@ import ShareImageButton from './ShareImageButton';
 import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
 
 const EditObjectButton = styled('button', {
+  display: 'flex',
+  alignItems: 'center',
   border: 'none',
   borderRadius: '$0',
   fontFamily: 'roboto',
@@ -42,7 +44,7 @@ const EditObjectButton = styled('button', {
   },
 
   svg: {
-    paddingRight: '$2'
+    marginRight: '$2'
   },
 });
 
@@ -196,7 +198,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
           <EditObjectButton onClick={handleMarkEmptyButtonClick}>
-            <FontAwesomeIcon icon={['fas', 'times']} /> Mark empty
+            <Cross2Icon /> Mark empty
           </EditObjectButton>
           <EditObjectButton
             onClick={handleAddObjectButtonClick}
@@ -205,7 +207,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
               backgroundColor: '$hiContrast',
             }}
           >
-            <FontAwesomeIcon icon={['fas', 'plus']} /> Add object
+            <PlusIcon /> Add object
           </EditObjectButton>
         </EditObjectButtons>
       }
