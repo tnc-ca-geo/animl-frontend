@@ -1,6 +1,13 @@
 import { globalCss } from './stitches.config.js';
 
 const globalStyles = globalCss({
+  '@import': [
+    `url("https://fonts.googleapis.com/css2?`
+      `family=Roboto:wght@300;400;500;600;700&`
+      `family=IBM+Plex+Mono:wght@300;400;500;600;700&`
+      `family=Source+Sans+Pro:wght@300;400;600;700&`
+      `display=swap')`
+  ],
   ':root': {
     '--amplify-primary-color': '#003BD7',
     '--amplify-primary-tint': '#003BD7',
@@ -13,32 +20,6 @@ const globalStyles = globalCss({
     fontFamily: "'Roboto', 'Oxygen', 'Ubuntu', 'Helvetica Neue', sans-serif",
     '-webkit-font-smoothing': 'antialiased',
     '-moz-osx-font-smoothing': 'grayscale',
-
-    '@font-face': [
-      {
-        fontFamily: 'Source Sans Pro',
-        fontStyle: 'normal',
-        fontWeight: '400',
-        fontDisplay: 'fallback',
-        src: `local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), 
-            url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.woff2') format('woff2'),
-            url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.woff') format('woff'),
-            url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.ttf') format('truetype'),
-            url('../assets/fonts/source-sans-pro-v13-latin_latin-ext-regular.svg#SourceSansPro') format('svg')`
-      },
-      {
-        fontFamily: 'IBM Plex Mono',
-        fontStyle: 'normal',
-        fontWeight: '400',
-        fontDisplay: 'fallback',
-        src: `local('IBM Plex Mono'), local('IBMPlexMono'),
-            url('../assets/fonts/ibm-plex-mono-regular.woff2') format('woff2'),
-            url('../assets/fonts/ibm-plex-mono-regular.woff') format('woff'), 
-            url('../assets/fonts/ibm-plex-mono-regular.ttf') format('truetype'), 
-            url('../assets/fonts/ibm-plex-mono-regular.svg#IBMPlexMono') format('svg')`
-      }
-    ],
-  
 
     // Date Picker styles
     // Had to override them here b/c the actual Date Picker element gets 
