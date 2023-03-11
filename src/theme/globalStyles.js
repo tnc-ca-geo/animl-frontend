@@ -2,11 +2,7 @@ import { globalCss } from './stitches.config.js';
 
 const globalStyles = globalCss({
   '@import': [
-    `url("https://fonts.googleapis.com/css2?`
-      `family=Roboto:wght@300;400;500;600;700&`
-      `family=IBM+Plex+Mono:wght@300;400;500;600;700&`
-      `family=Source+Sans+Pro:wght@300;400;600;700&`
-      `display=swap')`
+    "url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap')",
   ],
   ':root': {
     '--amplify-primary-color': '#003BD7',
