@@ -24,8 +24,8 @@ export const uploadSlice = createSlice({
         errors: null,
         progress: 0,
       }
-      state.loadingStates.projects = {
-        ...state.loadingStates.projects,
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
         ...ls
       };
     },
@@ -36,8 +36,8 @@ export const uploadSlice = createSlice({
         operation: null,
         errors: payload,
       }
-      state.loadingStates.projects = {
-        ...state.loadingStates.projects,
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
         ...ls
       };
     },
@@ -47,8 +47,8 @@ export const uploadSlice = createSlice({
         isLoading: false,
         operation: null,
       }
-      state.loadingStates.projects = {
-        ...state.loadingStates.projects,
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
         ...ls
       };
     },
@@ -57,8 +57,8 @@ export const uploadSlice = createSlice({
       const ls = {
         progress: payload.progress
       }
-      state.loadingStates.projects = {
-        ...state.loadingStates.projects,
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
         ...ls
       };
     },
