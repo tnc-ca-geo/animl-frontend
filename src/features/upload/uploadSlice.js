@@ -3,10 +3,14 @@ import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
 const initialState = {
-  isLoading: false,
-  operation: null,
-  errors: null,
-  progress: 0
+  loadingStates: {
+    upload: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+      progress: 0,
+    }
+  }
 };
 
 export const uploadSlice = createSlice({
@@ -14,25 +18,49 @@ export const uploadSlice = createSlice({
   initialState,
   reducers: {
     uploadStart: (state) => {
-      state.isLoading = true;
-      state.operation = 'uploading';
-      state.errors = null;
-      state.progress = 0;
+      const ls = {
+        isLoading: true,
+        operation: 'uploading',
+        errors: null,
+        progress: 0,
+      }
+      state.loadingStates.projects = {
+        ...state.loadingStates.projects,
+        ...ls
+      };
     },
 
     uploadFailure: (state, { payload }) => {
-      state.isLoading = false;
-      state.operation = null;
-      state.errors = payload;
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: payload,
+      }
+      state.loadingStates.projects = {
+        ...state.loadingStates.projects,
+        ...ls
+      };
     },
 
-    uploadSuccess: (state, { payload }) => {
-      state.isLoading = false;
-      state.operation = null;
+    uploadSuccess: (state) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+      }
+      state.loadingStates.projects = {
+        ...state.loadingStates.projects,
+        ...ls
+      };
     },
 
     uploadProgress: (state, { payload }) => {
-      state.progress = payload.progress;
+      const ls = {
+        progress: payload.progress
+      }
+      state.loadingStates.projects = {
+        ...state.loadingStates.projects,
+        ...ls
+      };
     },
   }
 });
