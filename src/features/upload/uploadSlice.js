@@ -3,8 +3,15 @@ import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
 const initialState = {
+  batchStates: [],
   loadingStates: {
     upload: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+      progress: 0,
+    },
+    batchStates: {
       isLoading: false,
       operation: null,
       errors: null,
@@ -62,6 +69,45 @@ export const uploadSlice = createSlice({
         ...ls
       };
     },
+
+    fetchBatchesStart: (state) => {
+      const ls = {
+        isLoading: true,
+        operation: 'fetching',
+        errors: null,
+      }
+      state.loadingStates.batchStates = {
+        ...state.loadingStates.batchStates,
+        ...ls
+      };
+    },
+
+    fetchBatchesSuccess: (state, { payload }) => {
+      const { batches, pageInfo } = payload.batches;
+
+      const ls = {
+        isLoading: true,
+        operation: 'fetching',
+        errors: null,
+      }
+      state.batchStates = batches.batches;
+      state.loadingStates.batchStates = {
+        ...state.loadingStates.batchStates,
+        ...ls
+      };
+    },
+
+    fetchBatchesFailure: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: payload,
+      }
+      state.loadingStates.batchStates = {
+        ...state.loadingStates.batchStates,
+        ...ls
+      };
+    }
   }
 });
 
@@ -70,6 +116,9 @@ export const {
   uploadSuccess,
   uploadFailure,
   uploadProgress,
+  fetchBatchesStart,
+  fetchBatchesSuccess,
+  fetchBatchesFailure,
 } = uploadSlice.actions;
 
 // bulk upload thunk
@@ -107,6 +156,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       })
 
       dispatch(uploadSuccess());
+      dispatch(fetchBatches());
     }
   } catch (err) {
     console.log('err: ', err)
@@ -114,6 +164,26 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
   }
 }
 
-export const selectUploadsLoading = state => state.uploads;
+export const fetchBatches = () => async (dispatch, getState) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const batches = await call({
+        request: 'getBatches',
+        projId: selectedProj._id
+      })
+      dispatch(fetchBatchesSuccess({ batches }));
+    }
+  } catch (err) {
+    console.log('err: ', err)
+    dispatch(fetchBatchesFailure(err))
+  }
+}
+
+export const selectBatchStates = state => state.uploads.batchStates;
+export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
 
 export default uploadSlice.reducer;

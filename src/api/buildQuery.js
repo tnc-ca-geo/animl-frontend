@@ -498,8 +498,42 @@ const queries = {
         }
       }
     `
-  })
+  }),
 
+  getBatches: () => ({
+    template: `
+      query GetBatches($input: QueryBatchesInput!) {
+        batches(input: $input) {
+          pageInfo {
+            previous
+            hasPrevious
+            next
+            hasNext
+          },
+          batches {
+            _id
+            eTag
+            processingStart
+            processingEnd
+            remaining
+            total
+          }
+        }
+      }
+    `,
+    variables: { input: {} }
+  }),
+
+  getBatch: ({ id }) => ({
+    template: `
+      query GetBatch($id: String!) {
+        batch(_id: $id) {
+            _id
+        }
+      }
+    `,
+    variables: { id }
+  })
 };
 
 export default queries;
