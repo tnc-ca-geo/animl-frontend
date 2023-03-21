@@ -6,9 +6,31 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates } from './uploadSlice';
+import { styled } from '@stitches/react';
 
 const bulkUploadSchema = Yup.object().shape({
   images_zip: Yup.mixed().required('File is required'),
+});
+
+const Table = styled('table', {
+  borderSpacing: '0',
+})
+
+const TableHead = styled('th', {
+  textAlign: 'left',
+  verticalAlign: 'bottom',
+  padding: '5px 15px',
+});
+
+const TableRow = styled('tr', {
+  '&:nth-child(odd)': {
+    backgroundColor: '$backgroundDark',
+  },
+});
+
+const TableCell = styled('td', {
+  padding: '5px 15px',
+  verticalAlign: 'top',
 });
 
 const BulkUploadForm = ({ handleClose }) => {
@@ -30,14 +52,14 @@ const BulkUploadForm = ({ handleClose }) => {
 
   return (
     <div>
-      <table>
+      <Table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Process start</th>
-            <th>Process end</th>
-            <th>Total images</th>
-            <th>Remaining images</th>
+            <TableHead>ID</TableHead>
+            <TableHead>Process start</TableHead>
+            <TableHead>Process end</TableHead>
+            <TableHead>Total images</TableHead>
+            <TableHead>Remaining images</TableHead>
           </tr>
         </thead>
         <tbody>
@@ -45,17 +67,18 @@ const BulkUploadForm = ({ handleClose }) => {
             const start = new Date(parseInt(processingStart)).toLocaleString();
             const end = processingEnd && new Date(parseInt(processingEnd)).toLocaleString();
             return (
-              <tr key={_id}>
-                <td>{eTag}</td>
-                <td>{start}</td>
-                <td>{end}</td>
-                <td>{total}</td>
-                <td>{remaining}</td>
-              </tr>
+              <TableRow key={_id}>
+                <TableCell>{eTag}</TableCell>
+                <TableCell>{start}</TableCell>
+                <TableCell>{end}</TableCell>
+                <TableCell>{total}</TableCell>
+                <TableCell>{remaining}</TableCell>
+              </TableRow>
             )}
           )}
         </tbody>
-      </table>
+      </Table>
+
       <FormWrapper>
         <Formik
           onSubmit={(values) => handleSubmit(values)}
