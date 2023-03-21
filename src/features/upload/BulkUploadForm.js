@@ -47,7 +47,12 @@ const BulkUploadForm = ({ handleClose }) => {
   const handleSubmit = (values) => dispatch(uploadFile({ file: values.images_zip }));
 
   useEffect(() => {
-    dispatch(fetchBatches())
+    // Initially loaded the batches
+    dispatch(fetchBatches());
+
+    // Update batches every minute
+    const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
+    return () => clearInterval(intervalID);
   }, [dispatch]);
 
   return (
