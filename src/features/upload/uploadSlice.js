@@ -174,9 +174,11 @@ export const fetchBatches = () => async (dispatch, getState) => {
     if (token) {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
+      const userAud = getState().user.aud;
       const batches = await call({
         request: 'getBatches',
-        projId: selectedProj._id
+        projId: selectedProj._id,
+        input: { user: userAud }
       })
       dispatch(fetchBatchesSuccess({ batches }));
     }

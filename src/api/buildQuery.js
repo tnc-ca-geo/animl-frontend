@@ -503,7 +503,7 @@ const queries = {
     variables: { input }
   }),
 
-  getBatches: () => ({
+  getBatches: (input) => ({
     template: `
       query GetBatches($input: QueryBatchesInput!) {
         batches(input: $input) {
@@ -520,11 +520,12 @@ const queries = {
             processingEnd
             remaining
             total
+            originalFile
           }
         }
       }
     `,
-    variables: { input: {} }
+    variables: { input }
   }),
 
   getBatch: ({ id }) => ({

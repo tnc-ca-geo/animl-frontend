@@ -14,6 +14,8 @@ const bulkUploadSchema = Yup.object().shape({
 
 const Table = styled('table', {
   borderSpacing: '0',
+  width: '100%',
+  marginBottom: '30px'
 })
 
 const TableHead = styled('th', {
@@ -60,24 +62,25 @@ const BulkUploadForm = ({ handleClose }) => {
       <Table>
         <thead>
           <tr>
-            <TableHead>ID</TableHead>
-            <TableHead>Process start</TableHead>
-            <TableHead>Process end</TableHead>
-            <TableHead>Total images</TableHead>
-            <TableHead>Remaining images</TableHead>
+            <TableHead>File name</TableHead>
+            <TableHead>Status</TableHead>
           </tr>
         </thead>
         <tbody>
-          {sortedBatchStates.map(({ _id, eTag, processingStart, processingEnd, total, remaining }) => {
-            const start = new Date(parseInt(processingStart)).toLocaleString();
-            const end = processingEnd && new Date(parseInt(processingEnd)).toLocaleString();
+          {sortedBatchStates.map(({ _id, originalFile, processingStart, processingEnd, total, remaining }) => {
+            let status = 'Queued'
+            if (processingStart) {
+              const dateString = new Date(parseInt(processingStart)).toLocaleString();
+              status = `Processing since ${dateString}. ${total ? `Finsished ${total - remaining} of ${total} images.` : ''}`
+            }
+            if (processingEnd) {
+              const dateString = new Date(parseInt(processingEnd)).toLocaleString();
+              status = `Processing of ${total} images finsihed at ${dateString}.`
+            }
             return (
               <TableRow key={_id}>
-                <TableCell>{eTag}</TableCell>
-                <TableCell>{start}</TableCell>
-                <TableCell>{end}</TableCell>
-                <TableCell>{total}</TableCell>
-                <TableCell>{remaining}</TableCell>
+                <TableCell>{originalFile}</TableCell>
+                <TableCell>{status}</TableCell>
               </TableRow>
             )}
           )}
@@ -92,9 +95,8 @@ const BulkUploadForm = ({ handleClose }) => {
         >
           {({ errors, touched, values, setFieldValue }) => (
             <Form>
-              <h2>Upload new batch</h2>
               <HelperText>
-                Upload a ZIP file containing images for bulk processing
+                <b>Upload a ZIP file containing images for bulk processing</b>
               </HelperText>
 
               <input
