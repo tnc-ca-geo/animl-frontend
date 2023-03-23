@@ -6,6 +6,7 @@ const initialState = {
   groups: [],
   projects: {},
   authStatus: null,
+  aud: null,
 };
 
 export const userSlice = createSlice({
@@ -17,6 +18,7 @@ export const userSlice = createSlice({
       state.authStatus = payload.authStatus;
       state.username = payload.username || null;
       state.groups = payload.groups || null;
+      state.aud = payload.aud || null;
       if (payload.groups) {
         state.projects = payload.groups.reduce((projects, group) => {
           const groupComponents = group.split('/');
