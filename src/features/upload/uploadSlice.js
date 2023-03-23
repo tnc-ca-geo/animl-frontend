@@ -129,14 +129,17 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
     if (token) {
       dispatch(uploadStart());
 
+      const { file } = payload;
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const uploadUrl = await call({
         request: 'getSignedUrl',
-        projId: selectedProj._id
+        projId: selectedProj._id,
+        input: {
+          originalFile: file.name
+        }
       });
       const signedUrl = uploadUrl.createUpload.url;
-      const { file } = payload;
 
       const xhr = new XMLHttpRequest();
       await new Promise((resolve) => {

@@ -490,14 +490,17 @@ const queries = {
     variables: { input: input },
   }),
 
-  getSignedUrl: () => ({
+  getSignedUrl: (input) => ({
     template: `
-      mutation CreateUpload {
-        createUpload {
-          url
+      mutation CreateUpload($input: CreateUploadInput!) {
+        createUpload(input: $input) {
+            batch
+            user
+            url
         }
       }
-    `
+    `,
+    variables: { input }
   }),
 
   getBatches: () => ({
