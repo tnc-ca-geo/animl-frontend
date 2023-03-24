@@ -5,7 +5,7 @@ import { FormWrapper, ButtonRow, HelperText, FormError } from '../../components/
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
-import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates } from './uploadSlice';
+import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo } from './uploadSlice';
 import { styled } from '@stitches/react';
 
 const bulkUploadSchema = Yup.object().shape({
@@ -15,10 +15,10 @@ const bulkUploadSchema = Yup.object().shape({
 const Table = styled('table', {
   borderSpacing: '0',
   width: '100%',
-  marginBottom: '30px'
+  marginBottom: '15px'
 })
 
-const TableHead = styled('th', {
+const TableHeadCell = styled('th', {
   textAlign: 'left',
   verticalAlign: 'bottom',
   padding: '5px 15px',
@@ -35,9 +35,18 @@ const TableCell = styled('td', {
   verticalAlign: 'top',
 });
 
+const Pagination = styled('div', {
+  textAlign: 'right',
+  marginBottom: '30px',
+  '& > button': {
+    marginLeft: '10px'
+  }
+})
+
 const BulkUploadForm = ({ handleClose }) => {
   const { isLoading, progress }  = useSelector(selectUploadsLoading);
   const batchStates = useSelector(selectBatchStates);
+  const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
   const percentUploaded = Math.round(progress * 100);
   const dispatch = useDispatch();
 
@@ -62,8 +71,8 @@ const BulkUploadForm = ({ handleClose }) => {
       <Table>
         <thead>
           <tr>
-            <TableHead>File name</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHeadCell>File name</TableHeadCell>
+            <TableHeadCell>Status</TableHeadCell>
           </tr>
         </thead>
         <tbody>
@@ -86,6 +95,10 @@ const BulkUploadForm = ({ handleClose }) => {
           )}
         </tbody>
       </Table>
+      <Pagination>
+        {hasPrevious && <Button size='small' onClick={() => dispatch(fetchBatches('previous'))}>Previous page</Button>}
+        {hasNext && <Button size='small' onClick={() => dispatch(fetchBatches('next'))}>Next page</Button>}
+      </Pagination>
 
       <FormWrapper>
         <Formik

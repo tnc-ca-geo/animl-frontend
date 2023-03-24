@@ -503,7 +503,7 @@ const queries = {
     variables: { input }
   }),
 
-  getBatches: (input) => ({
+  getBatches: ({user, pageInfo, page}) => ({
     template: `
       query GetBatches($input: QueryBatchesInput!) {
         batches(input: $input) {
@@ -525,7 +525,12 @@ const queries = {
         }
       }
     `,
-    variables: { input }
+    variables: { input: {
+      ...(page === 'next' && { next: pageInfo.next }),
+      ...(page === 'previous' && { previous: pageInfo.previous }),
+      limit: 5,
+      user
+    } }
   }),
 
   getBatch: ({ id }) => ({

@@ -4,6 +4,10 @@ import { call } from '../../api';
 
 const initialState = {
   batchStates: [],
+  pageInfo: {
+    hasNext: false,
+    hasPrevious: false,
+  },
   loadingStates: {
     upload: {
       isLoading: false,
@@ -83,14 +87,15 @@ export const uploadSlice = createSlice({
     },
 
     fetchBatchesSuccess: (state, { payload }) => {
-      const { batches, pageInfo } = payload.batches;
+      const { batches, pageInfo } = payload.batches.batches;
 
       const ls = {
         isLoading: true,
         operation: 'fetching',
         errors: null,
       }
-      state.batchStates = batches.batches;
+      state.batchStates = batches;
+      state.pageInfo = pageInfo;
       state.loadingStates.batchStates = {
         ...state.loadingStates.batchStates,
         ...ls
@@ -167,7 +172,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
   }
 }
 
-export const fetchBatches = () => async (dispatch, getState) => {
+export const fetchBatches = (page = 'current') => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -175,10 +180,12 @@ export const fetchBatches = () => async (dispatch, getState) => {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const userAud = getState().user.aud;
+      const pageInfo = getState().uploads.pageInfo;
+
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
-        input: { user: userAud }
+        input: { user: userAud, pageInfo, page }
       })
       dispatch(fetchBatchesSuccess({ batches }));
     }
@@ -189,6 +196,7 @@ export const fetchBatches = () => async (dispatch, getState) => {
 }
 
 export const selectBatchStates = state => state.uploads.batchStates;
+export const selectBatchPageInfo = state => state.uploads.pageInfo;
 export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
 
 export default uploadSlice.reducer;
