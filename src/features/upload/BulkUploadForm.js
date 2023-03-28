@@ -80,11 +80,11 @@ const BulkUploadForm = ({ handleClose }) => {
             let status = 'Queued'
             if (processingStart) {
               const dateString = new Date(parseInt(processingStart)).toLocaleString();
-              status = `Processing since ${dateString}. ${total ? `Finsished ${total - remaining} of ${total} images.` : ''}`
+              status = `Processing since ${dateString}. ${total ? `Finished ${total - remaining} of ${total} images.` : ''}`
             }
             if (processingEnd) {
               const dateString = new Date(parseInt(processingEnd)).toLocaleString();
-              status = `Processing of ${total} images finsihed at ${dateString}.`
+              status = `Processing of ${total} images finished at ${dateString}.`
             }
             return (
               <TableRow key={_id}>
