@@ -5,7 +5,7 @@ import { FormWrapper, ButtonRow, HelperText, FormError } from '../../components/
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
-import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo } from './uploadSlice';
+import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch } from './uploadSlice';
 import { styled } from '@stitches/react';
 
 const bulkUploadSchema = Yup.object().shape({
@@ -73,11 +73,14 @@ const BulkUploadForm = ({ handleClose }) => {
           <tr>
             <TableHeadCell>File name</TableHeadCell>
             <TableHeadCell>Status</TableHeadCell>
+            <TableHeadCell>Actions</TableHeadCell>
           </tr>
         </thead>
         <tbody>
           {sortedBatchStates.map(({ _id, originalFile, processingStart, processingEnd, total, remaining }) => {
             let status = 'Queued'
+            const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
+
             if (processingStart) {
               const dateString = new Date(parseInt(processingStart)).toLocaleString();
               status = `Processing started at ${dateString}.`
@@ -93,6 +96,7 @@ const BulkUploadForm = ({ handleClose }) => {
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>{status}</TableCell>
+                <TableCell>{isStopable && <Button size='small' onClick={() => dispatch(stopBatch(_id))}>Stop</Button>}</TableCell>
               </TableRow>
             )}
           )}

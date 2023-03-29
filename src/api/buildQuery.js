@@ -548,6 +548,17 @@ const queries = {
       }
     `,
     variables: { id }
+  }),
+
+  stopBatch: ({ id }) => ({
+    template: `
+      mutation StopBatch($input: StopBatchInput!) {
+        stopBatch(input: $input) {
+          message
+        }
+      }
+    `,
+    variables: { input: { batch: id } }
   })
 };
 

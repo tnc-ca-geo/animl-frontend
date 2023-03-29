@@ -20,6 +20,11 @@ const initialState = {
       operation: null,
       errors: null,
       progress: 0,
+    },
+    stopBatch: {
+      isLoading: false,
+      operation: null,
+      errors: null,
     }
   }
 };
@@ -31,7 +36,7 @@ const mergeBatchData = (oldBatchData, newBatchData) => {
   }
 
   return oldBatchData.map((existingBatch) => {
-    const batchUpdate = newBatchData.find(({ batch: { _id }}) => _id === existingBatch._id);
+    const batchUpdate = newBatchData.find(({ _id }) => _id === existingBatch._id);
     if (!batchUpdate) {
       return existingBatch;
     }
@@ -110,7 +115,7 @@ export const uploadSlice = createSlice({
 
       const ls = {
         isLoading: true,
-        operation: 'fetching',
+        operation: null,
         errors: null,
       }
 
@@ -149,6 +154,42 @@ export const uploadSlice = createSlice({
     fetchBatchDetailSuccess: (state, { payload }) => {
       const newBatchData = payload.batches.map(({ batch }) => batch);
       state.batchStates = mergeBatchData(state.batchStates, newBatchData);
+    },
+
+    stopBatchStart: (state) => {
+      const ls = {
+        isLoading: true,
+        operation: 'stopping',
+        errors: null,
+      }
+      state.loadingStates.stopBatch = {
+        ...state.loadingStates.stopBatch,
+        ...ls
+      };
+    },
+
+    stopBatchSuccess: (state) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+      }
+      state.loadingStates.stopBatch = {
+        ...state.loadingStates.stopBatch,
+        ...ls
+      };
+    },
+
+    stopBatchFailure: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: payload,
+      }
+      state.loadingStates.stopBatch = {
+        ...state.loadingStates.stopBatch,
+        ...ls
+      };
     }
   }
 });
@@ -162,6 +203,9 @@ export const {
   fetchBatchesSuccess,
   fetchBatchesFailure,
   fetchBatchDetailSuccess,
+  stopBatchStart,
+  stopBatchSuccess,
+  stopBatchFailure,
 } = uploadSlice.actions;
 
 // bulk upload thunk
@@ -243,6 +287,30 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
   } catch (err) {
     console.log('err: ', err)
     dispatch(fetchBatchesFailure(err))
+  }
+}
+
+export const stopBatch = (id) => async (dispatch, getState) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      dispatch(stopBatchStart());
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      await call({
+        request: 'stopBatch',
+        projId: selectedProj._id,
+        input: { id }
+      })
+
+      dispatch(stopBatchSuccess());
+      dispatch(fetchBatches());
+    }
+  } catch (err) {
+    console.log('err: ', err)
+    dispatch(stopBatchFailure(err))
   }
 }
 
