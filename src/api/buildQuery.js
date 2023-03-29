@@ -537,7 +537,13 @@ const queries = {
     template: `
       query GetBatch($id: String!) {
         batch(_id: $id) {
-            _id
+          _id
+          eTag
+          processingStart
+          processingEnd
+          dead
+          remaining
+          total
         }
       }
     `,

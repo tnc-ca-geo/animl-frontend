@@ -24,6 +24,25 @@ const initialState = {
   }
 };
 
+const mergeBatchData = (oldBatchData, newBatchData) => {
+  // Merges two arrays of batches, used to update batch data with the `remaining` value
+  if (oldBatchData.length === 0) {
+    return newBatchData;
+  }
+
+  return oldBatchData.map((existingBatch) => {
+    const batchUpdate = newBatchData.find(({ batch: { _id }}) => _id === existingBatch._id);
+    if (!batchUpdate) {
+      return existingBatch;
+    }
+
+    return {
+      ...existingBatch,
+      ...batchUpdate.batch
+    }
+  });
+}
+
 export const uploadSlice = createSlice({
   name: 'uploads',
   initialState,
@@ -94,12 +113,25 @@ export const uploadSlice = createSlice({
         operation: 'fetching',
         errors: null,
       }
-      state.batchStates = batches;
+
       state.pageInfo = pageInfo;
       state.loadingStates.batchStates = {
         ...state.loadingStates.batchStates,
         ...ls
       };
+
+      if (payload.overwrite) {
+        state.batchStates = batches;
+      } else {
+        // removes all fields where value === null from the object,
+        // so don't overwrite the `remaining` value we have in state
+        const newBatchData = batches.map(batch => {
+          return Object.keys(batch)
+          .filter((key) => batch[key] != null)
+          .reduce((obj, key) => ({ ...obj, [key]: batch[key] }), {});
+        });
+        state.batchStates = mergeBatchData(state.batchStates, newBatchData);
+      }
     },
 
     fetchBatchesFailure: (state, { payload }) => {
@@ -112,6 +144,11 @@ export const uploadSlice = createSlice({
         ...state.loadingStates.batchStates,
         ...ls
       };
+    },
+
+    fetchBatchDetailSuccess: (state, { payload }) => {
+      const newBatchData = payload.batches.map(({ batch }) => batch);
+      state.batchStates = mergeBatchData(state.batchStates, newBatchData);
     }
   }
 });
@@ -124,6 +161,7 @@ export const {
   fetchBatchesStart,
   fetchBatchesSuccess,
   fetchBatchesFailure,
+  fetchBatchDetailSuccess,
 } = uploadSlice.actions;
 
 // bulk upload thunk
@@ -187,7 +225,20 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
         projId: selectedProj._id,
         input: { user: userAud, pageInfo, page }
       })
-      dispatch(fetchBatchesSuccess({ batches }));
+
+      const ongoingBatches = batches.batches.batches.filter(
+        ({ processingEnd, remaining }) => !processingEnd && !remaining
+      );
+
+      const requests = ongoingBatches.map(({ _id: id }) => call({
+        request: 'getBatch',
+        projId: selectedProj._id,
+        input: { id }
+      }))
+      Promise.all(requests)
+        .then(batches => dispatch(fetchBatchDetailSuccess({ batches })));
+
+      dispatch(fetchBatchesSuccess({ batches, overwrite: page !== 'current' }));
     }
   } catch (err) {
     console.log('err: ', err)
