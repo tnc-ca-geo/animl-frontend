@@ -29,6 +29,20 @@ const initialState = {
   }
 };
 
+const equalBatches = (batch1, batch2) => {
+  // Returns true if two arrays of batches contain the same batches.
+  // NOTE: This doesn't mean the objects in each array are equal.
+  //
+  // We use this do work out if we need to update the objects currently in
+  // state (if true) or if we need to overwrite the state (if false). 
+
+  if (batch1.length !== batch2.length) return false;
+
+  const batch1Ids = batch1.map(({ _id }) => _id).sort();
+  const batch2Ids = batch2.map(({ _id }) => _id).sort();
+  return JSON.stringify(batch1Ids) === JSON.stringify(batch2Ids);
+}
+
 const mergeBatchData = (oldBatchData, newBatchData) => {
   // Merges two arrays of batches, used to update batch data with the `remaining` value
   if (oldBatchData.length === 0) {
@@ -125,7 +139,7 @@ export const uploadSlice = createSlice({
         ...ls
       };
 
-      if (payload.overwrite) {
+      if (!equalBatches(state.batchStates, batches)) {
         state.batchStates = batches;
       } else {
         // removes all fields where value === null from the object,
@@ -282,7 +296,7 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
       Promise.all(requests)
         .then(batches => dispatch(fetchBatchDetailSuccess({ batches })));
 
-      dispatch(fetchBatchesSuccess({ batches, overwrite: page !== 'current' }));
+      dispatch(fetchBatchesSuccess({ batches }));
     }
   } catch (err) {
     console.log('err: ', err)
