@@ -544,6 +544,9 @@ const queries = {
           dead
           remaining
           total
+          errors {
+            error
+          }
         }
       }
     `,

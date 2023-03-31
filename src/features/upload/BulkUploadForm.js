@@ -43,6 +43,32 @@ const Pagination = styled('div', {
   }
 })
 
+const Status = styled('p');
+const Error = styled('span', {
+  color: 'red'
+});
+
+const getStatus = (batch) => {
+  const { processingStart, processingEnd, total, remaining, errors } = batch;
+
+  let status = 'Queued';
+  if (processingStart) {
+    const dateString = new Date(parseInt(processingStart)).toLocaleString();
+    status = `Processing started at ${dateString}.`
+    if (remaining !== null) {
+      status = `${status} ${total ? `Finished ${total - remaining} of ${total} images.` : ''} ${total - remaining === 0 ? 'Wrapping up.' : ''}`
+    }
+  }
+  if (processingEnd) {
+    const dateString = new Date(parseInt(processingEnd)).toLocaleString();
+    status = `Processing of ${total} images finished at ${dateString}.`
+  }
+
+  const error = errors?.length > 0 && <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
+
+  return <Status>{status} {error}</Status>;
+}
+
 const BulkUploadForm = ({ handleClose }) => {
   const { isLoading, progress }  = useSelector(selectUploadsLoading);
   const batchStates = useSelector(selectBatchStates);
@@ -77,21 +103,11 @@ const BulkUploadForm = ({ handleClose }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedBatchStates.map(({ _id, originalFile, processingStart, processingEnd, total, remaining }) => {
-            let status = 'Queued'
+          {sortedBatchStates.map((batch) => {
+            const { _id, originalFile, processingEnd, total, remaining } = batch
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
+            const status = getStatus(batch)
 
-            if (processingStart) {
-              const dateString = new Date(parseInt(processingStart)).toLocaleString();
-              status = `Processing started at ${dateString}.`
-              if (remaining !== null) {
-                status = `${status} ${total ? `Finished ${total - remaining} of ${total} images.` : ''} ${total - remaining === 0 ? 'Wrapping up.' : ''}`
-              }
-            }
-            if (processingEnd) {
-              const dateString = new Date(parseInt(processingEnd)).toLocaleString();
-              status = `Processing of ${total} images finished at ${dateString}.`
-            }
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>

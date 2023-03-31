@@ -57,7 +57,7 @@ const mergeBatchData = (oldBatchData, newBatchData) => {
 
     return {
       ...existingBatch,
-      ...batchUpdate.batch
+      ...batchUpdate
     }
   });
 }
@@ -284,9 +284,11 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
         input: { user: userAud, pageInfo, page }
       })
 
-      const ongoingBatches = batches.batches.batches.filter(
-        ({ processingEnd, remaining }) => !processingEnd && !remaining
-      );
+      // const ongoingBatches = batches.batches.batches.filter(
+      //   ({ processingEnd, remaining }) => !processingEnd && !remaining
+      // );
+
+      const ongoingBatches = batches.batches.batches;
 
       const requests = ongoingBatches.map(({ _id: id }) => call({
         request: 'getBatch',
