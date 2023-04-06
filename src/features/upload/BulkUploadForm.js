@@ -9,7 +9,12 @@ import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, sele
 import { styled } from '@stitches/react';
 
 const bulkUploadSchema = Yup.object().shape({
-  images_zip: Yup.mixed().required('File is required'),
+  images_zip: Yup
+    .mixed()
+    .required('File is required')
+    .test('fileSize', 'The file must be smaller than 50GB.', (value) => {
+      return value.size <= Math.pow(1024, 3) * 50;
+    }),
 });
 
 const Table = styled('table', {
