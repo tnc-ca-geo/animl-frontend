@@ -43,7 +43,7 @@ const Pagination = styled('div', {
   }
 })
 
-const Status = styled('p');
+const Status = styled('span');
 const Error = styled('span', {
   color: 'red'
 });
