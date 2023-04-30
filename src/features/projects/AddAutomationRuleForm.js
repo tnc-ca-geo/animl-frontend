@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { styled } from '../../theme/stitches.config.js';
 import _ from 'lodash';
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -15,6 +16,11 @@ import {
 } from '../../components/Form';
 import CategoryConfigForm from './CategoryConfigForm';
 
+
+const CategoryConfigSection = styled('div', {
+  maxHeight: '220px',
+  overflowY: 'scroll',
+});
 
 const emptyRule = {
   name: '',
@@ -253,16 +259,18 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
           </FieldRow>
 
           {/* category configurations */}
-          {Object.entries(values.action.categoryConfig).length > 0 && 
-            <label>Confidence thresholds</label>
-          }
-          <FieldArray name='categoryConfigs'>
-            <>
-              {Object.entries(values.action.categoryConfig).map(([k, v]) => (
-                <CategoryConfigForm key={k} catName={k} config={v} />
-              ))}
-            </>
-          </FieldArray>
+          <CategoryConfigSection>
+            {Object.entries(values.action.categoryConfig).length > 0 && 
+              <label>Confidence thresholds</label>
+            }
+            <FieldArray name='categoryConfigs'>
+              <>
+                {Object.entries(values.action.categoryConfig).map(([k, v]) => (
+                  <CategoryConfigForm key={k} catName={k} config={v} />
+                ))}
+              </>
+            </FieldArray>
+          </CategoryConfigSection>
           
           <ButtonRow>
             <Button

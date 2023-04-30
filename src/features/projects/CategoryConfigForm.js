@@ -16,6 +16,7 @@ const CategoryName = styled(CheckboxLabel, {
   fontSize: '$3',
   fontFamily: '$Roboto',
   fontWeight: '$2',
+  minWidth: '130px'
 });
 
 const ConfThreshold = styled('div', {
@@ -45,7 +46,7 @@ const StyledSlider = styled(ReactSlider, {
 });
 
 const StyledThumb = styled('div', {
-  top: '-8px',
+  top: '-5px',
   height: '12px',
   width: '12px',
   textAlign: 'center',
