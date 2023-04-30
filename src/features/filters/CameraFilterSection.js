@@ -70,7 +70,10 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
     }));
   };
 
-  const handleExpandCameraButtonClick = () => setExpanded(!expanded);
+  const handleExpandCameraButtonClick = (e) => {
+    e.preventDefault();
+    setExpanded(!expanded);
+  }
 
   return (
     <StyledCameraFilterSection>
