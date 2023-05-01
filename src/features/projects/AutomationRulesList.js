@@ -6,7 +6,7 @@ import IconButton from '../../components/IconButton';
 import Button from '../../components/Button';
 import { ButtonRow } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { TrashIcon } from '@radix-ui/react-icons';
+import { TrashIcon, Pencil1Icon } from '@radix-ui/react-icons';
 
 
 const Rule = styled('li', {
@@ -36,7 +36,6 @@ const StyledRuleDescription = styled('div', {
   }
 });
 
-
 const RuleDescription = ({ rule, availableModels }) => {
   const model = availableModels.find((m) => m === rule.action.mlModel);
   return (
@@ -50,7 +49,7 @@ const RuleDescription = ({ rule, availableModels }) => {
           `When an ${rule.event.label} is detected, `
         }
         {rule.action.type === 'run-inference'
-          ? `submit the image to ${model} for inference.`
+          ? `request a prediction from ${model}.`
           : `send an alert to ${rule.action.alertRecipients.join(', ')}.`
         }
       </p>
@@ -59,7 +58,7 @@ const RuleDescription = ({ rule, availableModels }) => {
 };
 
 
-const AutomationRulesList = ({ project, availableModels, onAddRuleClick }) => {
+const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditRuleClick, setCurrentRule }) => {
   const automationRulesLoading = useSelector(selectAutomationRulesLoading);
   const dispatch = useDispatch();
 
@@ -69,6 +68,13 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick }) => {
       rule._id.toString() !== ruleToRemove
     ));
     dispatch(updateAutomationRules({ automationRules: rules }));
+  };
+
+  const handleRuleEditClick = (e) => {
+    const ruleToEdit = e.currentTarget.dataset.rule;
+    const rule = project.automationRules.find((r) => r._id.toString() === ruleToEdit);
+    setCurrentRule(rule);
+    onEditRuleClick();
   };
 
   return (
@@ -84,13 +90,22 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick }) => {
             return (
               <Rule key={rule._id}>
                 <RuleDescription rule={rule} availableModels={availableModels} />
-                <IconButton
-                  variant='ghost'
-                  data-rule={rule._id}
-                  onClick={handleRuleDeleteClick}
-                >
-                  <TrashIcon />
-                </IconButton>
+                <div>
+                  <IconButton
+                    variant='ghost'
+                    data-rule={rule._id}
+                    onClick={handleRuleEditClick}
+                  >
+                    <Pencil1Icon />
+                  </IconButton>
+                  <IconButton
+                    variant='ghost'
+                    data-rule={rule._id}
+                    onClick={handleRuleDeleteClick}
+                  >
+                    <TrashIcon />
+                  </IconButton>
+                </div>
               </Rule>
             )
           })}

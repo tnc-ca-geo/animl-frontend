@@ -55,6 +55,7 @@ const StyledThumb = styled('div', {
   border: '3px solid white',
   borderRadius: '50%',
   cursor: 'grab',
+  zIndex: 0,
 });
 
 const StyledTrack = styled('div', {

@@ -88,7 +88,7 @@ const addRuleSchema = Yup.object().shape({
 });
 
 
-const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm }) => {
+const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
 
@@ -100,10 +100,18 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm }) =>
   }, [models, availableModels, dispatch]);
 
   // save rule
-  const handleSaveRulesSubmit = ({name, event, action}) => {
-    const newRule = buildRule(name, event, action);
-    const rules = project.automationRules.concat(newRule);
-    dispatch(updateAutomationRules({ automationRules: rules }));
+  const handleSaveRulesSubmit = (formVals) => {
+    const newRule = valsToRule(formVals);
+    let newRules = [...project.automationRules];
+    if (rule) {
+      // we're updating an existing rule
+      const ruleIndex = project.automationRules.findIndex((r) => r._id === rule._id);
+      newRules[ruleIndex] = newRule;
+    } else {
+      // we're creating a new rule
+      newRules = project.automationRules.concat(newRule);
+    }
+    dispatch(updateAutomationRules({ automationRules: newRules }));
     hideAddRuleForm();
   };
 
@@ -113,7 +121,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm }) =>
   return (
     <FormWrapper>
       <Formik
-        initialValues={{ ...emptyRule }}
+        initialValues={rule ? ruleToVals(rule) : { ...emptyRule }}
         validationSchema={addRuleSchema} 
         onSubmit={handleSaveRulesSubmit}
       >
@@ -256,18 +264,18 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm }) =>
           </FieldRow>
 
           {/* category configurations */}
-          <CategoryConfigSection>
-            {Object.entries(values.action.categoryConfig).length > 0 && 
+          {values.action.categoryConfig && Object.entries(values.action.categoryConfig).length > 0 && 
+            <CategoryConfigSection>
               <label>Confidence thresholds</label>
-            }
-            <FieldArray name='categoryConfigs'>
-              <>
-                {Object.entries(values.action.categoryConfig).map(([k, v]) => (
-                  <CategoryConfigForm key={k} catName={k} config={v} />
-                ))}
-              </>
-            </FieldArray>
-          </CategoryConfigSection>
+              <FieldArray name='categoryConfigs'>
+                <>
+                  {Object.entries(values.action.categoryConfig).map(([k, v]) => (
+                    <CategoryConfigForm key={k} catName={k} config={v} />
+                  ))}
+                </>
+              </FieldArray>
+            </CategoryConfigSection>
+          }
           
           <ButtonRow>
             <Button
@@ -293,9 +301,9 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm }) =>
 };
 
 
-function buildRule(name, event, action) {
-
-  let newRule = {
+// map from values to automation rule schema
+function valsToRule({ name, event, action }) {
+  const newRule = {
     name,
     event: {
       type: event.type.value,
@@ -315,6 +323,46 @@ function buildRule(name, event, action) {
 
   return newRule;
 }
+
+// map rule schema to form values (for updating an existing rule)
+function ruleToVals(rule) {
+  const mapValueToLabel = {
+    'image-added': 'Image added',
+    'label-added': 'Label added',
+    'run-inference': 'Run inference',
+    'send-alert': 'Send alert',
+  };
+
+  const vals = {
+    ...rule,
+    name: rule.name,
+    event: {
+      type: {
+        value: rule.event.type,
+        label: mapValueToLabel[rule.event.type]
+      },
+      ...(rule.event.label && { label: rule.event.label }),
+    },
+    action: {
+      type: {
+        value: rule.action.type,
+        label: mapValueToLabel[rule.action.type]
+      },
+    }
+  };
+
+  if (rule.action.type === 'run-inference') {
+    vals.action.model = { value: rule.action.mlModel, label: rule.action.mlModel };
+    vals.action.categoryConfig = rule.action.categoryConfig;
+  }
+  else if (rule.action.type === 'send-alert') {
+    const recipients = rule.action.alertRecipients.join(', ');
+    vals.action.alertRecipients = recipients;
+  }
+
+  return vals;
+}
+
 
 
 export default AddAutomationRuleForm;

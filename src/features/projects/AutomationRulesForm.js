@@ -11,8 +11,13 @@ const AutomationRulesForm = () => {
   // const selectedView = useSelector(selectSelectedView);
   const availableModels = selectedProject.availableMLModels;
   const [ showAddRuleForm, setShowAddRuleForm ] = useState(false);
+  const [ currentRule, setCurrentRule ] = useState();
 
-  const handleAddRuleClick = () => setShowAddRuleForm(true);
+  const handleAddRuleClick = () => {
+    setCurrentRule(null);
+    setShowAddRuleForm(true);
+  }
+  const handleEditRuleClick = () => setShowAddRuleForm(true);
   const hideAddRuleForm = () => setShowAddRuleForm(false);
   
   return (
@@ -23,11 +28,14 @@ const AutomationRulesForm = () => {
               project={selectedProject}
               availableModels={availableModels}
               hideAddRuleForm={hideAddRuleForm}
+              rule={currentRule}
             />
           : <AutomationRulesList
               project={selectedProject}
               availableModels={availableModels}
               onAddRuleClick={handleAddRuleClick}
+              onEditRuleClick={handleEditRuleClick}
+              setCurrentRule={setCurrentRule}
             />
         : <SpinnerOverlay>
             <PulseSpinner />
