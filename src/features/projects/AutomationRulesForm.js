@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  selectSelectedProject,
-  selectSelectedView
-} from '../projects/projectsSlice';
+import { selectSelectedProject } from '../projects/projectsSlice';
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -11,25 +8,24 @@ import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const AutomationRulesForm = () => {
   const selectedProject = useSelector(selectSelectedProject);
-  const selectedView = useSelector(selectSelectedView);
+  // const selectedView = useSelector(selectSelectedView);
   const availableModels = selectedProject.availableMLModels;
   const [ showAddRuleForm, setShowAddRuleForm ] = useState(false);
 
   const handleAddRuleClick = () => setShowAddRuleForm(true);
   const hideAddRuleForm = () => setShowAddRuleForm(false);
   
-
   return (
     <div>
-      {availableModels.length && selectedView
+      {availableModels.length && selectedProject
         ? showAddRuleForm
           ? <AddAutomationRuleForm
-              view={selectedView}
+              project={selectedProject}
               availableModels={availableModels}
               hideAddRuleForm={hideAddRuleForm}
             />
           : <AutomationRulesList
-              view={selectedView}
+              project={selectedProject}
               availableModels={availableModels}
               onAddRuleClick={handleAddRuleClick}
             />

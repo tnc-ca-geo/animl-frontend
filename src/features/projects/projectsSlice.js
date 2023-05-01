@@ -21,6 +21,11 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    automationRules: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
     deployments: {
       isLoading: false,
       operation: null,
@@ -98,7 +103,10 @@ export const projectsSlice = createSlice({
       state.unsavedViewChanges = payload;
     },
 
-    /* Views CRUD */
+
+    /* 
+     * Views CRUD 
+     */
 
     editViewStart: (state) => { 
       const ls = { isLoading: true, operation: 'updating', errors: null };  
@@ -142,8 +150,36 @@ export const projectsSlice = createSlice({
       state.loadingStates.views.errors.splice(index, 1);
     },
 
+    /* 
+     * Automation Rules CRUD 
+     */
 
-    /* Deployments CRUD */
+    updateAutomationRulesStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };  
+      state.loadingStates.automationRules = ls;
+    },
+
+    updateAutomationRulesFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };  
+      state.loadingStates.automationRules = ls;
+    },
+
+    updateAutomationRulesSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };  
+      state.loadingStates.automationRules = ls;
+      const editedAutomationRules = payload.automationRules;
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.automationRules = editedAutomationRules;
+    },
+    
+    dismissAutomationRulesError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.automationRules.errors.splice(index, 1);
+    },
+
+    /* 
+     * Deploployments CRUD 
+     */
 
     editDeploymentsStart: (state) => {
       const ls = { isLoading: true, operation: 'updating', errors: null };  
@@ -251,6 +287,11 @@ export const {
   editViewFailure,
   dismissViewsError,
 
+  updateAutomationRulesStart,
+  updateAutomationRulesSuccess,
+  updateAutomationRulesFailure,
+  dismissAutomationRulesError,
+
   editDeploymentsStart, 
   editDeploymentsFailure,
   editDeploymentsSuccess,
@@ -350,6 +391,34 @@ export const editView = (operation, payload) => {
   };
 };
 
+// updateAutomationRules thunk
+export const updateAutomationRules = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+
+      dispatch(updateAutomationRulesStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'updateAutomationRules', 
+          input: payload
+        });
+        const automationRules = res.updateAutomationRules.automationRules;
+        dispatch(updateAutomationRulesSuccess({ projId, automationRules }));
+      }
+    } catch (err) {
+      console.log(`error attempting to update automation rules: `, err);
+      dispatch(updateAutomationRulesFailure(err));
+    }
+  };
+};
+
 // editDeployments thunk
 export const editDeployments = (operation, payload) => {
   return async (dispatch, getState) => {
@@ -423,8 +492,9 @@ export const selectProjects = state => state.projects.projects;
 export const selectSelectedProject = state => (
   state.projects.projects.find((proj) => proj.selected)
 );
-// TODO AUTH - decide whether we just derive all this in components from
-// selectedProject or provide selectors here
+export const selectSelectedProjectId = createSelector([selectSelectedProject],
+  (proj) => proj ? proj._id : null
+);
 export const selectViews = createSelector([selectSelectedProject],
   (proj) => proj ? proj.views : null
 );
@@ -438,6 +508,7 @@ export const selectMLModels = createSelector([selectSelectedProject],
 );
 export const selectProjectsLoading = state => state.projects.loadingStates.projects;
 export const selectViewsLoading = state => state.projects.loadingStates.views;
+export const selectAutomationRulesLoading = state => state.projects.loadingStates.automationRules;
 export const selectDeploymentsLoading = state => state.projects.loadingStates.deployments;
 export const selectModelsLoadingState = state => state.projects.loadingStates.models;
 export const selectModalOpen = state => state.projects.modalOpen;

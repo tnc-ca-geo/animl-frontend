@@ -4,7 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import _ from 'lodash';
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { editView, selectMLModels, fetchModels } from './projectsSlice';
+import { updateAutomationRules, selectMLModels, fetchModels } from './projectsSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
 import {
@@ -88,7 +88,7 @@ const addRuleSchema = Yup.object().shape({
 });
 
 
-const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
+const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
 
@@ -102,11 +102,8 @@ const AddAutomationRuleForm = ({ view, availableModels, hideAddRuleForm }) => {
   // save rule
   const handleSaveRulesSubmit = ({name, event, action}) => {
     const newRule = buildRule(name, event, action);
-    const rules = view.automationRules.concat(newRule);
-    dispatch(editView('update', {
-      viewId: view._id,
-      diffs: { automationRules: rules }
-    }));
+    const rules = project.automationRules.concat(newRule);
+    dispatch(updateAutomationRules({ automationRules: rules }));
     hideAddRuleForm();
   };
 

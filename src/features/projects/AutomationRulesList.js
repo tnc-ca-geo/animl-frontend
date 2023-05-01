@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { editView, selectViewsLoading } from '../projects/projectsSlice';
+import { updateAutomationRules, selectAutomationRulesLoading, editView, selectViewsLoading } from '../projects/projectsSlice';
 import IconButton from '../../components/IconButton';
 import Button from '../../components/Button';
 import { ButtonRow } from '../../components/Form';
@@ -59,37 +59,33 @@ const RuleDescription = ({ rule, availableModels }) => {
 };
 
 
-const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
-  const viewsLoading = useSelector(selectViewsLoading);
+const AutomationRulesList = ({ project, availableModels, onAddRuleClick }) => {
+  const automationRulesLoading = useSelector(selectAutomationRulesLoading);
   const dispatch = useDispatch();
 
   const handleRuleDeleteClick = (e) => {
     const ruleToRemove = e.currentTarget.dataset.rule;
-    const rules = view.automationRules.filter((rule) => (
+    const rules = project.automationRules.filter((rule) => (
       rule._id.toString() !== ruleToRemove
     ));
-    dispatch(editView('update', {
-      viewId: view._id,
-      diffs: { automationRules: rules }
-    }));
+    dispatch(updateAutomationRules({ automationRules: rules }));
   };
 
   return (
     <div>
-      {viewsLoading.isLoading &&
+      {automationRulesLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
         </SpinnerOverlay>
       }
       <div>
         <RulesList>
-          {view.automationRules.map((rule) => {
+          {project.automationRules.map((rule) => {
             return (
               <Rule key={rule._id}>
                 <RuleDescription rule={rule} availableModels={availableModels} />
                 <IconButton
                   variant='ghost'
-                  disabled={view && !view.editable}
                   data-rule={rule._id}
                   onClick={handleRuleDeleteClick}
                 >
@@ -102,7 +98,6 @@ const AutomationRulesList = ({ view, availableModels, onAddRuleClick }) => {
         <ButtonRow>
           <Button
             size='large'
-            disabled={!view.editable}
             onClick={onAddRuleClick}
           >
             New rule

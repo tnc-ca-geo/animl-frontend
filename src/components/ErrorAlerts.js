@@ -39,6 +39,7 @@ import {
 } from '../features/images/imagesSlice';
 import getErrorContent from '../content/Errors';
 
+// TODO: add updateAutomationRules errors
 
 const ErrorAlerts = () => {
   const dispatch = useDispatch();

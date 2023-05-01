@@ -95,20 +95,21 @@ const viewFields = `
     notReviewed
     custom
   }
-  automationRules {
-    _id
-    name
-    event {
-      type
-      label
-    }
-    action {
-      type
-      alertRecipients
-      mlModel
-      confThreshold
-      categoryConfig
-    }
+`;
+
+const automationRuleFields = `
+  _id
+  name
+  event {
+    type
+    label
+  }
+  action {
+    type
+    alertRecipients
+    mlModel
+    confThreshold
+    categoryConfig
   }
 `;
 
@@ -119,6 +120,9 @@ const projectFields = `
   description
   views {
     ${viewFields}
+  }
+  automationRules {
+    ${automationRuleFields}
   }
   cameraConfigs {
     ${cameraConfigFields}
@@ -321,6 +325,19 @@ const queries = {
         deleteView(input: $input) {
           project {
             ${projectFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateAutomationRules: (input) => ({
+    template: `
+      mutation UpdateAutomationRules($input: UpdateAutomationRulesInput!) {
+        updateAutomationRules(input: $input) {
+          automationRules {
+            ${automationRuleFields}
           }
         }
       }

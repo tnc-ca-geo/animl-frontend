@@ -12,7 +12,7 @@ import {
 } from './imagesSlice';
 import { selectActiveFilters } from '../filters/filtersSlice';
 import ImagesTable from './ImagesTable';
-import { selectSelectedProject } from '../projects/projectsSlice';
+import { selectSelectedProjectId } from '../projects/projectsSlice';
 
 // const ImagesTableLoadingOverlay = styled('div', {
 //   flexGrow: '1',
@@ -32,7 +32,7 @@ const StyledImagesPanel = styled('div', {
 });
 
 const ImagesPanel = () => {
-  const selectedProject = useSelector(selectSelectedProject);
+  const selectedProjectId = useSelector(selectSelectedProjectId);
   const activeFilters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
@@ -43,10 +43,10 @@ const ImagesPanel = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (selectedProject && activeFilters && !imgContextLoading.isLoading) {
+    if (selectedProjectId && activeFilters && !imgContextLoading.isLoading) {
       dispatch(fetchImages(activeFilters));
     }
-  }, [selectedProject, activeFilters, imgContextLoading, paginatedField, 
+  }, [selectedProjectId, activeFilters, imgContextLoading, paginatedField, 
     sortAscending, dispatch]);
 
   const loadNextPage = () => {
