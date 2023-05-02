@@ -532,6 +532,7 @@ const queries = {
           },
           batches {
             _id
+            projectId
             eTag
             processingStart
             processingEnd
