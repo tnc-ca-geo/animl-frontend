@@ -36,6 +36,12 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    uploads: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+      progress: 0
+    }
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -46,7 +52,6 @@ export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
-
     getProjectsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.projects = ls;
@@ -69,7 +74,6 @@ export const projectsSlice = createSlice({
       //     state.projects.push(proj);
       //   }
       // });
-
     },
 
     dismissProjectsError: (state, { payload }) => {

@@ -507,6 +507,79 @@ const queries = {
     variables: { input: input },
   }),
 
+  getSignedUrl: (input) => ({
+    template: `
+      mutation CreateUpload($input: CreateUploadInput!) {
+        createUpload(input: $input) {
+            batch
+            user
+            url
+        }
+      }
+    `,
+    variables: { input }
+  }),
+
+  getBatches: ({user, pageInfo, page}) => ({
+    template: `
+      query GetBatches($input: QueryBatchesInput!) {
+        batches(input: $input) {
+          pageInfo {
+            previous
+            hasPrevious
+            next
+            hasNext
+          },
+          batches {
+            _id
+            eTag
+            processingStart
+            processingEnd
+            remaining
+            total
+            originalFile
+          }
+        }
+      }
+    `,
+    variables: { input: {
+      ...(page === 'next' && { next: pageInfo.next }),
+      ...(page === 'previous' && { previous: pageInfo.previous }),
+      limit: 5,
+      user
+    } }
+  }),
+
+  getBatch: ({ id }) => ({
+    template: `
+      query GetBatch($id: String!) {
+        batch(_id: $id) {
+          _id
+          eTag
+          processingStart
+          processingEnd
+          dead
+          remaining
+          total
+          errors {
+            error
+          }
+        }
+      }
+    `,
+    variables: { id }
+  }),
+
+  stopBatch: ({ id }) => ({
+    template: `
+      mutation StopBatch($input: StopBatchInput!) {
+        stopBatch(input: $input) {
+          message
+        }
+      }
+    `,
+    variables: { input: { batch: id } }
+  })
 };
 
 export default queries;
