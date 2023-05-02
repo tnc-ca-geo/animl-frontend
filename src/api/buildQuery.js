@@ -1,6 +1,6 @@
 // TODO: Prune fields we're not using
 
-const cameraFields = `
+const wirelessCameraFields = `
   _id
   make
   model 
@@ -195,11 +195,11 @@ const queries = {
     },
   }),
 
-  getCameras: () => ({
+  getWirelessCameras: () => ({
     template: `
       {
-        cameras {
-          ${cameraFields}
+        wirelessCameras {
+          ${wirelessCameraFields}
         }
       }
     `,
@@ -482,8 +482,8 @@ const queries = {
           project {
             ${projectFields}
           }
-          cameras {
-            ${cameraFields}
+          wirelessCameras {
+            ${wirelessCameraFields}
           }
         }
       }
@@ -498,8 +498,8 @@ const queries = {
           project {
             ${projectFields}
           }
-          cameras {
-            ${cameraFields}
+          wirelessCameras {
+            ${wirelessCameraFields}
           }
         }
       }

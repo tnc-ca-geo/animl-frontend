@@ -58,12 +58,12 @@ export const camerasSlice = createSlice({
 
     registerCameraSuccess: (state, { payload }) => {
       console.log('cameraSlice - registerCameraSuccess() - ', payload);
-      state.cameras = payload.cameras;
+      state.cameras = payload.wirelessCameras;
       state.loadingState = {
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound: (payload.cameras.length === 0),
+        noneFound: (payload.wirelessCameras.length === 0),
       };
       // TODO: make the cameras update update more surgical?
       // i.e. ONLY return the new/updated Camera source record and merge it 
@@ -89,12 +89,12 @@ export const camerasSlice = createSlice({
 
     unregisterCameraSuccess: (state, { payload }) => {
       console.log('cameraSlice - unregisterCameraSuccess() - ', payload);
-      state.cameras = payload.cameras;
+      state.cameras = payload.wirelessCameras;
       state.loadingState = {
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound: (payload.cameras.length === 0),
+        noneFound: (payload.wirelessCameras.length === 0),
       };
     },
 
@@ -152,10 +152,10 @@ export const fetchCameras = () => async (dispatch, getState) => {
       const selectedProj = projects.find((proj) => proj.selected);
       const res = await call({
         projId: selectedProj._id,
-        request: 'getCameras',
+        request: 'getWirelessCameras',
       });
       console.log('res: ', res);
-      dispatch(getCamerasSuccess(res.cameras));
+      dispatch(getCamerasSuccess(res.wirelessCameras));
     }
   } catch (err) {
     dispatch(getCamerasFailure(err));
