@@ -24,9 +24,9 @@ import {
   dismissModelsError,
 } from '../features/projects/projectsSlice';
 import {
-  selectCamerasErrors,
-  dismissCamerasError,
-} from '../features/cameras/camerasSlice';
+  selectWirelessCamerasErrors,
+  dismissWirelessCamerasError,
+} from '../features/cameras/wirelessCamerasSlice';
 import {
   selectImagesErrors,
   dismissImagesError,
@@ -48,7 +48,7 @@ const ErrorAlerts = () => {
   const viewsErrors = useSelector(selectViewsErrors);
   const depsErrors = useSelector(selectDeploymentsErrors);
   const modelsErrors = useSelector(selectModelsErrors);
-  const camerasErrors = useSelector(selectCamerasErrors);
+  const camerasErrors = useSelector(selectWirelessCamerasErrors);
   const imagesErrors = useSelector(selectImagesErrors);
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
@@ -66,7 +66,6 @@ const ErrorAlerts = () => {
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportErrors, 'Error Exporting Data', 'data'),
-
   ];
 
   const errors = enrichedErrors.reduce((acc, curr) => (
@@ -118,7 +117,7 @@ const dismissErrorActions = {
   'views': (i) => dismissViewsError(i),
   'deployments': (i) => dismissDeploymentsError(i),
   'models': (i) => dismissModelsError(i),
-  'cameras': (i) => dismissCamerasError(i),
+  'cameras': (i) => dismissWirelessCamerasError(i),
   'images': (i) => dismissImagesError(i),
   'imageContext': (i) => dismissImageContextError(i),
   'stats': (i) => dismissStatsError(i),
@@ -126,8 +125,8 @@ const dismissErrorActions = {
 };
 
 function enrichErrors(errors, title, entity) {
-  if (!errors) return;
-  console.log('errors: ', errors);
+  // console.log(`${entity} errors: `, errors);
+  if (!errors || !errors.length) return;
   return errors.map((err, index) => ({
     index,
     entity,

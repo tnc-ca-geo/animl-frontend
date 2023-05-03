@@ -5,8 +5,8 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { 
   registerCamera,
-  selectCamerasLoading,
-} from '../cameras/camerasSlice';
+  selectWirelessCamerasLoading,
+} from './wirelessCamerasSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
 import {
@@ -17,7 +17,7 @@ import {
   ButtonRow,
 } from '../../components/Form';
 import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { SUPPORTED_CAM_MAKES  } from '../../config.js';
+import { SUPPORTED_WIRELESS_CAMS  } from '../../config.js';
 
 
 // TODO: improve validation? Make sure cameraId is not already actively 
@@ -32,15 +32,12 @@ const registerCameraSchema = Yup.object().shape({
 
 
 const RegisterCameraForm = () => {
-  const camerasLoading = useSelector(selectCamerasLoading);
-  const makeOptions = SUPPORTED_CAM_MAKES.map((m) => ({ value: m, label: m }));
+  const camerasLoading = useSelector(selectWirelessCamerasLoading);
+  const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({ value: m, label: m }));
   const dispatch = useDispatch();
 
   const handleRegisterCameraSubmit = (formVals) => {
-    dispatch(registerCamera({
-      cameraId: formVals.cameraId,
-      make: formVals.make.value,
-    }));
+    dispatch(registerCamera({ cameraId: formVals.cameraId, make: formVals.make.value }));
   };
   
   return (
@@ -63,7 +60,7 @@ const RegisterCameraForm = () => {
             setFieldTouched }) => (
             <Form>
               <FormSubheader>
-                Register a new camera
+                Register a wireless camera
               </FormSubheader>
               <FieldRow>
                 <FormFieldWrapper>

@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_CAMERA_REGISTRATION_ROLES } from '../../auth/roles';
 import {
-  selectCamerasLoading,
-  selectCameras,
-  fetchCameras,
-} from './camerasSlice';
+  selectWirelessCamerasLoading,
+  selectWirelessCameras,
+  fetchWirelessCameras,
+} from './wirelessCamerasSlice';
 import CameraList from './CameraList';
 import SaveDeploymentForm from './SaveDeploymentForm';
 import DeleteDeploymentForm from './DeleteDeploymentForm';
@@ -23,28 +23,31 @@ const CameraAdminModal = () => {
   const [ deploymentSelected, setDeploymentSelected ] = useState();
   const dispatch = useDispatch();
 
-  // fetch camera source records
-  const cameras = useSelector(selectCameras);
-  const camerasLoading = useSelector(selectCamerasLoading);
+  // fetch wireless camera records
+  const wirelessCams = useSelector(selectWirelessCameras);
+  const camerasLoading = useSelector(selectWirelessCamerasLoading);
   useEffect(() => {
     const { isLoading, noneFound } = camerasLoading;
-    if (!cameras.length && !isLoading && !noneFound){
-      dispatch(fetchCameras());
+    if (!wirelessCams.length && !isLoading && !noneFound){
+      dispatch(fetchWirelessCameras());
     }
-  }, [cameras.length, camerasLoading, dispatch]);
+  }, [wirelessCams.length, camerasLoading, dispatch]);
 
-  // enrich camera config records with active state
-  let enrichedCams = [];
-  if (project.cameraConfigs.length && cameras.length) {
-    enrichedCams = project.cameraConfigs.map((camConfig) => {
-      const camera = cameras.find((cam) => cam._id === camConfig._id);
-      const active = camera.projRegistrations.some((pr) => (
-        pr.projectId === project._id && pr.active
-      ));
-      return { ...camConfig, active };
-    });
-  }
-
+  // enrich camera config records with wireless camera data
+  const enrichedCams = project.cameraConfigs.map((camConfig) => {
+    const camera = { ...camConfig };
+    if (wirelessCams.length > 0) {
+      const wirelessCam = wirelessCams.find((cam) => cam._id === camConfig._id);
+      if (wirelessCam) {
+        camera.isWireless = true;
+        const active = wirelessCam.projRegistrations.some((pr) => (pr.projectId === project._id) && pr.active);
+        camera.active = active;
+      }
+      return camera;
+    }
+    return { ...camera, isWireless: false };
+  });
+  
   const handleSaveDepClick = ({ cameraId, deployment }) => {
     setShowSaveDepForm(true);
     setCameraSelected(cameraId);

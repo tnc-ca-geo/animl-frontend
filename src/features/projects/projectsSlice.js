@@ -5,7 +5,7 @@ import { enrichCameraConfigs } from './utils';
 import {
   registerCameraSuccess,
   unregisterCameraSuccess
-} from '../cameras/camerasSlice';
+} from '../cameras/wirelessCamerasSlice';
 
 const initialState = {
   projects: [],

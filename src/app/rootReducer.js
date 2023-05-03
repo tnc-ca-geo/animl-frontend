@@ -4,7 +4,7 @@ import { undoHistoryReducer } from 'redux-undo-redo';
 import userSlice from '../features/user/userSlice';
 import filtersReducer from '../features/filters/filtersSlice';
 import imagesReducer from '../features/images/imagesSlice';
-import camerasReducer from '../features/cameras/camerasSlice';
+import wirelessCamerasReducer from '../features/cameras/wirelessCamerasSlice';
 import reviewReducer from '../features/review/reviewSlice';
 import loupeReducer from '../features/loupe/loupeSlice';
 import projectReducer from '../features/projects/projectsSlice';
@@ -17,7 +17,7 @@ const createRootReducer = (history) => combineReducers({
   projects: projectReducer,
   filters: filtersReducer,
   images: imagesReducer,
-  cameras: camerasReducer,
+  wirelessCameras: wirelessCamerasReducer,
   review: reviewReducer,
   loupe: loupeReducer,
   undoHistory: undoHistoryReducer, 

@@ -1,7 +1,7 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
-import { registerCameraSuccess } from '../cameras/camerasSlice';
+import { registerCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import {
   getProjectsStart,
   getProjectsFailure,

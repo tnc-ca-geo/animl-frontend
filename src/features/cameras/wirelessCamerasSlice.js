@@ -6,7 +6,7 @@ import {
 } from '../projects/projectsSlice';
 
 const initialState = {
-  cameras: [],
+  wirelessCameras: [],
   loadingState: {
     isLoading: false,
     operation: null, /* 'fetching', 'updating', 'deleting' */
@@ -15,25 +15,24 @@ const initialState = {
   },
 };
 
-export const camerasSlice = createSlice({
-  name: 'cameras',
+export const wirelessCamerasSlice = createSlice({
+  name: 'wirelessCameras',
   initialState,
   reducers: {
 
-    getCamerasStart: (state) => {
+    getWirelessCamerasStart: (state) => {
       state.loadingState.isLoading = true;
       state.loadingState.operation = 'fetching';
     },
 
-    getCamerasFailure: (state, { payload }) => {
+    getWirelessCamerasFailure: (state, { payload }) => {
       state.loadingState.isLoading = false;
       state.loadingState.operation = null;
       state.loadingState.errors = payload;
     },
 
-    getCamerasSuccess: (state, { payload }) => {
-      console.log('getCamerasSuccess: ', payload);
-      state.cameras = payload;
+    getWirelessCamerasSuccess: (state, { payload }) => {
+      state.wirelessCameras = payload;
       state.loadingState = {
         isLoading: false,
         operation: null,
@@ -50,15 +49,13 @@ export const camerasSlice = createSlice({
     },
 
     registerCameraFailure: (state, { payload }) => {
-      console.log('cameraSlice - registerCameraFailure() - ', payload);
       state.loadingState.isLoading = false;
       state.loadingState.operation = null;
       state.loadingState.errors = payload;
     },
 
     registerCameraSuccess: (state, { payload }) => {
-      console.log('cameraSlice - registerCameraSuccess() - ', payload);
-      state.cameras = payload.wirelessCameras;
+      state.wirelessCameras = payload.wirelessCameras;
       state.loadingState = {
         isLoading: false,
         operation: null,
@@ -81,15 +78,13 @@ export const camerasSlice = createSlice({
     },
 
     unregisterCameraFailure: (state, { payload }) => {
-      console.log('cameraSlice - unregisterCameraFailure() - ', payload);
       state.loadingState.isLoading = false;
       state.loadingState.operation = null;
       state.loadingState.errors = payload;
     },
 
     unregisterCameraSuccess: (state, { payload }) => {
-      console.log('cameraSlice - unregisterCameraSuccess() - ', payload);
-      state.cameras = payload.wirelessCameras;
+      state.wirelessCameras = payload.wirelessCameras;
       state.loadingState = {
         isLoading: false,
         operation: null,
@@ -98,7 +93,7 @@ export const camerasSlice = createSlice({
       };
     },
 
-    dismissCamerasError: (state, { payload }) => {
+    dismissWirelessCamerasError: (state, { payload }) => {
       const index = payload;
       state.loadingState.errors.splice(index, 1);
     },
@@ -109,7 +104,7 @@ export const camerasSlice = createSlice({
     builder
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         if (payload.newProjSelected) {
-          state.cameras = [];
+          state.wirelessCameras = [];
           state.loadingState = {
             isLoading: false,
             operation: null,
@@ -124,9 +119,9 @@ export const camerasSlice = createSlice({
 // export actions from slice
 export const {
 
-  getCamerasStart,
-  getCamerasFailure,
-  getCamerasSuccess,
+  getWirelessCamerasStart,
+  getWirelessCamerasFailure,
+  getWirelessCamerasSuccess,
 
   registerCameraStart,
   registerCameraFailure,
@@ -136,15 +131,14 @@ export const {
   unregisterCameraFailure,
   unregisterCameraSuccess,
 
-  dismissCamerasError,
+  dismissWirelessCamerasError,
 
-} = camerasSlice.actions;
+} = wirelessCamerasSlice.actions;
 
-// fetchCameras thunk
-export const fetchCameras = () => async (dispatch, getState) => {
+// fetchWirelessCameras thunk
+export const fetchWirelessCameras = () => async (dispatch, getState) => {
   try {
-    console.log('fetchingCameras()');
-    dispatch(getCamerasStart());
+    dispatch(getWirelessCamerasStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
@@ -154,11 +148,10 @@ export const fetchCameras = () => async (dispatch, getState) => {
         projId: selectedProj._id,
         request: 'getWirelessCameras',
       });
-      console.log('res: ', res);
-      dispatch(getCamerasSuccess(res.wirelessCameras));
+      dispatch(getWirelessCamerasSuccess(res.wirelessCameras));
     }
   } catch (err) {
-    dispatch(getCamerasFailure(err));
+    dispatch(getWirelessCamerasFailure(err));
   }
 };
 
@@ -178,7 +171,6 @@ export const registerCamera = (payload) => {
           request: 'registerCamera',
           input: payload,
         });
-        console.log('res: ', res);
         dispatch(registerCameraSuccess(res.registerCamera))
       }
 
@@ -192,7 +184,6 @@ export const registerCamera = (payload) => {
 // unregisger camera thunk
 export const unregisterCamera = (payload) => async (dispatch, getState) => {
   try {
-    console.log('unregisteringCamera() - ', payload);
     dispatch(unregisterCameraStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -205,7 +196,6 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
         request: 'unregisterCamera',
         input: payload
       });
-      console.log('res: ', res);
       dispatch(unregisterCameraSuccess(res.unregisterCamera));
     }
   } catch (err) {
@@ -215,8 +205,8 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
 
 
 // Selectors
-export const selectCameras = state => state.cameras.cameras;
-export const selectCamerasLoading = state => state.cameras.loadingState;
-export const selectCamerasErrors = state => state.cameras.loadingState.errors;
+export const selectWirelessCameras = state => state.wirelessCameras.wirelessCameras;
+export const selectWirelessCamerasLoading = state => state.wirelessCameras.loadingState;
+export const selectWirelessCamerasErrors = state => state.wirelessCameras.loadingState.errors;
 
-export default camerasSlice.reducer;
+export default wirelessCamerasSlice.reducer;

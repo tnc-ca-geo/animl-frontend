@@ -2,13 +2,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { styled } from '../../theme/stitches.config';
-import { green } from '@radix-ui/colors';
 import { selectUserCurrentRoles } from '../user/userSlice';
-import { unregisterCamera, selectCamerasLoading } from './camerasSlice';
-import Button from '../../components/Button';
+import { unregisterCamera } from './wirelessCamerasSlice';
 import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
-import NoneFoundAlert from '../../components/NoneFoundAlert';
 import { Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
   hasRole,
@@ -29,7 +26,7 @@ const ManageCamButtons = styled('div', {
   right: '$3',
 })
 
-const ManageCamButton = styled('Button', {
+const ManageCamButton = styled('button', {
   border: 'none',
   backgroundColor: '$gray3',
   borderRadius: '$3',
@@ -123,7 +120,7 @@ const ActiveState = ({ active }) => (
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
-  const camerasLoading = useSelector(selectCamerasLoading);
+  // const camerasLoading = useSelector(selectWirelessCamerasLoading);
   const userRoles = useSelector(selectUserCurrentRoles);
   const dispatch = useDispatch();
 
@@ -133,11 +130,6 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   
   return (
     <>
-      {camerasLoading.noneFound && 
-        <NoneFoundAlert>
-          There are currently no cameras associated with this project.
-        </NoneFoundAlert>
-      }
       {cameras.length > 0 &&
         <StyledCameraList>
           {cameras.map((cam) => (
@@ -147,9 +139,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               expandedDefault={false}
               headerButtons={
                 <>
-                  <ActiveState active={cam.active} />
+                  {cam.isWireless && <ActiveState active={cam.active} />}
                   <ManageCamButtons>
-                    {(hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && 
+                    {(cam.isWireless && (hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES)) && 
                       cam.active) && 
                       <ManageCamButton
                         onClick={() => handleUnregisterClick({
@@ -168,7 +160,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                     }
                   </ManageCamButtons>
                 </>
-              }s
+              }
             >
               {cam.deployments.map((dep) => (
                 <DeploymentItem key={dep._id}> 
