@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import { FormWrapper, ButtonRow, HelperText, FormError } from '../../components/Form';
@@ -13,7 +13,7 @@ const bulkUploadSchema = Yup.object().shape({
     .mixed()
     .required('File is required')
     .test('fileSize', 'The file must be smaller than 50GB.', (value) => {
-      return value.size <= Math.pow(1024, 3) * 50;
+      return value && value.size <= Math.pow(1024, 3) * 50;
     }),
 });
 
@@ -75,6 +75,7 @@ const getStatus = (batch) => {
 }
 
 const BulkUploadForm = ({ handleClose }) => {
+  const fieldField = useRef();
   const { isLoading, progress }  = useSelector(selectUploadsLoading);
   const batchStates = useSelector(selectBatchStates);
   const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
@@ -87,6 +88,10 @@ const BulkUploadForm = ({ handleClose }) => {
   }, [batchStates]);
 
   const handleSubmit = (values) => dispatch(uploadFile({ file: values.images_zip }));
+
+  const resetFileField = () => {
+    fieldField.current.value = null;
+  }
 
   useEffect(() => {
     // Initially loaded the batches
@@ -133,14 +138,18 @@ const BulkUploadForm = ({ handleClose }) => {
           onSubmit={(values) => handleSubmit(values)}
           validationSchema={bulkUploadSchema}
           initialValues={{ images_zip: null }}
+          onReset={() => {
+            resetFileField();
+          }}
         >
-          {({ errors, touched, values, setFieldValue }) => (
+          {({ errors, touched, setFieldValue }) => (
             <Form>
               <HelperText>
                 <b>Upload a ZIP file containing images for bulk processing</b>
               </HelperText>
 
               <input
+                ref={fieldField}
                 type='file'
                 id='images_zip'
                 name='images_zip'
@@ -158,6 +167,9 @@ const BulkUploadForm = ({ handleClose }) => {
               <ButtonRow>
                 <Button type='submit' size='large' disabled={isLoading}>
                   Upload
+                </Button>
+                <Button type='reset' size='large' disabled={isLoading}>
+                  Reset
                 </Button>
               </ButtonRow>
             </Form>
