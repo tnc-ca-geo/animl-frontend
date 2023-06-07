@@ -125,6 +125,12 @@ const DataCell = styled(TableCell, {
         //   paddingLeft: '12px',
         // },
       }
+    },
+    scrollable: {
+      true: {
+        overflowY: 'scroll',
+        alignItems: 'start',
+      }
     }
   }
 });
@@ -383,16 +389,18 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
             onClick={(e) => handleRowClick(e, row.id)}
             selected={focusIndex.image === index}
           >
-            {row.cells.map(cell => {
-              return (
-                <DataCell
-                  {...cell.getCellProps()}
-                  selected={focusIndex.image === index}
-                >
-                  {cell.render('Cell')}
-                </DataCell>
-              )
-            })}
+            {row.cells.map(cell => (
+              <DataCell
+                {...cell.getCellProps()}
+                selected={focusIndex.image === index}
+                scrollable={
+                  cell.column.Header === 'Labels' && 
+                  cell.value.props.objects.length > 4
+                }
+              >
+                {cell.render('Cell')}
+              </DataCell>
+            ))}
           </TableRow>
         );
       }
