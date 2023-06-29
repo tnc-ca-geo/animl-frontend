@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@aws-amplify/ui-react": "^3.5.9",
+    "@aws-amplify/ui-react": "^5.0.3",
     "@babel/runtime": "^7.11.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-regular-svg-icons": "^5.15.1",
@@ -25,7 +25,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@vvo/tzdb": "^6.47.0",
-    "aws-amplify": "^4.3.40",
+    "aws-amplify": "^5.3.3",
     "bson": "^4.2.3",
     "connected-react-router": "^6.9.1",
     "env-cmd": "^10.1.0",
@@ -46,7 +46,6 @@
     "react-redux": "^7.2.1",
     "react-resizable": "^1.11.0",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "^4.0.3",
     "react-scrollbar-size": "^4.0.0",
     "react-select": "^5.5.1",
     "react-slider": "^1.3.1",
@@ -56,14 +55,14 @@
     "react-window-infinite-loader": "^1.0.5",
     "react-with-direction": "^1.3.1",
     "redux-undo-redo": "^2.1.1",
-    "serverless-finch": "^4.0.0",
     "yup": "^0.32.8"
   },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "vite build",
     "build:staging": "env-cmd -f .env.staging npm run build",
+    "serve": "vite preview",
     "deploy-dev": "npm run build:staging && sls client deploy --no-confirm --stage dev",
     "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod",
     "test": "react-scripts test",
@@ -72,20 +71,11 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "resolutions": {
-    "//": "See https://github.com/facebook/create-react-app/issues/11773",
-    "react-error-overlay": "6.0.9"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.1",
+    "serverless-finch": "^4.0.3",
+    "vite": "^4.3.9",
+    "vite-plugin-svgr": "^3.2.0",
+    "vite-plugin-top-level-await": "^1.3.1"
   }
 }

@@ -1,111 +1,19 @@
 org: animl
 app: animl
 service: animl-frontend
-# variablesResolutionMode: 20210326
 
 plugins:
   - serverless-finch
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   region: us-west-2
   profile: animl
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
-  # iamRoleStatements:
-  #   - Effect: Allow
-  #     Action:
-  #       - sqs:*
-  #     Resource:
-  #       - Fn::GetAtt:
-  #           - inferenceQueue
-  #           - Arn
-  #   - Effect: Allow
-  #     Action:
-  #       - ses:SendEmail
-  #       - ses:SendRawEmail
-  #     Resource: "*"
-  #   - Effect: Allow
-  #     Action:
-  #       - ssm:GetParameters
-  #     Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/*
-  #   - Effect: Allow
-  #     Action:
-  #       - secretsmanager:GetSecretValue
-  #     Resource: "*"  
-
-  # # Only necessary for private endpoints
-  # apiKeys:
-  # #   # - name: lambdaApolloKey
-  # #     # value: ${env:APOLLO_LAMBDA_KEY}
-  #   - name: animlApiKeyInternal
-  #     value: '{{resolve:secretsmanager:api-key:SecretString:apikey}}'
-
-# functions:
-#   graphql:
-#     handler: src/api/handler.server
-#     events:
-#     - http:
-#         path: /
-#         method: post
-#         cors: true
-#     - http:
-#         path: /internal
-#         method: post
-#         cors: true
-#         private: true
-#     - http:
-#         path: /external
-#         method: post
-#         cors: true
-#         authorizer:
-#             name: CognitoAuthN
-#             type: COGNITO_USER_POOLS
-#             arn: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/{{resolve:ssm:/application/cognito/userPoolId:1}}
-#     timeout: 20
-#   playground:
-#     handler: src/api/handler.playground
-#     events:
-#     - http:
-#         path: /
-#         method: get
-#         cors: true
-#         #authorizer:
-#         #    name: CognitoAuthN
-#         #    type: COGNITO_USER_POOLS
-#         #    arn: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/{{resolve:ssm:/application/cognito/userPoolId:1}}
-#     timeout: 20
-#   inference:
-#     handler: src/ml/handler.inference
-#     reservedConcurrency: 10 # max number of lambdas to invoke at one time
-#     events:
-#       - eventBridge:
-#           schedule: rate(5 minutes)
-#       # - sqs:
-#       #     arn:
-#       #       Fn::GetAtt:
-#       #         - inferenceQueue
-#       #         - Arn
-#       #     batchSize: 1
-#     timeout: 120
-
-# resources:
-#   Conditions:
-#     IsDev: !Equals ["dev", "${opt:stage, self:provider.stage, 'dev'}"]
-
-#   Resources:
-
-#     # SSM Param - Frontend URL
-#     SSMParameterFrontendUrl:
-#       Type: AWS::SSM::Parameter
-#       Properties:
-#         Description: Animl Frontend url
-#         Name: /fronend/url-${opt:stage, self:provider.stage, 'dev'}
-#         Type: String
-#         Value: !If [IsDev, 'animl-staging.camera', 'animl.camera']
 
 custom:
   client:
