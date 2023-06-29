@@ -28,8 +28,7 @@ perform manual labeling
 - Offer tools for exporting ML model training data
 
 This repository contains the frontend web application for viewing and 
-interacting with the camera trap data. It is a React app, using [Redux](https://redux.js.org/) (specifically  
-[Redux Toolkit](https://redux-toolkit.js.org/)) for state management and [Vite](https://vitejs.dev/) for tooling.
+interacting with the camera trap data. It is a React app, using [Redux](https://redux.js.org/) (specifically [Redux Toolkit](https://redux-toolkit.js.org/)) for state management and [Vite](https://vitejs.dev/) for tooling.
 
 ## Available Scripts
 
