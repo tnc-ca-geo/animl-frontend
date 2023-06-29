@@ -10,7 +10,7 @@ const IMAGES_URLS = {
   production: 'https://doo86afh9dk8g.cloudfront.net/'  
 };
 
-const stage = process.env.REACT_APP_STAGE || process.env.NODE_ENV;
+const stage = import.meta.env.VITE_STAGE || process.env.NODE_ENV;
 
 export const API_URL = API_URLS[stage];
 export const IMAGES_URL = IMAGES_URLS[stage];

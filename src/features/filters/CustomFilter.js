@@ -3,7 +3,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import parser from 'mongodb-query-parser';
+// import parser from 'mongodb-query-parser'; // TODO: this is causing build issues in Vite. Look for alternative
 import { customFilterChanged, selectCustomFilter } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import { FormWrapper, FormError, FieldRow, ButtonRow } from '../../components/Form';
@@ -39,7 +39,8 @@ const CustomFilter = () => {
       'is-valid-query',
       'Must be a valid MongoDB query',
       value => {
-        const filter = parser.isFilterValid(value);
+        // const filter = parser.isFilterValid(value);
+        const filter = value;
         return filter ? true : false;
       }, 
     ),

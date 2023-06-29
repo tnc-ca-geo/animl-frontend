@@ -33,11 +33,4 @@ const store = configureStore({
   ),
 });
 
-if (process.env.NODE_ENV === 'development' && module.hot) {
-  module.hot.accept('./rootReducer', () => {
-    const createNewRootReducer = require('./rootReducer').default;
-    store.replaceReducer(createNewRootReducer(history));
-  })
-}
-
 export default store;
