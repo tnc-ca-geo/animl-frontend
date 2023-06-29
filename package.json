@@ -64,9 +64,7 @@
     "build:staging": "env-cmd -f .env.staging npm run build",
     "serve": "vite preview",
     "deploy-dev": "npm run build:staging && sls client deploy --no-confirm --stage dev",
-    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod"
   },
   "eslintConfig": {
     "extends": "react-app"
