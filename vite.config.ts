@@ -9,7 +9,6 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: true,
-    // target: 'esnext'
   },
   server: {
     open: true,
