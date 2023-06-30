@@ -27,7 +27,7 @@ const StyledFiltersPanel = styled('div', {
   flexGrow: '0',
   flexShrink: '0',
   flexBasis: '330px',
-  height: 'calc(100vh - $8)',
+  height: 'calc(100vh - $8 - 1px)', // to account for navbar + border
   overflowY: 'hidden',
 });
 

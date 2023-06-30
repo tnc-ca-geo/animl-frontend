@@ -245,7 +245,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   const defaultColumn = useMemo(() => ({
     minWidth: 30,
-    width: 130, // width is used for both the flex-basis and flex-grow
+    width: 100, // width is used for both the flex-basis and flex-grow
     maxWidth: 400,
   }), []);
 
@@ -367,7 +367,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       // TODO: allow for selection of mulitple images to perform bulk actions on
     } else {
       const newIndex = { image: Number(id), object: null, label: null }
-      dispatch(setFocus({ index: newIndex, type: 'manual'}));
+      dispatch(setFocus({ index: newIndex, type: 'manual' }));
       dispatch(toggleOpenLoupe(true));
     }
   }, [dispatch]);
