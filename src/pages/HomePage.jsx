@@ -7,6 +7,7 @@ import { Grid } from '../components/Grid';
 import { Container } from '../components/Container';
 import { MagicWandIcon, LapTimerIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import Footer from '../components/Footer';
+import StyledScrollArea from '../components/ScrollArea';
 
 const Gradient = styled(Box, {
   width: '100vw',
@@ -150,6 +151,31 @@ const AppPage = () => {
             <FeatureText>Configure automated alerts to notify users if a species of concern is detected.</FeatureText>
           </Feature>
         </Grid>
+      </Container>
+      <Container>
+          <StyledScrollArea>
+            <ul>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+              <li>thing</li>
+            </ul>
+          </StyledScrollArea>
       </Container>
       <Footer/>
     </Box>

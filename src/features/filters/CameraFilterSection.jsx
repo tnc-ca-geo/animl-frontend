@@ -38,7 +38,6 @@ const CameraCheckboxWrapper = styled(CheckboxWrapper, {
 })
 
 const ExpandButton = styled('div', {
-  paddingRight: '$2',
   position: 'absolute',
   right: '0',
 })
@@ -49,6 +48,7 @@ const DeploymentCheckboxWrapper = styled(CheckboxWrapper, {
 
 const StyledCameraFilterSection = styled('div', {
   fontSize: '$3',
+  position: 'relative',
 });
 
 const CameraFilterSection = ({ camConfig, activeDeps }) => {
