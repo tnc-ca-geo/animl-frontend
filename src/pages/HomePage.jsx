@@ -152,31 +152,6 @@ const AppPage = () => {
           </Feature>
         </Grid>
       </Container>
-      <Container>
-          <StyledScrollArea>
-            <ul>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-              <li>thing</li>
-            </ul>
-          </StyledScrollArea>
-      </Container>
       <Footer/>
     </Box>
   );

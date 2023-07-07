@@ -13,6 +13,7 @@ import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
 import { useTable, useSortBy, useFlexLayout, useResizeColumns } from 'react-table';
+import useBreakpoints from '../../hooks/useBreakpoints';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -286,17 +287,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     },
   ], []);
 
-  const columnsToHide = useMemo(() => (
-    columns.reduce((acc, curr) => {
-      const id = curr.accessor;
-      if (id !== 'thumbnail' && 
-          id !== 'labelPills') {
-        acc.push(id)
-      }
-      return acc;
-    }, [])
-  ), [columns]);
-
   const initialState = {
     sortBy: [
       {
@@ -352,14 +342,37 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [sortBy, dispatch]);
 
+  // responsively hide/show table columns
+  const { ref, breakpoint } = useBreakpoints([
+    ['xxs', 540],
+    ['xs', 640],
+    ['sm', 740],
+    ['md', 840],
+    ['lg', 940],
+    ['xl', Infinity]
+  ]);
+
+  const columnsToHide = useMemo(() => ({
+    'loupeOpen': ['dtOriginal', 'dtAdded', 'reviewed', 'cameraId', 'deploymentName'],
+    'xxs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed', 'dtOriginal'],
+    'xs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed'],
+    'sm': ['dtAdded', 'deploymentName', 'cameraId'],
+    'md': ['dtAdded', 'deploymentName'],
+    'lg': ['dtAdded']
+  }), []);
+
   useEffect(() => {
+    if (!breakpoint) return;
     if (isLoupeOpen) {
-      setHiddenColumns(columnsToHide);
+      setHiddenColumns(columnsToHide['loupeOpen']);
     }
-    else {
+    else if (breakpoint === 'xl') {
       toggleHideAllColumns(false)
     }
-  }, [isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
+    else {
+      setHiddenColumns(columnsToHide[breakpoint])
+    }
+  }, [breakpoint, isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
 
   const handleRowClick = useCallback((e, id) => {
     if (e.shiftKey) {
@@ -452,7 +465,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   );
 
   return (
-    <TableContainer>
+    <TableContainer ref={ref} >
       {imagesLoading.isLoading &&
         <SpinnerOverlay>
           <PulseSpinner />
