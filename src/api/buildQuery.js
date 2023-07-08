@@ -58,6 +58,23 @@ const pageInfoFields = `
   count
 `;
 
+const batchFields = `
+  _id
+  projectId
+  eTag
+  processingStart
+  processingEnd
+  overrideSerial
+  originalFile
+  uploadedfile
+  total
+  remaining
+  dead
+  errors {
+    error
+  }
+`;
+
 const cameraConfigFields = `
   _id
   deployments {
@@ -520,6 +537,19 @@ const queries = {
     variables: { input }
   }),
 
+  updateBatch: (input) => ({
+    template: `
+      mutation UpdateBatch($input: UpdateBatchInput!) {
+        updateBatch(input: $input) {
+          batch {
+            ${batchFields}
+          }
+        }
+      }
+    `,
+    variables: { input }
+  }),
+
   getBatches: ({user, pageInfo, page}) => ({
     template: `
       query GetBatches($input: QueryBatchesInput!) {
@@ -531,14 +561,7 @@ const queries = {
             hasNext
           },
           batches {
-            _id
-            projectId
-            eTag
-            processingStart
-            processingEnd
-            remaining
-            total
-            originalFile
+            ${batchFields}
           }
         }
       }
@@ -555,16 +578,7 @@ const queries = {
     template: `
       query GetBatch($id: String!) {
         batch(_id: $id) {
-          _id
-          eTag
-          processingStart
-          processingEnd
-          dead
-          remaining
-          total
-          errors {
-            error
-          }
+          ${batchFields}
         }
       }
     `,

@@ -230,7 +230,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
     if (token) {
       dispatch(uploadStart());
 
-      const { file } = payload;
+      const { file, overrideSerial } = payload;
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const uploadUrl = await call({
@@ -241,6 +241,19 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
         }
       });
       const signedUrl = uploadUrl.createUpload.url;
+
+      // if overrideSerial is provided by user, call updateBatch to set it
+      if (overrideSerial.length) {
+        console.log('overriding serial with: ', overrideSerial)
+        const batch = await call({
+          request: 'updateBatch',
+          projId: selectedProj._id,
+          input: {
+            _id: uploadUrl.createUpload.batch,
+            overrideSerial
+          }
+        });
+      }
 
       const xhr = new XMLHttpRequest();
       await new Promise((resolve) => {
@@ -257,7 +270,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
         xhr.send(file);
-      })
+      });
 
       dispatch(uploadSuccess());
       dispatch(fetchBatches());

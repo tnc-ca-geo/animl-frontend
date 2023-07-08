@@ -1,20 +1,23 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form } from 'formik';
-import { FormWrapper, ButtonRow, HelperText, FormError } from '../../components/Form';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormError } from '../../components/Form';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch } from './uploadSlice';
 import { styled } from '@stitches/react';
 
+
 const bulkUploadSchema = Yup.object().shape({
-  images_zip: Yup
-    .mixed()
-    .required('File is required')
+  zipFile: Yup.mixed()
+    .required('A ZIP file is required')
     .test('fileSize', 'The file must be smaller than 50GB.', (value) => {
+      if (!value) return true;
       return value.size <= Math.pow(1024, 3) * 50;
     }),
+  // TODO: improve SN override validation (no spaces, special characters, and all lowercase)
+  overrideSerial: Yup.string()
 });
 
 const Table = styled('table', {
@@ -86,7 +89,12 @@ const BulkUploadForm = ({ handleClose }) => {
     return clonedStates.sort((a, b) => parseInt(b.processingStart) - parseInt(a.processingStart))
   }, [batchStates]);
 
-  const handleSubmit = (values) => dispatch(uploadFile({ file: values.images_zip }));
+  const handleSubmit = (values) => {
+    dispatch(uploadFile({ 
+      file: values.zipFile, 
+      overrideSerial: values.overrideSerial
+    }));
+  };
 
   useEffect(() => {
     // Initially loaded the batches
@@ -132,24 +140,38 @@ const BulkUploadForm = ({ handleClose }) => {
         <Formik
           onSubmit={(values) => handleSubmit(values)}
           validationSchema={bulkUploadSchema}
-          initialValues={{ images_zip: null }}
+          initialValues={{ zipFile: null, overrideSerial: '' }}
         >
           {({ errors, touched, values, setFieldValue }) => (
             <Form>
-              <HelperText>
-                <b>Upload a ZIP file containing images for bulk processing</b>
-              </HelperText>
 
-              <input
-                type='file'
-                id='images_zip'
-                name='images_zip'
-                accept='.zip'
-                onChange={(e) => setFieldValue('images_zip', e.target.files[0])}
-              />
-              {touched.images_zip && errors.images_zip && (
-                <FormError>{ errors.images_zip }</FormError>
+              <FieldRow>
+                <FormFieldWrapper>
+                  <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
+                  <input
+                    type='file'
+                    id='zipFile'
+                    name='zipFile'
+                    accept='.zip'
+                    onChange={(e) => setFieldValue('zipFile', e.target.files[0])}
+                  />
+                  <ErrorMessage component={FormError} name='zipFile'/>
+                </FormFieldWrapper>
+              </FieldRow>
+
+              <FieldRow>
+                <FormFieldWrapper>
+                  <label htmlFor='overrideSerial'>Serial Number Override</label>
+                  <Field name='overrideSerial' id='overrideSerial' />
+                  <ErrorMessage component={FormError} name='overrideSerial'/>
+                </FormFieldWrapper>
+              </FieldRow>
+
+              {/*
+              {touched.zipFile && errors.zipFile && (
+                <FormError>{ errors.zipFile }</FormError>
               )}
+              */}
 
               {(isLoading || progress > 0) && (
                 <ProgressBar aria-label="Upload progress" max="100" value={percentUploaded}>{percentUploaded}%</ProgressBar>
