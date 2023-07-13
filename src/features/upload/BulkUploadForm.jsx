@@ -5,6 +5,7 @@ import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormErr
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
+import { selectSelectedProject } from '../projects/projectsSlice';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch } from './uploadSlice';
 import { styled } from '@stitches/react';
 
@@ -78,6 +79,7 @@ const getStatus = (batch) => {
 }
 
 const BulkUploadForm = ({ handleClose }) => {
+  const selectedProject = useSelector(selectSelectedProject);
   const { isLoading, progress }  = useSelector(selectUploadsLoading);
   const batchStates = useSelector(selectBatchStates);
   const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
@@ -86,7 +88,9 @@ const BulkUploadForm = ({ handleClose }) => {
 
   const sortedBatchStates = useMemo(() => {
     const clonedStates = batchStates.slice();
-    return clonedStates.sort((a, b) => parseInt(b.processingStart) - parseInt(a.processingStart))
+    return clonedStates
+      .filter((batch) => batch.projectId === selectedProject._id)
+      .sort((a, b) => parseInt(b.processingStart) - parseInt(a.processingStart))
   }, [batchStates]);
 
   const handleSubmit = (values) => {
