@@ -126,6 +126,7 @@ export const uploadSlice = createSlice({
 
     fetchBatchesSuccess: (state, { payload }) => {
       const { batches, pageInfo } = payload.batches.batches;
+      console.log('fetchBatchesSuccess: ', payload.batches);
 
       const ls = {
         isLoading: true,
@@ -166,6 +167,7 @@ export const uploadSlice = createSlice({
     },
 
     fetchBatchDetailSuccess: (state, { payload }) => {
+      console.log('fetchBatcheDetailSuccess: ', payload.batches);
       const newBatchData = payload.batches.map(({ batch }) => batch);
       state.batchStates = mergeBatchData(state.batchStates, newBatchData);
     },
@@ -288,13 +290,14 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
     if (token) {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      const userAud = getState().user.aud;
+      const userSub = getState().user.sub;
       const pageInfo = getState().uploads.pageInfo;
 
+      console.log('getBatches...')
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
-        input: { user: userAud, pageInfo, page }
+        input: { user: userSub, pageInfo, page }
       })
 
       // const ongoingBatches = batches.batches.batches.filter(
@@ -303,6 +306,7 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
 
       const ongoingBatches = batches.batches.batches;
 
+      console.log('getBatch for all returned batches...')
       const requests = ongoingBatches.map(({ _id: id }) => call({
         request: 'getBatch',
         projId: selectedProj._id,
