@@ -34,6 +34,7 @@ const StyledSidebarNav = styled('div', {
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userIsSuperUser = useSelector(selectUserIsSuperUser);
+  console.log('isSuperUser: ', userIsSuperUser)
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
   const selectedProject = useSelector(selectSelectedProject);

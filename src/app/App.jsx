@@ -85,7 +85,6 @@ const App = () => {
       payload.username = idToken['cognito:username'];
       payload.groups = idToken['cognito:groups'];
       payload.sub = idToken['sub'];
-      payload.isSuperUser = idToken['cognito:groups'].includes('animl_superuser')
     }
     dispatch(userAuthStateChanged(payload));
   }, [user, authStatus, dispatch]);

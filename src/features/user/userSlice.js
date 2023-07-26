@@ -7,7 +7,6 @@ const initialState = {
   projects: {},
   authStatus: null,
   sub: null,
-  isSuperUser: false,
 };
 
 export const userSlice = createSlice({
@@ -21,7 +20,6 @@ export const userSlice = createSlice({
       state.username = username || null;
       state.groups = groups || null;
       state.sub = sub || null;
-      state.isSuperUser = isSuperUser || false;
       if (groups) {
         state.projects = groups.reduce((projects, group) => {
           const groupComponents = group.split('/');
@@ -54,7 +52,7 @@ export const selectUserAuthStatus = state => state.user.authStatus;
 export const selectUserGroups = state => state.user.groups;
 export const selectUserUsername = state => state.user.username;
 export const selectUserProjects = state => state.user.projects;
-export const selectUserIsSuperUser = state => state.user.isSuperUser;
+export const selectUserIsSuperUser = state => state.user.groups.includes('animl_superuser');
 export const selectUserCurrentRoles = createSelector(
   [selectSelectedProject, selectUserProjects],
   (selectedProject, userProjects) => {
