@@ -306,12 +306,12 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
 
       const ongoingBatches = batches.batches.batches;
 
-      console.log('getBatch for all returned batches...')
+      console.log('getBatch for all returned batches...');
       const requests = ongoingBatches.map(({ _id: id }) => call({
         request: 'getBatch',
         projId: selectedProj._id,
         input: { id }
-      }))
+      }));
       Promise.all(requests)
         .then(batches => dispatch(fetchBatchDetailSuccess({ batches })));
 

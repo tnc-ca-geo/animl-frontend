@@ -57,10 +57,13 @@ const Error = styled('span', {
   color: 'red'
 });
 
-const getStatus = (batch) => {
+const getStatus = (percentUploaded, batch) => {
   const { processingStart, processingEnd, total, remaining, errors } = batch;
 
-  let status = 'Queued';
+  let status = `File successfully uploaded. Preparing images...`;
+  if (percentUploaded !== 100) {
+    status = `Uploading file...`
+  }
   if (processingStart) {
     const dateString = new Date(parseInt(processingStart)).toLocaleString();
     status = `Processing started at ${dateString}.`
@@ -123,7 +126,7 @@ const BulkUploadForm = ({ handleClose }) => {
           {sortedBatchStates.map((batch) => {
             const { _id, originalFile, processingEnd, total, remaining } = batch
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
-            const status = getStatus(batch)
+            const status = getStatus(percentUploaded, batch)
 
             return (
               <TableRow key={_id}>
