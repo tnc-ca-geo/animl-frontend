@@ -16,12 +16,12 @@ export const userSlice = createSlice({
   reducers: {
 
     userAuthStateChanged: (state, { payload }) => {
-      const { authStatus, username, groups, sub, superUser } = payload;
+      const { authStatus, username, groups, sub, isSuperUser } = payload;
       state.authStatus = authStatus;
       state.username = username || null;
       state.groups = groups || null;
       state.sub = sub || null;
-      state.isSuperUser = superUser || false;
+      state.isSuperUser = isSuperUser || false;
       if (groups) {
         state.projects = groups.reduce((projects, group) => {
           const groupComponents = group.split('/');

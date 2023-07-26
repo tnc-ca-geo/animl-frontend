@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserCurrentRoles } from '../user/userSlice';
+import { selectUserCurrentRoles, selectUserIsSuperUser } from '../user/userSlice';
 import {
   hasRole,
   WRITE_AUTOMATION_RULES_ROLES,
@@ -33,6 +33,7 @@ const StyledSidebarNav = styled('div', {
 
 const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
+  const userIsSuperUser = useSelector(selectUserIsSuperUser);
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
   const selectedProject = useSelector(selectSelectedProject);
@@ -105,7 +106,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       }
 
       {/* bulk upload view */}
-      {hasRole(userRoles, WRITE_IMAGES_ROLES) &&
+      {(hasRole(userRoles, WRITE_IMAGES_ROLES) && userIsSuperUser) &&
         <SidebarNavItem 
           state={modalOpen && (modalContent === 'bulk-upload-form') ? 'active' : ''}
           disabled={!selectedProject}
