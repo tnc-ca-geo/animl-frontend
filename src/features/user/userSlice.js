@@ -7,6 +7,7 @@ const initialState = {
   projects: {},
   authStatus: null,
   sub: null,
+  isSuperUser: false,
 };
 
 export const userSlice = createSlice({
@@ -15,12 +16,14 @@ export const userSlice = createSlice({
   reducers: {
 
     userAuthStateChanged: (state, { payload }) => {
-      state.authStatus = payload.authStatus;
-      state.username = payload.username || null;
-      state.groups = payload.groups || null;
-      state.sub = payload.sub || null;
-      if (payload.groups) {
-        state.projects = payload.groups.reduce((projects, group) => {
+      const { authStatus, username, groups, sub, superUser } = payload;
+      state.authStatus = authStatus;
+      state.username = username || null;
+      state.groups = groups || null;
+      state.sub = sub || null;
+      state.isSuperUser = superUser || false;
+      if (groups) {
+        state.projects = groups.reduce((projects, group) => {
           const groupComponents = group.split('/');
           if (groupComponents.length !== 3) return projects;
           const project = groupComponents[1];
@@ -51,6 +54,7 @@ export const selectUserAuthStatus = state => state.user.authStatus;
 export const selectUserGroups = state => state.user.groups;
 export const selectUserUsername = state => state.user.username;
 export const selectUserProjects = state => state.user.projects;
+export const selectUserIsSuperUser = state => state.user.isSuperUser;
 export const selectUserCurrentRoles = createSelector(
   [selectSelectedProject, selectUserProjects],
   (selectedProject, userProjects) => {
