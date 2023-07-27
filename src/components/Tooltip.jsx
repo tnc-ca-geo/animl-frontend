@@ -24,6 +24,7 @@ const slideLeftAndFade = keyframes({
 });
 
 const StyledContent = styled(TooltipPrimitive.Content, {
+  zIndex: '$3',
   borderRadius: '$2',
   padding: '10px 15px',
   fontSize: '$3',
