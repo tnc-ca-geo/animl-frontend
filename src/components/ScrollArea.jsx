@@ -17,7 +17,8 @@ const StyledScrollAreaRoot = styled(ScrollArea.Root, {
 const StyledScrollAreaViewport = styled(ScrollArea.Viewport, {
   width: '100%',
   height: '100%',
-  borderRadius: 'inherit'
+  borderRadius: 'inherit',
+  position: 'absolute'
 });
 
 const StyledScrollAreaScrollbar = styled(ScrollArea.Scrollbar, {
