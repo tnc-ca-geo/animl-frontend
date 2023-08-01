@@ -215,9 +215,13 @@ export const uploadSlice = createSlice({
     },
 
     exportErrorsStart: (state) => {
-      let ls = state.loadingStates.errorsExport;
-      ls.isLoading = true;
-      ls.noneFound = false;
+      console.log('export errors start: ', payload);
+      state.errorsExport = null; 
+      state.loadingStates.errorsExport = {
+        isLoading: true,
+        errors: null,
+        noneFound: false,
+      }
     },
 
     exportErrorsSuccess: (state, { payload }) => {
@@ -246,7 +250,6 @@ export const uploadSlice = createSlice({
       ls.errors = payload;
     },
 
-    // TODO: how is this used again?
     clearErrorsExport: (state) => { 
       console.log('clearing export errors')
       state.errorsExport = null; 

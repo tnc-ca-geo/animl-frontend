@@ -105,7 +105,7 @@ const ExportModal = () => {
         <Button 
           type='submit'
           size='large'
-          disabled={exportLoading.isLoading || exportReady}
+          disabled={exportLoading.isLoading}
           data-format='coco'
           onClick={handleExportButtonClick}
         >
@@ -114,7 +114,7 @@ const ExportModal = () => {
         <Button 
           type='submit'
           size='large'
-          disabled={exportLoading.isLoading || exportReady}
+          disabled={exportLoading.isLoading}
           data-format='csv'
           onClick={handleExportButtonClick}
         >

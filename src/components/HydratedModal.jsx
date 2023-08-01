@@ -10,6 +10,7 @@ import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import { clearExport, clearStats } from '../features/images/imagesSlice';
+import { clearErrorsExport } from '../features/upload/uploadSlice.js'
 import {
   selectModalOpen,
   selectModalContent,
@@ -67,7 +68,7 @@ const HydratedModal = () => {
       title: 'Bulk upload',
       size: 'md',
       content: <BulkUploadForm/>,
-      callBackOnClose: () => true,
+      callBackOnClose: () => dispatch(clearErrorsExport()),
     },
   };
 
