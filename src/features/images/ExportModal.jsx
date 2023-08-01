@@ -56,7 +56,7 @@ const ExportModal = () => {
     if (exportPending) {
       dispatch(getExportStatus(dataExport.documentId));
     }
-  }, [exportPending, dataExport, dispatch])
+  }, [exportPending, dataExport, dispatch]);
 
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;

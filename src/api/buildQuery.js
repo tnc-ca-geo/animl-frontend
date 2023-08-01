@@ -275,6 +275,7 @@ const queries = {
     },
   }),
 
+  // TODO: name this something more specific (like exportImageData)
   export: ({ format, filters }) => ({
     template: `
       query Export($input: ExportInput!) {
@@ -288,17 +289,27 @@ const queries = {
     },
   }),
 
+  exportErrors: ({ filters }) => ({
+    template: `
+      query ExportErrors($input: ExportErrorsInput!) {
+        exportErrors(input: $input) {
+            documentId
+        }
+      }
+    `,
+    variables: {
+      input: { filters }
+    },
+  }),
+
   getExportStatus: ({ documentId }) => ({
     template: `
       query GetExportStatus($input: ExportStatusInput!) {
         exportStatus(input: $input) {
           status
           url
-          imageCount
-          reviewedCount {
-            reviewed
-            notReviewed
-          }
+          count
+          meta
           error {
             message
           }

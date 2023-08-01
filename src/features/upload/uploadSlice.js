@@ -4,6 +4,7 @@ import { call } from '../../api';
 
 const initialState = {
   batchStates: [],
+  errorsExport: null,
   pageInfo: {
     hasNext: false,
     hasPrevious: false,
@@ -25,7 +26,12 @@ const initialState = {
       isLoading: false,
       operation: null,
       errors: null,
-    }
+    },
+    errorsExport: {
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    },
   }
 };
 
@@ -206,7 +212,57 @@ export const uploadSlice = createSlice({
         ...state.loadingStates.stopBatch,
         ...ls
       };
-    }
+    },
+
+    exportErrorsStart: (state) => {
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = true;
+      ls.noneFound = false;
+    },
+
+    exportErrorsSuccess: (state, { payload }) => {
+      console.log('export errors Success: ', payload);
+      state.errorsExport = {
+        ...state.errorsExport,
+        ...payload
+      }
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = false;
+      ls.noneFound = payload.count === 0;
+      ls.errors = null;
+    },
+
+    exportErrorsUpdate: (state, { payload }) => {
+      console.log('export errors update: ', payload);
+      state.errorsExport = payload;
+    },
+
+    exportErrorsFailure: (state, { payload }) => {
+      console.log('export errors fail: ', payload);
+      state.errorsExport = null; 
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = payload;
+    },
+
+    // TODO: how is this used again?
+    clearErrorsExport: (state) => { 
+      console.log('clearing export errors')
+      state.errorsExport = null; 
+      state.loadingStates.errorsExport = {
+        isLoading: false,
+        errors: null,
+        noneFound: false,
+      }
+    },
+
+    // TODO: remember to wire up exportErrors errors
+    dismissExportErrorsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.errorsExport.errors.splice(index, 1);
+    },
+
   }
 });
 
@@ -222,6 +278,12 @@ export const {
   stopBatchStart,
   stopBatchSuccess,
   stopBatchFailure,
+  exportErrorsStart,
+  exportErrorsSuccess,
+  exportErrorsUpdate,
+  exportErrorsFailure,
+  clearErrorsExport,
+  dismissExportErrorsError
 } = uploadSlice.actions;
 
 // bulk upload thunk
@@ -281,7 +343,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
     console.log('err: ', err)
     dispatch(uploadFailure(err))
   }
-}
+};
 
 export const fetchBatches = (page = 'current') => async (dispatch, getState) => {
   try {
@@ -321,7 +383,7 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
     console.log('err: ', err)
     dispatch(fetchBatchesFailure(err))
   }
-}
+};
 
 export const stopBatch = (id) => async (dispatch, getState) => {
   try {
@@ -345,10 +407,73 @@ export const stopBatch = (id) => async (dispatch, getState) => {
     console.log('err: ', err)
     dispatch(stopBatchFailure(err))
   }
-}
+};
+
+// export errors thunk
+export const exportErrors = ({ filters }) => {
+  return async (dispatch, getState) => {
+    console.log(`uploadSlice - exportErrors() - exporting with filters: `, filters);
+    try {
+
+      dispatch(exportErrorsStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'exportErrors',
+          input: { filters },
+        });  
+        console.log('imagesSlice() - exportErrors() - res: ', res);
+        dispatch(exportErrorsUpdate({ documentId: res.exportErrors.documentId }));
+      }
+    } catch (err) {
+      dispatch(exportErrorsFailure(err));
+    }
+  };
+};
+
+// getErrorsExportStatus thunk
+export const getErrorsExportStatus = (documentId) => {
+  return async (dispatch, getState) => {
+    console.log('uploadSlice() - getErrorsExportStatus() - docId: ', documentId);
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const { exportStatus } = await call({
+          projId: selectedProj._id,
+          request: 'getExportStatus',
+          input: { documentId },
+        });  
+        console.log('uploadSlice() - getErrorsExportStatus() - exportStatus: ', exportStatus)
+        
+        if (exportStatus.status === 'Success') {
+          dispatch(exportErrorsSuccess(exportStatus));
+        } else if (exportStatus.status === 'Error' && exportStatus.error) {
+          dispatch(exportErrorsFailure(exportStatus.error));
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          dispatch(getErrorsExportStatus(documentId));
+        }
+      }
+    } catch (err) {
+      dispatch(exportFailure(err));
+    }
+  };
+};
 
 export const selectBatchStates = state => state.uploads.batchStates;
 export const selectBatchPageInfo = state => state.uploads.pageInfo;
 export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
+export const selectErrorsExport = state => state.uploads.errorsExport;
+export const selectErrorsExportLoading = state => state.uploads.loadingStates.errorsExport;
+export const selectErrorsExportErrors = state => state.uploads.loadingStates.errorsExport.errors;
 
 export default uploadSlice.reducer;

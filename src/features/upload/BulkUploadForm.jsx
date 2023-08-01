@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import ProgressBar from '../../components/ProgressBar';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch } from './uploadSlice';
+import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 
 
@@ -87,6 +87,8 @@ const BulkUploadForm = ({ handleClose }) => {
   const batchStates = useSelector(selectBatchStates);
   const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
   const percentUploaded = Math.round(progress * 100);
+  const errorsExport = useSelector(selectErrorsExport);
+  const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const dispatch = useDispatch();
 
   const sortedBatchStates = useMemo(() => {
@@ -112,6 +114,28 @@ const BulkUploadForm = ({ handleClose }) => {
     return () => clearInterval(intervalID);
   }, [dispatch]);
 
+  const errorsExportReady = !errorsExportLoading.isLoading && 
+    !errorsExportLoading.errors && 
+    errorsExport && 
+    errorsExport.url;
+
+  const errorsExportPending = errorsExportLoading.isLoading && 
+    errorsExport && 
+    errorsExport.documentId;
+
+  useEffect(() => {
+    if (errorsExportPending) {
+      dispatch(getErrorsExportStatus(errorsExport.documentId));
+    }
+  }, [errorsExportPending, errorsExport, dispatch]);
+
+  // when we have a url for the exported CSV file, open it
+  useEffect(() => {
+    if (errorsExportReady) {
+      window.open(errorsExport.url, 'downloadTab');
+    }
+  }, [errorsExportReady, errorsExport, dispatch]);
+
   return (
     <div>
       <Table>
@@ -124,15 +148,18 @@ const BulkUploadForm = ({ handleClose }) => {
         </thead>
         <tbody>
           {sortedBatchStates.map((batch) => {
-            const { _id, originalFile, processingEnd, total, remaining } = batch
+            console.log('batch to display: ', batch)
+            const { _id, originalFile, processingEnd, total, remaining } = batch;
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
-            const status = getStatus(percentUploaded, batch)
+            const status = getStatus(percentUploaded, batch);
+            const hasErrors = true;
 
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>{status}</TableCell>
                 <TableCell>{isStopable && <Button size='small' onClick={() => dispatch(stopBatch(_id))}>Stop</Button>}</TableCell>
+                <TableCell>{hasErrors && <Button size='small' onClick={() => dispatch(exportErrors({filters: { batch: _id }}))}>Get Errors</Button>}</TableCell>
               </TableRow>
             )}
           )}
@@ -142,6 +169,11 @@ const BulkUploadForm = ({ handleClose }) => {
         {hasPrevious && <Button size='small' onClick={() => dispatch(fetchBatches('previous'))}>Previous page</Button>}
         {hasNext && <Button size='small' onClick={() => dispatch(fetchBatches('next'))}>Next page</Button>}
       </Pagination>
+      {errorsExportReady && 
+        <p><em>Success! Your export is ready for download. If the download 
+        did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
+        initiate it.</em></p>
+      }
 
       <FormWrapper>
         <Formik
