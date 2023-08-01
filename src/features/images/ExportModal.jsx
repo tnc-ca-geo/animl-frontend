@@ -95,10 +95,10 @@ const ExportModal = () => {
         }
       </HelperText>
       {(exportReady &&
-        dataExport.reviewedCount &&
-        dataExport.reviewedCount.notReviewed > 0) &&
+        dataExport.meta.reviewedCount &&
+        dataExport.meta.reviewedCount.notReviewed > 0) &&
           <NotReviewedWarning
-            reviewedCount={dataExport.reviewedCount}
+            reviewedCount={dataExport.meta.reviewedCount}
           />
       }
       <ButtonRow>

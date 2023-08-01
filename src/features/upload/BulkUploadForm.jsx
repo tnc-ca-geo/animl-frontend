@@ -113,7 +113,10 @@ const BulkUploadForm = ({ handleClose }) => {
     const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
     return () => clearInterval(intervalID);
   }, [dispatch]);
+  
 
+  // TODO: a lot of this export logic is shared by the ExportModal,
+  // so we should consider abstracting either into a component or hook
   const errorsExportReady = !errorsExportLoading.isLoading && 
     !errorsExportLoading.errors && 
     errorsExport && 

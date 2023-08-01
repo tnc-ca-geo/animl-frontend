@@ -209,7 +209,7 @@ export const imagesSlice = createSlice({
       }
       let ls = state.loadingStates.export;
       ls.isLoading = false;
-      ls.noneFound = payload.imageCount === 0;
+      ls.noneFound = payload.meta.imageCount === 0;
       ls.errors = null;
     },
 
