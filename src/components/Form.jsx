@@ -11,6 +11,7 @@ const textInput = {
   boxSizing: 'border-box',
   border: '1px solid',
   borderColor: '$border',
+  backgroundColor: '#FFFFFF',
   borderRadius: '$1',
   '&:focus': {
     transition: 'all 0.2s ease',

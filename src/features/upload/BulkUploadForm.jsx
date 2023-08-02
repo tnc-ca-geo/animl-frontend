@@ -50,7 +50,11 @@ const Pagination = styled('div', {
   '& > button': {
     marginLeft: '10px'
   }
-})
+});
+
+const BulkUploadActionButton = styled(Button, {
+  marginRight: '$2'
+});
 
 const Status = styled('span');
 const Error = styled('span', {
@@ -149,43 +153,6 @@ const BulkUploadForm = ({ handleClose }) => {
 
   return (
     <div>
-      <Table>
-        <thead>
-          <tr>
-            <TableHeadCell>File name</TableHeadCell>
-            <TableHeadCell>Status</TableHeadCell>
-            <TableHeadCell>Actions</TableHeadCell>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedBatchStates.map((batch) => {
-            console.log('batch to display: ', batch)
-            const { _id, originalFile, processingEnd, total, remaining } = batch;
-            const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
-            const status = getStatus(percentUploaded, batch);
-            const hasErrors = true;
-
-            return (
-              <TableRow key={_id}>
-                <TableCell>{originalFile}</TableCell>
-                <TableCell>{status}</TableCell>
-                <TableCell>{isStopable && <Button size='small' onClick={() => dispatch(stopBatch(_id))}>Stop</Button>}</TableCell>
-                <TableCell>{hasErrors && <Button size='small' onClick={(e) => handleExportButtonClick(e, _id)}>Get Errors</Button>}</TableCell>
-              </TableRow>
-            )}
-          )}
-        </tbody>
-      </Table>
-      <Pagination>
-        {hasPrevious && <Button size='small' onClick={() => dispatch(fetchBatches('previous'))}>Previous page</Button>}
-        {hasNext && <Button size='small' onClick={() => dispatch(fetchBatches('next'))}>Next page</Button>}
-      </Pagination>
-      {errorsExportReady && 
-        <p><em>Success! Your export is ready for download. If the download 
-        did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
-        initiate it.</em></p>
-      }
-
       <FormWrapper>
         <Formik
           onSubmit={(values) => handleSubmit(values)}
@@ -207,9 +174,6 @@ const BulkUploadForm = ({ handleClose }) => {
                   />
                   <ErrorMessage component={FormError} name='zipFile'/>
                 </FormFieldWrapper>
-              </FieldRow>
-
-              <FieldRow>
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>Serial Number Override</label>
                   <Field name='overrideSerial' id='overrideSerial' />
@@ -218,6 +182,7 @@ const BulkUploadForm = ({ handleClose }) => {
               </FieldRow>
 
               {/*
+              // TODO: do we need this? Figure out the right place for it if so
               {touched.zipFile && errors.zipFile && (
                 <FormError>{ errors.zipFile }</FormError>
               )}
@@ -236,6 +201,46 @@ const BulkUploadForm = ({ handleClose }) => {
           )}
         </Formik>
       </FormWrapper>
+      <Table>
+        <thead>
+          <tr>
+            <TableHeadCell>File name</TableHeadCell>
+            <TableHeadCell>Status</TableHeadCell>
+            <TableHeadCell>Actions</TableHeadCell>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedBatchStates.map((batch) => {
+            console.log('batch to display: ', batch)
+            const { _id, originalFile, processingEnd, total, remaining } = batch;
+            const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
+            const status = getStatus(percentUploaded, batch);
+            const hasErrors = true;
+
+            return (
+              <TableRow key={_id}>
+                <TableCell>{originalFile}</TableCell>
+                <TableCell>{status}</TableCell>
+                <TableCell>
+                  <BulkUploadActionButton size='small' disabled={!isStopable} onClick={() => dispatch(stopBatch(_id))}>Stop</BulkUploadActionButton>
+                  <BulkUploadActionButton size='small' disabled={!hasErrors} isonClick={(e) => handleExportButtonClick(e, _id)}>Download Errors</BulkUploadActionButton>
+                  <BulkUploadActionButton size='small' disabled={!hasErrors} isonClick={(e) => console.log('TODO: clear errors')}>Clear Errors</BulkUploadActionButton>
+                  <BulkUploadActionButton size='small' isonClick={(e) => console.log('TODO: delete batch record')}>Delete</BulkUploadActionButton>
+                </TableCell>
+              </TableRow>
+            )}
+          )}
+        </tbody>
+      </Table>
+      <Pagination>
+        {hasPrevious && <Button size='small' onClick={() => dispatch(fetchBatches('previous'))}>Previous page</Button>}
+        {hasNext && <Button size='small' onClick={() => dispatch(fetchBatches('next'))}>Next page</Button>}
+      </Pagination>
+      {errorsExportReady && 
+        <p><em>Success! Your export is ready for download. If the download 
+        did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
+        initiate it.</em></p>
+      }
     </div>
   )
 }

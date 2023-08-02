@@ -28,6 +28,8 @@ const StyledHeader = styled('div', {
   // justifyContent: 'space-between',
   padding: '$0 $2 $0 $3',
   height: '$7',
+  borderTopLeftRadius: '$2',
+  borderTopRightRadius: '$2',
   borderBottom: '1px solid $border',
   backgroundColor: '$backgroundLight',
   fontWeight: '$5',

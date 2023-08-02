@@ -66,7 +66,7 @@ const HydratedModal = () => {
     },
     'bulk-upload-form': {
       title: 'Bulk upload',
-      size: 'md',
+      size: 'lg',
       content: <BulkUploadForm/>,
       callBackOnClose: () => dispatch(clearErrorsExport()),
     },
