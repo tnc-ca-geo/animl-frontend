@@ -215,7 +215,7 @@ export const uploadSlice = createSlice({
     },
 
     exportErrorsStart: (state) => {
-      console.log('export errors start: ', payload);
+      console.log('export errors start');
       state.errorsExport = null; 
       state.loadingStates.errorsExport = {
         isLoading: true,

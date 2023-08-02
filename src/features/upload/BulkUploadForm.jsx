@@ -126,6 +126,14 @@ const BulkUploadForm = ({ handleClose }) => {
     errorsExport && 
     errorsExport.documentId;
 
+  const handleExportButtonClick = (e, _id) => {
+    const { isLoading, errors, noneFound } = errorsExportLoading;
+    const noErrors = !errors || errors.length === 0;
+    if (!noneFound && !isLoading && noErrors) {
+      dispatch(exportErrors({filters: { batch: _id }}));
+    }
+  };
+
   useEffect(() => {
     if (errorsExportPending) {
       dispatch(getErrorsExportStatus(errorsExport.documentId));
@@ -162,7 +170,7 @@ const BulkUploadForm = ({ handleClose }) => {
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>{status}</TableCell>
                 <TableCell>{isStopable && <Button size='small' onClick={() => dispatch(stopBatch(_id))}>Stop</Button>}</TableCell>
-                <TableCell>{hasErrors && <Button size='small' onClick={() => dispatch(exportErrors({filters: { batch: _id }}))}>Get Errors</Button>}</TableCell>
+                <TableCell>{hasErrors && <Button size='small' onClick={(e) => handleExportButtonClick(e, _id)}>Get Errors</Button>}</TableCell>
               </TableRow>
             )}
           )}
