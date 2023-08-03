@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormError } from '../../components/Form';
+import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormError, FileUploadInput } from '../../components/Form';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
+import IconButton from '../../components/IconButton.jsx';
 import ProgressBar from '../../components/ProgressBar';
 import { selectSelectedProject } from '../projects/projectsSlice';
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 
@@ -165,7 +167,7 @@ const BulkUploadForm = ({ handleClose }) => {
               <FieldRow>
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
-                  <input
+                  <FileUploadInput
                     type='file'
                     id='zipFile'
                     name='zipFile'
@@ -181,19 +183,12 @@ const BulkUploadForm = ({ handleClose }) => {
                 </FormFieldWrapper>
               </FieldRow>
 
-              {/*
-              // TODO: do we need this? Figure out the right place for it if so
-              {touched.zipFile && errors.zipFile && (
-                <FormError>{ errors.zipFile }</FormError>
-              )}
-              */}
-
               {(isLoading || progress > 0) && (
                 <ProgressBar aria-label="Upload progress" max="100" value={percentUploaded}>{percentUploaded}%</ProgressBar>
               )}
 
               <ButtonRow>
-                <Button type='submit' size='large' disabled={isLoading}>
+                <Button type='submit' size='large' disabled={isLoading || !values.zipFile}>
                   Upload
                 </Button>
               </ButtonRow>
@@ -223,8 +218,8 @@ const BulkUploadForm = ({ handleClose }) => {
                 <TableCell>{status}</TableCell>
                 <TableCell>
                   <BulkUploadActionButton size='small' disabled={!isStopable} onClick={() => dispatch(stopBatch(_id))}>Stop</BulkUploadActionButton>
-                  <BulkUploadActionButton size='small' disabled={!hasErrors} isonClick={(e) => handleExportButtonClick(e, _id)}>Download Errors</BulkUploadActionButton>
-                  <BulkUploadActionButton size='small' disabled={!hasErrors} isonClick={(e) => console.log('TODO: clear errors')}>Clear Errors</BulkUploadActionButton>
+                  <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => handleExportButtonClick(e, _id)}>Download Errors</BulkUploadActionButton>
+                  <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => console.log('TODO: clear errors')}>Clear Errors</BulkUploadActionButton>
                   <BulkUploadActionButton size='small' isonClick={(e) => console.log('TODO: delete batch record')}>Delete</BulkUploadActionButton>
                 </TableCell>
               </TableRow>
@@ -233,8 +228,22 @@ const BulkUploadForm = ({ handleClose }) => {
         </tbody>
       </Table>
       <Pagination>
-        {hasPrevious && <Button size='small' onClick={() => dispatch(fetchBatches('previous'))}>Previous page</Button>}
-        {hasNext && <Button size='small' onClick={() => dispatch(fetchBatches('next'))}>Next page</Button>}
+        <IconButton
+          variant='ghost'
+          size='large'
+          disabled={!hasPrevious}
+          onClick={() => dispatch(fetchBatches('previous'))}
+        >
+          <ChevronLeftIcon/>
+        </IconButton>
+        <IconButton
+          variant='ghost'
+          size='large'
+          disabled={!hasNext}
+          onClick={() => dispatch(fetchBatches('next'))}
+        >
+          <ChevronRightIcon/>
+        </IconButton>
       </Pagination>
       {errorsExportReady && 
         <p><em>Success! Your export is ready for download. If the download 
