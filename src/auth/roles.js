@@ -1,3 +1,4 @@
+const SUPER_USER = 'super_user';
 const MANAGER = 'project_manager';
 const MEMBER = 'project_member';
 const OBSERVER = 'project_observer';
@@ -13,5 +14,5 @@ export const QUERY_WITH_CUSTOM_FILTER =         [MANAGER];
 export const READ_STATS_ROLES =                 [MANAGER];
 
 export const hasRole = (currRoles, targetRoles = []) => (
-  currRoles && currRoles.some((role) => targetRoles.includes(role))
+  currRoles && (currRoles.includes(SUPER_USER) || currRoles.some((role) => targetRoles.includes(role)))
 );

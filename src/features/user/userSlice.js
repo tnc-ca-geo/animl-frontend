@@ -53,12 +53,26 @@ export const selectUserGroups = state => state.user.groups;
 export const selectUserUsername = state => state.user.username;
 export const selectUserProjects = state => state.user.projects;
 export const selectUserIsSuperUser = state => state.user.groups.includes('animl_superuser');
+// export const selectUserCurrentRoles = createSelector(
+//   [selectSelectedProject, selectUserProjects],
+//   (selectedProject, userProjects) => {
+//     return (selectedProject && userProjects) 
+//       ? userProjects[selectedProject._id].roles
+//       : [];
+//   }
+// );
+
 export const selectUserCurrentRoles = createSelector(
-  [selectSelectedProject, selectUserProjects],
-  (selectedProject, userProjects) => {
-    return (selectedProject && userProjects) 
-      ? userProjects[selectedProject._id].roles
-      : [];
+  [selectSelectedProject, selectUserProjects, selectUserIsSuperUser],
+  (selectedProject, userProjects, isSuperUser) => {
+    let roles = [];
+    if (isSuperUser) {
+      roles = ['super_user'];
+    }
+    else if (selectedProject && userProjects) {
+      roles = userProjects[selectedProject._id].roles;
+    }
+    return roles;
   }
 );
 
