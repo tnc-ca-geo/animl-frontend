@@ -6,8 +6,10 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import ProgressBar from '../../components/ProgressBar';
+import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon } from '@radix-ui/react-icons';
+import { sky, green } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
@@ -61,6 +63,26 @@ const BulkUploadActionButton = styled(Button, {
 
 const FileUpload = styled('div', {
   position: 'relative',
+});
+
+const ProgressRoot = styled(Progress.Root, {
+  position: 'relative',
+  overflow: 'hidden',
+  background: '$gray6',//'white',
+  borderRadius: '99999px',
+  width: '100%',
+  height: '8px',
+
+  /* Fix overflow clipping in Safari */
+  /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
+  transform: 'translateZ(0)',
+});
+
+const ProgressIndicator = styled(Progress.Indicator, {
+  backgroundColor: green.green9, //sky.sky4, //'$blue600',
+  width: '100%',
+  height: '100%',
+  transition: 'transform 660ms cubic-bezier(0.65, 0, 0.35, 1)'
 });
 
 const ClearFileButton = styled(IconButton, {
@@ -129,10 +151,19 @@ const BulkUploadForm = ({ handleClose }) => {
     }));
   };
 
-  const fileInput = useRef();
-  const resetFileField = () => {
-    fileInput.current.value = null;
+  const formikRef = useRef();
+  const fileInputRef = useRef();
+  const reset = () => {
+    console.log('resetting form');
+    fileInputRef.current.value = null;
+    formikRef.current?.resetForm();
   };
+  useEffect(() => {
+    if (percentUploaded === 100) {
+      console.log('upload complete');
+      reset()
+    }
+  }, [percentUploaded, reset])
 
   useEffect(() => {
     // Initially loaded the batches
@@ -184,6 +215,7 @@ const BulkUploadForm = ({ handleClose }) => {
           onSubmit={(values) => handleSubmit(values)}
           validationSchema={bulkUploadSchema}
           initialValues={{ zipFile: null, overrideSerial: '' }}
+          innerRef={formikRef}
         >
           {({ errors, touched, values, setFieldValue, resetForm }) => (
             <Form>
@@ -193,7 +225,7 @@ const BulkUploadForm = ({ handleClose }) => {
                   <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
                   <FileUpload>
                     <FileUploadInput
-                      ref={fileInput}
+                      ref={fileInputRef}
                       type='file'
                       id='zipFile'
                       name='zipFile'
@@ -202,11 +234,8 @@ const BulkUploadForm = ({ handleClose }) => {
                     />
                     <ClearFileButton
                       variant='ghost'
-                      disabled={!values.zipFile}
-                      onClick={() => {
-                        resetForm({ zipFile: null });
-                        resetFileField();
-                      }}
+                      disabled={!values.zipFile || isLoading}
+                      onClick={reset}
                     >
                       <Cross2Icon />
                     </ClearFileButton>
@@ -224,8 +253,10 @@ const BulkUploadForm = ({ handleClose }) => {
                 </FormFieldWrapper>
               </FieldRow>
 
-              {(isLoading || progress > 0) && (
-                <ProgressBar aria-label="Upload progress" max="100" value={percentUploaded}>{percentUploaded}%</ProgressBar>
+              {(progress > 0) && (
+                <ProgressRoot>
+                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
+                </ProgressRoot>
               )}
 
               <ButtonRow>

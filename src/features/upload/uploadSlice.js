@@ -110,7 +110,7 @@ export const uploadSlice = createSlice({
 
     uploadProgress: (state, { payload }) => {
       const ls = {
-        progress: payload.progress
+        progress: payload.progress < 1 ? payload.progress : 0
       }
       state.loadingStates.upload = {
         ...state.loadingStates.upload,
