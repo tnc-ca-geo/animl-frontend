@@ -20,8 +20,8 @@ const bulkUploadSchema = Yup.object().shape({
       if (!value) return true;
       return value && value.size <= Math.pow(1024, 3) * 50;
     }),
-  // TODO: improve SN override validation (no spaces, special characters, and all lowercase)
   overrideSerial: Yup.string()
+    .matches(/^[a-zA-Z0-9_.-]*$/, 'Serial Numbers can\'t contain spaces or special characters')
 });
 
 const Table = styled('table', {
@@ -219,7 +219,7 @@ const BulkUploadForm = ({ handleClose }) => {
                     <InfoIcon tooltipContent={<SerialNumberOverrideHelp />}/>
                   </label>
 
-                  <Field name='overrideSerial' id='overrideSerial' placeholder='Optional. Use with caution!'/>
+                  <Field name='overrideSerial' id='overrideSerial' placeholder='Optional. Read the docs and use with caution!'/>
                   <ErrorMessage component={FormError} name='overrideSerial'/>
                 </FormFieldWrapper>
               </FieldRow>

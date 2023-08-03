@@ -80,6 +80,7 @@ export const ButtonRow = styled(FieldRow, {
 
 export const FormFieldWrapper = styled('div', {
   flexGrow: '1',
+  width: '100%',
   marginBottom: '$3',
   marginLeft: '$3',
   '&:first-child': {
