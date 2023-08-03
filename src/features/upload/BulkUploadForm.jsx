@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormError, FileUploadInput } from '../../components/Form';
@@ -7,7 +7,7 @@ import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import ProgressBar from '../../components/ProgressBar';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { ChevronLeftIcon, ChevronRightIcon, InfoCircledIcon } from '@radix-ui/react-icons';
+import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
@@ -18,7 +18,7 @@ const bulkUploadSchema = Yup.object().shape({
     .required('A ZIP file is required')
     .test('fileSize', 'The file must be smaller than 50GB.', (value) => {
       if (!value) return true;
-      return value.size <= Math.pow(1024, 3) * 50;
+      return value && value.size <= Math.pow(1024, 3) * 50;
     }),
   // TODO: improve SN override validation (no spaces, special characters, and all lowercase)
   overrideSerial: Yup.string()
@@ -57,6 +57,17 @@ const Pagination = styled('div', {
 
 const BulkUploadActionButton = styled(Button, {
   marginRight: '$2'
+});
+
+const FileUpload = styled('div', {
+  position: 'relative',
+});
+
+const ClearFileButton = styled(IconButton, {
+  position: 'absolute',
+  right: 0,
+  top: '12px',
+  margin: '0 $2 0 $2',
 });
 
 const Status = styled('span');
@@ -118,6 +129,11 @@ const BulkUploadForm = ({ handleClose }) => {
     }));
   };
 
+  const fileInput = useRef();
+  const resetFileField = () => {
+    fileInput.current.value = null;
+  };
+
   useEffect(() => {
     // Initially loaded the batches
     dispatch(fetchBatches());
@@ -160,6 +176,7 @@ const BulkUploadForm = ({ handleClose }) => {
     }
   }, [errorsExportReady, errorsExport, dispatch]);
 
+
   return (
     <div>
       <FormWrapper>
@@ -168,19 +185,32 @@ const BulkUploadForm = ({ handleClose }) => {
           validationSchema={bulkUploadSchema}
           initialValues={{ zipFile: null, overrideSerial: '' }}
         >
-          {({ errors, touched, values, setFieldValue }) => (
+          {({ errors, touched, values, setFieldValue, resetForm }) => (
             <Form>
 
               <FieldRow>
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
-                  <FileUploadInput
-                    type='file'
-                    id='zipFile'
-                    name='zipFile'
-                    accept='.zip'
-                    onChange={(e) => setFieldValue('zipFile', e.target.files[0])}
-                  />
+                  <FileUpload>
+                    <FileUploadInput
+                      ref={fileInput}
+                      type='file'
+                      id='zipFile'
+                      name='zipFile'
+                      accept='.zip'
+                      onChange={(e) => setFieldValue('zipFile', e.target.files[0])}
+                    />
+                    <ClearFileButton
+                      variant='ghost'
+                      disabled={!values.zipFile}
+                      onClick={() => {
+                        resetForm({ zipFile: null });
+                        resetFileField();
+                      }}
+                    >
+                      <Cross2Icon />
+                    </ClearFileButton>
+                  </FileUpload>
                   <ErrorMessage component={FormError} name='zipFile'/>
                 </FormFieldWrapper>
                 <FormFieldWrapper>
@@ -217,7 +247,7 @@ const BulkUploadForm = ({ handleClose }) => {
         </thead>
         <tbody>
           {sortedBatchStates.map((batch) => {
-            console.log('batch to display: ', batch)
+            // console.log('batch to display: ', batch)
             const { _id, originalFile, processingEnd, total, remaining } = batch;
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
             const status = getStatus(percentUploaded, batch);
