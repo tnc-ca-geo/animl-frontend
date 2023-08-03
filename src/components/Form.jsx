@@ -29,12 +29,13 @@ const StyledFormWrapper = styled('div', {
   display: 'block',
   width: '100%',
   label: {
-    display: 'inherit',
+    display: 'flex',
+    alignItems: 'center',
     width: '100%',
     fontSize: '$3',
     fontWeight: '$3',
     color: '$textDark',
-    marginBottom: '$2',
+    marginBottom: '$2'
   },
   input: textInput,
   textarea: {

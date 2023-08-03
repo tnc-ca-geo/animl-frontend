@@ -7,9 +7,10 @@ import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import ProgressBar from '../../components/ProgressBar';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
+import { ChevronLeftIcon, ChevronRightIcon, InfoCircledIcon } from '@radix-ui/react-icons';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
+import InfoIcon from '../../components/InfoIcon';
 
 
 const bulkUploadSchema = Yup.object().shape({
@@ -85,7 +86,13 @@ const getStatus = (percentUploaded, batch) => {
   const error = errors?.length > 0 && <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
 
   return <Status>{status} {error}</Status>;
-}
+};
+
+const SerialNumberOverrideHelp = () => (
+  <div>
+    serial number help. For more info see <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>docs</a>
+  </div>
+);
 
 const BulkUploadForm = ({ handleClose }) => {
   const selectedProject = useSelector(selectSelectedProject);
@@ -177,8 +184,12 @@ const BulkUploadForm = ({ handleClose }) => {
                   <ErrorMessage component={FormError} name='zipFile'/>
                 </FormFieldWrapper>
                 <FormFieldWrapper>
-                  <label htmlFor='overrideSerial'>Serial Number Override</label>
-                  <Field name='overrideSerial' id='overrideSerial' />
+                  <label htmlFor='overrideSerial'>
+                    Serial Number Override
+                    <InfoIcon tooltipContent={<SerialNumberOverrideHelp />}/>
+                  </label>
+
+                  <Field name='overrideSerial' id='overrideSerial' placeholder='Optional. Use with caution!'/>
                   <ErrorMessage component={FormError} name='overrideSerial'/>
                 </FormFieldWrapper>
               </FieldRow>
@@ -220,7 +231,7 @@ const BulkUploadForm = ({ handleClose }) => {
                   <BulkUploadActionButton size='small' disabled={!isStopable} onClick={() => dispatch(stopBatch(_id))}>Stop</BulkUploadActionButton>
                   <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => handleExportButtonClick(e, _id)}>Download Errors</BulkUploadActionButton>
                   <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => console.log('TODO: clear errors')}>Clear Errors</BulkUploadActionButton>
-                  <BulkUploadActionButton size='small' isonClick={(e) => console.log('TODO: delete batch record')}>Delete</BulkUploadActionButton>
+                  <BulkUploadActionButton size='small' onClick={(e) => console.log('TODO: delete batch record')}>Delete</BulkUploadActionButton>
                 </TableCell>
               </TableRow>
             )}
