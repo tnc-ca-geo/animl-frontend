@@ -11,6 +11,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@juggle/resize-observer": "^3.3.1",
     "@radix-ui/colors": "^0.1.8",
+    "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-context-menu": "^2.1.0",
     "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
