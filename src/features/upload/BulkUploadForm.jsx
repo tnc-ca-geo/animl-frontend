@@ -10,10 +10,16 @@ import { Alert, AlertPortal, AlertOverlay, AlertTrigger, AlertContent, AlertTitl
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { green, red, orange } from '@radix-ui/colors';
+import { green, red, mauve } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../components/Tooltip.jsx';
 
 
 const bulkUploadSchema = Yup.object().shape({
@@ -30,13 +36,21 @@ const bulkUploadSchema = Yup.object().shape({
 const Table = styled('table', {
   borderSpacing: '0',
   width: '100%',
-  marginBottom: '15px'
+  marginBottom: '15px',
+  // borderBottom: '1px solid',
+  // borderColor: '$border',
 })
 
 const TableHeadCell = styled('th', {
+  color: '$textMedium',
+  fontSize: '$2',
+  fontWeight: '400',
+  textTransform: 'uppercase',
   textAlign: 'left',
   verticalAlign: 'bottom',
   padding: '5px 15px',
+  borderBottom: '1px solid',
+  borderColor: '$border',
 });
 
 const TableRow = styled('tr', {
@@ -46,8 +60,12 @@ const TableRow = styled('tr', {
 });
 
 const TableCell = styled('td', {
+  color: '$textDark',
+  fontSize: '$3',
+  fontWeight: '400',
   padding: '5px 15px',
-  verticalAlign: 'top',
+  // borderBottom: '1px solid',
+  // borderColor: mauve.mauve11,
 });
 
 const Pagination = styled('div', {
@@ -101,9 +119,8 @@ const Error = styled('span', {
 
 const getStatus = (percentUploaded, batch) => {
   const { processingStart, processingEnd, total, remaining, errors } = batch;
-
   let status = `File successfully uploaded. Preparing images...`;
-  if (percentUploaded !== 100) {
+  if (percentUploaded > 0 && percentUploaded < 99) {
     status = `Uploading file...`
   }
   if (processingStart) {
@@ -317,10 +334,44 @@ const BulkUploadForm = ({ handleClose }) => {
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>{status}</TableCell>
                 <TableCell>
+                  {/*
                   <BulkUploadActionButton size='small' disabled={!isStopable} onClick={() => dispatch(stopBatch(_id))}>Stop</BulkUploadActionButton>
                   <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => handleExportButtonClick(e, _id)}>Download Errors</BulkUploadActionButton>
                   <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => console.log('TODO: clear errors')}>Clear Errors</BulkUploadActionButton>
                   <BulkUploadActionButton size='small' onClick={(e) => console.log('TODO: delete batch record')}>Delete</BulkUploadActionButton>
+                  */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <IconButton
+                        variant='ghost'
+                        size='large'
+                        disabled={!isStopable}
+                        onClick={dispatch(stopBatch(_id))}
+                      >
+                        <Cross2Icon />
+                      </IconButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={5} >
+                      Kill image processing
+                      <TooltipArrow />
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <IconButton
+                        variant='ghost'
+                        size='large'
+                        disabled={!hasErrors}
+                        onClick={(e) => handleExportButtonClick(e, _id)}
+                      >
+                        <ExclamationTriangleIcon />
+                      </IconButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={5} >
+                      Download errors CSV
+                      <TooltipArrow />
+                    </TooltipContent>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             )}

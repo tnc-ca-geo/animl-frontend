@@ -326,7 +326,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       await new Promise((resolve) => {
         xhr.upload.addEventListener("progress", (event) => {
           if (event.lengthComputable) {
-            dispatch(uploadProgress({ progress: event.loaded / event.total }))
+            dispatch(uploadProgress({ progress: event.loaded / event.total }));
           }
         });
         xhr.addEventListener("loadend", () => {

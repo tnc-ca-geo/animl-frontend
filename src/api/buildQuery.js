@@ -580,7 +580,9 @@ const queries = {
     variables: { input: {
       ...(page === 'next' && { next: pageInfo.next }),
       ...(page === 'previous' && { previous: pageInfo.previous }),
-      limit: 5,
+      paginatedField: 'processingStart',
+      sortAscending: true,
+      limit: 10,
       user
     } }
   }),
