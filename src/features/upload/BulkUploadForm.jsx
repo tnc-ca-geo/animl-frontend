@@ -10,7 +10,7 @@ import { Alert, AlertPortal, AlertOverlay, AlertTrigger, AlertContent, AlertTitl
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { green, orange } from '@radix-ui/colors';
+import { green, red, orange } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
@@ -99,29 +99,6 @@ const Error = styled('span', {
   color: 'red'
 });
 
-const Warning = styled('div', {
-  marginTop: '$2',
-  marginBottom: '$3',
-  padding: '$2 $3',
-  borderRadius: '$2',
-  backgroundColor: '$warningBg',
-  color: '$textMedium',
-  p: {
-    marginTop: '$2',
-  }
-});
-
-const WarningTitle = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  color: '$warningText',
-  fontWeight: '500',
-  marginTop: '$2',
-  svg: {
-    marginRight: '$2'
-  }
-});
-
 const getStatus = (percentUploaded, batch) => {
   const { processingStart, processingEnd, total, remaining, errors } = batch;
 
@@ -151,21 +128,6 @@ const SerialNumberOverrideHelp = () => (
     serial number help. For more info see <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>docs</a>
   </div>
 );
-
-const alertContent = {
-  'override-serial-set': <p>You've included a camera Serial Number Override in your
-      upload. Setting the Serial Number Override will override the serial 
-      number for all images in this ZIP file, so proceed with caution. For more
-      information on the implications of using this feature, please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
-    </p>
-  ,
-  'no-automation-rule': <p>There are currently no machine learning automation rules 
-      configured to trigger when new images are added to this Project, so if you proceed, images in  
-      this ZIP will be saved, but the upload will not produce in any machine learning predictions. To learn more 
-      about how to configure machine learning pipelines using Automation Rules, 
-      please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
-    </p>
-};
 
 const BulkUploadForm = ({ handleClose }) => {
   const selectedProject = useSelector(selectSelectedProject);
@@ -205,7 +167,7 @@ const BulkUploadForm = ({ handleClose }) => {
       setAlertOpen(true);
     }
     else {
-      // upload(values);
+      upload(values);
     }
   };
 
@@ -304,7 +266,7 @@ const BulkUploadForm = ({ handleClose }) => {
                 
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>
-                    Serial Number Override
+                    Serial number override
                     <InfoIcon tooltipContent={<SerialNumberOverrideHelp />}/>
                   </label>
 
@@ -312,9 +274,9 @@ const BulkUploadForm = ({ handleClose }) => {
                   <ErrorMessage component={FormError} name='overrideSerial'/>
                 </FormFieldWrapper>
 
-                <ButtonRow css={{ 'padding': 0, 'margin': '0 0 $3 $3', 'alignItems': 'end' }}>
+                <ButtonRow css={{ 'padding': 0, 'margin': '0 0 $3 $3', 'alignItems': 'start' }}>
                   <Button 
-                    css={{ 'height': '55px', 'marginBottom': '2px' }}
+                    css={{ 'height': '55px', 'marginTop': '28px' }}
                     type='submit' 
                     size='large' 
                     disabled={isLoading || !values.zipFile}
@@ -399,9 +361,46 @@ const BulkUploadForm = ({ handleClose }) => {
   )
 };
 
+// TODO: break out into new file
+
+const Warning = styled('div', {
+  marginTop: '$2',
+  marginBottom: '$3',
+  padding: '$1 $3',
+  color: '$textMedium',
+  p: {
+    marginTop: '$2',
+  }
+});
+
+const WarningTitle = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  color: '$warningText',
+  fontWeight: '500',
+  marginTop: '$2',
+  svg: {
+    marginRight: '$2'
+  }
+});
+
+const alertContent = {
+  'override-serial-set': <p>You've included a camera Serial Number Override in your
+      upload. Setting the Serial Number Override will override the serial 
+      number for all images in this ZIP file, so proceed with caution. For more
+      information on the implications of using this feature, please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
+    </p>
+  ,
+  'no-automation-rule': <p>There are currently no machine learning automation rules 
+      configured to trigger when new images are added to this Project, so if you proceed, images in  
+      this ZIP will be saved, but the upload will not produce in any machine learning predictions. To learn more 
+      about how to configure machine learning pipelines using Automation Rules, 
+      please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
+    </p>
+};
+
 const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
 
-  console.log('warnings: ', warnings)
   const handleConfirmUpload = () => {
     upload(formValues);
     setAlertOpen(false);
@@ -420,17 +419,24 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
         <AlertTitle>Are you sure you'd like to proceed with this upload?</AlertTitle>
         {warnings && warnings.map((warn) => (
           <Warning key={warn} >
-            <WarningTitle><ExclamationTriangleIcon/>Warning!</WarningTitle>
+            <WarningTitle><ExclamationTriangleIcon/>Warning</WarningTitle>
             {alertContent[warn]}
           </Warning>
         ))}
         <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
-          <AlertCancel asChild>
-            <button onClick={() => setAlertOpen(false)}>Cancel</button>
-          </AlertCancel>
-          <AlertAction asChild>
-            <button onClick={handleConfirmUpload}>Yes, begin upload</button>
-          </AlertAction>
+          <Button size='small' css={{ border: 'none' }} onClick={() => setAlertOpen(false)}>Cancel</Button>
+          <Button
+            size='small'
+            css={{
+              backgroundColor: red.red4,
+              color: red.red11,
+              border: 'none',
+              '&:hover': { color: red.red11, backgroundColor: red.red5 }
+            }} 
+            onClick={handleConfirmUpload}
+          >
+            Yes, begin upload
+          </Button>
         </div>
       </AlertContent>
     </AlertPortal>
