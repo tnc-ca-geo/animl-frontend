@@ -221,6 +221,7 @@ const BulkUploadForm = ({ handleClose }) => {
             <Form>
 
               <FieldRow>
+
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
                   <FileUpload>
@@ -242,6 +243,7 @@ const BulkUploadForm = ({ handleClose }) => {
                   </FileUpload>
                   <ErrorMessage component={FormError} name='zipFile'/>
                 </FormFieldWrapper>
+                
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>
                     Serial Number Override
@@ -251,6 +253,17 @@ const BulkUploadForm = ({ handleClose }) => {
                   <Field name='overrideSerial' id='overrideSerial' placeholder='Optional. Read the docs and use with caution!'/>
                   <ErrorMessage component={FormError} name='overrideSerial'/>
                 </FormFieldWrapper>
+
+                <ButtonRow css={{ 'padding': 0, 'margin': '0 0 $3 $3', 'alignItems': 'end' }}>
+                  <Button 
+                    css={{ 'height': '55px', 'marginBottom': '2px' }}
+                    type='submit' 
+                    size='large' 
+                    disabled={isLoading || !values.zipFile}
+                  >
+                    Upload
+                  </Button>
+                </ButtonRow>
               </FieldRow>
 
               {(progress > 0) && (
@@ -259,11 +272,6 @@ const BulkUploadForm = ({ handleClose }) => {
                 </ProgressRoot>
               )}
 
-              <ButtonRow>
-                <Button type='submit' size='large' disabled={isLoading || !values.zipFile}>
-                  Upload
-                </Button>
-              </ButtonRow>
             </Form>
           )}
         </Formik>
