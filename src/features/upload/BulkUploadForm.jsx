@@ -9,12 +9,11 @@ import ProgressBar from '../../components/ProgressBar';
 import { Alert, AlertPortal, AlertOverlay, AlertTrigger, AlertContent, AlertTitle, AlertDescription, AlertCancel, AlertAction } from '../../components/AlertDialog';
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { sky, green } from '@radix-ui/colors';
+import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { green, orange } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
-import { values } from 'lodash';
 
 
 const bulkUploadSchema = Yup.object().shape({
@@ -95,8 +94,32 @@ const ClearFileButton = styled(IconButton, {
 });
 
 const Status = styled('span');
+
 const Error = styled('span', {
   color: 'red'
+});
+
+const Warning = styled('div', {
+  marginTop: '$2',
+  marginBottom: '$3',
+  padding: '$2 $3',
+  borderRadius: '$2',
+  backgroundColor: '$warningBg',
+  color: '$textMedium',
+  p: {
+    marginTop: '$2',
+  }
+});
+
+const WarningTitle = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  color: '$warningText',
+  fontWeight: '500',
+  marginTop: '$2',
+  svg: {
+    marginRight: '$2'
+  }
 });
 
 const getStatus = (percentUploaded, batch) => {
@@ -129,6 +152,21 @@ const SerialNumberOverrideHelp = () => (
   </div>
 );
 
+const alertContent = {
+  'override-serial-set': <p>You've included a camera Serial Number Override in your
+      upload. Setting the Serial Number Override will override the serial 
+      number for all images in this ZIP file, so proceed with caution. For more
+      information on the implications of using this feature, please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
+    </p>
+  ,
+  'no-automation-rule': <p>There are currently no machine learning automation rules 
+      configured to trigger when new images are added to this Project, so if you proceed, images in  
+      this ZIP will be saved, but the upload will not produce in any machine learning predictions. To learn more 
+      about how to configure machine learning pipelines using Automation Rules, 
+      please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
+    </p>
+};
+
 const BulkUploadForm = ({ handleClose }) => {
   const selectedProject = useSelector(selectSelectedProject);
   const { isLoading, progress }  = useSelector(selectUploadsLoading);
@@ -143,8 +181,6 @@ const BulkUploadForm = ({ handleClose }) => {
   const hasImageAddedAutoRule = selectedProject.automationRules.some((rule) => (
     rule.event.type === 'image-added' && rule.action.type === 'run-inference'
   ));
-
-  console.log('hasImageAddedAutoRule: ', hasImageAddedAutoRule)
 
   const sortedBatchStates = useMemo(() => {
     const clonedStates = batchStates.slice();
@@ -164,12 +200,12 @@ const BulkUploadForm = ({ handleClose }) => {
     const warns = [];
     if (values.overrideSerial) warns.push('override-serial-set');
     if (!hasImageAddedAutoRule) warns.push('no-automation-rule');
-    if (warnings.length) {
+    if (warns.length) {
       setWarnings(warns)
       setAlertOpen(true);
     }
     else {
-      upload(values);
+      // upload(values);
     }
   };
 
@@ -381,12 +417,13 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
     <AlertPortal>
       <AlertOverlay/>
       <AlertContent>
-        <AlertTitle>Are you sure you'd like to initiate this upload?</AlertTitle>
-        <AlertDescription>
-          {warnings && warnings.map((warn) => (
-            <div key={warn}>{warn}</div>
-          ))}
-        </AlertDescription>
+        <AlertTitle>Are you sure you'd like to proceed with this upload?</AlertTitle>
+        {warnings && warnings.map((warn) => (
+          <Warning key={warn} >
+            <WarningTitle><ExclamationTriangleIcon/>Warning!</WarningTitle>
+            {alertContent[warn]}
+          </Warning>
+        ))}
         <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
           <AlertCancel asChild>
             <button onClick={() => setAlertOpen(false)}>Cancel</button>
@@ -399,6 +436,6 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
     </AlertPortal>
   </Alert>
   )
-}
+};
 
 export default BulkUploadForm;

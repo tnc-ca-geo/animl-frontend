@@ -203,7 +203,7 @@ const StyledReviewIcon = styled('div', {
         backgroundColor: '$successBg',
       },
       false: {
-        color: '$warnringText',
+        color: '$warningText',
         backgroundColor: '$warningBg',
       }
     }

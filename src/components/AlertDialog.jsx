@@ -21,7 +21,7 @@ const AlertDialogContent = styled(AD.AlertDialogContent, {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '90vw',
-  maxWidth: '500px',
+  maxWidth: '600px',
   maxHeight: '85vh',
   padding: '25px',
   animation: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
@@ -33,14 +33,14 @@ const AlertDialogContent = styled(AD.AlertDialogContent, {
 
 const AlertDialogTitle = styled(AD.AlertDialogTitle, {
   margin: 0,
-  color: mauve.mauve12,
+  color: '$textDark', //mauve.mauve12,
   fontSize: '17px',
   fontWeight: '500',
 });
 
 const AlertDialogDescription = styled(AD.AlertDialogDescription, {
   marginBottom: '20px',
-  color: mauve.mauve11,
+  color: '$textMedium', // mauve.mauve11,
   fontSize: '15px',
   lineHeight: '1.5',
 });
