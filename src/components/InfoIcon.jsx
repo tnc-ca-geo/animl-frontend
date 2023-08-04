@@ -9,7 +9,7 @@ import {
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 const Icon = styled(InfoCircledIcon, {
-  marginLeft: '$2'
+  marginLeft: '$2',
 });
 
 const InfoIcon = ({ tooltipContent, side }) => {

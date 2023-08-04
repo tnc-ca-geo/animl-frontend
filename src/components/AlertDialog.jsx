@@ -6,11 +6,13 @@ import { styled, keyframes } from '@stitches/react';
 const AlertDialogOverlay = styled(AD.AlertDialogOverlay, {
   backgroundColor: blackA.blackA9,
   position: 'fixed',
+  zIndex: 1000,
   inset: 0,
   animation: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)'
 });
 
 const AlertDialogContent = styled(AD.AlertDialogContent, {
+  zIndex: 1000,
   backgroundColor: 'white',
   borderRadius: '$2',
   boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
@@ -115,12 +117,19 @@ const contentShow = keyframes({
 //   }
 // }
 
+// Exports
+export const Alert = AD.Root;
+export const AlertPortal = AD.Portal;
+export const AlertOverlay = AlertDialogOverlay;
+export const AlertTrigger = AD.Trigger;
+export const AlertContent = AlertDialogContent;
+export const AlertTitle = AlertDialogTitle;
+export const AlertDescription = AlertDialogDescription;
+export const AlertCancel = AD.Cancel;
+export const AlertAction = AD.Action;
 
-const AlertDialog = () => (
+export const AlertDialog = () => (
   <AD.Root>
-    <AD.Trigger asChild>
-      <button className="Button violet">Delete account</button>
-    </AD.Trigger>
     <AD.Portal>
       <AlertDialogOverlay className="AlertDialogOverlay" />
       <AlertDialogContent className="AlertDialogContent">
@@ -141,5 +150,3 @@ const AlertDialog = () => (
     </AD.Portal>
   </AD.Root>
 );
-
-export default AlertDialog;

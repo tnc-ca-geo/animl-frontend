@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormError, FileUploadInput } from '../../components/Form';
@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import ProgressBar from '../../components/ProgressBar';
+import { Alert, AlertPortal, AlertOverlay, AlertTrigger, AlertContent, AlertTitle, AlertDescription, AlertCancel, AlertAction } from '../../components/AlertDialog';
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon } from '@radix-ui/react-icons';
@@ -13,6 +14,7 @@ import { sky, green } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
+import { values } from 'lodash';
 
 
 const bulkUploadSchema = Yup.object().shape({
@@ -135,7 +137,14 @@ const BulkUploadForm = ({ handleClose }) => {
   const percentUploaded = Math.round(progress * 100);
   const errorsExport = useSelector(selectErrorsExport);
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
+  const [ alertOpen, setAlertOpen ] = useState(false);
+  const [ warnings, setWarnings ] = useState([])
   const dispatch = useDispatch();
+  const hasImageAddedAutoRule = selectedProject.automationRules.some((rule) => (
+    rule.event.type === 'image-added' && rule.action.type === 'run-inference'
+  ));
+
+  console.log('hasImageAddedAutoRule: ', hasImageAddedAutoRule)
 
   const sortedBatchStates = useMemo(() => {
     const clonedStates = batchStates.slice();
@@ -144,11 +153,24 @@ const BulkUploadForm = ({ handleClose }) => {
       .sort((a, b) => parseInt(b.processingStart) - parseInt(a.processingStart))
   }, [batchStates]);
 
-  const handleSubmit = (values) => {
+  const upload = (values) => {
     dispatch(uploadFile({ 
       file: values.zipFile, 
       overrideSerial: values.overrideSerial
     }));
+  };
+
+  const handleSubmit = (values) => {
+    const warns = [];
+    if (values.overrideSerial) warns.push('override-serial-set');
+    if (!hasImageAddedAutoRule) warns.push('no-automation-rule');
+    if (warnings.length) {
+      setWarnings(warns)
+      setAlertOpen(true);
+    }
+    else {
+      upload(values);
+    }
   };
 
   const formikRef = useRef();
@@ -217,7 +239,7 @@ const BulkUploadForm = ({ handleClose }) => {
           initialValues={{ zipFile: null, overrideSerial: '' }}
           innerRef={formikRef}
         >
-          {({ errors, touched, values, setFieldValue, resetForm }) => (
+          {({ values, setFieldValue, resetForm }) => (
             <Form>
 
               <FieldRow>
@@ -330,7 +352,52 @@ const BulkUploadForm = ({ handleClose }) => {
         did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
         initiate it.</em></p>
       }
+      <UploadAlert
+        open={alertOpen}
+        setAlertOpen={setAlertOpen}
+        formValues={formikRef.current?.values}
+        upload={upload}
+        warnings={warnings}
+      />
     </div>
+  )
+};
+
+const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
+
+  console.log('warnings: ', warnings)
+  const handleConfirmUpload = () => {
+    upload(formValues);
+    setAlertOpen(false);
+  };
+
+  return (
+    <Alert
+      open={open}
+      onOpenChange={(e) => {
+        console.log('Upload alert onOpenChange firing: ', e); // TODO: do we need this?
+      }}
+    >
+    <AlertPortal>
+      <AlertOverlay/>
+      <AlertContent>
+        <AlertTitle>Are you sure you'd like to initiate this upload?</AlertTitle>
+        <AlertDescription>
+          {warnings && warnings.map((warn) => (
+            <div key={warn}>{warn}</div>
+          ))}
+        </AlertDescription>
+        <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
+          <AlertCancel asChild>
+            <button onClick={() => setAlertOpen(false)}>Cancel</button>
+          </AlertCancel>
+          <AlertAction asChild>
+            <button onClick={handleConfirmUpload}>Yes, begin upload</button>
+          </AlertAction>
+        </div>
+      </AlertContent>
+    </AlertPortal>
+  </Alert>
   )
 }
 
