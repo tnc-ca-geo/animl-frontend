@@ -327,7 +327,6 @@ const BulkUploadForm = ({ handleClose }) => {
             const { _id, originalFile, processingEnd, total, remaining } = batch;
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
             const status = getStatus(percentUploaded, batch);
-            const hasErrors = true;
 
             return (
               <TableRow key={_id}>
@@ -346,7 +345,7 @@ const BulkUploadForm = ({ handleClose }) => {
                         variant='ghost'
                         size='large'
                         disabled={!isStopable}
-                        onClick={dispatch(stopBatch(_id))}
+                        onClick={() => dispatch(stopBatch(_id))}
                       >
                         <Cross2Icon />
                       </IconButton>
@@ -361,7 +360,7 @@ const BulkUploadForm = ({ handleClose }) => {
                       <IconButton
                         variant='ghost'
                         size='large'
-                        disabled={!hasErrors}
+                        disabled={!batch.imageErrors || batch.imageErrors === 0}
                         onClick={(e) => handleExportButtonClick(e, _id)}
                       >
                         <ExclamationTriangleIcon />

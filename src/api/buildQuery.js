@@ -70,6 +70,7 @@ const batchFields = `
   total
   remaining
   dead
+  imageErrors
   errors {
     error
   }
