@@ -109,9 +109,7 @@ export const uploadSlice = createSlice({
     },
 
     uploadProgress: (state, { payload }) => {
-      const ls = {
-        progress: payload.progress < 1 ? payload.progress : 0
-      }
+      const ls = { progress: payload.progress }
       state.loadingStates.upload = {
         ...state.loadingStates.upload,
         ...ls
@@ -301,7 +299,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const uploadUrl = await call({
-        request: 'getSignedUrl',
+        request: 'createUpload',
         projId: selectedProj._id,
         input: {
           originalFile: file.name
@@ -358,21 +356,20 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
       const userSub = getState().user.sub;
       const pageInfo = getState().uploads.pageInfo;
 
-      console.log('getBatches...')
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
         input: { user: userSub, pageInfo, page }
-      })
+      });
 
-      // const ongoingBatches = batches.batches.batches.filter(
-      //   ({ processingEnd, remaining }) => !processingEnd && !remaining
-      // );
-
-      const ongoingBatches = batches.batches.batches;
-
-      console.log('getBatch for all returned batches...');
-      const requests = ongoingBatches.map(({ _id: id }) => call({
+      // TODO: we currently need to request getBatch (batch details) for every
+      // returned batch because getBatch enriches the returned Batch payload with
+      // `batch.errors`, `batch.remaining`, and `batch.dead`.
+      // It may be more efficient to do this for all batches returned from getBatches
+      // to avoid all of these additional round-trips to the API
+      // Additionally, if we did that, after the initial getBatches fetch we'd
+      // only need to poll for the ongoing batches, rather than all of them
+      const requests = batches.batches.batches.map(({ _id: id }) => call({
         request: 'getBatch',
         projId: selectedProj._id,
         input: { id }

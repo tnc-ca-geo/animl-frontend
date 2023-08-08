@@ -61,12 +61,12 @@ const pageInfoFields = `
 const batchFields = `
   _id
   projectId
-  eTag
+  uploadComplete
+  ingestionComplete
   processingStart
   processingEnd
   overrideSerial
   originalFile
-  uploadedfile
   total
   remaining
   dead
@@ -536,7 +536,7 @@ const queries = {
     variables: { input: input },
   }),
 
-  getSignedUrl: (input) => ({
+  createUpload: (input) => ({
     template: `
       mutation CreateUpload($input: CreateUploadInput!) {
         createUpload(input: $input) {
@@ -582,6 +582,11 @@ const queries = {
       ...(page === 'next' && { next: pageInfo.next }),
       ...(page === 'previous' && { previous: pageInfo.previous }),
       paginatedField: 'processingStart',
+      // TODO: sortAscending should be false to show in order of newest -> oldest, 
+      // but for newly created batches, batch.processingStart is not yet set and
+      // gets put at the bottom of the returned array b/c of that. Figure out how
+      // to return the batches in reverse chronological order but surface newly
+      // created batches at the top
       sortAscending: true,
       limit: 10,
       user

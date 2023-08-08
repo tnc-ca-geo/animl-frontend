@@ -11,7 +11,7 @@ import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { green, red, mauve } from '@radix-ui/colors';
-import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus } from './uploadSlice';
+import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
 import { 
@@ -118,26 +118,53 @@ const Error = styled('span', {
 });
 
 const getStatus = (percentUploaded, batch) => {
-  const { processingStart, processingEnd, total, remaining, errors } = batch;
-  let status = `File successfully uploaded. Preparing images...`;
-  if (percentUploaded > 0 && percentUploaded < 99) {
-    status = `Uploading file...`
+  const { uploadComplete, ingestionComplete, processingStart, processingEnd, total, remaining, errors } = batch;
+  const status = {
+    'uploading-file': percentUploaded > 0 && percentUploaded < 100,
+    'validating-file': !uploadComplete && !processingStart,
+    'deploying-stack': uploadComplete && !processingStart, // not sure we need this
+    'saving-images': processingStart && !ingestionComplete,
+    'processing-images': processingStart && ingestionComplete ? true : false,	// this overlaps w/ saving images (batch will be in both states for a bit)
+    'processing-complete': processingStart && ingestionComplete && (remaining === 0),
+    'stack-destroyed': processingEnd ? true : false, // not sure we need this either
+    'has-batch-errors': errors?.length > 0,
+  };
+  console.log(`status of ${batch.originalFile}: `, status);
+
+  let statusMsg = ``;
+  if (status['uploading-file']) {
+    statusMsg = `Uploading file...`;
+  } else if (status['validating-file']) {
+    statusMsg = `Validating file...`;
   }
-  if (processingStart) {
+  if (status['deploying-stack']) {
+    statusMsg = `File successfully uploaded. Provisioning resources...`;
+  }
+  if (status['saving-images']) {
+    statusMsg = `Saving images...`;
+  }
+  if (status['processing-images']) {
+    statusMsg = `Processing images. Finished ${total - remaining} of ${total} images`;
+  }
+  if (status['processing-complete']) {
+    statusMsg = `Finished processing images. Cleaning up...`;
+  }
+  if (status['stack-destroyed']) {
+    statusMsg = `Finished processing images. Cleaning up...`;
+  }
+  if (status['stack-destroyed']) {
     const dateString = new Date(parseInt(processingStart)).toLocaleString();
-    status = `Processing started at ${dateString}.`
-    if (remaining !== null) {
-      status = `${status} ${total ? `Finished ${total - remaining} of ${total} images.` : ''} ${total - remaining === 0 ? 'Wrapping up.' : ''}`
-    }
-  }
-  if (processingEnd) {
-    const dateString = new Date(parseInt(processingEnd)).toLocaleString();
-    status = `Processing of ${total} images finished at ${dateString}.`
+    statusMsg = `Processing of ${total} images finished at ${dateString}`;
   }
 
-  const error = errors?.length > 0 && <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
-
-  return <Status>{status} {error}</Status>;
+  return (
+    <Status>
+      {statusMsg}
+      {status['has-batch-errors'] && 
+        <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
+      }
+    </Status>
+  );
 };
 
 const SerialNumberOverrideHelp = () => (
@@ -161,12 +188,7 @@ const BulkUploadForm = ({ handleClose }) => {
     rule.event.type === 'image-added' && rule.action.type === 'run-inference'
   ));
 
-  const sortedBatchStates = useMemo(() => {
-    const clonedStates = batchStates.slice();
-    return clonedStates
-      .filter((batch) => batch.projectId === selectedProject._id)
-      .sort((a, b) => parseInt(b.processingStart) - parseInt(a.processingStart))
-  }, [batchStates]);
+  console.log('most recent batch: ', batchStates[0]);
 
   const upload = (values) => {
     dispatch(uploadFile({ 
@@ -180,7 +202,7 @@ const BulkUploadForm = ({ handleClose }) => {
     if (values.overrideSerial) warns.push('override-serial-set');
     if (!hasImageAddedAutoRule) warns.push('no-automation-rule');
     if (warns.length) {
-      setWarnings(warns)
+      setWarnings(warns);
       setAlertOpen(true);
     }
     else {
@@ -198,15 +220,14 @@ const BulkUploadForm = ({ handleClose }) => {
   useEffect(() => {
     if (percentUploaded === 100) {
       console.log('upload complete');
-      reset()
+      dispatch(uploadProgress({ progress: 0 }));
+      reset();
     }
-  }, [percentUploaded, reset])
+  }, [percentUploaded, reset, dispatch]);
 
+  // Fetch batches and continue to poll every minute
   useEffect(() => {
-    // Initially loaded the batches
     dispatch(fetchBatches());
-
-    // Update batches every minute
     const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
     return () => clearInterval(intervalID);
   }, [dispatch]);
@@ -256,9 +277,7 @@ const BulkUploadForm = ({ handleClose }) => {
         >
           {({ values, setFieldValue, resetForm }) => (
             <Form>
-
               <FieldRow>
-
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
                   <FileUpload>
@@ -322,7 +341,7 @@ const BulkUploadForm = ({ handleClose }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedBatchStates.map((batch) => {
+          {batchStates.map((batch) => {
             // console.log('batch to display: ', batch)
             const { _id, originalFile, processingEnd, total, remaining } = batch;
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
@@ -333,12 +352,6 @@ const BulkUploadForm = ({ handleClose }) => {
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>{status}</TableCell>
                 <TableCell>
-                  {/*
-                  <BulkUploadActionButton size='small' disabled={!isStopable} onClick={() => dispatch(stopBatch(_id))}>Stop</BulkUploadActionButton>
-                  <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => handleExportButtonClick(e, _id)}>Download Errors</BulkUploadActionButton>
-                  <BulkUploadActionButton size='small' disabled={!hasErrors} onClick={(e) => console.log('TODO: clear errors')}>Clear Errors</BulkUploadActionButton>
-                  <BulkUploadActionButton size='small' onClick={(e) => console.log('TODO: delete batch record')}>Delete</BulkUploadActionButton>
-                  */}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <IconButton
@@ -360,6 +373,7 @@ const BulkUploadForm = ({ handleClose }) => {
                       <IconButton
                         variant='ghost'
                         size='large'
+                        css={{ color: '$errorText' }}
                         disabled={!batch.imageErrors || batch.imageErrors === 0}
                         onClick={(e) => handleExportButtonClick(e, _id)}
                       >
@@ -396,7 +410,7 @@ const BulkUploadForm = ({ handleClose }) => {
         </IconButton>
       </Pagination>
       {errorsExportReady && 
-        <p><em>Success! Your export is ready for download. If the download 
+        <p><em>Success! Your errors CSV is ready for download. If the download 
         did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
         initiate it.</em></p>
       }
