@@ -562,7 +562,7 @@ const queries = {
     variables: { input }
   }),
 
-  getBatches: ({user, pageInfo, page}) => ({
+  getBatches: ({ pageInfo, page }) => ({
     template: `
       query GetBatches($input: QueryBatchesInput!) {
         batches(input: $input) {
@@ -589,7 +589,6 @@ const queries = {
       // created batches at the top
       sortAscending: false,
       limit: 10,
-      user
     } }
   }),
 

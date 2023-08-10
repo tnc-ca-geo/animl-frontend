@@ -379,13 +379,12 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
     if (token) {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      const userSub = getState().user.sub;
       const pageInfo = getState().uploads.pageInfo;
 
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
-        input: { user: userSub, pageInfo, page }
+        input: { pageInfo, page }
       });
 
       // TODO: we currently need to request getBatch (batch details) for every

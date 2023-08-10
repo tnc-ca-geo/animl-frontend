@@ -84,7 +84,6 @@ const App = () => {
       const idToken = user.signInUserSession.idToken.payload;
       payload.username = idToken['cognito:username'];
       payload.groups = idToken['cognito:groups'];
-      payload.sub = idToken['sub'];
     }
     dispatch(userAuthStateChanged(payload));
   }, [user, authStatus, dispatch]);
