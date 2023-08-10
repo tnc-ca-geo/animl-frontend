@@ -13,6 +13,7 @@ import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon 
 import { green, red, mauve } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
+import { DateTime } from 'luxon';
 import InfoIcon from '../../components/InfoIcon';
 import { 
   Tooltip, 
@@ -138,7 +139,7 @@ const getStatus = (percentUploaded, batch) => {
     statusMsg = `Validating file...`;
   }
   if (status['deploying-stack']) {
-    statusMsg = `File successfully uploaded. Provisioning resources...`;
+    statusMsg = `File successfully uploaded. Provisioning processing resources...`;
   }
   if (status['saving-images']) {
     statusMsg = `Saving images...`;
@@ -153,10 +154,12 @@ const getStatus = (percentUploaded, batch) => {
     statusMsg = `Finished processing images. Cleaning up...`;
   }
   if (status['stack-destroyed']) {
-    const dateString = new Date(parseInt(processingStart)).toLocaleString();
+    const dateString = DateTime.fromISO(processingStart).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing of ${total} images finished at ${dateString}`;
   }
 
+  console.log(`status message: ${statusMsg}`);
+  
   return (
     <Status>
       {statusMsg}
@@ -364,7 +367,7 @@ const BulkUploadForm = ({ handleClose }) => {
                       </IconButton>
                     </TooltipTrigger>
                     <TooltipContent side="top" sideOffset={5} >
-                      Kill image processing
+                      Cancel image processing
                       <TooltipArrow />
                     </TooltipContent>
                   </Tooltip>
