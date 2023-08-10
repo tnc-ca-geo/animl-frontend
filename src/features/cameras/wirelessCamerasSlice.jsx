@@ -1,9 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
-import { 
-  setSelectedProjAndView,
-} from '../projects/projectsSlice';
+import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   wirelessCameras: [],

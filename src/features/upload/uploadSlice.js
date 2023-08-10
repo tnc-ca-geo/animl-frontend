@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
+import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   batchStates: [],
@@ -144,18 +145,23 @@ export const uploadSlice = createSlice({
         ...ls
       };
 
-      if (!equalBatches(state.batchStates, batches)) {
-        state.batchStates = batches;
-      } else {
-        // removes all fields where value === null from the object,
-        // so don't overwrite the `remaining` value we have in state
-        const newBatchData = batches.map(batch => {
-          return Object.keys(batch)
-          .filter((key) => batch[key] != null)
-          .reduce((obj, key) => ({ ...obj, [key]: batch[key] }), {});
-        });
-        state.batchStates = mergeBatchData(state.batchStates, newBatchData);
-      }
+      // TODO: ask oliver what this was for. I'm not sure we need it anymore?
+      // Maybe at one point the API returned batch.remaining = null when uploads
+      // were complete?
+
+      // if (!equalBatches(state.batchStates, batches)) {
+      //   state.batchStates = batches;
+      // } else {
+      //   // removes all fields where value === null from the object,
+      //   // so don't overwrite the `remaining` value we have in state
+      //   const newBatchData = batches.map(batch => {
+      //     return Object.keys(batch)
+      //     .filter((key) => batch[key] != null)
+      //     .reduce((obj, key) => ({ ...obj, [key]: batch[key] }), {});
+      //   });
+      //   state.batchStates = mergeBatchData(state.batchStates, newBatchData);
+      // }
+      state.batchStates = batches;
     },
 
     fetchBatchesFailure: (state, { payload }) => {
@@ -264,7 +270,27 @@ export const uploadSlice = createSlice({
       state.loadingStates.errorsExport.errors.splice(index, 1);
     },
 
-  }
+  },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(setSelectedProjAndView, (state, { payload }) => {
+        if (payload.newProjSelected) {
+          // reset upload states
+          state.batchStates = [];
+          state.errorsExport = null;
+          state.pageInfo  = { hasNext: false, hasPrevious: false };
+
+          const loadingReset = { isLoading: false, operation: null,errors: null };
+          state.loadingStates = {
+            upload: { ...loadingReset, progress: 0 },
+            batchStates: { ...loadingReset, progress: 0 },
+            stopBatch: loadingReset,
+            errorsExport: loadingReset,
+          }
+        }
+      })
+  },
 });
 
 export const {
