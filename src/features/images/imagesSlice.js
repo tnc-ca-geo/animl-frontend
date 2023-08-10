@@ -196,30 +196,30 @@ export const imagesSlice = createSlice({
     },
 
     exportStart: (state) => {
-      let ls = state.loadingStates.export;
-      ls.isLoading = true;
-      ls.noneFound = false;
+      state.export = null; 
+      state.loadingStates.export = {
+        isLoading: true,
+        errors: null,
+        noneFound: false,
+      }
     },
 
     exportSuccess: (state, { payload }) => {
-      console.log('export Success: ', payload);
       state.export = {
         ...state.export,
         ...payload
       }
       let ls = state.loadingStates.export;
       ls.isLoading = false;
-      ls.noneFound = payload.imageCount === 0;
+      ls.noneFound = payload.meta.imageCount === 0;
       ls.errors = null;
     },
 
     exportUpdate: (state, { payload }) => {
-      console.log('export update: ', payload);
       state.export = payload;
     },
 
     exportFailure: (state, { payload }) => {
-      console.log('export fail: ', payload);
       state.export = null; 
       let ls = state.loadingStates.export;
       ls.isLoading = false;
@@ -228,7 +228,6 @@ export const imagesSlice = createSlice({
     },
 
     clearExport: (state) => { 
-      console.log('clearing export')
       state.export = null; 
       state.loadingStates.export = {
         isLoading: false,

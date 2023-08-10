@@ -61,15 +61,16 @@ const pageInfoFields = `
 const batchFields = `
   _id
   projectId
-  eTag
+  uploadComplete
+  ingestionComplete
   processingStart
   processingEnd
   overrideSerial
   originalFile
-  uploadedfile
   total
   remaining
   dead
+  imageErrors
   errors {
     error
   }
@@ -275,6 +276,7 @@ const queries = {
     },
   }),
 
+  // TODO: name this something more specific (like exportImageData)
   export: ({ format, filters }) => ({
     template: `
       query Export($input: ExportInput!) {
@@ -288,17 +290,27 @@ const queries = {
     },
   }),
 
+  exportErrors: ({ filters }) => ({
+    template: `
+      query ExportErrors($input: ExportErrorsInput!) {
+        exportErrors(input: $input) {
+            documentId
+        }
+      }
+    `,
+    variables: {
+      input: { filters }
+    },
+  }),
+
   getExportStatus: ({ documentId }) => ({
     template: `
       query GetExportStatus($input: ExportStatusInput!) {
         exportStatus(input: $input) {
           status
           url
-          imageCount
-          reviewedCount {
-            reviewed
-            notReviewed
-          }
+          count
+          meta
           error {
             message
           }
@@ -524,7 +536,7 @@ const queries = {
     variables: { input: input },
   }),
 
-  getSignedUrl: (input) => ({
+  createUpload: (input) => ({
     template: `
       mutation CreateUpload($input: CreateUploadInput!) {
         createUpload(input: $input) {
@@ -550,7 +562,7 @@ const queries = {
     variables: { input }
   }),
 
-  getBatches: ({user, pageInfo, page}) => ({
+  getBatches: ({ pageInfo, page }) => ({
     template: `
       query GetBatches($input: QueryBatchesInput!) {
         batches(input: $input) {
@@ -569,8 +581,14 @@ const queries = {
     variables: { input: {
       ...(page === 'next' && { next: pageInfo.next }),
       ...(page === 'previous' && { previous: pageInfo.previous }),
-      limit: 5,
-      user
+      paginatedField: 'uploadComplete',
+      // TODO: sortAscending should be false to show in order of newest -> oldest, 
+      // but for newly created batches, batch.processingStart is not yet set and
+      // gets put at the bottom of the returned array b/c of that. Figure out how
+      // to return the batches in reverse chronological order but surface newly
+      // created batches at the top
+      sortAscending: false,
+      limit: 10,
     } }
   }),
 

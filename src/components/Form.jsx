@@ -11,6 +11,7 @@ const textInput = {
   boxSizing: 'border-box',
   border: '1px solid',
   borderColor: '$border',
+  backgroundColor: '#FFFFFF',
   borderRadius: '$1',
   '&:focus': {
     transition: 'all 0.2s ease',
@@ -28,12 +29,13 @@ const StyledFormWrapper = styled('div', {
   display: 'block',
   width: '100%',
   label: {
-    display: 'inherit',
+    display: 'flex',
+    alignItems: 'center',
     width: '100%',
     fontSize: '$3',
     fontWeight: '$3',
     color: '$textDark',
-    marginBottom: '$2',
+    marginBottom: '$2'
   },
   input: textInput,
   textarea: {
@@ -78,6 +80,7 @@ export const ButtonRow = styled(FieldRow, {
 
 export const FormFieldWrapper = styled('div', {
   flexGrow: '1',
+  width: '100%',
   marginBottom: '$3',
   marginLeft: '$3',
   '&:first-child': {
@@ -102,3 +105,58 @@ export const HelperText = styled('div', {
     }
   }
 });
+
+export const FileUploadInput = styled('input', {
+  '&[type="file"]': {
+    borderStyle: 'dashed',
+  },
+  '&[type="file"]::file-selector-button': {
+    // Reset
+    alignItems: 'center',
+    appearance: 'none',
+    borderWidth: '0',
+    boxSizing: 'border-box',
+    display: 'inline-flex',
+    flexShrink: 0,
+    fontFamily: 'inherit',
+    justifyContent: 'center',
+    lineHeight: '1',
+    outline: 'none',
+    // padding: '0',
+    textDecoration: 'none',
+    userSelect: 'none',
+    WebkitTapHighlightColor: 'transparent',
+    '&::before': {
+      boxSizing: 'border-box',
+    },
+    '&::after': {
+      boxSizing: 'border-box',
+    },
+    
+    // Custom
+    color: '$loContrast',
+    backgroundColor: '$hiContrast',
+    border: '1px solid $hiContrast',
+    borderRadius: '$1',
+    fontWeight: '$3',
+    fontSize: '$2',
+    textTransform: 'uppercase',
+    transition: 'all 40ms linear',
+    padding: '$1 $2',
+    marginRight: '$2',
+    '&:hover': {
+      color: '$hiContrast',
+      backgroundColor: '$gray3',
+      cursor: 'pointer',
+    },
+    '&:disabled': {
+      pointerEvents: 'none',
+      backgroundColor: 'transparent',
+      color: '$gray5',
+      borderColor: '$gray5',
+    },
+    svg: {
+      marginRight: '$2'
+    },
+  }
+})

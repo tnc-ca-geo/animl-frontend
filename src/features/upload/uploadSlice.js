@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
+import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   batchStates: [],
+  errorsExport: null,
   pageInfo: {
     hasNext: false,
     hasPrevious: false,
@@ -25,7 +27,12 @@ const initialState = {
       isLoading: false,
       operation: null,
       errors: null,
-    }
+    },
+    errorsExport: {
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    },
   }
 };
 
@@ -103,9 +110,7 @@ export const uploadSlice = createSlice({
     },
 
     uploadProgress: (state, { payload }) => {
-      const ls = {
-        progress: payload.progress
-      }
+      const ls = { progress: payload.progress }
       state.loadingStates.upload = {
         ...state.loadingStates.upload,
         ...ls
@@ -140,18 +145,23 @@ export const uploadSlice = createSlice({
         ...ls
       };
 
-      if (!equalBatches(state.batchStates, batches)) {
-        state.batchStates = batches;
-      } else {
-        // removes all fields where value === null from the object,
-        // so don't overwrite the `remaining` value we have in state
-        const newBatchData = batches.map(batch => {
-          return Object.keys(batch)
-          .filter((key) => batch[key] != null)
-          .reduce((obj, key) => ({ ...obj, [key]: batch[key] }), {});
-        });
-        state.batchStates = mergeBatchData(state.batchStates, newBatchData);
-      }
+      // TODO: ask oliver what this was for. I'm not sure we need it anymore?
+      // Maybe at one point the API returned batch.remaining = null when uploads
+      // were complete?
+
+      // if (!equalBatches(state.batchStates, batches)) {
+      //   state.batchStates = batches;
+      // } else {
+      //   // removes all fields where value === null from the object,
+      //   // so don't overwrite the `remaining` value we have in state
+      //   const newBatchData = batches.map(batch => {
+      //     return Object.keys(batch)
+      //     .filter((key) => batch[key] != null)
+      //     .reduce((obj, key) => ({ ...obj, [key]: batch[key] }), {});
+      //   });
+      //   state.batchStates = mergeBatchData(state.batchStates, newBatchData);
+      // }
+      state.batchStates = batches;
     },
 
     fetchBatchesFailure: (state, { payload }) => {
@@ -206,8 +216,81 @@ export const uploadSlice = createSlice({
         ...state.loadingStates.stopBatch,
         ...ls
       };
-    }
-  }
+    },
+
+    exportErrorsStart: (state) => {
+      console.log('export errors start');
+      state.errorsExport = null; 
+      state.loadingStates.errorsExport = {
+        isLoading: true,
+        errors: null,
+        noneFound: false,
+      }
+    },
+
+    exportErrorsSuccess: (state, { payload }) => {
+      console.log('export errors Success: ', payload);
+      state.errorsExport = {
+        ...state.errorsExport,
+        ...payload
+      }
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = false;
+      ls.noneFound = payload.count === 0;
+      ls.errors = null;
+    },
+
+    exportErrorsUpdate: (state, { payload }) => {
+      console.log('export errors update: ', payload);
+      state.errorsExport = payload;
+    },
+
+    exportErrorsFailure: (state, { payload }) => {
+      console.log('export errors fail: ', payload);
+      state.errorsExport = null; 
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = payload;
+    },
+
+    clearErrorsExport: (state) => { 
+      console.log('clearing export errors')
+      state.errorsExport = null; 
+      state.loadingStates.errorsExport = {
+        isLoading: false,
+        errors: null,
+        noneFound: false,
+      }
+    },
+
+    // TODO: remember to wire up exportErrors errors
+    dismissExportErrorsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.errorsExport.errors.splice(index, 1);
+    },
+
+  },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(setSelectedProjAndView, (state, { payload }) => {
+        if (payload.newProjSelected) {
+          // reset upload states
+          state.batchStates = [];
+          state.errorsExport = null;
+          state.pageInfo  = { hasNext: false, hasPrevious: false };
+
+          const loadingReset = { isLoading: false, operation: null,errors: null };
+          state.loadingStates = {
+            upload: { ...loadingReset, progress: 0 },
+            batchStates: { ...loadingReset, progress: 0 },
+            stopBatch: loadingReset,
+            errorsExport: loadingReset,
+          }
+        }
+      })
+  },
 });
 
 export const {
@@ -222,6 +305,12 @@ export const {
   stopBatchStart,
   stopBatchSuccess,
   stopBatchFailure,
+  exportErrorsStart,
+  exportErrorsSuccess,
+  exportErrorsUpdate,
+  exportErrorsFailure,
+  clearErrorsExport,
+  dismissExportErrorsError
 } = uploadSlice.actions;
 
 // bulk upload thunk
@@ -236,7 +325,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const uploadUrl = await call({
-        request: 'getSignedUrl',
+        request: 'createUpload',
         projId: selectedProj._id,
         input: {
           originalFile: file.name
@@ -261,7 +350,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       await new Promise((resolve) => {
         xhr.upload.addEventListener("progress", (event) => {
           if (event.lengthComputable) {
-            dispatch(uploadProgress({ progress: event.loaded / event.total }))
+            dispatch(uploadProgress({ progress: event.loaded / event.total }));
           }
         });
         xhr.addEventListener("loadend", () => {
@@ -281,7 +370,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
     console.log('err: ', err)
     dispatch(uploadFailure(err))
   }
-}
+};
 
 export const fetchBatches = (page = 'current') => async (dispatch, getState) => {
   try {
@@ -290,24 +379,22 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
     if (token) {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      const userSub = getState().user.sub;
       const pageInfo = getState().uploads.pageInfo;
 
-      console.log('getBatches...')
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
-        input: { user: userSub, pageInfo, page }
-      })
+        input: { pageInfo, page }
+      });
 
-      // const ongoingBatches = batches.batches.batches.filter(
-      //   ({ processingEnd, remaining }) => !processingEnd && !remaining
-      // );
-
-      const ongoingBatches = batches.batches.batches;
-
-      console.log('getBatch for all returned batches...');
-      const requests = ongoingBatches.map(({ _id: id }) => call({
+      // TODO: we currently need to request getBatch (batch details) for every
+      // returned batch because getBatch enriches the returned Batch payload with
+      // `batch.errors`, `batch.remaining`, and `batch.dead`.
+      // It may be more efficient to do this for all batches returned from getBatches
+      // to avoid all of these additional round-trips to the API
+      // Additionally, if we did that, after the initial getBatches fetch we'd
+      // only need to poll for the ongoing batches, rather than all of them
+      const requests = batches.batches.batches.map(({ _id: id }) => call({
         request: 'getBatch',
         projId: selectedProj._id,
         input: { id }
@@ -321,7 +408,7 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
     console.log('err: ', err)
     dispatch(fetchBatchesFailure(err))
   }
-}
+};
 
 export const stopBatch = (id) => async (dispatch, getState) => {
   try {
@@ -345,10 +432,73 @@ export const stopBatch = (id) => async (dispatch, getState) => {
     console.log('err: ', err)
     dispatch(stopBatchFailure(err))
   }
-}
+};
+
+// export errors thunk
+export const exportErrors = ({ filters }) => {
+  return async (dispatch, getState) => {
+    console.log(`uploadSlice - exportErrors() - exporting with filters: `, filters);
+    try {
+
+      dispatch(exportErrorsStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'exportErrors',
+          input: { filters },
+        });  
+        console.log('imagesSlice() - exportErrors() - res: ', res);
+        dispatch(exportErrorsUpdate({ documentId: res.exportErrors.documentId }));
+      }
+    } catch (err) {
+      dispatch(exportErrorsFailure(err));
+    }
+  };
+};
+
+// getErrorsExportStatus thunk
+export const getErrorsExportStatus = (documentId) => {
+  return async (dispatch, getState) => {
+    console.log('uploadSlice() - getErrorsExportStatus() - docId: ', documentId);
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const { exportStatus } = await call({
+          projId: selectedProj._id,
+          request: 'getExportStatus',
+          input: { documentId },
+        });  
+        console.log('uploadSlice() - getErrorsExportStatus() - exportStatus: ', exportStatus)
+        
+        if (exportStatus.status === 'Success') {
+          dispatch(exportErrorsSuccess(exportStatus));
+        } else if (exportStatus.status === 'Error' && exportStatus.error) {
+          dispatch(exportErrorsFailure(exportStatus.error));
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          dispatch(getErrorsExportStatus(documentId));
+        }
+      }
+    } catch (err) {
+      dispatch(exportFailure(err));
+    }
+  };
+};
 
 export const selectBatchStates = state => state.uploads.batchStates;
 export const selectBatchPageInfo = state => state.uploads.pageInfo;
 export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
+export const selectErrorsExport = state => state.uploads.errorsExport;
+export const selectErrorsExportLoading = state => state.uploads.loadingStates.errorsExport;
+export const selectErrorsExportErrors = state => state.uploads.loadingStates.errorsExport.errors;
 
 export default uploadSlice.reducer;

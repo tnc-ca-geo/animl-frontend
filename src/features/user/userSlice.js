@@ -6,7 +6,6 @@ const initialState = {
   groups: [],
   projects: {},
   authStatus: null,
-  sub: null,
 };
 
 export const userSlice = createSlice({
@@ -15,11 +14,10 @@ export const userSlice = createSlice({
   reducers: {
 
     userAuthStateChanged: (state, { payload }) => {
-      const { authStatus, username, groups, sub, isSuperUser } = payload;
+      const { authStatus, username, groups, isSuperUser } = payload;
       state.authStatus = authStatus;
       state.username = username || null;
       state.groups = groups || null;
-      state.sub = sub || null;
       if (groups) {
         state.projects = groups.reduce((projects, group) => {
           const groupComponents = group.split('/');
@@ -54,11 +52,16 @@ export const selectUserUsername = state => state.user.username;
 export const selectUserProjects = state => state.user.projects;
 export const selectUserIsSuperUser = state => state.user.groups.includes('animl_superuser');
 export const selectUserCurrentRoles = createSelector(
-  [selectSelectedProject, selectUserProjects],
-  (selectedProject, userProjects) => {
-    return (selectedProject && userProjects) 
-      ? userProjects[selectedProject._id].roles
-      : [];
+  [selectSelectedProject, selectUserProjects, selectUserIsSuperUser],
+  (selectedProject, userProjects, isSuperUser) => {
+    let roles = [];
+    if (isSuperUser) {
+      roles = ['super_user'];
+    }
+    else if (selectedProject && userProjects) {
+      roles = userProjects[selectedProject._id].roles;
+    }
+    return roles;
   }
 );
 

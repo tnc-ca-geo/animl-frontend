@@ -30,7 +30,7 @@ const Button = styled('button', {
   borderRadius: '$1',
   height: '$5',
   fontWeight: '$3',
-  textTransform: 'uppercase',
+  textTransform: 'capitalize',
   transition: 'all 40ms linear',
   '&:hover': {
     color: '$hiContrast',

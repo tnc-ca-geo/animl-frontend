@@ -56,7 +56,7 @@ const ExportModal = () => {
     if (exportPending) {
       dispatch(getExportStatus(dataExport.documentId));
     }
-  }, [exportPending, dataExport, dispatch])
+  }, [exportPending, dataExport, dispatch]);
 
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;
@@ -95,17 +95,17 @@ const ExportModal = () => {
         }
       </HelperText>
       {(exportReady &&
-        dataExport.reviewedCount &&
-        dataExport.reviewedCount.notReviewed > 0) &&
+        dataExport.meta.reviewedCount &&
+        dataExport.meta.reviewedCount.notReviewed > 0) &&
           <NotReviewedWarning
-            reviewedCount={dataExport.reviewedCount}
+            reviewedCount={dataExport.meta.reviewedCount}
           />
       }
       <ButtonRow>
         <Button 
           type='submit'
           size='large'
-          disabled={exportLoading.isLoading || exportReady}
+          disabled={exportLoading.isLoading}
           data-format='coco'
           onClick={handleExportButtonClick}
         >
@@ -114,7 +114,7 @@ const ExportModal = () => {
         <Button 
           type='submit'
           size='large'
-          disabled={exportLoading.isLoading || exportReady}
+          disabled={exportLoading.isLoading}
           data-format='csv'
           onClick={handleExportButtonClick}
         >

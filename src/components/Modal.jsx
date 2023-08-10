@@ -52,7 +52,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
       },
       lg: {
         width: '95vw',
-        height: '95vh',
+        // height: '95vh',
       },
     }
   }

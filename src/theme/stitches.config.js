@@ -101,7 +101,7 @@ export const {
       successText: green.green11,
       warningBg: orange.orange4,
       warningBase: orange.orange9,
-      warnringText: orange.orange11,
+      warningText: orange.orange11,
       errorBg: tomato.tomato4,
       errorBase: tomato.tomato9,
       errorText: tomato.tomato11,
