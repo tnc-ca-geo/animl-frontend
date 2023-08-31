@@ -124,6 +124,15 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors.splice(index, 1);
     },
 
+    deleteImageStart: (state, { payload}) => {
+      // TODO
+    },
+
+    deleteImageSuccess: (state, { payload }) => {
+      state.workingImages = state.workingImages.filter(
+        ({ _id }) => _id !== payload
+      );
+    }
   },
 
   extraReducers: (builder) => {
@@ -153,7 +162,15 @@ export const {
   editLabelFailure,
   editLabelSuccess,
   dismissLabelsError,
+  deleteImageStart,
+  deleteImageSuccess,
 } = reviewSlice.actions;
+
+export const deleteImage = (id) => async (dispatch) => {
+  dispatch(deleteImageStart());
+  // TODO: Submit delete image
+  dispatch(deleteImageSuccess(id))
+}
 
 // editLabel thunk
 export const editLabel = (operation, entity, payload, projId) => {

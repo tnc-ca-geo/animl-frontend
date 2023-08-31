@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { Cross2Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
-import { selectWorkingImages, labelValidated, markedEmpty } from '../review/reviewSlice';
+import { selectWorkingImages, labelValidated, markedEmpty, deleteImage } from '../review/reviewSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
@@ -143,6 +143,8 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
+  const handleDeleteButtonClick = () => dispatch(deleteImage(image._id));
+
   return (
     <ImageWrapper ref={containerEl} className='full-size-image'>
       {isDrawingBbox &&
@@ -190,6 +192,14 @@ const FullSizeImage = ({ image, focusIndex }) => {
             </ContextMenuItemIconLeft>
             Mark empty
           </ContextMenuItem>
+          <ContextMenuItem
+            onSelect={handleDeleteButtonClick}
+          >
+            <ContextMenuItemIconLeft>
+              <TrashIcon />
+            </ContextMenuItemIconLeft>
+            Delete
+          </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
       <ShareImage>
@@ -197,6 +207,9 @@ const FullSizeImage = ({ image, focusIndex }) => {
       </ShareImage>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
+          <EditObjectButton onClick={handleDeleteButtonClick}>
+            <TrashIcon /> Delete
+          </EditObjectButton>
           <EditObjectButton onClick={handleMarkEmptyButtonClick}>
             <Cross2Icon /> Mark empty
           </EditObjectButton>
