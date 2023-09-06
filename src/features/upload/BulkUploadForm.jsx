@@ -6,21 +6,15 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import ProgressBar from '../../components/ProgressBar';
-import { Alert, AlertPortal, AlertOverlay, AlertTrigger, AlertContent, AlertTitle, AlertDescription, AlertCancel, AlertAction } from '../../components/AlertDialog';
+import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../../components/AlertDialog';
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { green, red, mauve } from '@radix-ui/colors';
-import { uploadFile, selectUploadsLoading, fetchBatches, selectBatchStates, selectBatchPageInfo, stopBatch, exportErrors, selectErrorsExport, selectErrorsExportLoading, getErrorsExportStatus, uploadProgress } from './uploadSlice';
+import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { green, red } from '@radix-ui/colors';
+import { uploadFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
-import { DateTime } from 'luxon';
 import InfoIcon from '../../components/InfoIcon';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipArrow, 
-  TooltipTrigger
-} from '../../components/Tooltip.jsx';
+import BulkUploadTable from './BulkUploadTable.jsx';
 
 
 const bulkUploadSchema = Yup.object().shape({
@@ -32,53 +26,6 @@ const bulkUploadSchema = Yup.object().shape({
     }),
   overrideSerial: Yup.string()
     .matches(/^[a-zA-Z0-9_.-]*$/, 'Serial Numbers can\'t contain spaces or special characters')
-});
-
-const Table = styled('table', {
-  borderSpacing: '0',
-  width: '100%',
-  marginBottom: '15px',
-  // borderBottom: '1px solid',
-  // borderColor: '$border',
-})
-
-const TableHeadCell = styled('th', {
-  color: '$textMedium',
-  fontSize: '$2',
-  fontWeight: '400',
-  textTransform: 'uppercase',
-  textAlign: 'left',
-  verticalAlign: 'bottom',
-  padding: '5px 15px',
-  borderBottom: '1px solid',
-  borderColor: '$border',
-});
-
-const TableRow = styled('tr', {
-  '&:nth-child(odd)': {
-    backgroundColor: '$backgroundDark',
-  },
-});
-
-const TableCell = styled('td', {
-  color: '$textDark',
-  fontSize: '$3',
-  fontWeight: '400',
-  padding: '5px 15px',
-  // borderBottom: '1px solid',
-  // borderColor: mauve.mauve11,
-});
-
-const Pagination = styled('div', {
-  textAlign: 'right',
-  marginBottom: '30px',
-  '& > button': {
-    marginLeft: '10px'
-  }
-});
-
-const BulkUploadActionButton = styled(Button, {
-  marginRight: '$2'
 });
 
 const FileUpload = styled('div', {
@@ -112,86 +59,23 @@ const ClearFileButton = styled(IconButton, {
   margin: '0 $2 0 $2',
 });
 
-const Status = styled('span');
-
-const Error = styled('span', {
-  color: 'red'
-});
-
-const getStatus = (percentUploaded, batch) => {
-  const { uploadComplete, ingestionComplete, processingStart, processingEnd, total, remaining, errors } = batch;
-  const status = {
-    'uploading-file': percentUploaded > 0 && percentUploaded < 100,
-    'validating-file': !uploadComplete && !processingStart,
-    'deploying-stack': uploadComplete && !processingStart, // not sure we need this
-    'saving-images': processingStart && !ingestionComplete,
-    'processing-images': processingStart && ingestionComplete ? true : false,	// this overlaps w/ saving images (batch will be in both states for a bit)
-    'processing-complete': processingStart && ingestionComplete && (remaining === 0),
-    'stack-destroyed': processingEnd ? true : false, // not sure we need this either
-    'has-batch-errors': errors?.length > 0,
-  };
-  console.log(`status of ${batch.originalFile}: `, status);
-
-  let statusMsg = ``;
-  if (status['uploading-file']) {
-    statusMsg = `Uploading file...`;
-  } else if (status['validating-file']) {
-    statusMsg = `Validating file...`;
-  }
-  if (status['deploying-stack']) {
-    statusMsg = `File successfully uploaded. Provisioning processing resources...`;
-  }
-  if (status['saving-images']) {
-    statusMsg = `Saving images...`;
-  }
-  if (status['processing-images']) {
-    statusMsg = `Processing images. Finished ${total - remaining} of ${total} images`;
-  }
-  if (status['processing-complete']) {
-    statusMsg = `Finished processing images. Cleaning up...`;
-  }
-  if (status['stack-destroyed']) {
-    statusMsg = `Finished processing images. Cleaning up...`;
-  }
-  if (status['stack-destroyed']) {
-    const dateString = DateTime.fromISO(processingStart).toLocaleString(DateTime.DATETIME_SHORT);
-    statusMsg = `Processing of ${total} images finished at ${dateString}`;
-  }
-
-  console.log(`status message: ${statusMsg}`);
-  
-  return (
-    <Status>
-      {statusMsg}
-      {status['has-batch-errors'] && 
-        <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
-      }
-    </Status>
-  );
-};
-
 const SerialNumberOverrideHelp = () => (
   <div>
     serial number help. For more info see <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>docs</a>
   </div>
 );
 
+
 const BulkUploadForm = ({ handleClose }) => {
   const selectedProject = useSelector(selectSelectedProject);
   const { isLoading, progress }  = useSelector(selectUploadsLoading);
-  const batchStates = useSelector(selectBatchStates);
-  const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
   const percentUploaded = Math.round(progress * 100);
-  const errorsExport = useSelector(selectErrorsExport);
-  const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const [ alertOpen, setAlertOpen ] = useState(false);
   const [ warnings, setWarnings ] = useState([])
   const dispatch = useDispatch();
   const hasImageAddedAutoRule = selectedProject.automationRules.some((rule) => (
     rule.event.type === 'image-added' && rule.action.type === 'run-inference'
   ));
-
-  console.log('most recent batch: ', batchStates[0]);
 
   const upload = (values) => {
     dispatch(uploadFile({ 
@@ -228,46 +112,6 @@ const BulkUploadForm = ({ handleClose }) => {
     }
   }, [percentUploaded, reset, dispatch]);
 
-  // Fetch batches and continue to poll every minute
-  useEffect(() => {
-    dispatch(fetchBatches());
-    const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
-    return () => clearInterval(intervalID);
-  }, [dispatch]);
-  
-
-  // TODO: a lot of this export logic is shared by the ExportModal,
-  // so we should consider abstracting either into a component or hook
-  const errorsExportReady = !errorsExportLoading.isLoading && 
-    !errorsExportLoading.errors && 
-    errorsExport && 
-    errorsExport.url;
-
-  const errorsExportPending = errorsExportLoading.isLoading && 
-    errorsExport && 
-    errorsExport.documentId;
-
-  const handleExportButtonClick = (e, _id) => {
-    const { isLoading, errors, noneFound } = errorsExportLoading;
-    const noErrors = !errors || errors.length === 0;
-    if (!noneFound && !isLoading && noErrors) {
-      dispatch(exportErrors({filters: { batch: _id }}));
-    }
-  };
-
-  useEffect(() => {
-    if (errorsExportPending) {
-      dispatch(getErrorsExportStatus(errorsExport.documentId));
-    }
-  }, [errorsExportPending, errorsExport, dispatch]);
-
-  // when we have a url for the exported CSV file, open it
-  useEffect(() => {
-    if (errorsExportReady) {
-      window.open(errorsExport.url, 'downloadTab');
-    }
-  }, [errorsExportReady, errorsExport, dispatch]);
-
 
   return (
     <div>
@@ -278,7 +122,7 @@ const BulkUploadForm = ({ handleClose }) => {
           initialValues={{ zipFile: null, overrideSerial: '' }}
           innerRef={formikRef}
         >
-          {({ values, setFieldValue, resetForm }) => (
+          {({ values, setFieldValue }) => (
             <Form>
               <FieldRow>
                 <FormFieldWrapper>
@@ -335,88 +179,7 @@ const BulkUploadForm = ({ handleClose }) => {
           )}
         </Formik>
       </FormWrapper>
-      <Table>
-        <thead>
-          <tr>
-            <TableHeadCell>File name</TableHeadCell>
-            <TableHeadCell>Status</TableHeadCell>
-            <TableHeadCell>Actions</TableHeadCell>
-          </tr>
-        </thead>
-        <tbody>
-          {batchStates.map((batch) => {
-            // console.log('batch to display: ', batch)
-            const { _id, originalFile, processingEnd, total, remaining } = batch;
-            const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
-            const status = getStatus(percentUploaded, batch);
-
-            return (
-              <TableRow key={_id}>
-                <TableCell>{originalFile}</TableCell>
-                <TableCell>{status}</TableCell>
-                <TableCell>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <IconButton
-                        variant='ghost'
-                        size='large'
-                        disabled={!isStopable}
-                        onClick={() => dispatch(stopBatch(_id))}
-                      >
-                        <Cross2Icon />
-                      </IconButton>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
-                      Cancel image processing
-                      <TooltipArrow />
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <IconButton
-                        variant='ghost'
-                        size='large'
-                        css={{ color: '$errorText' }}
-                        disabled={!batch.imageErrors || batch.imageErrors === 0}
-                        onClick={(e) => handleExportButtonClick(e, _id)}
-                      >
-                        <ExclamationTriangleIcon />
-                      </IconButton>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
-                      Download errors CSV
-                      <TooltipArrow />
-                    </TooltipContent>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            )}
-          )}
-        </tbody>
-      </Table>
-      <Pagination>
-        <IconButton
-          variant='ghost'
-          size='large'
-          disabled={!hasPrevious}
-          onClick={() => dispatch(fetchBatches('previous'))}
-        >
-          <ChevronLeftIcon/>
-        </IconButton>
-        <IconButton
-          variant='ghost'
-          size='large'
-          disabled={!hasNext}
-          onClick={() => dispatch(fetchBatches('next'))}
-        >
-          <ChevronRightIcon/>
-        </IconButton>
-      </Pagination>
-      {errorsExportReady && 
-        <p><em>Success! Your errors CSV is ready for download. If the download 
-        did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
-        initiate it.</em></p>
-      }
+      <BulkUploadTable percentUploaded={percentUploaded} />
       <UploadAlert
         open={alertOpen}
         setAlertOpen={setAlertOpen}
