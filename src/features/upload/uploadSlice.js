@@ -36,38 +36,38 @@ const initialState = {
   }
 };
 
-const equalBatches = (batch1, batch2) => {
-  // Returns true if two arrays of batches contain the same batches.
-  // NOTE: This doesn't mean the objects in each array are equal.
-  //
-  // We use this do work out if we need to update the objects currently in
-  // state (if true) or if we need to overwrite the state (if false). 
+// const equalBatches = (batch1, batch2) => {
+//   // Returns true if two arrays of batches contain the same batches.
+//   // NOTE: This doesn't mean the objects in each array are equal.
+//   //
+//   // We use this do work out if we need to update the objects currently in
+//   // state (if true) or if we need to overwrite the state (if false). 
 
-  if (batch1.length !== batch2.length) return false;
+//   if (batch1.length !== batch2.length) return false;
 
-  const batch1Ids = batch1.map(({ _id }) => _id).sort();
-  const batch2Ids = batch2.map(({ _id }) => _id).sort();
-  return JSON.stringify(batch1Ids) === JSON.stringify(batch2Ids);
-}
+//   const batch1Ids = batch1.map(({ _id }) => _id).sort();
+//   const batch2Ids = batch2.map(({ _id }) => _id).sort();
+//   return JSON.stringify(batch1Ids) === JSON.stringify(batch2Ids);
+// }
 
-const mergeBatchData = (oldBatchData, newBatchData) => {
-  // Merges two arrays of batches, used to update batch data with the `remaining` value
-  if (oldBatchData.length === 0) {
-    return newBatchData;
-  }
+// const mergeBatchData = (oldBatchData, newBatchData) => {
+//   // Merges two arrays of batches, used to update batch data with the `remaining` value
+//   if (oldBatchData.length === 0) {
+//     return newBatchData;
+//   }
 
-  return oldBatchData.map((existingBatch) => {
-    const batchUpdate = newBatchData.find(({ _id }) => _id === existingBatch._id);
-    if (!batchUpdate) {
-      return existingBatch;
-    }
+//   return oldBatchData.map((existingBatch) => {
+//     const batchUpdate = newBatchData.find(({ _id }) => _id === existingBatch._id);
+//     if (!batchUpdate) {
+//       return existingBatch;
+//     }
 
-    return {
-      ...existingBatch,
-      ...batchUpdate
-    }
-  });
-}
+//     return {
+//       ...existingBatch,
+//       ...batchUpdate
+//     }
+//   });
+// }
 
 export const uploadSlice = createSlice({
   name: 'uploads',
@@ -139,6 +139,7 @@ export const uploadSlice = createSlice({
         errors: null,
       }
 
+      state.batchStates = batches;
       state.pageInfo = pageInfo;
       state.loadingStates.batchStates = {
         ...state.loadingStates.batchStates,
@@ -161,7 +162,6 @@ export const uploadSlice = createSlice({
       //   });
       //   state.batchStates = mergeBatchData(state.batchStates, newBatchData);
       // }
-      state.batchStates = batches;
     },
 
     fetchBatchesFailure: (state, { payload }) => {
@@ -176,11 +176,12 @@ export const uploadSlice = createSlice({
       };
     },
 
-    fetchBatchDetailSuccess: (state, { payload }) => {
-      console.log('fetchBatcheDetailSuccess: ', payload.batches);
-      const newBatchData = payload.batches.map(({ batch }) => batch);
-      state.batchStates = mergeBatchData(state.batchStates, newBatchData);
-    },
+    // fetchBatchDetailSuccess: (state, { payload }) => {
+    //   console.log('fetchBatcheDetailSuccess: ', payload.batches);
+    //   // const newBatchData = payload.batches.map(({ batch }) => batch);
+    //   // state.batchStates = mergeBatchData(state.batchStates, newBatchData);
+    //   state.batchStates = payload.batches.map(({ batch }) => batch);
+    // },
 
     stopBatchStart: (state) => {
       const ls = {
@@ -301,7 +302,7 @@ export const {
   fetchBatchesStart,
   fetchBatchesSuccess,
   fetchBatchesFailure,
-  fetchBatchDetailSuccess,
+  // fetchBatchDetailSuccess,
   stopBatchStart,
   stopBatchSuccess,
   stopBatchFailure,
@@ -394,13 +395,14 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
       // to avoid all of these additional round-trips to the API
       // Additionally, if we did that, after the initial getBatches fetch we'd
       // only need to poll for the ongoing batches, rather than all of them
-      const requests = batches.batches.batches.map(({ _id: id }) => call({
-        request: 'getBatch',
-        projId: selectedProj._id,
-        input: { id }
-      }));
-      Promise.all(requests)
-        .then(batches => dispatch(fetchBatchDetailSuccess({ batches })));
+
+      // const requests = batches.batches.batches.map(({ _id: id }) => call({
+      //   request: 'getBatch',
+      //   projId: selectedProj._id,
+      //   input: { id }
+      // }));
+      // Promise.all(requests)
+      //   .then(batches => dispatch(fetchBatchDetailSuccess({ batches })));
 
       dispatch(fetchBatchesSuccess({ batches }));
     }
