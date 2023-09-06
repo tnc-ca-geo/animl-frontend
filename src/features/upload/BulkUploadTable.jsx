@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading } from './uploadSlice';
 import { styled } from '@stitches/react';
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
+import { violet, blackA, mauve } from '@radix-ui/colors';
+import { TextAlignLeftIcon, TextAlignCenterIcon, TextAlignRightIcon } from '@radix-ui/react-icons';
 import { DateTime } from 'luxon';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
@@ -70,6 +73,8 @@ const BulkUploadTable = ({ percentUploaded }) => {
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const dispatch = useDispatch();
   console.log('most recent batch: ', batchStates[0]);
+
+  const [batchesToFetch, setBatchesToFetch] = useState('current');
 
   // Fetch batches and continue to poll every minute
   useEffect(() => {
@@ -171,6 +176,10 @@ const BulkUploadTable = ({ percentUploaded }) => {
           )}
         </tbody>
       </Table>
+      <CurrentCompletedToggle
+        batchesToFetch={batchesToFetch}
+        setBatchesToFetch={setBatchesToFetch}
+      />
       <Pagination>
         <IconButton
           variant='ghost'
@@ -249,5 +258,50 @@ const getStatus = (percentUploaded, batch) => {
     </Status>
   );
 };
+
+const CurrentCompletedToggle = ({ batchesToFetch, setBatchesToFetch }) => (
+  <ToggleGroupRoot
+    type='single'
+    value={batchesToFetch}
+    aria-label='Text alignment'
+    onValueChange={(value) => {
+      if (value) setBatchesToFetch(value);
+    }}
+  >
+    <ToggleGroupItem value='current' aria-label='Current uploads'>
+      Current
+    </ToggleGroupItem>
+    <ToggleGroupItem value='right' aria-label='Completed uploads'>
+      Completed
+    </ToggleGroupItem>
+  </ToggleGroupRoot>
+);
+
+const ToggleGroupRoot = styled(ToggleGroup.Root, {
+  display: 'inline-flex',
+  backgroundColor: mauve.mauve6,
+  borderRadius: 4,
+  boxShadow: `0 2px 10px ${blackA.blackA7}`,
+});
+
+const ToggleGroupItem = styled(ToggleGroup.Item, {
+  all: 'unset',
+  backgroundColor: 'white',
+  color: mauve.mauve11,
+  height: 35,
+  width: 150,
+  display: 'flex',
+  fontSize: 15,
+  lineHeight: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginLeft: 1,
+  '&:first-child': { marginLeft: 0, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
+  '&:last-child': { borderTopRightRadius: 4, borderBottomRightRadius: 4 },
+  '&:hover': { backgroundColor: violet.violet3 },
+  '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
+  // '&:focus': { position: 'relative', boxShadow: `0 0 0 2px black` },
+});
+
 
 export default BulkUploadTable;
