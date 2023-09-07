@@ -562,7 +562,7 @@ const queries = {
     variables: { input }
   }),
 
-  getBatches: ({ pageInfo, page }) => ({
+  getBatches: ({ status, pageInfo, page }) => ({
     template: `
       query GetBatches($input: QueryBatchesInput!) {
         batches(input: $input) {
@@ -581,6 +581,7 @@ const queries = {
     variables: { input: {
       ...(page === 'next' && { next: pageInfo.next }),
       ...(page === 'previous' && { previous: pageInfo.previous }),
+      status: status,
       paginatedField: 'uploadComplete',
       // TODO: sortAscending should be false to show in order of newest -> oldest, 
       // but for newly created batches, batch.processingStart is not yet set and

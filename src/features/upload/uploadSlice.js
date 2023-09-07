@@ -365,7 +365,6 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       });
 
       dispatch(uploadSuccess());
-      dispatch(fetchBatches());
     }
   } catch (err) {
     console.log('err: ', err)
@@ -373,7 +372,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
   }
 };
 
-export const fetchBatches = (page = 'current') => async (dispatch, getState) => {
+export const fetchBatches = ({ status, page }) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -385,7 +384,7 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
-        input: { pageInfo, page }
+        input: { status, pageInfo, page }
       });
 
       // TODO: we currently need to request getBatch (batch details) for every
@@ -428,7 +427,6 @@ export const stopBatch = (id) => async (dispatch, getState) => {
       })
 
       dispatch(stopBatchSuccess());
-      dispatch(fetchBatches());
     }
   } catch (err) {
     console.log('err: ', err)
