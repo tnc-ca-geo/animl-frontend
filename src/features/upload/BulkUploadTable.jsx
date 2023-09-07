@@ -30,6 +30,7 @@ const TableHeadCell = styled('th', {
   verticalAlign: 'bottom',
   padding: '5px 15px',
   borderBottom: '1px solid',
+  borderTop: '1px solid',
   borderColor: '$border',
 });
 
@@ -116,6 +117,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
 
   return (
     <div>
+      <CurrentCompletedToggle />
       <Table>
         <thead>
           <tr>
@@ -175,7 +177,6 @@ const BulkUploadTable = ({ percentUploaded }) => {
           )}
         </tbody>
       </Table>
-      <CurrentCompletedToggle />
       <Pagination>
         <IconButton
           variant='ghost'
@@ -272,10 +273,10 @@ const CurrentCompletedToggle = () => {
       }}
     >
       <ToggleGroupItem value='CURRENT' aria-label='Current uploads'>
-        Current
+        Current uploads
       </ToggleGroupItem>
       <ToggleGroupItem value='COMPLETED' aria-label='Completed uploads'>
-        Completed
+        Completed uploads
       </ToggleGroupItem>
     </ToggleGroupRoot>
   )
@@ -285,25 +286,30 @@ const ToggleGroupRoot = styled(ToggleGroup.Root, {
   display: 'inline-flex',
   backgroundColor: mauve.mauve6,
   borderRadius: 4,
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
+  marginBottom: '$2'
 });
 
 const ToggleGroupItem = styled(ToggleGroup.Item, {
   all: 'unset',
-  backgroundColor: 'white',
+  backgroundColor: '$backgroundLight',
   color: mauve.mauve11,
   height: 35,
-  width: 150,
+  width: 140,
   display: 'flex',
-  fontSize: 15,
+  fontSize: '$3',
   lineHeight: 1,
   alignItems: 'center',
   justifyContent: 'center',
-  marginLeft: 1,
-  '&:first-child': { marginLeft: 0, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
-  '&:last-child': { borderTopRightRadius: 4, borderBottomRightRadius: 4 },
-  '&:hover': { backgroundColor: violet.violet3 },
-  '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
+  borderBottom: '2px solid',
+  borderColor: '$gray2',
+  '&:first-child': { marginLeft: 0 },
+  '&:hover': { backgroundColor: violet.violet3, borderColor: violet.violet3},
+  '&[data-state=on]': { 
+    // backgroundColor: violet.violet5,
+    color: violet.violet11,
+    borderBottom: '2px solid',
+    borderColor: violet.violet11,
+  },
   // '&:focus': { position: 'relative', boxShadow: `0 0 0 2px black` },
 });
 

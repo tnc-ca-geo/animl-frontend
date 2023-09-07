@@ -10,7 +10,7 @@ import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../.
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { green, red } from '@radix-ui/colors';
+import { green, red, mauve } from '@radix-ui/colors';
 import { uploadFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
@@ -35,10 +35,11 @@ const FileUpload = styled('div', {
 const ProgressRoot = styled(Progress.Root, {
   position: 'relative',
   overflow: 'hidden',
-  background: '$gray6',//'white',
+  background: '$backgroundLight',
   borderRadius: '99999px',
   width: '100%',
   height: '8px',
+  marginBottom: '$4',
 
   /* Fix overflow clipping in Safari */
   /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
@@ -124,7 +125,7 @@ const BulkUploadForm = ({ handleClose }) => {
         >
           {({ values, setFieldValue }) => (
             <Form>
-              <FieldRow>
+              <FieldRow css={{ paddingBottom: 0 }}>
                 <FormFieldWrapper>
                   <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
                   <FileUpload>
@@ -169,11 +170,9 @@ const BulkUploadForm = ({ handleClose }) => {
                 </ButtonRow>
               </FieldRow>
 
-              {(progress > 0) && (
-                <ProgressRoot>
-                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
-                </ProgressRoot>
-              )}
+              <ProgressRoot>
+                <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
+              </ProgressRoot>
 
             </Form>
           )}
