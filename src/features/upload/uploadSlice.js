@@ -6,6 +6,7 @@ import { setSelectedProjAndView } from '../projects/projectsSlice';
 const initialState = {
   batchStates: [],
   errorsExport: null,
+  filter: 'CURRENT',
   pageInfo: {
     hasNext: false,
     hasPrevious: false,
@@ -177,7 +178,7 @@ export const uploadSlice = createSlice({
     },
 
     // fetchBatchDetailSuccess: (state, { payload }) => {
-    //   console.log('fetchBatcheDetailSuccess: ', payload.batches);
+    //   console.log('fetchBatchDetailSuccess: ', payload.batches);
     //   // const newBatchData = payload.batches.map(({ batch }) => batch);
     //   // state.batchStates = mergeBatchData(state.batchStates, newBatchData);
     //   state.batchStates = payload.batches.map(({ batch }) => batch);
@@ -271,6 +272,10 @@ export const uploadSlice = createSlice({
       state.loadingStates.errorsExport.errors.splice(index, 1);
     },
 
+    filterBatches: (state, { payload }) => {
+      state.filter = payload;
+    }
+
   },
 
   extraReducers: (builder) => {
@@ -279,6 +284,7 @@ export const uploadSlice = createSlice({
         if (payload.newProjSelected) {
           // reset upload states
           state.batchStates = [];
+          state.filter = 'CURRENT';
           state.errorsExport = null;
           state.pageInfo  = { hasNext: false, hasPrevious: false };
 
@@ -311,7 +317,8 @@ export const {
   exportErrorsUpdate,
   exportErrorsFailure,
   clearErrorsExport,
-  dismissExportErrorsError
+  dismissExportErrorsError,
+  filterBatches
 } = uploadSlice.actions;
 
 // bulk upload thunk
@@ -365,6 +372,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       });
 
       dispatch(uploadSuccess());
+      dispatch(fetchBatches());
     }
   } catch (err) {
     console.log('err: ', err)
@@ -372,7 +380,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
   }
 };
 
-export const fetchBatches = ({ status, page }) => async (dispatch, getState) => {
+export const fetchBatches = (page = 'current') => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -380,11 +388,12 @@ export const fetchBatches = ({ status, page }) => async (dispatch, getState) => 
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const pageInfo = getState().uploads.pageInfo;
+      const filter = getState().uploads.filter;
 
       const batches = await call({
         request: 'getBatches',
         projId: selectedProj._id,
-        input: { status, pageInfo, page }
+        input: { filter, pageInfo, page }
       });
 
       // TODO: we currently need to request getBatch (batch details) for every
@@ -427,6 +436,7 @@ export const stopBatch = (id) => async (dispatch, getState) => {
       })
 
       dispatch(stopBatchSuccess());
+      dispatch(fetchBatches());
     }
   } catch (err) {
     console.log('err: ', err)
@@ -495,6 +505,7 @@ export const getErrorsExportStatus = (documentId) => {
 };
 
 export const selectBatchStates = state => state.uploads.batchStates;
+export const selectBatchFilter = state => state.uploads.filter;
 export const selectBatchPageInfo = state => state.uploads.pageInfo;
 export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
 export const selectErrorsExport = state => state.uploads.errorsExport;

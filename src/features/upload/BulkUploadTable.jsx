@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading, fetchBatchesStart } from './uploadSlice';
+import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches } from './uploadSlice';
+import { selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading, selectBatchFilter } from './uploadSlice';
 import { styled } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { violet, blackA, mauve } from '@radix-ui/colors';
@@ -74,14 +75,12 @@ const BulkUploadTable = ({ percentUploaded }) => {
   const dispatch = useDispatch();
   console.log('most recent batch: ', batchStates[0]);
 
-  const [batchesToFetch, setBatchesToFetch] = useState('CURRENT');
-
   // Fetch batches and continue to poll every minute
   useEffect(() => {
-    dispatch(fetchBatches({ status: batchesToFetch, page: 'current'}));
-    const intervalID = setInterval(() => dispatch(fetchBatches({ status: batchesToFetch, page: 'current'})), 60000);
+    dispatch(fetchBatches());
+    const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
     return () => clearInterval(intervalID);
-  }, [dispatch, batchesToFetch]);
+  }, [dispatch]);
 
   // TODO: a lot of this export logic is shared by the ExportModal,
   // so we should consider abstracting either into a component or hook
@@ -176,16 +175,13 @@ const BulkUploadTable = ({ percentUploaded }) => {
           )}
         </tbody>
       </Table>
-      <CurrentCompletedToggle
-        batchesToFetch={batchesToFetch}
-        setBatchesToFetch={setBatchesToFetch}
-      />
+      <CurrentCompletedToggle />
       <Pagination>
         <IconButton
           variant='ghost'
           size='large'
           disabled={!hasPrevious}
-          onClick={() => dispatch(fetchBatches({ status: batchesToFetch, page: 'previous' }))}
+          onClick={() => dispatch(fetchBatches('previous'))}
         >
           <ChevronLeftIcon/>
         </IconButton>
@@ -193,7 +189,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
           variant='ghost'
           size='large'
           disabled={!hasNext}
-          onClick={() => dispatch(fetchBatches({ status: batchesToFetch, page: 'next'}))}
+          onClick={() => dispatch(fetchBatches('next'))}
         >
           <ChevronRightIcon/>
         </IconButton>
@@ -259,23 +255,31 @@ const getStatus = (percentUploaded, batch) => {
   );
 };
 
-const CurrentCompletedToggle = ({ batchesToFetch, setBatchesToFetch }) => (
-  <ToggleGroupRoot
-    type='single'
-    value={batchesToFetch}
-    aria-label='Filter current or completed uploads'
-    onValueChange={(value) => {
-      if (value) setBatchesToFetch(value);
-    }}
-  >
-    <ToggleGroupItem value='CURRENT' aria-label='Current uploads'>
-      Current
-    </ToggleGroupItem>
-    <ToggleGroupItem value='COMPLETED' aria-label='Completed uploads'>
-      Completed
-    </ToggleGroupItem>
-  </ToggleGroupRoot>
-);
+const CurrentCompletedToggle = () => {
+  const batchFilter = useSelector(selectBatchFilter);
+  const dispatch = useDispatch();
+
+  return (
+    <ToggleGroupRoot
+      type='single'
+      value={batchFilter}
+      aria-label='Filter current or completed uploads'
+      onValueChange={(value) => {
+        if (value) {
+          dispatch(filterBatches(value));
+          dispatch(fetchBatches())
+        }
+      }}
+    >
+      <ToggleGroupItem value='CURRENT' aria-label='Current uploads'>
+        Current
+      </ToggleGroupItem>
+      <ToggleGroupItem value='COMPLETED' aria-label='Completed uploads'>
+        Completed
+      </ToggleGroupItem>
+    </ToggleGroupRoot>
+  )
+};
 
 const ToggleGroupRoot = styled(ToggleGroup.Root, {
   display: 'inline-flex',
