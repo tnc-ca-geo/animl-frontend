@@ -286,13 +286,11 @@ const ToggleGroupRoot = styled(ToggleGroup.Root, {
   display: 'inline-flex',
   backgroundColor: mauve.mauve6,
   borderRadius: 4,
-  marginBottom: '$2'
 });
 
 const ToggleGroupItem = styled(ToggleGroup.Item, {
   all: 'unset',
-  backgroundColor: '$backgroundLight',
-  color: mauve.mauve11,
+  color: '$textMedium',
   height: 35,
   width: 140,
   display: 'flex',
@@ -303,14 +301,12 @@ const ToggleGroupItem = styled(ToggleGroup.Item, {
   borderBottom: '2px solid',
   borderColor: '$gray2',
   '&:first-child': { marginLeft: 0 },
-  '&:hover': { backgroundColor: violet.violet3, borderColor: violet.violet3},
+  '&:hover': { backgroundColor: '$gray4', borderColor: '$gray4'},
   '&[data-state=on]': { 
-    // backgroundColor: violet.violet5,
-    color: violet.violet11,
+    color: '$hiContrast',
     borderBottom: '2px solid',
-    borderColor: violet.violet11,
-  },
-  // '&:focus': { position: 'relative', boxShadow: `0 0 0 2px black` },
+    borderColor: '$hiContrast',
+  }
 });
 
 
