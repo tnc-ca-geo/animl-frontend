@@ -74,7 +74,6 @@ const BulkUploadTable = ({ percentUploaded }) => {
   const errorsExport = useSelector(selectErrorsExport);
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const dispatch = useDispatch();
-  console.log('most recent batch: ', batchStates[0]);
 
   // Fetch batches and continue to poll every minute
   useEffect(() => {
@@ -82,6 +81,15 @@ const BulkUploadTable = ({ percentUploaded }) => {
     const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
     return () => clearInterval(intervalID);
   }, [dispatch]);
+
+  const sortedBatches = [];
+  for (const batch of batchStates) {    
+    if (!batch.uploadComplete) {
+      sortedBatches.unshift(batch)
+    } else {
+      sortedBatches.push(batch)
+    }
+  }
 
   // TODO: a lot of this export logic is shared by the ExportModal,
   // so we should consider abstracting either into a component or hook
@@ -127,7 +135,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
           </tr>
         </thead>
         <tbody>
-          {batchStates.map((batch) => {
+          {sortedBatches.map((batch) => {
             // console.log('batch to display: ', batch)
             const { _id, originalFile, processingEnd, total, remaining } = batch;
             const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
@@ -284,7 +292,6 @@ const CurrentCompletedToggle = () => {
 
 const ToggleGroupRoot = styled(ToggleGroup.Root, {
   display: 'inline-flex',
-  backgroundColor: mauve.mauve6,
   borderRadius: 4,
 });
 

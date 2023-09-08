@@ -20,6 +20,9 @@ import BulkUploadTable from './BulkUploadTable.jsx';
 const bulkUploadSchema = Yup.object().shape({
   zipFile: Yup.mixed()
     .required('A ZIP file is required')
+    .test('is-valid-type', 'The file must be a .zip file', (value) => {
+      return value.name.toLowerCase().split('.').pop() === 'zip';
+    })
     .test('fileSize', 'The file must be smaller than 50GB.', (value) => {
       if (!value) return true;
       return value && value.size <= Math.pow(1024, 3) * 50;
