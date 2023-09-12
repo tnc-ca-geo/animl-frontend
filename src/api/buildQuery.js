@@ -155,12 +155,13 @@ const queries = {
 
   getProjects: (input) => ({
     template: `
-      {
-        projects {
+      query GetProjects($input: QueryProjectsInput) {
+        projects(input: $input) {
           ${projectFields}
         }
       }
     `,
+    variables: { input: input }
   }),
 
   getViews: (input) => ({

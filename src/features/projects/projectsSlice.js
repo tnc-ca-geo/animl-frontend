@@ -313,16 +313,18 @@ export const {
 
 
 // fetchProjects thunk
-export const fetchProjects = () => async dispatch => {
+export const fetchProjects = (payload) => async dispatch => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
     if (token) {
-
       dispatch(getProjectsStart());
-      const projects = await call({ request: 'getProjects' });
+      const projects = await call({ 
+        request: 'getProjects',
+        ...(payload && { input: payload })
+      });
       dispatch(getProjectsSuccess(projects));
-
     }
   } catch (err) {
     console.log('err: ', err)

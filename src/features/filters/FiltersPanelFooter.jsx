@@ -5,7 +5,7 @@ import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../../auth/roles.j
 import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, fetchImages } from '../images/imagesSlice.js';
 import { selectActiveFilters  } from './filtersSlice.js';
-import { selectModalOpen, setModalOpen, setModalContent } from '../projects/projectsSlice.js';
+import { selectModalOpen, selectSelectedProject, setModalOpen, setModalContent, fetchProjects } from '../projects/projectsSlice.js';
 import { InfoCircledIcon, DownloadIcon, SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { 
@@ -70,10 +70,12 @@ const FiltersPanelFooter = () => {
   const filters = useSelector(selectActiveFilters);
   const imagesCount = useSelector(selectImagesCount);
   const modalOpen = useSelector(selectModalOpen);
+  const selectedProj = useSelector(selectSelectedProject);
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
     dispatch(fetchImages(filters));
+    // dispatch(fetchProjects({ _ids: [selectedProj._id] }))
   };
 
   const handleModalToggle = (content) => {
