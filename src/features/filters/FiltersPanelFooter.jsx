@@ -74,8 +74,7 @@ const FiltersPanelFooter = () => {
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
-    dispatch(fetchImages(filters));
-    // dispatch(fetchProjects({ _ids: [selectedProj._id] }))
+    dispatch(fetchProjects({ _ids: [selectedProj._id] }))
   };
 
   const handleModalToggle = (content) => {

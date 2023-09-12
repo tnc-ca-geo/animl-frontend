@@ -66,14 +66,16 @@ export const projectsSlice = createSlice({
       const noneFound = !payload.projects || payload.projects.length === 0;
       const ls = { isLoading: false, operation: null, errors: null, noneFound };
       state.loadingStates.projects = ls;
-      state.projects = noneFound ? [] : payload.projects;
-      
-      // const projectIdsInState = state.projects.map((proj) => proj._id);
-      // payload.projects.forEach((proj, i) => {
-      //   if (!projectIdsInState.includes(proj._id)) {
-      //     state.projects.push(proj);
-      //   }
-      // });
+      if (noneFound) {
+        state.projects = [];
+      } else if (state.projects.length) {
+        payload.projects.forEach((newProj) => {
+          const idx = state.projects.findIndex((oldProj) => oldProj._id === newProj._id);
+          if (idx !== -1) state.projects[idx] = newProj;
+        });
+      } else {
+        state.projects = payload.projects;
+      }
     },
 
     dismissProjectsError: (state, { payload }) => {
