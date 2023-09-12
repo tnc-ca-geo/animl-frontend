@@ -234,11 +234,10 @@ const queries = {
     `,
   }),
 
-  getModels: (input) => {
-    return {
+  getModels: (input) => ({
       template: `
-        {
-          mlModels {
+        query GetMLModels($input: QueryMLModelsInput) {
+          mlModels(input: $input) {
             _id
             description
             version
@@ -250,9 +249,8 @@ const queries = {
           }
         }
       `,
-      variables: { input: input },
-    }
-  },
+      variables: { input: input }
+  }),
 
   getStats: ({ filters }) => ({
     template: `
