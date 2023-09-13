@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../com
 
 const Table = styled('table', {
   borderSpacing: '0',
+  borderCollapse: 'collapse',
   width: '100%',
   tableLayout: 'fixed',
   marginBottom: '15px',
@@ -131,9 +132,9 @@ const BulkUploadTable = ({ percentUploaded }) => {
       <Table>
         <thead>
           <tr>
-            <TableHeadCell>File name</TableHeadCell>
-            <TableHeadCell>Status</TableHeadCell>
-            <TableHeadCell>Actions</TableHeadCell>
+            <TableHeadCell css={{ width: '25%' }}>File name</TableHeadCell>
+            <TableHeadCell css={{ width: '60%' }}>Status</TableHeadCell>
+            <TableHeadCell css={{ width: '15%' }}>Actions</TableHeadCell>
           </tr>
         </thead>
         <tbody>
@@ -153,7 +154,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
-                <TableCell css={{ width: '60%' }}>
+                <TableCell>
                   <Status>
                     {statusMsg}
                     {status['has-batch-errors'] && 
