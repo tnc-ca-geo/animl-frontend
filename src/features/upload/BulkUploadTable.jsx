@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches, selectStopBatchLoading } from './uploadSlice';
 import { selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading, selectBatchFilter } from './uploadSlice';
-import { styled } from '@stitches/react';
+import { styled, keyframes } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
-import { violet, blackA, mauve } from '@radix-ui/colors';
-import { TextAlignLeftIcon, TextAlignCenterIcon, TextAlignRightIcon } from '@radix-ui/react-icons';
 import { DateTime } from 'luxon';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
@@ -63,7 +61,27 @@ const BulkUploadActionButton = styled(Button, {
   marginRight: '$2'
 });
 
-const Status = styled('span');
+const ellipsis = keyframes({
+  '100%': { width: '1em;' }
+});
+
+const StatusMessage = styled('span', {
+  variants: {
+    loading: {
+      true: {
+        '&:after': {
+          overflow: 'hidden',
+          display: 'inline-block',
+          verticalAlign: 'bottom',
+          animation: `${ellipsis} steps(4,end) 1.2s infinite`,
+          content: '\u2026',
+          width: '0px'
+        }
+      }
+    }
+  }
+});
+
 
 const Error = styled('span', {
   color: 'red'
@@ -155,12 +173,12 @@ const BulkUploadTable = ({ percentUploaded }) => {
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>
-                  <Status>
+                  <div>
                     {statusMsg}
                     {status['has-batch-errors'] && 
                       <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
                     }
-                  </Status>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Tooltip>
@@ -249,43 +267,38 @@ const getStatus = (percentUploaded, batch) => {
 const getStatusMessage = (status, batch) => {
   const { processingStart, total, remaining, stoppingInitiated } = batch;
   let statusMsg = ``;
+  let loading = true;
   if (status['uploading-file']) {
-    statusMsg = `Uploading file...`;
+    statusMsg = `Uploading file`;
   } else if (status['validating-file']) {
-    statusMsg = `Validating file...`;
+    statusMsg = `Validating file`;
   }
   if (status['deploying-stack']) {
-    statusMsg = `File successfully uploaded. Provisioning processing resources...`;
+    statusMsg = `File successfully uploaded. Provisioning processing resources`;
   }
   if (status['saving-images']) {
-    statusMsg = `Saving images...`;
+    statusMsg = `Saving images`;
   }
   if (status['processing-images']) {
     statusMsg = `Processing images. Finished ${total - remaining} of ${total} images`;
   }
   if (status['processing-complete']) {
-    statusMsg = `Finished processing images. Cleaning up...`;
+    statusMsg = `Finished processing images. Cleaning up`;
   }
   if (status['stop-initiated']) {
-    statusMsg = `Cancelling image processing...`;
+    statusMsg = `Cancelling image processing`;
   }
   if (status['stack-destroyed']) { 
+    loading = false;
     const dateString = DateTime.fromISO(processingStart).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing of ${total} images finished at ${dateString}`;
   }
   if (status['stack-destroyed'] && status['stop-initiated']) {
+    loading = false;
     const dateString = DateTime.fromISO(stoppingInitiated).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing was cancelled at ${dateString}`;
   }
-  
-  return (
-    <Status>
-      {statusMsg}
-      {status['has-batch-errors'] && 
-        <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
-      }
-    </Status>
-  );
+  return <StatusMessage loading={loading}>{statusMsg}</StatusMessage>;
 };
 
 const CurrentCompletedToggle = () => {

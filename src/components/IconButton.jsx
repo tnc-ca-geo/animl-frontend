@@ -1,8 +1,6 @@
 import { styled, keyframes } from '../theme/stitches.config';
 
 const spinner = keyframes({
-  // '0%': { transform: 'scale(1)' },
-  // '100%': { transform: 'scale(1.5)' },
   '100%': { transform: 'rotate(360deg)' }
 });
 
