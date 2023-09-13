@@ -1,4 +1,10 @@
-import { styled } from '../theme/stitches.config';
+import { styled, keyframes } from '../theme/stitches.config';
+
+const spinner = keyframes({
+  // '0%': { transform: 'scale(1)' },
+  // '100%': { transform: 'scale(1.5)' },
+  '100%': { transform: 'rotate(360deg)' }
+});
 
 const IconButton = styled('button', {
   // Reset
@@ -110,6 +116,25 @@ const IconButton = styled('button', {
           backgroundColor: '$gray3',
         },
       },
+      loading: {
+        position: 'relative',
+        '&:before': {
+          content: '',
+          boxSizing: 'border-box',
+          position: 'absolute',
+          top: '14px',
+          right: '0px',
+          width: '$6',
+          height: '$6',
+          marginTop: '-15px',
+          marginLeft: '-15px',
+          borderRadius: '50%',
+          border: '1px solid',
+          borderColor: '$gray4',
+          borderTopColor: '$gray10',
+          animation: `${spinner} 1s linear infinite`
+        }
+      }
     },
   },
 });

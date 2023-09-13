@@ -25,50 +25,19 @@ const initialState = {
       progress: 0,
     },
     stopBatch: {
+      batch: null,
       isLoading: false,
       operation: null,
       errors: null,
     },
     errorsExport: {
+      batch: null,
       isLoading: false,
       errors: null,
       noneFound: false,
     },
   }
 };
-
-// const equalBatches = (batch1, batch2) => {
-//   // Returns true if two arrays of batches contain the same batches.
-//   // NOTE: This doesn't mean the objects in each array are equal.
-//   //
-//   // We use this do work out if we need to update the objects currently in
-//   // state (if true) or if we need to overwrite the state (if false). 
-
-//   if (batch1.length !== batch2.length) return false;
-
-//   const batch1Ids = batch1.map(({ _id }) => _id).sort();
-//   const batch2Ids = batch2.map(({ _id }) => _id).sort();
-//   return JSON.stringify(batch1Ids) === JSON.stringify(batch2Ids);
-// }
-
-// const mergeBatchData = (oldBatchData, newBatchData) => {
-//   // Merges two arrays of batches, used to update batch data with the `remaining` value
-//   if (oldBatchData.length === 0) {
-//     return newBatchData;
-//   }
-
-//   return oldBatchData.map((existingBatch) => {
-//     const batchUpdate = newBatchData.find(({ _id }) => _id === existingBatch._id);
-//     if (!batchUpdate) {
-//       return existingBatch;
-//     }
-
-//     return {
-//       ...existingBatch,
-//       ...batchUpdate
-//     }
-//   });
-// }
 
 export const uploadSlice = createSlice({
   name: 'uploads',
@@ -132,37 +101,17 @@ export const uploadSlice = createSlice({
 
     fetchBatchesSuccess: (state, { payload }) => {
       const { batches, pageInfo } = payload.batches.batches;
-      console.log('fetchBatchesSuccess: ', payload.batches);
-
       const ls = {
         isLoading: true,
         operation: null,
         errors: null,
       }
-
       state.batchStates = batches;
       state.pageInfo = pageInfo;
       state.loadingStates.batchStates = {
         ...state.loadingStates.batchStates,
         ...ls
       };
-
-      // TODO: ask oliver what this was for. I'm not sure we need it anymore?
-      // Maybe at one point the API returned batch.remaining = null when uploads
-      // were complete?
-
-      // if (!equalBatches(state.batchStates, batches)) {
-      //   state.batchStates = batches;
-      // } else {
-      //   // removes all fields where value === null from the object,
-      //   // so don't overwrite the `remaining` value we have in state
-      //   const newBatchData = batches.map(batch => {
-      //     return Object.keys(batch)
-      //     .filter((key) => batch[key] != null)
-      //     .reduce((obj, key) => ({ ...obj, [key]: batch[key] }), {});
-      //   });
-      //   state.batchStates = mergeBatchData(state.batchStates, newBatchData);
-      // }
     },
 
     fetchBatchesFailure: (state, { payload }) => {
@@ -177,15 +126,9 @@ export const uploadSlice = createSlice({
       };
     },
 
-    // fetchBatchDetailSuccess: (state, { payload }) => {
-    //   console.log('fetchBatchDetailSuccess: ', payload.batches);
-    //   // const newBatchData = payload.batches.map(({ batch }) => batch);
-    //   // state.batchStates = mergeBatchData(state.batchStates, newBatchData);
-    //   state.batchStates = payload.batches.map(({ batch }) => batch);
-    // },
-
-    stopBatchStart: (state) => {
+    stopBatchStart: (state, { payload }) => {
       const ls = {
+        batch: payload.batch,
         isLoading: true,
         operation: 'stopping',
         errors: null,
@@ -198,6 +141,7 @@ export const uploadSlice = createSlice({
 
     stopBatchSuccess: (state) => {
       const ls = {
+        batch: null,
         isLoading: false,
         operation: null,
         errors: null,
@@ -220,10 +164,10 @@ export const uploadSlice = createSlice({
       };
     },
 
-    exportErrorsStart: (state) => {
-      console.log('export errors start');
+    exportErrorsStart: (state, { payload }) => {
       state.errorsExport = null; 
       state.loadingStates.errorsExport = {
+        batch: payload.batch,
         isLoading: true,
         errors: null,
         noneFound: false,
@@ -231,7 +175,6 @@ export const uploadSlice = createSlice({
     },
 
     exportErrorsSuccess: (state, { payload }) => {
-      console.log('export errors Success: ', payload);
       state.errorsExport = {
         ...state.errorsExport,
         ...payload
@@ -243,12 +186,10 @@ export const uploadSlice = createSlice({
     },
 
     exportErrorsUpdate: (state, { payload }) => {
-      console.log('export errors update: ', payload);
       state.errorsExport = payload;
     },
 
     exportErrorsFailure: (state, { payload }) => {
-      console.log('export errors fail: ', payload);
       state.errorsExport = null; 
       let ls = state.loadingStates.errorsExport;
       ls.isLoading = false;
@@ -343,7 +284,6 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
 
       // if overrideSerial is provided by user, call updateBatch to set it
       if (overrideSerial.length) {
-        console.log('overriding serial with: ', overrideSerial)
         const batch = await call({
           request: 'updateBatch',
           projId: selectedProj._id,
@@ -356,12 +296,12 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
 
       const xhr = new XMLHttpRequest();
       await new Promise((resolve) => {
-        xhr.upload.addEventListener("progress", (event) => {
+        xhr.upload.addEventListener('progress', (event) => {
           if (event.lengthComputable) {
             dispatch(uploadProgress({ progress: event.loaded / event.total }));
           }
         });
-        xhr.addEventListener("loadend", () => {
+        xhr.addEventListener('loadend', () => {
           resolve(xhr.readyState === 4 && xhr.status === 200);
         });
 
@@ -396,22 +336,6 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
         input: { filter, pageInfo, page }
       });
 
-      // TODO: we currently need to request getBatch (batch details) for every
-      // returned batch because getBatch enriches the returned Batch payload with
-      // `batch.errors`, `batch.remaining`, and `batch.dead`.
-      // It may be more efficient to do this for all batches returned from getBatches
-      // to avoid all of these additional round-trips to the API
-      // Additionally, if we did that, after the initial getBatches fetch we'd
-      // only need to poll for the ongoing batches, rather than all of them
-
-      // const requests = batches.batches.batches.map(({ _id: id }) => call({
-      //   request: 'getBatch',
-      //   projId: selectedProj._id,
-      //   input: { id }
-      // }));
-      // Promise.all(requests)
-      //   .then(batches => dispatch(fetchBatchDetailSuccess({ batches })));
-
       dispatch(fetchBatchesSuccess({ batches }));
     }
   } catch (err) {
@@ -425,7 +349,7 @@ export const stopBatch = (id) => async (dispatch, getState) => {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
-      dispatch(stopBatchStart());
+      dispatch(stopBatchStart({ batch: id }));
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
@@ -450,7 +374,7 @@ export const exportErrors = ({ filters }) => {
     console.log(`uploadSlice - exportErrors() - exporting with filters: `, filters);
     try {
 
-      dispatch(exportErrorsStart());
+      dispatch(exportErrorsStart({ batch: filters.batch }));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -511,5 +435,7 @@ export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
 export const selectErrorsExport = state => state.uploads.errorsExport;
 export const selectErrorsExportLoading = state => state.uploads.loadingStates.errorsExport;
 export const selectErrorsExportErrors = state => state.uploads.loadingStates.errorsExport.errors;
+export const selectStopBatchLoading = state => state.uploads.loadingStates.stopBatch;
+
 
 export default uploadSlice.reducer;

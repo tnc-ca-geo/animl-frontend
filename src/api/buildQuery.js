@@ -65,6 +65,7 @@ const batchFields = `
   ingestionComplete
   processingStart
   processingEnd
+  stoppingInitiated
   overrideSerial
   originalFile
   total
@@ -588,7 +589,7 @@ const queries = {
       // to return the batches in reverse chronological order but surface newly
       // created batches at the top
       sortAscending: false,
-      limit: 10,
+      limit: 5,
     } }
   }),
 

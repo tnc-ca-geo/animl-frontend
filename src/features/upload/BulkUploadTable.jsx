@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches } from './uploadSlice';
+import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches, selectStopBatchLoading } from './uploadSlice';
 import { selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading, selectBatchFilter } from './uploadSlice';
 import { styled } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
@@ -74,6 +74,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
   const batchStates = useSelector(selectBatchStates);
   const errorsExport = useSelector(selectErrorsExport);
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
+  const stopBatchLoading = useSelector(selectStopBatchLoading);
   const dispatch = useDispatch();
 
   // Fetch batches and continue to poll every minute
@@ -137,20 +138,35 @@ const BulkUploadTable = ({ percentUploaded }) => {
         </thead>
         <tbody>
           {sortedBatches.map((batch) => {
-            // console.log('batch to display: ', batch)
             const { _id, originalFile, processingEnd, total, remaining } = batch;
-            const isStopable = !processingEnd && (remaining === null || total - remaining > 0);
             const status = getStatus(percentUploaded, batch);
+            console.log(`status of ${batch.originalFile}: `, status)
+            const statusMsg = getStatusMessage(status, batch);
+            const isFetchingErrors = errorsExportLoading.batch === _id && errorsExportLoading.isLoading;
+            const isStopable = !status['uploading-file'] && 
+                               !status['processing-complete'] && 
+                               !status['stop-initiated']
+                               !status['stack-destroyed'];
+            const isStoppingBatch = (stopBatchLoading.batch === _id && stopBatchLoading.isLoading) || 
+                                    (status['stop-initiated'] && !status['stack-destroyed']);
         
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
-                <TableCell css={{ width: '60%' }}>{status}</TableCell>
+                <TableCell css={{ width: '60%' }}>
+                  <Status>
+                    {statusMsg}
+                    {status['has-batch-errors'] && 
+                      <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
+                    }
+                  </Status>
+                </TableCell>
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <IconButton
                         variant='ghost'
+                        state={isStoppingBatch && 'loading'}
                         size='large'
                         disabled={!isStopable}
                         onClick={() => dispatch(stopBatch(_id))}
@@ -167,6 +183,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
                     <TooltipTrigger asChild>
                       <IconButton
                         variant='ghost'
+                        state={isFetchingErrors && 'loading'}
                         size='large'
                         css={{ color: '$errorText' }}
                         disabled={!batch.imageErrors || batch.imageErrors === 0}
@@ -214,19 +231,22 @@ const BulkUploadTable = ({ percentUploaded }) => {
 };
 
 const getStatus = (percentUploaded, batch) => {
-  const { uploadComplete, ingestionComplete, processingStart, processingEnd, total, remaining, errors } = batch;
-  const status = {
+  const { uploadComplete, ingestionComplete, processingStart, processingEnd, stoppingInitiated, remaining, errors } = batch;
+  return {
     'uploading-file': percentUploaded > 0 && percentUploaded < 100,
     'validating-file': !uploadComplete && !processingStart,
     'deploying-stack': uploadComplete && !processingStart, // not sure we need this
     'saving-images': processingStart && !ingestionComplete,
     'processing-images': processingStart && ingestionComplete ? true : false,	// this overlaps w/ saving images (batch will be in both states for a bit)
     'processing-complete': processingStart && ingestionComplete && (remaining === 0),
+    'stop-initiated': stoppingInitiated ? true : false,
     'stack-destroyed': processingEnd ? true : false, // not sure we need this either
     'has-batch-errors': errors?.length > 0,
   };
-  console.log(`status of ${batch.originalFile}: `, status);
+};
 
+const getStatusMessage = (status, batch) => {
+  const { processingStart, total, remaining, stoppingInitiated } = batch;
   let statusMsg = ``;
   if (status['uploading-file']) {
     statusMsg = `Uploading file...`;
@@ -245,15 +265,17 @@ const getStatus = (percentUploaded, batch) => {
   if (status['processing-complete']) {
     statusMsg = `Finished processing images. Cleaning up...`;
   }
-  if (status['stack-destroyed']) {
-    statusMsg = `Finished processing images. Cleaning up...`;
+  if (status['stop-initiated']) {
+    statusMsg = `Cancelling image processing...`;
   }
-  if (status['stack-destroyed']) {
+  if (status['stack-destroyed']) { 
     const dateString = DateTime.fromISO(processingStart).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing of ${total} images finished at ${dateString}`;
   }
-
-  console.log(`status message: ${statusMsg}`);
+  if (status['stack-destroyed'] && status['stop-initiated']) {
+    const dateString = DateTime.fromISO(stoppingInitiated).toLocaleString(DateTime.DATETIME_SHORT);
+    statusMsg = `Processing was cancelled at ${dateString}`;
+  }
   
   return (
     <Status>
