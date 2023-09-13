@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../com
 const Table = styled('table', {
   borderSpacing: '0',
   width: '100%',
+  tableLayout: 'fixed',
   marginBottom: '15px',
   // borderBottom: '1px solid',
   // borderColor: '$border',
@@ -144,7 +145,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
-                <TableCell>{status}</TableCell>
+                <TableCell css={{ width: '60%' }}>{status}</TableCell>
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger asChild>
