@@ -143,13 +143,13 @@ const BulkUploadTable = ({ percentUploaded }) => {
             console.log(`status of ${batch.originalFile}: `, status)
             const statusMsg = getStatusMessage(status, batch);
             const isFetchingErrors = errorsExportLoading.batch === _id && errorsExportLoading.isLoading;
-            const isStopable = !status['uploading-file'] && 
-                               !status['processing-complete'] && 
-                               !status['stop-initiated']
-                               !status['stack-destroyed'];
             const isStoppingBatch = (stopBatchLoading.batch === _id && stopBatchLoading.isLoading) || 
                                     (status['stop-initiated'] && !status['stack-destroyed']);
-        
+            const isStopable = !status['uploading-file'] && 
+                               !status['processing-complete'] && 
+                               !status['stop-initiated'] &&
+                               !status['stack-destroyed'];
+  
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
@@ -186,7 +186,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
                         state={isFetchingErrors && 'loading'}
                         size='large'
                         css={{ color: '$errorText' }}
-                        disabled={!batch.imageErrors || batch.imageErrors === 0}
+                        disabled={!status['processing-complete'] && (!batch.imageErrors || batch.imageErrors === 0)}
                         onClick={(e) => handleExportButtonClick(e, _id)}
                       >
                         <ExclamationTriangleIcon />
@@ -222,7 +222,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
         </IconButton>
       </Pagination>
       {errorsExportReady && 
-        <p><em>Success! Your errors CSV is ready for download. If the download 
+        <p><em>Your errors CSV is ready for download. If the download 
         did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
         initiate it.</em></p>
       }
@@ -233,7 +233,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
 const getStatus = (percentUploaded, batch) => {
   const { uploadComplete, ingestionComplete, processingStart, processingEnd, stoppingInitiated, remaining, errors } = batch;
   return {
-    'uploading-file': percentUploaded > 0 && percentUploaded < 100,
+    'uploading-file': percentUploaded > 0 && percentUploaded < 100 && !uploadComplete,
     'validating-file': !uploadComplete && !processingStart,
     'deploying-stack': uploadComplete && !processingStart, // not sure we need this
     'saving-images': processingStart && !ingestionComplete,
