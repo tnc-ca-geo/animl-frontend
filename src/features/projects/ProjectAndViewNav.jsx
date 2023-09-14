@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
+import { SimpleSpinner } from '../../components/Spinner.jsx';
 import {
   fetchProjects,
   selectProjects,
@@ -216,77 +217,75 @@ const ProjectAndViewNav = () => {
   };
 
   return (
-    <>
-      {projectsLoading.isLoading && <div>Loading projects...</div>}
+    <NavigationMenu>
+      <SimpleSpinner size='sm' display={projectsLoading.isLoading}/>
       {projectsLoading.noneFound && 
         <NoneFoundAlert>
           Rats! You don't have access to any projects yet!
         </NoneFoundAlert>
       }
       {selectedView &&
-        <NavigationMenu>
-          <NavigationMenuList>
+        <NavigationMenuList>
 
-            <NavigationMenuItem>
-              <NavigationMenuTrigger
-                onPointerMove={(e) => e.preventDefault()}
-              >
-                {selectedProj.name}
-              </NavigationMenuTrigger>
-              <NavigationMenuContent
-                onPointerMove={(e) => e.preventDefault()}
-              >
-                <MenuTitle>Projects</MenuTitle>
-                <ContentList layout="one">
-                  {projects.map((proj) => (
-                    <ContentListItem
-                      key={proj._id}
-                      title={proj.name}
-                      selected={proj.selected}
-                      onClick={() => handleProjectMenuItemClick(proj._id)}
-                    >
-                      {proj.description}
-                    </ContentListItem>
-                  ))}
-                </ContentList>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-    
-            <NavigationMenuItem>
-              <NavigationMenuTriggerViews
-                onPointerMove={(e) => e.preventDefault()}
-                edited={unsavedViewChanges}
-              >
-                {selectedView.name}
-              </NavigationMenuTriggerViews>
-              <NavigationMenuContent
-                onPointerMove={(e) => e.preventDefault()}
-              >
-                <MenuTitle>Views</MenuTitle>
-                <ContentList layout="two">
-                  {views.map((view) => (
-                    <ContentListItem
-                      key={view._id}
-                      title={view.name}
-                      selected={view.selected}
-                      onClick={() => handleViewMenuItemClick(view._id)}
-                    >
-                      {view.description}
-                    </ContentListItem>
-                  ))}
-                </ContentList>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-    
-            <NavigationMenuIndicator />
-          </NavigationMenuList>
-    
-          <ViewportPosition>
-            <NavigationMenuViewport />
-          </ViewportPosition>
-        </NavigationMenu>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger
+              onPointerMove={(e) => e.preventDefault()}
+            >
+              {selectedProj.name}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent
+              onPointerMove={(e) => e.preventDefault()}
+            >
+              <MenuTitle>Projects</MenuTitle>
+              <ContentList layout="one">
+                {projects.map((proj) => (
+                  <ContentListItem
+                    key={proj._id}
+                    title={proj.name}
+                    selected={proj.selected}
+                    onClick={() => handleProjectMenuItemClick(proj._id)}
+                  >
+                    {proj.description}
+                  </ContentListItem>
+                ))}
+              </ContentList>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+  
+          <NavigationMenuItem>
+            <NavigationMenuTriggerViews
+              onPointerMove={(e) => e.preventDefault()}
+              edited={unsavedViewChanges}
+            >
+              {selectedView.name}
+            </NavigationMenuTriggerViews>
+            <NavigationMenuContent
+              onPointerMove={(e) => e.preventDefault()}
+            >
+              <MenuTitle>Views</MenuTitle>
+              <ContentList layout="two">
+                {views.map((view) => (
+                  <ContentListItem
+                    key={view._id}
+                    title={view.name}
+                    selected={view.selected}
+                    onClick={() => handleViewMenuItemClick(view._id)}
+                  >
+                    {view.description}
+                  </ContentListItem>
+                ))}
+              </ContentList>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+  
+          <NavigationMenuIndicator />
+        </NavigationMenuList>
       }
-    </>
+
+      <ViewportPosition>
+        <NavigationMenuViewport />
+      </ViewportPosition>
+    </NavigationMenu>
   );
 };
 

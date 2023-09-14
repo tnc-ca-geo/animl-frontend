@@ -205,7 +205,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
                         state={isFetchingErrors && 'loading'}
                         size='large'
                         css={{ color: '$errorText' }}
-                        disabled={!status['processing-complete'] && (!batch.imageErrors || batch.imageErrors === 0)}
+                        disabled={!status['processing-complete'] || (!batch.imageErrors || batch.imageErrors === 0)}
                         onClick={(e) => handleExportButtonClick(e, _id)}
                       >
                         <ExclamationTriangleIcon />
