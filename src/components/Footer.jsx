@@ -2,6 +2,7 @@
 import { styled } from '../theme/stitches.config.js';
 import logo from '../assets/tnc-logo-black.svg';
 import { Container } from './Container.jsx';
+import { Flex, Separator } from '@radix-ui/themes';
 
 const StyledFooter = styled(Container, {
   textAlign: 'center',
@@ -28,12 +29,20 @@ const Footer = () => {
           Questions? Feedback? Interested in using Animl for your camera trapping projects? <a href='mailto:nathaniel.rindlaub@TNC.ORG?subject=Animl inquiry'>Contact us</a>
         </p>
       </div>
-        <p>© Copyright {year} The Nature Conservancy</p>
+      <p>© Copyright {year} The Nature Conservancy</p>
+      <Flex gap="3" justify="center" align="center">
         <a
           href='https://www.nature.org/en-us/about-us/who-we-are/accountability/privacy-policy/'
           target='_blank' rel='noopener noreferrer'>
           Privacy Policy
         </a> 
+        <Separator orientation="vertical" />
+        <a
+          href='https://docs.animl.camera/terms-of-service'
+          target='_blank' rel='noopener noreferrer'>
+          Terms of Service
+        </a>
+      </Flex>
     </StyledFooter>
   );
 };
