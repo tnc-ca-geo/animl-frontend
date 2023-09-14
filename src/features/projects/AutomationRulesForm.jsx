@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { selectSelectedProject } from './projectsSlice';
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 const AutomationRulesForm = () => {
@@ -38,7 +38,7 @@ const AutomationRulesForm = () => {
               setCurrentRule={setCurrentRule}
             />
         : <SpinnerOverlay>
-            <PulseSpinner />
+            <SimpleSpinner />
           </SpinnerOverlay>
       }
     </div>

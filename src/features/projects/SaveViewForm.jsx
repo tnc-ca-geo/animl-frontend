@@ -20,7 +20,7 @@ import {
   FormError,
   HelperText,
 } from '../../components/Form.jsx';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 
 const SaveModeTab = styled(Button, {
@@ -93,7 +93,7 @@ const SaveViewForm = ({ handleClose }) => {
     <div>
       {viewsLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       <div>

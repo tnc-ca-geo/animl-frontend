@@ -8,7 +8,7 @@ import {
   getExportStatus,
 } from './imagesSlice';
 import { selectActiveFilters  } from '../filters/filtersSlice.js';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
 import Button from '../../components/Button';
 import Warning from '../../components/Warning';
@@ -71,7 +71,7 @@ const ExportModal = () => {
     <div>
       {exportLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       {exportLoading.noneFound &&

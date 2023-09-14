@@ -32,7 +32,7 @@ import {
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -476,7 +476,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     <TableContainer ref={ref} >
       {imagesLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner/>
         </SpinnerOverlay>
       }
       {imagesLoading.noneFound && 

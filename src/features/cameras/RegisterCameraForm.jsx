@@ -16,7 +16,7 @@ import {
   FormFieldWrapper,
   ButtonRow,
 } from '../../components/Form';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { SUPPORTED_WIRELESS_CAMS  } from '../../config.js';
 
 
@@ -44,7 +44,7 @@ const RegisterCameraForm = () => {
     <div>
       {camerasLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       <FormWrapper>

@@ -5,7 +5,7 @@ import { updateAutomationRules, selectAutomationRulesLoading, editView, selectVi
 import IconButton from '../../components/IconButton.jsx';
 import Button from '../../components/Button.jsx';
 import { ButtonRow } from '../../components/Form.jsx';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { TrashIcon, Pencil1Icon } from '@radix-ui/react-icons';
 
 
@@ -81,7 +81,7 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
     <div>
       {automationRulesLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       <div>

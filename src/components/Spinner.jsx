@@ -126,8 +126,8 @@ const StyledSVG = styled('svg', {
   }
 });
 
-export const SimpleSpinner = ({ size, display }) => (
-  <StyledSVG size={size} display={display} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
+export const SimpleSpinner = ({ size='sm', display=true }) => (
+  <StyledSVG size={size} display={display} className="spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
     <g fill="none" fillRule="evenodd" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="12" r="11" opacity="0.3"></circle>
       <path d="M12 1c2.8 0 5.6 1.1 7.8 3.2 4.3 4.3 4.3 11.3 0 15.6s-11.3 4.3-15.6 0"></path>

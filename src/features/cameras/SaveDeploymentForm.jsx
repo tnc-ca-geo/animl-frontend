@@ -18,7 +18,7 @@ import {
   FormError,
 } from '../../components/Form.jsx';
 import DatePickerWithFormik from '../../components/DatePicker.jsx';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 
 const FormHeader = styled('div', {
@@ -106,7 +106,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
     <div>
       {depsLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       <FormHeader>

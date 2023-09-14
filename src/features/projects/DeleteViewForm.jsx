@@ -10,7 +10,7 @@ import {
 } from './projectsSlice.js';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 
 const ViewName = styled('span', {
@@ -42,7 +42,7 @@ const DeleteViewForm = ({ handleClose }) => {
     <div>
       {viewsLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       <FormWrapper>

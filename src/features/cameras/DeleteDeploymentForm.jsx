@@ -14,7 +14,7 @@ import {
   HelperText,
 } from '../../components/Form.jsx';
 import {
-  PulseSpinner,
+  SimpleSpinner,
   SpinnerOverlay
 } from '../../components/Spinner.jsx';
 
@@ -48,7 +48,7 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
     <div>
       {depsLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       <FormWrapper>

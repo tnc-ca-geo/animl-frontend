@@ -7,7 +7,7 @@ import {
   fetchStats
 } from './imagesSlice';
 import { selectActiveFilters  } from '../filters/filtersSlice.js';
-import { PulseSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
 
 const StatsDisplay = styled('div', {
@@ -64,7 +64,7 @@ const ImagesStatsModal = ({ open }) => {
     <div>
       {imagesStatsLoading.isLoading &&
         <SpinnerOverlay>
-          <PulseSpinner />
+          <SimpleSpinner />
         </SpinnerOverlay>
       }
       {imagesStatsLoading.noneFound &&
