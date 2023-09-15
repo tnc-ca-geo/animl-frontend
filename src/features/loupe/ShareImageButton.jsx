@@ -42,8 +42,7 @@ const StyledURLInput = styled('input', {
 const ShareImageButton = ({ imageId }) => {
   const selectedProject = useSelector(selectSelectedProject);
   const allImagesView = selectedProject.views.find((v) => v.name === 'All images');
-  const baseUrl = `https://animl.camera/app`;
-  const shareURL = `${baseUrl}/${selectedProject._id}/${allImagesView._id}?img=${imageId}`;
+  const shareURL = `${window.location.origin}/${selectedProject._id}/${allImagesView._id}?img=${imageId}`;
   const dispatch = useDispatch();
 
   const [ showToast, setShowToast ] = useState(false);
