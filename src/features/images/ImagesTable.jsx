@@ -33,6 +33,7 @@ import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { selectProjectsLoading } from '../projects/projectsSlice';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -219,6 +220,7 @@ const ReviewedIcon = ({ reviewed }) => (
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
+  const projectsLoading = useSelector(selectProjectsLoading);
   const imagesLoading = useSelector(selectImagesLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
@@ -474,7 +476,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   return (
     <TableContainer ref={ref} >
-      {imagesLoading.isLoading &&
+      {(projectsLoading.isLoading || imagesLoading.isLoading) &&
         <SpinnerOverlay>
           <SimpleSpinner/>
         </SpinnerOverlay>

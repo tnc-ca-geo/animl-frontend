@@ -63,10 +63,18 @@ const ClearFileButton = styled(IconButton, {
   margin: '0 $2 0 $2',
 });
 
+const SNOverrideContent = styled('div', {
+  maxWidth: '300px',
+  'a': {
+    color: mauve.mauve9,
+  }
+});
+
 const SerialNumberOverrideHelp = () => (
-  <div>
-    serial number help. For more info see <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>docs</a>
-  </div>
+  <SNOverrideContent>
+    Using this feature will override the camera serial numbers of all images in your Zip file and 
+    cannot be undone. Be sure to understand the implications and read the <a href="https://docs.animl.camera/fundamentals/uploading-images#overriding-serial-numbers" target='_blank' rel='noopener noreferrer'>documentation</a> before use.
+  </SNOverrideContent>
 );
 
 
