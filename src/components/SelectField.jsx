@@ -10,7 +10,7 @@ import { FormError } from './Form';
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
-    height: '52px',
+    height: '55px',
     boxSizing: 'border-box',
     border: '1px solid',
     borderColor: 'var(--colors-border) !important',
