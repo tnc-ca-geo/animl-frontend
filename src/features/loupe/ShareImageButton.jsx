@@ -57,7 +57,7 @@ const ShareImageButton = ({ imageId }) => {
       style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}
     >
       <StyledLabel htmlFor="shareURL">Share: </StyledLabel>
-      <StyledURLInput type="text" id="shareURL" readonly="readonly" defaultValue={shareURL} />
+      <StyledURLInput type="text" id="shareURL" readonly="readonly" value={shareURL} />
       <Tooltip>
         <TooltipTrigger asChild>
           <IconButton 
