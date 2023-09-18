@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, fetchImages } from '../images/imagesSlice.js';
 import { selectActiveFilters  } from './filtersSlice.js';
 import { selectModalOpen, selectSelectedProject, setModalOpen, setModalContent, fetchProjects } from '../projects/projectsSlice.js';
+import { toggleOpenLoupe } from '../loupe/loupeSlice.js'
 import { InfoCircledIcon, DownloadIcon, SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { 
@@ -74,7 +75,8 @@ const FiltersPanelFooter = () => {
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
-    dispatch(fetchProjects({ _ids: [selectedProj._id] }))
+    dispatch(toggleOpenLoupe(false));
+    dispatch(fetchProjects({ _ids: [selectedProj._id] }));
   };
 
   const handleModalToggle = (content) => {
