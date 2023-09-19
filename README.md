@@ -58,3 +58,18 @@ It will request backend resources that are also in their respective staging envi
 ### `npm run deploy-dev` &  `npm run deploy-prod` 
 
 Builds the app for deployment and deploys it to dev/production environment.<br />
+
+## Prod deployment
+Use caution when deploying to production, as the application involves multiple stacks (animl-ingest, animl-api, animl-frontend), and often the deployments need to be synchronized. For major deployments to prod in which there are breaking changes that affect the other components of the stack, follow these steps:
+
+1. Set the frontend `IN_MAINTENANCE_MODE` to `true` (in `animl-frontend/src/config.js`), deploy to prod, then invalidate its cloudfront cache. This will temporarily prevent users from interacting with the frontend (editing labels, bulk uploading images, etc.) while the rest of the updates are being deployed.
+
+2. Set ingest-image's `IN_MAINTENANCE_MODE` to `true` (in `animl-ingest/ingest-image/task.js`) and deploy to prod. This will temporarily route any images from wireless cameras that happen to get send to the ingestion bucket to the `animl-images-parkinglot-prod` bucket so that Animl isn't trying to process new images while the updates are being deployed.
+
+3. Backup prod DB by running `npm run export-db-prod` from the `animl-api` project root.
+
+4. Deploy animl-api to prod. 
+
+5. Turn off `IN_MAINTENANCE_MODE` in animl-frontend and animl-ingest, and deploy both to prod
+
+6. Copy any image that happened to land in `animl-images-parkinglot-prod` while the stacks were being deployed to `animl-images-ingestion-prod`

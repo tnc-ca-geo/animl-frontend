@@ -1,6 +1,6 @@
 {
   "name": "animl-frontend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "dependencies": {
     "@aws-amplify/ui-react": "^5.0.3",
