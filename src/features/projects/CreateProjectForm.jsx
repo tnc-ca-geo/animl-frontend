@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import { timeZonesNames } from '@vvo/tzdb';
 
 import { styled } from '../../theme/stitches.config.js';
-import { FormWrapper, FormFieldWrapper, FieldRow, ButtonRow } from '../../components/Form';
+import { FormWrapper, FormFieldWrapper, FieldRow, ButtonRow, FormError } from '../../components/Form';
 import Button from '../../components/Button.jsx';
 import SelectField from '../../components/SelectField.jsx';
 
@@ -51,18 +51,28 @@ const CreateProjectForm = () => {
           validationSchema={createProjectSchema}
           onSubmit={(values) => console.log(values)}
         >
-          {({ values, isValid, touched, setFieldTouched, setFieldValue }) => (
+          {({ values, errors, isValid, touched, setFieldTouched, setFieldValue }) => (
             <Form>
               <FieldRow>
                 <FormFieldWrapper>
                   <label htmlFor='name'>Name</label>
                   <Field name='name' id='name'/>
+                  {!!errors.name && touched.name && (
+                    <FormError>
+                      {errors.name}
+                    </FormError>
+                  )}
                 </FormFieldWrapper>
               </FieldRow>
               <FieldRow>
                 <FormFieldWrapper>
                   <label htmlFor='description'>Description</label>
                   <Field as="textarea" name='description' id='description'/>
+                  {!!errors.description && touched.description && (
+                    <FormError>
+                      {errors.description}
+                    </FormError>
+                  )}
                 </FormFieldWrapper>
               </FieldRow>
               <FieldRow>
@@ -73,8 +83,9 @@ const CreateProjectForm = () => {
                     options={tzOptions}
                     value={tzOptions.find(({ value }) => value === values.timezone)}
                     touched={touched.timezone}
-                    onBlur={setFieldTouched}
                     onChange={(name, { value }) => setFieldValue(name, value)}
+                    onBlur={(name, { value }) => setFieldTouched(name, value)}
+                    error={errors.timezone}
                   />
                 </FormFieldWrapper>
               </FieldRow>
@@ -87,7 +98,8 @@ const CreateProjectForm = () => {
                     value={mlModelOptions.find(({ value }) => value === values.availableMLModels)}
                     touched={touched.availableMLModels}
                     onChange={(name, { value }) => setFieldValue(name, value)}
-                    onBlur={setFieldTouched}
+                    onBlur={(name, { value }) => setFieldTouched(name, value)}
+                    error={errors.availableMLModels}
                   />
                 </FormFieldWrapper>
               </FieldRow>
