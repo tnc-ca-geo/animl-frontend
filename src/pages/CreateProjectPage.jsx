@@ -5,6 +5,7 @@ import { Page } from '../components/Page.jsx';
 import { NotFound } from '../components/NotFound.jsx'
 import { selectUserUsername, selectUserAuthStatus, selectUserIsSuperUser } from '../features/user/userSlice.js';
 import LoginForm from '../features/user/LoginForm.jsx';
+import CreateProjectForm from '../features/projects/CreateProjectForm.jsx';
 
 const CreateProjectPage = () => {
   const authStatus = useSelector(selectUserAuthStatus);
@@ -18,7 +19,7 @@ const CreateProjectPage = () => {
 
   return (
     <Page>
-      {isSuperUser ? <h1>Create Project</h1> : <NotFound />}
+      {isSuperUser ? <CreateProjectForm /> : <NotFound />}
     </Page>
   )
 }
