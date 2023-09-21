@@ -16,6 +16,11 @@ const initialState = {
       errors: null,
       noneFound: false,
     },
+    createProject: {
+      isLoading: false,
+      operation: null, /* 'fetching', 'updating', 'deleting' */
+      errors: null,
+    },
     views: {
       isLoading: false,
       operation: null,
@@ -52,6 +57,10 @@ export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
+    /* 
+     * Views CRUD 
+     */
+
     getProjectsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.projects = ls;
@@ -107,6 +116,25 @@ export const projectsSlice = createSlice({
 
     setUnsavedViewChanges: (state, { payload }) => {
       state.unsavedViewChanges = payload;
+    },
+
+    createProjectStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.createProject = ls;
+    },
+
+    createProjectSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.createProject = ls;
+      state.projects = {
+        ...state.projects,
+        // TODO Merge new project
+      }
+    },
+
+    createProjectFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };  
+      state.loadingStates.createProject = ls;
     },
 
 
@@ -286,6 +314,9 @@ export const {
   setSelectedProjAndView,
   setUnsavedViewChanges,
   dismissProjectsError,
+  createProjectStart,
+  createProjectSuccess,
+  createProjectFailure,
 
   editViewStart,
   saveViewSuccess,
@@ -333,6 +364,25 @@ export const fetchProjects = (payload) => async dispatch => {
     dispatch(getProjectsFailure(err));
   }
 };
+
+export const createProject = (payload) = async dispatch => {
+  try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      // TODO make this work
+      if (token) {
+        dispatch(createProjectStart());
+        const project = await call({ 
+          request: 'createProject',
+          ...(payload && { input: payload })
+        });
+        dispatch(createProjectSuccess(project));
+      }
+  } catch (err) {
+    console.log('err: ', err)
+    dispatch(createProjectFailure(err));
+  }
+}
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?

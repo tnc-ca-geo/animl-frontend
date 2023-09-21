@@ -165,6 +165,10 @@ const queries = {
     variables: { input: input }
   }),
 
+  createProject: (input) => ({
+    // TODO: make create project query
+  }),
+
   getViews: (input) => ({
     template: `
       {
