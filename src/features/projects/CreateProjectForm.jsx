@@ -1,6 +1,7 @@
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { timeZonesNames } from '@vvo/tzdb';
+import _ from 'lodash';
 
 import { styled } from '../../theme/stitches.config.js';
 import { FormWrapper, FormFieldWrapper, FieldRow, ButtonRow, FormError } from '../../components/Form';
@@ -49,7 +50,13 @@ const CreateProjectForm = () => {
             availableMLModels: ''
           }}
           validationSchema={createProjectSchema}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={(values) => {
+            const payload = {
+              ...values,
+              _id: _.kebabCase(values.name)
+            }
+            console.log(payload);
+          }}
         >
           {({ values, errors, isValid, touched, setFieldTouched, setFieldValue }) => (
             <Form>
