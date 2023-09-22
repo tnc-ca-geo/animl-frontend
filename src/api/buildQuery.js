@@ -391,9 +391,7 @@ const queries = {
     template: `
       mutation UpdateObjects($input: UpdateObjectsInput!) {
         updateObjects(input: $input) {
-          images {
-            ${imageFields}
-          }
+          isOk
         }
       }
     `,
@@ -430,9 +428,7 @@ const queries = {
     template: `
       mutation UpdateLabels($input: UpdateLabelsInput!) {
         updateLabels(input: $input) {
-          images {
-            ${imageFields}
-          }
+          isOk
         }
       }
     `,
