@@ -374,19 +374,6 @@ const queries = {
     variables: { input: input },
   }),
 
-  // updateObjects: (input) => ({
-  //   template: `
-  //     mutation UpdateObjects($input: UpdateObjectsInput!) {
-  //       updateObjects(input: $input) {
-  //         image {
-  //           ${imageFields}
-  //         }
-  //       }
-  //     }
-  //   `,
-  //   variables: { input: input },
-  // }),
-
   createObject: (input) => ({
     template: `
       mutation CreateObject($input: CreateObjectInput!) {
@@ -400,11 +387,11 @@ const queries = {
     variables: { input: input },
   }),
 
-  updateObject: (input) => ({
+  updateObjects: (input) => ({
     template: `
-      mutation UpdateObject($input: UpdateObjectInput!) {
-        updateObject(input: $input) {
-          image {
+      mutation UpdateObjects($input: UpdateObjectsInput!) {
+        updateObjects(input: $input) {
+          images {
             ${imageFields}
           }
         }

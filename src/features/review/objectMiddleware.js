@@ -17,10 +17,12 @@ export const objectMiddleware = store => next => action => {
   if (bboxUpdated.match(action)) {
     next(action);
     const { imgId, objId, bbox } = action.payload;
-    store.dispatch(editLabel('update', 'object', {
-      imageId: imgId,
-      objectId: objId,
-      diffs: { bbox },
+    store.dispatch(editLabel('update', 'objects', {
+      updates: [{
+        imageId: imgId,
+        objectId: objId,
+        diffs: { bbox },
+      }]
     }));
   }
 
@@ -28,7 +30,7 @@ export const objectMiddleware = store => next => action => {
 
   else if (objectRemoved.match(action)) {
     const { imgId, objId } = action.payload;
-    store.dispatch(editLabel('delete', 'object', {
+    store.dispatch(editLabel('delete', 'objects', {
       imageId: imgId,
       objectId: objId,
     }));
@@ -40,10 +42,12 @@ export const objectMiddleware = store => next => action => {
   else if (objectLocked.match(action)) {
     next(action);
     const { imgId, objId, locked } = action.payload;
-    store.dispatch(editLabel('update', 'object', {
-      imageId: imgId,
-      objectId: objId,
-      diffs: { locked },
+    store.dispatch(editLabel('update', 'objects', {
+      updates: [{
+        imageId: imgId,
+        objectId: objId,
+        diffs: { locked },
+      }]
     }));
   }
 
