@@ -119,11 +119,13 @@ export const labelMiddleware = store => next => action => {
 
     // update label
     const validation = { validated, userId };
-    store.dispatch(editLabel('update', 'label', {
-      imageId: imgId,
-      objectId: objId,
-      labelId: lblId,
-      diffs: { validation },
+    store.dispatch(editLabel('update', 'labels', {
+      updates: [{
+        imageId: imgId,
+        objectId: objId,
+        labelId: lblId,
+        diffs: { validation },
+      }]
     }));
 
     // update object
@@ -143,11 +145,13 @@ export const labelMiddleware = store => next => action => {
     const { imgId, objId, lblId, oldValidation, oldLocked } = action.payload;
 
     // update label
-    store.dispatch(editLabel('update', 'label', {
-      imageId: imgId,
-      objectId: objId,
-      labelId: lblId,
-      diffs: { validation: oldValidation },
+    store.dispatch(editLabel('update', 'labels', {
+      updates: [{
+        imageId: imgId,
+        objectId: objId,
+        labelId: lblId,
+        diffs: { validation: oldValidation },
+      }]
     }));
 
     // update object

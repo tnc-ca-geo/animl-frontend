@@ -439,11 +439,11 @@ const queries = {
     variables: { input: input },
   }),
 
-  updateLabel: (input) => ({
+  updateLabels: (input) => ({
     template: `
-      mutation UpdateLabel($input: UpdateLabelInput!) {
-        updateLabel(input: $input) {
-          image {
+      mutation UpdateLabels($input: UpdateLabelsInput!) {
+        updateLabels(input: $input) {
+          images {
             ${imageFields}
           }
         }
