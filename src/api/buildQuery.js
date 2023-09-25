@@ -374,13 +374,11 @@ const queries = {
     variables: { input: input },
   }),
 
-  createObject: (input) => ({
+  createObjects: (input) => ({
     template: `
-      mutation CreateObject($input: CreateObjectInput!) {
-        createObject(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation CreateObjects($input: CreateObjectsInput!) {
+        createObjects(input: $input) {
+          isOk
         }
       }
     `,

@@ -181,8 +181,6 @@ export const editLabel = (operation, entity, payload, projId) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        // TODO: do we really need to pass in the operation and entity separately?
-        // why not just do one string, e.g.: 'createObject'
         const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
         const res = await call({
           projId: selectedProj._id, 

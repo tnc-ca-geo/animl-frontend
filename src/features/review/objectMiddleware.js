@@ -30,7 +30,7 @@ export const objectMiddleware = store => next => action => {
 
   else if (objectRemoved.match(action)) {
     const { imgId, objId } = action.payload;
-    store.dispatch(editLabel('delete', 'objects', {
+    store.dispatch(editLabel('delete', 'object', {
       imageId: imgId,
       objectId: objId,
     }));
@@ -80,9 +80,11 @@ export const objectMiddleware = store => next => action => {
     };
 
     next(action);
-    store.dispatch(editLabel('create', 'object', {
-      object: action.payload.newObject,
-      imageId: imgId,
+    store.dispatch(editLabel('create', 'objects', {
+      objects: [{
+        object: action.payload.newObject,
+        imageId: imgId,
+      }]
     }));
   }
 

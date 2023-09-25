@@ -192,18 +192,15 @@ const BoundingBoxLabel = ({
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
-    const category = newValue.value || newValue;
-    if (newValue) {
-      setTempObject(null);
-      dispatch(labelAdded({
-        objIsTemp: object.isTemp,
-        userId: username,
-        bbox: object.bbox,
-        category,
-        objId: object._id,
-        imgId,
-      }));
-    }
+    setTempObject(null);
+    dispatch(labelAdded({
+      objIsTemp: object.isTemp,
+      userId: username,
+      bbox: object.bbox,
+      category: newValue.value || newValue,
+      objId: object._id,
+      imgId
+    }));
   };
 
   return (

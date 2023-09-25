@@ -47,9 +47,11 @@ export const labelMiddleware = store => next => action => {
     next(action);
 
     if (objIsTemp) {
-      store.dispatch(editLabel('create', 'object', {
-        object: action.payload.newObject,
-        imageId: imgId,
+      store.dispatch(editLabel('create', 'objects', {
+        objects: [{
+          object: action.payload.newObject,
+          imageId: imgId,
+        }]
       }));
     }
     else {
