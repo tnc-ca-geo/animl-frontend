@@ -4,7 +4,7 @@ import {
   editLabel,
   bboxUpdated,
   objectRemoved,
-  objectLocked,
+  objectsLocked,
   objectManuallyUnlocked,
   markedEmpty,
   markedEmptyReverted,
@@ -37,18 +37,17 @@ export const objectMiddleware = store => next => action => {
     next(action);
   }
 
-  /* objectLocked */
+  /* objectsLocked */
 
-  else if (objectLocked.match(action)) {
+  else if (objectsLocked.match(action)) {
+    console.log('objectMiddleware - objectsLoked - action: ', action);
     next(action);
-    const { imgId, objId, locked } = action.payload;
-    store.dispatch(editLabel('update', 'objects', {
-      updates: [{
-        imageId: imgId,
-        objectId: objId,
-        diffs: { locked },
-      }]
-    }));
+    const updates = action.payload.objects.map(({ imgId, objId, locked }) => ({
+      imageId: imgId,
+      objectId: objId,
+      diffs: { locked },
+    }))
+    store.dispatch(editLabel('update', 'objects', { updates }));
   }
 
   /* objectManuallyUnlocked */
@@ -56,7 +55,8 @@ export const objectMiddleware = store => next => action => {
   else if (objectManuallyUnlocked.match(action)) {
     next(action);
     const { imgId, objId } = action.payload;
-    store.dispatch(objectLocked({ imgId, objId, locked: false }));
+    const objects = [{ imgId, objId, locked: false }];
+    store.dispatch(objectsLocked({ objects }));
   }
 
   /* markedEmpty */

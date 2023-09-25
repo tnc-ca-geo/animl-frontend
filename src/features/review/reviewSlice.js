@@ -74,24 +74,30 @@ export const reviewSlice = createSlice({
       }
     },
 
-    labelValidated: (state, { payload }) => {
-      const { userId, imgId, objId, lblId, validated } = payload;
-      const label = findLabel(state.workingImages, imgId, objId, lblId);
-      label.validation = { validated, userId };
+    labelsValidated: (state, { payload }) => {
+      console.log('reviewSlice - labelsValidated - payload: ', payload);
+      payload.labels.forEach(({ userId, imgId, objId, lblId, validated }) => {
+        const label = findLabel(state.workingImages, imgId, objId, lblId);
+        label.validation = { validated, userId };
+      });
     },
 
-    labelValidationReverted: (state, { payload }) => { // for undoing a validation
-      const { imgId, objId, lblId, oldValidation, oldLocked } = payload;
-      const object = findObject(state.workingImages, imgId, objId);
-      object.locked = oldLocked;
-      const label = findLabel(state.workingImages, imgId, objId, lblId);
-      label.validation = oldValidation;
+    labelsValidationReverted: (state, { payload }) => { // for undoing a validation
+      console.log('reviewSlice - labelsValidationReverted - payload: ', payload);
+      payload.labels.forEach(({ imgId, objId, lblId, oldValidation, oldLocked }) => {
+        const object = findObject(state.workingImages, imgId, objId);
+        object.locked = oldLocked;
+        const label = findLabel(state.workingImages, imgId, objId, lblId);
+        label.validation = oldValidation;
+      });
     },
 
-    objectLocked: (state, { payload }) => {
-      const { imgId, objId } = payload;
-      const object = findObject(state.workingImages, imgId, objId);
-      object.locked = payload.locked;
+    objectsLocked: (state, { payload }) => {
+      console.log('reviewSlice - objectsLocked - payload: ', payload);
+      payload.objects.forEach(({ imgId, objId, locked }) => {
+        const object = findObject(state.workingImages, imgId, objId);
+        object.locked = locked;
+      });
     },
 
     markedEmpty: (state, { payload }) => {
@@ -145,9 +151,9 @@ export const {
   objectRemoved,
   labelAdded,
   labelRemoved,
-  labelValidated,
-  labelValidationReverted,
-  objectLocked,
+  labelsValidated,
+  labelsValidationReverted,
+  objectsLocked,
   markedEmpty,
   editLabelStart,
   editLabelFailure,

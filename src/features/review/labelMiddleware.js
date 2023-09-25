@@ -5,13 +5,13 @@ import { addLabelEnd, selectReviewMode } from '../loupe/loupeSlice';
 import {
   setFocus,
   editLabel,
-  objectLocked,
+  objectsLocked,
   labelAdded,
   labelRemoved,
-  labelValidated,
+  labelsValidated,
   incrementFocusIndex,
   selectWorkingImages,
-  labelValidationReverted,
+  labelsValidationReverted,
 } from './reviewSlice';
 import { findObject } from '../../app/utils';
 
@@ -58,7 +58,8 @@ export const labelMiddleware = store => next => action => {
         imageId: imgId,
         objectId: objId,
       }));
-      store.dispatch(objectLocked({ imgId, objId, locked: true }));
+      const objects = [{ imgId, objId, locked: true }];
+      store.dispatch(objectsLocked({ objects }));
     }
 
     store.dispatch(addLabelEnd());
@@ -102,7 +103,8 @@ export const labelMiddleware = store => next => action => {
         objectId: objId,
         labelId: newLabel._id,
       }));
-      store.dispatch(objectLocked({ imgId, objId, locked: false }));
+      const objects = [{ imgId, objId, locked: false }];
+      store.dispatch(objectsLocked({ objects }));
     }
 
     next(action);
@@ -111,51 +113,58 @@ export const labelMiddleware = store => next => action => {
     // store.dispatch(fetchLabels()); // fetchLabels again? 
   }
 
-  /* labelValidated */
+  /* labelsValidated */
 
-  else if (labelValidated.match(action)) {
-    const { userId, imgId, objId, lblId, validated } = action.payload;
+  else if (labelsValidated.match(action)) {
+    console.log('labelMiddleware - labelsValidated - action: ', action);
     next(action);
+    const lbls = action.payload.labels;
 
-    // update label
-    const validation = { validated, userId };
-    store.dispatch(editLabel('update', 'labels', {
-      updates: [{
-        imageId: imgId,
-        objectId: objId,
-        labelId: lblId,
-        diffs: { validation },
-      }]
+    // update labels
+    const updates = lbls.map(({ userId, imgId, objId, lblId, validated }) => ({
+      imageId: imgId,
+      objectId: objId,
+      labelId: lblId,
+      diffs: { validation: { validated, userId } },
     }));
+    store.dispatch(editLabel('update', 'labels', { updates }));
 
-    // update object
+    // update objects
     const workingImages = selectWorkingImages(store.getState());
-    const object = findObject(workingImages, imgId, objId);
-    const allLabelsInvalidated = object.labels.every((lbl) => (
-      lbl.validation && lbl.validation.validated === false
-    ));
-    const locked = ((!validated && allLabelsInvalidated) || validated);
-    store.dispatch(objectLocked({ imgId, objId, locked}));
+    const objects = [];
+    lbls.forEach(({ imgId, objId, validated }) => {
+      const object = findObject(workingImages, imgId, objId);
+      const allLabelsInvalidated = object.labels.every((lbl) => (
+        lbl.validation && lbl.validation.validated === false
+      ));
+      const locked = (!validated && allLabelsInvalidated) || validated;
+      objects.push({ imgId, objId, locked })
+    });
+    store.dispatch(objectsLocked({ objects }));
   }
 
-  /* labelValidationReverted */
+  /* labelsValidationReverted */
 
-  else if (labelValidationReverted.match(action)) {
+  else if (labelsValidationReverted.match(action)) {
     next(action);
-    const { imgId, objId, lblId, oldValidation, oldLocked } = action.payload;
+    const lbls = action.payload.labels;
 
-    // update label
-    store.dispatch(editLabel('update', 'labels', {
-      updates: [{
-        imageId: imgId,
-        objectId: objId,
-        labelId: lblId,
-        diffs: { validation: oldValidation },
-      }]
+    // update labels
+    const labelUpdates = lbls.map(({ imgId, objId, lblId, oldValidation }) => ({
+      imageId: imgId,
+      objectId: objId,
+      labelId: lblId,
+      diffs: { validation: oldValidation },
     }));
+    store.dispatch(editLabel('update', 'labels', { updates: labelUpdates }));
 
     // update object
-    store.dispatch(objectLocked({ imgId, objId, locked: oldLocked }));
+    const objectUpdates = lbls.map(({ imgId, objId, oldLocked }) => ({
+      imgId,
+      objId,
+      locked: oldLocked 
+    }));
+    store.dispatch(objectsLocked({ objects: objectUpdates }));
   }
 
   else {
