@@ -396,26 +396,22 @@ const queries = {
     variables: { input: input },
   }),
 
-  deleteObject: (input) => ({
+  deleteObjects: (input) => ({
     template: `
-      mutation DeleteObject($input: DeleteObjectInput!) {
-        deleteObject(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation DeleteObjects($input: DeleteObjectsInput!) {
+        deleteObjects(input: $input) {
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  createLabel: (input) => ({
+  createLabels: (input) => ({
     template: `
       mutation CreateLabels($input: CreateLabelsInput!) {
         createLabels(input: $input) {
-          image {
-            ${imageFields}
-          }
+          isOk
         }
       }
     `,
@@ -433,13 +429,11 @@ const queries = {
     variables: { input: input },
   }),
 
-  deleteLabel: (input) => ({
+  deleteLabels: (input) => ({
     template: `
-      mutation DeleteLabel($input: DeleteLabelInput!) {
-        deleteLabel(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation DeleteLabels($input: DeleteLabelsInput!) {
+        deleteLabels(input: $input) {
+          isOk
         }
       }
     `,

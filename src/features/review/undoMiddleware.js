@@ -1,13 +1,13 @@
 import { createUndoMiddleware } from 'redux-undo-redo';
 import {
   bboxUpdated,
-  labelAdded,
+  labelsAdded,
   objectsLocked,
   objectManuallyUnlocked,
   labelsValidated,
   labelsValidationReverted,
   selectWorkingImages,
-  labelRemoved,
+  labelsRemoved,
   markedEmpty,
   markedEmptyReverted,
 } from './reviewSlice';
@@ -16,11 +16,11 @@ import { findObject } from '../../app/utils';
 export const undoMiddleware = createUndoMiddleware({
   revertingActions: {
 
-    // labelAdded
-    [labelAdded.toString()]: {
+    // labelsAdded
+    [labelsAdded.toString()]: {
       action: (action) => {
-        console.log('reverting labelAdded with action: ', action);
-        return labelRemoved(action.payload);
+        console.log('reverting labelsAdded with action: ', action);
+        return labelsRemoved(action.payload);
       },
     },
 

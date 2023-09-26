@@ -3,7 +3,7 @@ import { ObjectID } from 'bson';
 import {
   editLabel,
   bboxUpdated,
-  objectRemoved,
+  objectsRemoved,
   objectsLocked,
   objectManuallyUnlocked,
   markedEmpty,
@@ -26,13 +26,14 @@ export const objectMiddleware = store => next => action => {
     }));
   }
 
- /* objectRemoved */
+ /* objectsRemoved */
 
-  else if (objectRemoved.match(action)) {
-    const { imgId, objId } = action.payload;
-    store.dispatch(editLabel('delete', 'object', {
-      imageId: imgId,
-      objectId: objId,
+  else if (objectsRemoved.match(action)) {
+    store.dispatch(editLabel('delete', 'objects', {
+      objects: action.payload.objects.map(({ imgId, objId }) => ({
+        imageId: imgId,
+        objectId: objId
+      }))
     }));
     next(action);
   }
@@ -62,38 +63,47 @@ export const objectMiddleware = store => next => action => {
   /* markedEmpty */
 
   else if (markedEmpty.match(action)) {
-    const { imgId, userId } = action.payload;
+    const { images, userId } = action.payload;
 
-    action.payload.newObject = action.payload.newObject || {
-      _id: new ObjectID().toString(),
-      bbox: [0,0,1,1],
-      locked: true,
-      labels: [{
+    action.payload.images = images.map((img) => {
+      img.newObject = img.newObject || {
         _id: new ObjectID().toString(),
-        category: 'empty',
         bbox: [0,0,1,1],
-        validation: { validated: true, userId },  
-        type: 'manual',
-        conf: 1,
-        userId
-      }],
-    };
+        locked: true,
+        labels: [{
+          _id: new ObjectID().toString(),
+          category: 'empty',
+          bbox: [0,0,1,1],
+          validation: { validated: true, userId },  
+          type: 'manual',
+          conf: 1,
+          userId
+        }],
+      };
+      return img;
+    });
 
     next(action);
+
     store.dispatch(editLabel('create', 'objects', {
-      objects: [{
-        object: action.payload.newObject,
+      objects: action.payload.images.map(({ newObject, imgId }) => ({
+        object: newObject,
         imageId: imgId,
-      }]
+      }))
     }));
   }
 
-  /* markedEmpty */
+  /* markedEmptyReverted */
 
   else if (markedEmptyReverted.match(action)) {
-    const { imgId, newObject } = action.payload;
-    if (newObject) {
-      store.dispatch(objectRemoved({ imgId, objId: newObject._id }));
+    const objectsToRemove = [];
+    for (const { imgId, newObject } of action.payload.images) {
+      if (newObject) {  // TODO: not sure this is necessary - is there ever a case where there is not a newObject?
+        objectsToRemove.push({ imgId, objId: newObject._id })
+      }
+    }
+    if (objectsToRemove.length) {
+      store.dispatch(objectsRemoved({ objects: objectsToRemove }));
     }
   }
 

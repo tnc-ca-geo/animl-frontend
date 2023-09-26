@@ -139,7 +139,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
       dispatch(labelsValidated({ labels: labelsToValidate }))
     }
     else {
-      dispatch(markedEmpty({ imgId: image._id, userId }));
+      dispatch(markedEmpty({ images: [{ imgId: image._id }], userId }));
     }
   };
 

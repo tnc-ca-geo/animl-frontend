@@ -4,7 +4,7 @@ import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
 import { createFilter } from 'react-select';
 import { selectAvailLabels } from '../filters/filtersSlice.js';
-import { labelAdded, setFocus } from '../review/reviewSlice.js';
+import { labelsAdded, setFocus } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
 import ValidationButtons from './ValidationButtons.jsx';
 
@@ -193,13 +193,15 @@ const BoundingBoxLabel = ({
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
     setTempObject(null);
-    dispatch(labelAdded({
-      objIsTemp: object.isTemp,
-      userId: username,
-      bbox: object.bbox,
-      category: newValue.value || newValue,
-      objId: object._id,
-      imgId
+    dispatch(labelsAdded({
+      labels: [{
+        objIsTemp: object.isTemp,
+        userId: username,
+        bbox: object.bbox,
+        category: newValue.value || newValue,
+        objId: object._id,
+        imgId
+      }]
     }));
   };
 

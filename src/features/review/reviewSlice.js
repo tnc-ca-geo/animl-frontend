@@ -38,39 +38,43 @@ export const reviewSlice = createSlice({
       object.bbox = payload.bbox;
     },
 
-    objectRemoved: (state, { payload }) => {
-      const image = findImage(state.workingImages, payload.imgId);
-      const objectIndex = image.objects.findIndex((obj) => (
-        obj._id === payload.objId
-      ));
-      image.objects.splice(objectIndex, 1);
-    },
-
-    labelAdded: (state, { payload }) => {
-      const { imgId, objId, objIsTemp, newObject, newLabel } = payload;
-      const image = findImage(state.workingImages, imgId);
-      if (objIsTemp && newObject) {
-        image.objects.unshift(newObject);
-      }
-      else {
-        const object = image.objects.find((obj) => obj._id === objId);
-        object.labels.unshift(newLabel);
-      }
-    },
-
-    labelRemoved: (state, { payload }) => {
-      const { imgId, objId, newLabel } = payload;
-      const image = findImage(state.workingImages, imgId);
-      const object = image.objects.find((obj) => obj._id === objId);
-      const labelIndex = object.labels.findIndex((lbl) => (
-        lbl._id === newLabel._id
-      ));
-      object.labels.splice(labelIndex, 1);
-
-      // remove object if there aren't any labels left 
-      if (!object.labels.length) {
-        const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
+    objectsRemoved: (state, { payload }) => {
+      for (const obj of payload.objects) {
+        const image = findImage(state.workingImages, obj.imgId);
+        const objectIndex = image.objects.findIndex((o) => o._id === obj.objId);
         image.objects.splice(objectIndex, 1);
+      }
+    },
+
+    labelsAdded: (state, { payload }) => {
+      for (const label of payload.labels) {
+        const { imgId, objId, objIsTemp, newObject, newLabel } = label;
+        const image = findImage(state.workingImages, imgId);
+        if (objIsTemp && newObject) {
+          image.objects.unshift(newObject);
+        }
+        else {
+          const object = image.objects.find((obj) => obj._id === objId);
+          object.labels.unshift(newLabel);
+        }
+      }
+    },
+
+    labelsRemoved: (state, { payload }) => {
+      for (const label of payload.labels) {
+        const { imgId, objId, newLabel } = label;
+        const image = findImage(state.workingImages, imgId);
+        const object = image.objects.find((obj) => obj._id === objId);
+        const labelIndex = object.labels.findIndex((lbl) => (
+          lbl._id === newLabel._id
+        ));
+        object.labels.splice(labelIndex, 1);
+  
+        // remove object if there aren't any labels left 
+        if (!object.labels.length) {
+          const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
+          image.objects.splice(objectIndex, 1);
+        }
       }
     },
 
@@ -101,9 +105,11 @@ export const reviewSlice = createSlice({
     },
 
     markedEmpty: (state, { payload }) => {
-      if (payload.newObject) {
-        const image = findImage(state.workingImages, payload.imgId);
-        image.objects.push(payload.newObject);
+      for (const img of payload.images) {
+        if (img.newObject) {
+          const image = findImage(state.workingImages, img.imgId);
+          image.objects.push(img.newObject);
+        }
       }
     },
 
@@ -148,9 +154,9 @@ export const reviewSlice = createSlice({
 export const {
   setFocus,
   bboxUpdated,
-  objectRemoved,
-  labelAdded,
-  labelRemoved,
+  objectsRemoved,
+  labelsAdded,
+  labelsRemoved,
   labelsValidated,
   labelsValidationReverted,
   objectsLocked,
