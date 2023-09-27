@@ -121,7 +121,7 @@ const LoupeFooter = ({ image }) => {
     //   if (e.code === 'ArrowRight' || e.code === 'Enter') validated = true;
     //   if (e.code === 'ArrowLeft') validated = false;
     //   if (typeof variable == 'boolean') {
-    //     dispatch(labelValidated({
+    //     dispatch(labelsValidated({
     //       userId: username,
     //       imageId: image._id,
     //       objId: object._id,
