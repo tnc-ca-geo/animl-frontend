@@ -194,9 +194,12 @@ const FullSizeImage = ({ image, focusIndex }) => {
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+      {/*
       <ShareImage>
         <ShareImageButton imageId={image._id}/>
       </ShareImage>
+      */}
+      {/*
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
         <EditObjectButtons>
           <EditObjectButton onClick={handleMarkEmptyButtonClick}>
@@ -211,8 +214,8 @@ const FullSizeImage = ({ image, focusIndex }) => {
           >
             <PlusIcon /> Add object
           </EditObjectButton>
-        </EditObjectButtons>
-      }
+        </EditObjectButtons
+      */}
     </ImageWrapper>
   );
 };

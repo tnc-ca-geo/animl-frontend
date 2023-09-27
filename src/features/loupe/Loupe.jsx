@@ -12,9 +12,12 @@ import {
   reviewModeToggled,
   selectReviewMode,
 } from './loupeSlice.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import PanelHeader from '../../components/PanelHeader.jsx';
 import ReviewSettingsForm from './ReviewSettingsForm.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
+import ImageReviewToolbar from './ImageReviewToolbar';
 import LoupeFooter from './LoupeFooter.jsx';
 
 const ItemValue = styled('div', {
@@ -58,8 +61,8 @@ const MetadataPane = styled('div', {
 });
 
 const ImagePane = styled('div', {
-  display: 'flex',
-  justifyContent: 'center',
+  // display: 'flex',
+  // justifyContent: 'center',
   // maxWidth: '900px',
 });
 
@@ -83,6 +86,8 @@ const StyledLoupe = styled('div', {
 });
 
 const Loupe = () => {
+  const userRoles = useSelector(selectUserCurrentRoles);
+  const userId = useSelector(selectUserUsername);
   const dispatch = useDispatch();
 
   // track focused image
@@ -163,6 +168,9 @@ const Loupe = () => {
                   image={image}
                   focusIndex={focusIndex}
                 />
+                {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+                  <ImageReviewToolbar />
+                }
               </ImagePane>
             </div>
           }
