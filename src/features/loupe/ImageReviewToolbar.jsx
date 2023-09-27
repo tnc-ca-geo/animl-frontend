@@ -11,14 +11,18 @@ const StyledToolbarRoot = styled(ToolbarRoot, {
   marginTop: '$2'
 })
 
-const ImageReviewToolbar = ({ handleMarkEmptyButtonClick, handleAddObjectButtonClick }) => {
+const ImageReviewToolbar = ({
+  handleValidateAllButtonClick,
+  handleMarkEmptyButtonClick,
+  handleAddObjectButtonClick
+}) => {
   return (
     <StyledToolbarRoot aria-label="Formatting options">
-      <ToolbarIconButton>
+      <ToolbarIconButton onClick={(e) => handleValidateAllButtonClick(e, true)}>
         <CheckIcon /> Validate
       </ToolbarIconButton>
       <ToolbarSeparator />
-      <ToolbarIconButton>
+      <ToolbarIconButton onClick={(e) => handleValidateAllButtonClick(e, false)}>
         <Cross2Icon /> Invalidate
       </ToolbarIconButton>
       <ToolbarSeparator />

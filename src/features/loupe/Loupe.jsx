@@ -91,11 +91,12 @@ const StyledLoupe = styled('div', {
 const Loupe = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
+  const workingImages = useSelector(selectWorkingImages);
+  const focusIndex = useSelector(selectFocusIndex);
+  const currImgObjects = workingImages[focusIndex.image].objects;
   const dispatch = useDispatch();
 
   // track focused image
-  const focusIndex = useSelector(selectFocusIndex);
-  const workingImages = useSelector(selectWorkingImages);
   const [ image, setImage ] = useState();
   useEffect(() => {
     setImage(workingImages[focusIndex.image]);
@@ -112,10 +113,29 @@ const Loupe = () => {
   // const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
   // const handleToggleReviewSettings = () => {
   //   setReviewSettingsOpen(!reviewSettingsOpen);
-  // };
+  // };]
+
+  const handleValidateAllButtonClick = (e, validated) => {
+    e.stopPropagation();
+    console.log('handleValidateAllButtonClick - validated: ', validated)
+    const labelsToValidate = [];
+    currImgObjects.forEach((object) => {
+      if (object.locked) return;
+      // find first non-invalidated label in array
+      const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
+      labelsToValidate.push({
+        imgId: image._id,
+        objId: object._id,
+        lblId: label._id,
+        userId,
+        validated,
+      });
+    });
+    console.log('handleValidateAllButtonClick - labelsToValidate: ', labelsToValidate)
+    dispatch(labelsValidated({ labels: labelsToValidate }));
+  };
 
   // track whether the image has objects with empty, unvalidated labels
-  const currImgObjects = workingImages[focusIndex.image].objects;
   const emptyLabels = currImgObjects.reduce((acc, curr) => {
     return acc.concat(curr.labels.filter((lbl) => (
       lbl.category === 'empty' && !lbl.validated
@@ -209,6 +229,7 @@ const Loupe = () => {
                 />
                 {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
                   <ImageReviewToolbar
+                    handleValidateAllButtonClick={handleValidateAllButtonClick}
                     handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
                     handleAddObjectButtonClick={handleAddObjectButtonClick}
                   />
