@@ -1,7 +1,11 @@
 import { styled } from '../../theme/stitches.config.js';
-import { ToolbarRoot, ToolbarToggleItem, ToolbarSeparator, ToolbarLink, ToolbarButton } from '../../components/Toolbar.jsx';
+import { ToolbarRoot, ToolbarToggleItem, ToolbarSeparator, ToolbarLink, ToolbarButton, ToolbarIconButton } from '../../components/Toolbar.jsx';
 import { ToggleGroup } from '@radix-ui/react-toolbar';
 import {
+  PlusIcon,
+  ValueNoneIcon,
+  CheckIcon,
+  Cross2Icon,
   StrikethroughIcon,
   TextAlignLeftIcon,
   TextAlignCenterIcon,
@@ -16,34 +20,22 @@ const StyledToolbarRoot = styled(ToolbarRoot, {
 
 const ImageReviewToolbar = () => (
   <StyledToolbarRoot aria-label="Formatting options">
-    <ToggleGroup type="multiple" aria-label="Text formatting">
-      <ToolbarToggleItem value="bold" aria-label="Bold">
-        <FontBoldIcon />
-      </ToolbarToggleItem>
-      <ToolbarToggleItem value="italic" aria-label="Italic">
-        <FontItalicIcon />
-      </ToolbarToggleItem>
-      <ToolbarToggleItem value="strikethrough" aria-label="Strike through">
-        <StrikethroughIcon />
-      </ToolbarToggleItem>
-    </ToggleGroup>
+    <ToolbarIconButton>
+      <CheckIcon /> Validate
+    </ToolbarIconButton>
     <ToolbarSeparator />
-    <ToggleGroup type="single" defaultValue="center" aria-label="Text alignment">
-      <ToolbarToggleItem value="left" aria-label="Left aligned">
-        <TextAlignLeftIcon />
-      </ToolbarToggleItem>
-      <ToolbarToggleItem value="center" aria-label="Center aligned">
-        <TextAlignCenterIcon />
-      </ToolbarToggleItem>
-      <ToolbarToggleItem value="right" aria-label="Right aligned">
-        <TextAlignRightIcon />
-      </ToolbarToggleItem>
-    </ToggleGroup>
+    <ToolbarIconButton>
+      <Cross2Icon /> Invalidate
+    </ToolbarIconButton>
     <ToolbarSeparator />
-    <ToolbarLink href="#" target="_blank" css={{ marginRight: 10 }}>
-      Edited 2 hours ago
-    </ToolbarLink>
-    <ToolbarButton css={{ marginLeft: 'auto' }}>Share</ToolbarButton>
+    <ToolbarIconButton>
+      <ValueNoneIcon /> Mark empty
+    </ToolbarIconButton>
+    <ToolbarSeparator />
+    <ToolbarIconButton>
+      <PlusIcon /> Add object
+    </ToolbarIconButton>
+    {/* <ToolbarButton css={{ marginLeft: 'auto' }}>Share</ToolbarButton> */}
   </StyledToolbarRoot>
 );
 

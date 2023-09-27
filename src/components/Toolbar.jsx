@@ -24,7 +24,7 @@ export const itemStyles = {
   lineHeight: 1,
   alignItems: 'center',
   justifyContent: 'center',
-  '&:hover': { backgroundColor: violet.violet3, color: violet.violet11 },
+  '&:hover': { backgroundColor: violet.violet3, color: violet.violet11, cursor: 'pointer' },
   '&:focus': { position: 'relative', boxShadow: `0 0 0 2px ${violet.violet7}` },
 };
 
@@ -55,6 +55,17 @@ export const ToolbarLink = styled(
   { '&:hover': { backgroundColor: 'transparent', cursor: 'pointer' } },
   { '@bp1': { display: 'inline-flex' } }
 );
+
+export const ToolbarIconButton = styled(Toolbar.Button, {
+  ...itemStyles,
+  backgroundColor: 'white',
+  marginLeft: 2,
+  '&:first-child': { marginLeft: 0 },
+  '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
+  svg: {
+    marginRight: '$2',
+  }
+});
 
 export const ToolbarButton = styled(
   Toolbar.Button,
