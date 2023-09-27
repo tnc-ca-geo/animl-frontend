@@ -6,11 +6,14 @@ import { DateTime } from 'luxon';
 import {
   selectWorkingImages,
   selectFocusIndex,
+  labelsValidated,
+  markedEmpty
 } from '../review/reviewSlice.js';
 import {
   toggleOpenLoupe,
   reviewModeToggled,
   selectReviewMode,
+  drawBboxStart,
 } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
@@ -98,18 +101,51 @@ const Loupe = () => {
     setImage(workingImages[focusIndex.image]);
   }, [ workingImages, focusIndex ]);
 
-  // track reivew mode
-  const reviewMode = useSelector(selectReviewMode);
-  const handleToggleReviewMode = (e) => {
-    dispatch(reviewModeToggled());
-    e.currentTarget.blur();
-  };
+  // // track reivew mode
+  // const reviewMode = useSelector(selectReviewMode);
+  // const handleToggleReviewMode = (e) => {
+  //   dispatch(reviewModeToggled());
+  //   e.currentTarget.blur();
+  // };
 
-  // review mode settings modal
-  const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
-  const handleToggleReviewSettings = () => {
-    setReviewSettingsOpen(!reviewSettingsOpen);
+  // // review mode settings modal
+  // const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
+  // const handleToggleReviewSettings = () => {
+  //   setReviewSettingsOpen(!reviewSettingsOpen);
+  // };
+
+  // track whether the image has objects with empty, unvalidated labels
+  const currImgObjects = workingImages[focusIndex.image].objects;
+  const emptyLabels = currImgObjects.reduce((acc, curr) => {
+    return acc.concat(curr.labels.filter((lbl) => (
+      lbl.category === 'empty' && !lbl.validated
+    )));
+  }, []);
+
+  const handleMarkEmptyButtonClick = () => {
+    if (emptyLabels.length > 0) {
+      const labelsToValidate = [];
+      currImgObjects.forEach((obj) => {
+        obj.labels
+          .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
+          .forEach((lbl) => {
+            labelsToValidate.push({
+              imgId: image._id,
+              objId: obj._id,
+              lblId: lbl._id,
+              userId,
+              validated: true
+            });
+        });
+      });
+      dispatch(labelsValidated({ labels: labelsToValidate }))
+    }
+    else {
+      dispatch(markedEmpty({ images: [{ imgId: image._id }], userId }));
+    }
   };
+  
+  const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
@@ -165,11 +201,17 @@ const Loupe = () => {
             <div>
               <ImagePane>
                 <FullSizeImage
+                  workingImages={workingImages}
                   image={image}
                   focusIndex={focusIndex}
+                  handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+                  handleAddObjectButtonClick={handleAddObjectButtonClick}
                 />
                 {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-                  <ImageReviewToolbar />
+                  <ImageReviewToolbar
+                    handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+                    handleAddObjectButtonClick={handleAddObjectButtonClick}
+                  />
                 }
               </ImagePane>
             </div>

@@ -41,7 +41,7 @@ export const objectMiddleware = store => next => action => {
   /* objectsLocked */
 
   else if (objectsLocked.match(action)) {
-    console.log('objectMiddleware - objectsLoked - action: ', action);
+    console.log('objectMiddleware - objectsLocked - action: ', action);
     next(action);
     const updates = action.payload.objects.map(({ imgId, objId, locked }) => ({
       imageId: imgId,

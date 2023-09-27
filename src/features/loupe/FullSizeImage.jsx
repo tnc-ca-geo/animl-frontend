@@ -6,8 +6,8 @@ import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
-import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
-import { selectWorkingImages, labelsValidated, markedEmpty } from '../review/reviewSlice';
+import { selectIsDrawingBbox} from './loupeSlice';
+import { labelsValidated, markedEmpty } from '../review/reviewSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
@@ -75,7 +75,7 @@ const ImageWrapper = styled('div', {
   maxWidth: '940px',
 });
 
-const FullSizeImage = ({ image, focusIndex }) => {
+const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButtonClick, handleMarkEmptyButtonClick }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
@@ -90,7 +90,6 @@ const FullSizeImage = ({ image, focusIndex }) => {
   }, [ image._id ]);
   const handleImgLoaded = () => setImgLoaded(true);
 
-  const workingImages = useSelector(selectWorkingImages);
   const currImgObjects = workingImages[focusIndex.image].objects;
   const [ tempObject, setTempObject ] = useState(null);
   let objectsToRender = currImgObjects.filter((obj) => (
@@ -112,38 +111,6 @@ const FullSizeImage = ({ image, focusIndex }) => {
     objectsToRender.splice(i, 1);
     objectsToRender.unshift(object);
   });
-
-  // track whether the image has objects with empty, unvalidated labels
-  const emptyLabels = currImgObjects.reduce((acc, curr) => {
-    return acc.concat(curr.labels.filter((lbl) => (
-      lbl.category === 'empty' && !lbl.validated
-    )));
-  }, []);
-
-  const handleMarkEmptyButtonClick = () => {
-    if (emptyLabels.length > 0) {
-      const labelsToValidate = [];
-      currImgObjects.forEach((obj) => {
-        obj.labels
-          .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
-          .forEach((lbl) => {
-            labelsToValidate.push({
-              imgId: image._id,
-              objId: obj._id,
-              lblId: lbl._id,
-              userId,
-              validated: true
-            });
-        });
-      });
-      dispatch(labelsValidated({ labels: labelsToValidate }))
-    }
-    else {
-      dispatch(markedEmpty({ images: [{ imgId: image._id }], userId }));
-    }
-  };
-
-  const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
   return (
     <ImageWrapper ref={containerEl} className='full-size-image'>
