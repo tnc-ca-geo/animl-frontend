@@ -1,13 +1,13 @@
 import { createUndoMiddleware } from 'redux-undo-redo';
 import {
   bboxUpdated,
-  labelAdded,
-  objectLocked,
+  labelsAdded,
+  objectsLocked,
   objectManuallyUnlocked,
-  labelValidated,
-  labelValidationReverted,
+  labelsValidated,
+  labelsValidationReverted,
   selectWorkingImages,
-  labelRemoved,
+  labelsRemoved,
   markedEmpty,
   markedEmptyReverted,
 } from './reviewSlice';
@@ -16,36 +16,39 @@ import { findObject } from '../../app/utils';
 export const undoMiddleware = createUndoMiddleware({
   revertingActions: {
 
-    // labelAdded
-    [labelAdded.toString()]: {
+    // labelsAdded
+    [labelsAdded.toString()]: {
       action: (action) => {
-        console.log('reverting labelAdded with action: ', action);
-        return labelRemoved(action.payload);
+        console.log('reverting labelsAdded with action: ', action);
+        return labelsRemoved(action.payload);
       },
     },
 
-    // labelValidated
-    [labelValidated.toString()]: {
-      action: (action, { oldValidation, oldLocked }) => {
-        console.log("reverting labelValidated with action: ", action);
-        const { imgId, objId, lblId } = action.payload;
-        return labelValidationReverted({
-          imgId,
-          objId,
-          lblId,
-          oldValidation,
-          oldLocked,
-        });
+    // labelsValidated
+    [labelsValidated.toString()]: {
+      action: (action, oldLabelsState) => {
+        console.log("reverting labelsValidated with action: ", action);
+        const labels = oldLabelsState.map(({ oldValidation, oldLocked }, i) => {
+          const { imgId, objId, lblId } = action.payload.labels[i];
+          return {
+            imgId,
+            objId,
+            lblId,
+            oldValidation,
+            oldLocked
+          };
+        })
+        return labelsValidationReverted({ labels });
       },
       createArgs: (state, action) => {
+        console.log('undoMiddleware - labelsValidated - createArgs - action ', action);
         const workingImages = selectWorkingImages(state);
-        const { imgId, objId, lblId } = action.payload;
-        const object = findObject(workingImages, imgId, objId);
-        const label = object.labels.find((lbl) => lbl._id === lblId);
-        return {
-          oldValidation: label.validation,
-          oldLocked: object.locked
-        }
+        const oldLabelsState = action.payload.labels.map(({ imgId, objId, lblId }) => {
+          const object = findObject(workingImages, imgId, objId);
+          const label = object.labels.find((lbl) => lbl._id === lblId);
+          return { oldValidation: label.validation, oldLocked: object.locked };
+        });
+        return oldLabelsState;
       }
     },
 
@@ -72,7 +75,8 @@ export const undoMiddleware = createUndoMiddleware({
       action: (action) => {
         console.log("reverting objectManuallyUnlocked with action: ", action);
         const { imgId, objId } = action.payload;
-        return objectLocked({ imgId, objId, locked: true });
+        const objects = [{ imgId, objId, locked: true }]
+        return objectsLocked({ objects });
       },
     },
 

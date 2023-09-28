@@ -389,91 +389,66 @@ const queries = {
     variables: { input: input },
   }),
 
-  // updateObjects: (input) => ({
-  //   template: `
-  //     mutation UpdateObjects($input: UpdateObjectsInput!) {
-  //       updateObjects(input: $input) {
-  //         image {
-  //           ${imageFields}
-  //         }
-  //       }
-  //     }
-  //   `,
-  //   variables: { input: input },
-  // }),
-
-  createObject: (input) => ({
+  createObjects: (input) => ({
     template: `
-      mutation CreateObject($input: CreateObjectInput!) {
-        createObject(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation CreateObjects($input: CreateObjectsInput!) {
+        createObjects(input: $input) {
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  updateObject: (input) => ({
+  updateObjects: (input) => ({
     template: `
-      mutation UpdateObject($input: UpdateObjectInput!) {
-        updateObject(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation UpdateObjects($input: UpdateObjectsInput!) {
+        updateObjects(input: $input) {
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  deleteObject: (input) => ({
+  deleteObjects: (input) => ({
     template: `
-      mutation DeleteObject($input: DeleteObjectInput!) {
-        deleteObject(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation DeleteObjects($input: DeleteObjectsInput!) {
+        deleteObjects(input: $input) {
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  createLabel: (input) => ({
+  createLabels: (input) => ({
     template: `
       mutation CreateLabels($input: CreateLabelsInput!) {
         createLabels(input: $input) {
-          image {
-            ${imageFields}
-          }
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  updateLabel: (input) => ({
+  updateLabels: (input) => ({
     template: `
-      mutation UpdateLabel($input: UpdateLabelInput!) {
-        updateLabel(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation UpdateLabels($input: UpdateLabelsInput!) {
+        updateLabels(input: $input) {
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  deleteLabel: (input) => ({
+  deleteLabels: (input) => ({
     template: `
-      mutation DeleteLabel($input: DeleteLabelInput!) {
-        deleteLabel(input: $input) {
-          image {
-            ${imageFields}
-          }
+      mutation DeleteLabels($input: DeleteLabelsInput!) {
+        deleteLabels(input: $input) {
+          isOk
         }
       }
     `,
