@@ -17,6 +17,11 @@ const initialState = {
       isLoading: false,
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
+    },
+    images: {
+      isLoading: false,
+      operation: null, /* 'deleting' */
+      errors: null,
     }
   }
 };
@@ -124,15 +129,24 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors.splice(index, 1);
     },
 
-    deleteImageStart: (state, { payload}) => {
-      // TODO
+    deleteImageStart: (state) => {
+      state.loadingStates.images.isLoading = true;
+      state.loadingStates.images.operation = 'deleting';
+      state.loadingStates.images.error = null;
     },
 
     deleteImageSuccess: (state, { payload }) => {
       state.workingImages = state.workingImages.filter(
         ({ _id }) => _id !== payload
       );
-    }
+      state.loadingStates.images.isLoading = false;
+      state.loadingStates.images.operation = null;
+    },
+
+    deleteImageError: (state, { payload }) => {
+      state.loadingStates.images.isLoading = false;
+      state.loadingStates.images.error = payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -166,10 +180,27 @@ export const {
   deleteImageSuccess,
 } = reviewSlice.actions;
 
-export const deleteImage = (id) => async (dispatch) => {
+export const deleteImage = (imageId) => async (dispatch, getState) => {
   dispatch(deleteImageStart());
-  // TODO: Submit delete image
-  dispatch(deleteImageSuccess(id))
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
+    const projects = getState().projects.projects;
+    const selectedProj = projects.find((proj) => proj.selected);
+
+    if (token && selectedProj) {
+      const r = await call({
+        projId: selectedProj._id,
+        request: 'deleteImage',
+        input: { imageId },
+      });
+    }
+    dispatch(deleteImageSuccess(imageId));
+  } catch (err) {
+    console.log(`error attempting to delete image: `, err);
+    dispatch(deleteImageError(err));
+  }
 }
 
 // editLabel thunk
