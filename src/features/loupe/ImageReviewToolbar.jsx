@@ -96,11 +96,16 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
     setCatSelectorOpen(false);
   };
 
+  const handleCategorySelectorBlur = (e) => {
+    setCatSelectorOpen(false);
+  };
+
   return (
     <StyledCategorySelector
       autoFocus
       isClearable
       isSearchable
+      openMenuOnClick
       className='react-select'
       classNamePrefix='react-select'
       menuPlacement='top'
@@ -109,6 +114,7 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
       isDisabled={availLabels.isLoading}
       onChange={handleCategoryChange}
       onCreateOption={handleCategoryChange}
+      onBlur={handleCategorySelectorBlur}
       // value={createOption(label.category)}
       options={options}
     />

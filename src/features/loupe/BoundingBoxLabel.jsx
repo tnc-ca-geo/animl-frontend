@@ -152,20 +152,20 @@ const BoundingBoxLabel = ({
     if (catSelectorOpen) catSelectorRef.current.focus();
   }, [catSelectorRef, catSelectorOpen])
 
-  // stop adding label if user clicks out of it
-  useEffect(() => {
-    const handleWindowClick = (e) => {
-      if (object.isTemp) setTempObject(null);
-      // unless the last click was on the "edit label" context menu item
-      if (!targetIsEditLabelMenuItem(e)) { 
-        dispatch(addLabelEnd());
-      }
-    };
-    addingLabel
-      ? window.addEventListener('click', handleWindowClick)
-      : window.removeEventListener('click', handleWindowClick);
-    return () => window.removeEventListener('click', handleWindowClick);
-  }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
+  // // stop adding label if user clicks out of it
+  // useEffect(() => {
+  //   const handleWindowClick = (e) => {
+  //     if (object.isTemp) setTempObject(null);
+  //     // unless the last click was on the "edit label" context menu item
+  //     if (!targetIsEditLabelMenuItem(e)) { 
+  //       dispatch(addLabelEnd());
+  //     }
+  //   };
+  //   addingLabel
+  //     ? window.addEventListener('click', handleWindowClick)
+  //     : window.removeEventListener('click', handleWindowClick);
+  //   return () => window.removeEventListener('click', handleWindowClick);
+  // }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -205,6 +205,11 @@ const BoundingBoxLabel = ({
     }));
   };
 
+  const handleCategorySelectorBlur = (e) => {
+    if (object.isTemp) setTempObject(null);
+    dispatch(addLabelEnd());
+  };
+
   return (
     <StyledBoundingBoxLabel
       verticalPos={verticalPos}
@@ -229,6 +234,7 @@ const BoundingBoxLabel = ({
           isDisabled={availLabels.isLoading || !isAuthorized}
           onChange={handleCategoryChange}
           onCreateOption={handleCategoryChange}
+          onBlur={handleCategorySelectorBlur}
           value={createOption(label.category)}
           options={options}
           css={{ display: catSelectorOpen ? 'block' : 'none' }}
