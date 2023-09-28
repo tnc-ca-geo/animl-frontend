@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
@@ -144,8 +144,9 @@ const BoundingBoxLabel = ({
   const options = availLabels.ids.map((id) => createOption(id));
 
   // manage category selector state (open/closed)
-  const addingLabel = useSelector(selectIsAddingLabel);
-  const catSelectorOpen = (addingLabel && selected);
+  const isAddingLabel = useSelector(selectIsAddingLabel);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
+  // const catSelectorOpen = (addingLabel && selected);
 
   // manually focus catSelector if it's open
   useEffect(() => {
@@ -161,11 +162,11 @@ const BoundingBoxLabel = ({
   //       dispatch(addLabelEnd());
   //     }
   //   };
-  //   addingLabel
+  //   ToggleGroup
   //     ? window.addEventListener('click', handleWindowClick)
   //     : window.removeEventListener('click', handleWindowClick);
   //   return () => window.removeEventListener('click', handleWindowClick);
-  // }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
+  // }, [ ToggleGroup, imgId, object, setTempObject, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -187,6 +188,7 @@ const BoundingBoxLabel = ({
     if (!object.locked && isAuthorized && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
       dispatch(addLabelStart());
+      setCatSelectorOpen(true);
     }
   };
 
@@ -203,11 +205,13 @@ const BoundingBoxLabel = ({
         imgId
       }]
     }));
+    setCatSelectorOpen(false);
   };
 
   const handleCategorySelectorBlur = (e) => {
     if (object.isTemp) setTempObject(null);
     dispatch(addLabelEnd());
+    setCatSelectorOpen(false);
   };
 
   return (

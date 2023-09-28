@@ -97,6 +97,7 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
   };
 
   const handleCategorySelectorBlur = (e) => {
+    dispatch(addLabelEnd());
     setCatSelectorOpen(false);
   };
 
