@@ -229,6 +229,7 @@ const Loupe = () => {
                 />
                 {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
                   <ImageReviewToolbar
+                    image={image}
                     handleValidateAllButtonClick={handleValidateAllButtonClick}
                     handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
                     handleAddObjectButtonClick={handleAddObjectButtonClick}

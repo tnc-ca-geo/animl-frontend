@@ -16,7 +16,7 @@ export const itemStyles = {
   all: 'unset',
   flex: '0 0 auto',
   color: mauve.mauve11,
-  height: 25,
+  height: 32,
   padding: '0 5px',
   borderRadius: 4,
   display: 'inline-flex',
