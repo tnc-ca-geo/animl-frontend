@@ -7,7 +7,7 @@ import { styled } from '../../theme/stitches.config';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
-import { selectWorkingImages, labelsValidated, markedEmpty, deleteImage } from '../review/reviewSlice';
+import { selectWorkingImages, labelsValidated, markedEmpty, deleteImages } from '../review/reviewSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
@@ -145,7 +145,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
-  const handleDeleteButtonClick = () => dispatch(deleteImage(image._id));
+  const handleDeleteButtonClick = () => dispatch(deleteImages([image._id]));
 
   return (
     <ImageWrapper ref={containerEl} className='full-size-image'>

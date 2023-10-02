@@ -141,21 +141,21 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors.splice(index, 1);
     },
 
-    deleteImageStart: (state) => {
+    deleteImagesStart: (state) => {
       state.loadingStates.images.isLoading = true;
       state.loadingStates.images.operation = 'deleting';
       state.loadingStates.images.error = null;
     },
 
-    deleteImageSuccess: (state, { payload }) => {
+    deleteImagesSuccess: (state, { payload }) => {
       state.workingImages = state.workingImages.filter(
-        ({ _id }) => _id !== payload
+        ({ _id }) => !payload.includes(_id)
       );
       state.loadingStates.images.isLoading = false;
       state.loadingStates.images.operation = null;
     },
 
-    deleteImageError: (state, { payload }) => {
+    deleteImagesError: (state, { payload }) => {
       state.loadingStates.images.isLoading = false;
       state.loadingStates.images.error = payload;
     },
@@ -188,12 +188,13 @@ export const {
   editLabelFailure,
   editLabelSuccess,
   dismissLabelsError,
-  deleteImageStart,
-  deleteImageSuccess,
+  deleteImagesStart,
+  deleteImagesSuccess,
+  deleteImagesError,
 } = reviewSlice.actions;
 
-export const deleteImage = (imageId) => async (dispatch, getState) => {
-  dispatch(deleteImageStart());
+export const deleteImages = (imageIds) => async (dispatch, getState) => {
+  dispatch(deleteImagesStart());
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -204,14 +205,14 @@ export const deleteImage = (imageId) => async (dispatch, getState) => {
     if (token && selectedProj) {
       const r = await call({
         projId: selectedProj._id,
-        request: 'deleteImage',
-        input: { imageId },
+        request: 'deleteImages',
+        input: { imageIds },
       });
     }
-    dispatch(deleteImageSuccess(imageId));
+    dispatch(deleteImagesSuccess(imageIds));
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
-    dispatch(deleteImageError(err));
+    dispatch(deleteImagesError(err));
   }
 }
 

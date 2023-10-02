@@ -190,11 +190,11 @@ const queries = {
     }
   },
 
-  deleteImage: (input) => {
+  deleteImages: (input) => {
     return {
       template: `
-        mutation DeleteImage($input: DeleteImageInput!) {
-          deleteImage(input: $input) {
+        mutation DeleteImages($input: DeleteImagesInput!) {
+          deleteImages(input: $input) {
             message
           }
         }
