@@ -5,7 +5,7 @@ import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { hasRole, WRITE_OBJECTS_ROLES, WRITE_IMAGES_ROLES } from '../../auth/roles';
 import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
 import { selectWorkingImages, labelsValidated, markedEmpty, deleteImages } from '../review/reviewSlice';
 import { Image } from '../../components/Image';
@@ -194,14 +194,16 @@ const FullSizeImage = ({ image, focusIndex }) => {
             </ContextMenuItemIconLeft>
             Mark empty
           </ContextMenuItem>
-          <ContextMenuItem
-            onSelect={handleDeleteButtonClick}
-          >
-            <ContextMenuItemIconLeft>
-              <TrashIcon />
-            </ContextMenuItemIconLeft>
-            Delete
-          </ContextMenuItem>
+          {hasRole(userRoles, WRITE_IMAGES_ROLES) &&
+            <ContextMenuItem
+              onSelect={handleDeleteButtonClick}
+            >
+              <ContextMenuItemIconLeft>
+                <TrashIcon />
+              </ContextMenuItemIconLeft>
+              Delete
+            </ContextMenuItem>
+          }
         </ContextMenuContent>
       </ContextMenu>
       <ShareImage>
