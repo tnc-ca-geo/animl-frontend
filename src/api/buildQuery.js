@@ -588,6 +588,25 @@ const queries = {
       }
     `,
     variables: { input: { batch: id } }
+  }),
+
+  getUsers: () => ({
+    template: `
+      query ListUsers($input: QueryUsersInput!){
+        users(input: $input) {
+            users {
+                username,
+                email,
+                enabled,
+                status,
+                roles,
+                created,
+                enabled
+            }
+        }
+      }
+    `,
+    variables: { input: {}}
   })
 };
 

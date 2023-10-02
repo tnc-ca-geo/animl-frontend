@@ -116,6 +116,17 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         />
       }
 
+      {/* bulk upload view */}
+      {/* {(hasRole(userRoles, WRITE_IMAGES_ROLES) && userHasBetaAccess) && */}
+        <SidebarNavItem 
+          state={modalOpen && (modalContent === 'manage-users-form') ? 'active' : ''}
+          disabled={!selectedProject}
+          handleClick={() => handleModalToggle('manage-users-form')}
+          icon={<FontAwesomeIcon icon={['fas', 'user']} />}
+          tooltipContent='Manage users'
+        />
+      {/* } */}
+
     </StyledSidebarNav>
   );
 };
