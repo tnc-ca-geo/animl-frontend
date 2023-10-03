@@ -607,7 +607,18 @@ const queries = {
       }
     `,
     variables: { input: {}}
-  })
+  }),
+
+  updateUser: (input) => ({
+    template: `
+      mutation UpdateUser($input: UpdateUserInput!){
+        updateUser(input: $input) {
+            message
+        }
+      }
+    `,
+    variables: { input }
+  }),
 };
 
 export default queries;
