@@ -94,6 +94,12 @@ export const userSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
+
+    cancel: (state) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.users = ls;
+      state.mode = 'list';
+    }
   }
 });
 
@@ -109,6 +115,7 @@ export const {
   addUserSuccess,
   addUserStart,
   addUserError,
+  cancel
 } = userSlice.actions;
 
 export const fetchUsers = () => {

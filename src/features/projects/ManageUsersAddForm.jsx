@@ -3,7 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import { styled } from "@stitches/react";
 import * as Yup from 'yup';
 
-import { createUser } from './userSlice.js';
+import { createUser, cancel } from './userSlice.js';
 import {
   FormWrapper,
   FormSubheader,
@@ -130,6 +130,13 @@ const ManageUsersAddForm = () => {
               </FormFieldWrapper>
             </FieldRow>
             <ButtonRow>
+              <Button
+                type='button'
+                size='large'
+                onClick={() => dispatch(cancel())}
+              >
+                Cancel
+              </Button>
               <Button
                 type='submit'
                 size='large'

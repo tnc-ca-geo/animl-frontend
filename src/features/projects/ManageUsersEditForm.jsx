@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Formik, Form } from 'formik';
 import { styled } from "@stitches/react";
 
-import { selectUsers, selectSelectedUser, updateUser } from './userSlice.js';
+import { selectUsers, selectSelectedUser, updateUser, cancel } from './userSlice.js';
 import {
   FormWrapper,
   FormSubheader,
@@ -106,6 +106,13 @@ const ManageUsersEditForm = () => {
               </Fieldset>
             </FieldRow>
             <ButtonRow>
+              <Button
+                type='button'
+                size='large'
+                onClick={() => dispatch(cancel())}
+              >
+                Cancel
+              </Button>
               <Button
                 type='submit'
                 size='large'
