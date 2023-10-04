@@ -2,7 +2,7 @@ import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
-import { getImagesSuccess, clearImages } from '../images/imagesSlice';
+import { getImagesSuccess, clearImages, deleteImagesStart } from '../images/imagesSlice';
 
 const initialState = {
   workingImages: [],
@@ -139,26 +139,7 @@ export const reviewSlice = createSlice({
     dismissLabelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.labels.errors.splice(index, 1);
-    },
-
-    deleteImagesStart: (state) => {
-      state.loadingStates.images.isLoading = true;
-      state.loadingStates.images.operation = 'deleting';
-      state.loadingStates.images.error = null;
-    },
-
-    deleteImagesSuccess: (state, { payload }) => {
-      state.workingImages = state.workingImages.filter(
-        ({ _id }) => !payload.includes(_id)
-      );
-      state.loadingStates.images.isLoading = false;
-      state.loadingStates.images.operation = null;
-    },
-
-    deleteImagesError: (state, { payload }) => {
-      state.loadingStates.images.isLoading = false;
-      state.loadingStates.images.error = payload;
-    },
+    }
   },
 
   extraReducers: (builder) => {
@@ -169,6 +150,11 @@ export const reviewSlice = createSlice({
       })
       .addCase(clearImages, (state) => {
         state.workingImages = [];
+      })
+      .addCase(deleteImagesStart, (state, { payload }) => {
+        state.workingImages = state.workingImages.filter(
+          ({ _id }) => !payload.includes(_id)
+        );
       })
   },
 
@@ -188,33 +174,7 @@ export const {
   editLabelFailure,
   editLabelSuccess,
   dismissLabelsError,
-  deleteImagesStart,
-  deleteImagesSuccess,
-  deleteImagesError,
 } = reviewSlice.actions;
-
-export const deleteImages = (imageIds) => async (dispatch, getState) => {
-  dispatch(deleteImagesStart());
-  try {
-    const currentUser = await Auth.currentAuthenticatedUser();
-    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
-
-    if (token && selectedProj) {
-      const r = await call({
-        projId: selectedProj._id,
-        request: 'deleteImages',
-        input: { imageIds },
-      });
-    }
-    dispatch(deleteImagesSuccess(imageIds));
-  } catch (err) {
-    console.log(`error attempting to delete image: `, err);
-    dispatch(deleteImagesError(err));
-  }
-}
 
 // editLabel thunk
 export const editLabel = (operation, entity, payload, projId) => {
