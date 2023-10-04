@@ -37,7 +37,7 @@ const ManageUsersAddForm = () => {
             <FormSubheader>
               Add user
             </FormSubheader>
-            {error && <p>{error[0].message}</p>}
+
             <FieldRow>
               <FormFieldWrapper>
                 <label htmlFor='username'>E-Mail</label>
