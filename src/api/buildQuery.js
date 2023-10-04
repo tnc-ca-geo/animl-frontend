@@ -619,6 +619,17 @@ const queries = {
     `,
     variables: { input }
   }),
+
+  createUser: (input) => ({
+    template: `
+      mutation createUser($input: CreateUserInput!){
+        createUser(input: $input) {
+            message
+        }
+      }
+    `,
+    variables: { input }
+  }),
 };
 
 export default queries;

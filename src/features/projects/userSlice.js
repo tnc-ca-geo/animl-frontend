@@ -41,12 +41,12 @@ export const userSlice = createSlice({
     },
 
     updateUserStart: (state) => {
-      const ls = { isLoading: true, operation: 'updating', errors: null };  
+      const ls = { isLoading: true, operation: 'updating', errors: null };
       state.loadingStates.users = ls;
     },
 
     updateUserSuccess: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: null };  
+      const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.users = ls;
       state.mode = 'list';
       const updatedUsers = state.users.map((user) => {
@@ -63,7 +63,35 @@ export const userSlice = createSlice({
     },
 
     updateUserError: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };  
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.users = ls;
+    },
+
+    addUser: (state) => {
+      state.mode = 'addUser';
+    },
+
+    addUserStart: (state) => {
+      const ls = { isLoading: true, operation: 'adding', errors: null };
+      state.loadingStates.users = ls;
+    },
+
+    addUserSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.users = ls;
+      state.mode = 'list';
+
+      state.users = [
+        ...state.users,
+        {
+          ...payload,
+          email: payload.username
+        }
+      ];
+    },
+
+    addUserError: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
   }
@@ -76,7 +104,11 @@ export const {
   editUser,
   updateUserSuccess,
   updateUserStart,
-  updateUserError
+  updateUserError,
+  addUser,
+  addUserSuccess,
+  addUserStart,
+  addUserError,
 } = userSlice.actions;
 
 export const fetchUsers = () => {
@@ -124,6 +156,31 @@ export const updateUser = (values) => {
       }
     } catch (err) {
       dispatch(updateUserError(err));
+    }
+  }
+}
+
+export const createUser = (values) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(addUserStart());
+
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'createUser',
+          input: values
+        });
+        dispatch(addUserSuccess(values));
+      }
+    } catch (err) {
+      dispatch(addUserError(err));
     }
   }
 }
