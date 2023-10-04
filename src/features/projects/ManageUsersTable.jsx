@@ -7,11 +7,13 @@ import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
 import { ButtonRow } from '../../components/Form';
-import { addUser, editUser, fetchUsers, selectUsers } from './userSlice.js';
+import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './userSlice.js';
 
 const ManageUsersTable = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectUsers);
+  const isLoading = useSelector(selectUsersLoading);
+  console.log(isLoading);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -20,38 +22,42 @@ const ManageUsersTable = () => {
   return (
     <Content>
       <TableContainer>
-        <Table>
-          <thead>
-            <tr>
-              <TableHeadCell>User email</TableHeadCell>
-              <TableHeadCell>Actions</TableHeadCell>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(({ email }) => (
-              <TableRow key={email}>
-                <TableCell>{email}</TableCell>
-                <TableCell>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <IconButton
-                        variant='ghost'
-                        size='large'
-                        onClick={() => dispatch(editUser(email))}
-                      >
-                        <Pencil1Icon />
-                      </IconButton>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
-                      Edit user roles
-                      <TooltipArrow />
-                    </TooltipContent>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </tbody>
-        </Table>
+        {isLoading ? (
+          <p>Loading users...</p>
+        ) : (
+          <Table>
+            <thead>
+              <tr>
+                <TableHeadCell>User email</TableHeadCell>
+                <TableHeadCell>Actions</TableHeadCell>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(({ email }) => (
+                <TableRow key={email}>
+                  <TableCell>{email}</TableCell>
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <IconButton
+                          variant='ghost'
+                          size='large'
+                          onClick={() => dispatch(editUser(email))}
+                        >
+                          <Pencil1Icon />
+                        </IconButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={5} >
+                        Edit user roles
+                        <TooltipArrow />
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </TableContainer>
       <ButtonRow>
         <Button type='button' size='large' onClick={() => dispatch(addUser())}>
