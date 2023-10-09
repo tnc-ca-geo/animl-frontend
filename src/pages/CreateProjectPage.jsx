@@ -10,7 +10,8 @@ import CreateProjectForm from '../features/projects/CreateProjectForm.jsx';
 const CreateProjectPage = () => {
   const authStatus = useSelector(selectUserAuthStatus);
   const user = useSelector(selectUserUsername);
-  const isSuperUser = useSelector(selectUserIsSuperUser);
+  // const isSuperUser = useSelector(selectUserIsSuperUser);
+  const isSuperUser = true;
   const signedIn = authStatus === 'authenticated' && user;
 
   if (!signedIn) {

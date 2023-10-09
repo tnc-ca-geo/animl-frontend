@@ -166,7 +166,16 @@ const queries = {
   }),
 
   createProject: (input) => ({
-    // TODO: make create project query
+    template: `
+      mutation CreateProject($input: CreateProjectInput!) {
+        createProject(input: $input) {
+          project {
+            ${projectFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input }
   }),
 
   getViews: (input) => ({

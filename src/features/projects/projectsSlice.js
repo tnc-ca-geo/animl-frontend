@@ -18,8 +18,9 @@ const initialState = {
     },
     createProject: {
       isLoading: false,
-      operation: null, /* 'fetching', 'updating', 'deleting' */
+      operation: null,
       errors: null,
+      stateMsg: null,
     },
     views: {
       isLoading: false,
@@ -119,21 +120,33 @@ export const projectsSlice = createSlice({
     },
 
     createProjectStart: (state) => {
-      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      const ls = { isLoading: true, operation: 'fetching', errors: null, stateMsg: null };
       state.loadingStates.createProject = ls;
     },
 
     createProjectSuccess: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: null };
+      const { project } = payload.createProject;
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        stateMsg: `Successfully created project ${project.name}`
+      };
       state.loadingStates.createProject = ls;
+
       state.projects = {
         ...state.projects,
-        // TODO Merge new project
+        [project._id]: project
       }
     },
 
     createProjectFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };  
+      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      state.loadingStates.createProject = ls;
+    },
+
+    dismissStateMsg: (state) => {
+      const ls = { isLoading: false, operation: null, errors: null, stateMsg: null };
       state.loadingStates.createProject = ls;
     },
 
@@ -317,6 +330,7 @@ export const {
   createProjectStart,
   createProjectSuccess,
   createProjectFailure,
+  dismissStateMsg,
 
   editViewStart,
   saveViewSuccess,
@@ -365,7 +379,7 @@ export const fetchProjects = (payload) => async dispatch => {
   }
 };
 
-export const createProject = (payload) = async dispatch => {
+export const createProject = (payload) => async dispatch => {
   try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -374,7 +388,7 @@ export const createProject = (payload) = async dispatch => {
         dispatch(createProjectStart());
         const project = await call({ 
           request: 'createProject',
-          ...(payload && { input: payload })
+          input: payload
         });
         dispatch(createProjectSuccess(project));
       }
@@ -575,6 +589,7 @@ export const selectProjectsErrors = state => state.projects.loadingStates.projec
 export const selectViewsErrors = state => state.projects.loadingStates.views.errors;
 export const selectDeploymentsErrors = state => state.projects.loadingStates.deployments.errors;
 export const selectModelsErrors = state => state.projects.loadingStates.models.errors;
+export const selectCreateProjectState = state => state.projects.loadingStates.createProject.stateMsg;
 
 
 export default projectsSlice.reducer;
