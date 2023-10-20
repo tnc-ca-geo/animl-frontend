@@ -2,7 +2,7 @@ import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
-import { getImagesSuccess, clearImages, deleteImagesStart } from '../images/imagesSlice';
+import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
 
 const initialState = {
   workingImages: [],
@@ -151,7 +151,7 @@ export const reviewSlice = createSlice({
       .addCase(clearImages, (state) => {
         state.workingImages = [];
       })
-      .addCase(deleteImagesStart, (state, { payload }) => {
+      .addCase(deleteImagesSuccess, (state, { payload }) => {
         state.workingImages = state.workingImages.filter(
           ({ _id }) => !payload.includes(_id)
         );
