@@ -54,7 +54,6 @@ const ErrorAlerts = () => {
   const statsErrors = useSelector(selectStatsErrors);
   const exportErrors = useSelector(selectExportErrors);
 
-  
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
     enrichErrors(projectsErrors, 'Project Error', 'projects'),

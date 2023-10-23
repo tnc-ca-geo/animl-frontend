@@ -97,7 +97,7 @@ export const imagesSlice = createSlice({
 
     dismissImagesError: (state, { payload }) => {
       const index = payload;
-      state.loadingStates.image.errors.splice(index, 1);
+      state.loadingStates.images.errors.splice(index, 1);
     },
 
     preFocusImageStart: (state, { payload }) => {
@@ -254,7 +254,7 @@ export const imagesSlice = createSlice({
 
     deleteImagesError: (state, { payload }) => {
       state.loadingStates.images.isLoading = false;
-      state.loadingStates.images.error = payload;
+      state.loadingStates.images.errors = payload;
     },
   },
 });
