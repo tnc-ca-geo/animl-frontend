@@ -140,10 +140,10 @@ export const projectsSlice = createSlice({
       };
       state.loadingStates.createProject = ls;
 
-      state.projects = {
+      state.projects = [
         ...state.projects,
-        [project._id]: project
-      }
+        project
+      ];
     },
 
     createProjectFailure: (state, { payload }) => {
@@ -613,9 +613,12 @@ export const fetchModelOptions = () => {
 
 // Selectors
 export const selectProjects = state => state.projects.projects;
-export const selectSelectedProject = state => (
-  state.projects.projects.find((proj) => proj.selected)
-);
+export const selectSelectedProject = state => {
+  console.log(state);
+  return (
+    state.projects.projects.find((proj) => proj.selected)
+  )
+};
 export const selectSelectedProjectId = createSelector([selectSelectedProject],
   (proj) => proj ? proj._id : null
 );
