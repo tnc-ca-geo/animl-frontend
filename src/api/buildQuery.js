@@ -165,6 +165,19 @@ const queries = {
     variables: { input: input }
   }),
 
+  createProject: (input) => ({
+    template: `
+      mutation CreateProject($input: CreateProjectInput!) {
+        createProject(input: $input) {
+          project {
+            ${projectFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input }
+  }),
+
   getViews: (input) => ({
     template: `
       {
