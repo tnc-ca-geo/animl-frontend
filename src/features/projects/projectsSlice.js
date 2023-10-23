@@ -43,7 +43,7 @@ const initialState = {
       operation: null,
       errors: null,
     },
-    modelsOptions: {
+    modelOptions: {
       isLoading: false,
       operation: null,
       errors: null,
@@ -295,6 +295,7 @@ export const projectsSlice = createSlice({
     },
 
     getModelOptionsStart: (state) => {
+      console.log('getModelOptionsStart')
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.modelOptions = ls;
     },
@@ -305,6 +306,7 @@ export const projectsSlice = createSlice({
     },
 
     getModelOptionsSuccess: (state, { payload }) => {
+      console.log('getModelOptionsSuccess')
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.modelOptions = ls;
       state.modelOptions = payload;
@@ -592,7 +594,7 @@ export const fetchModels = (payload) => {
 export const fetchModelOptions = () => {
   return async (dispatch) => {
     try {
-      dispatch(getModelsStart());
+      dispatch(getModelOptionsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
 
@@ -613,12 +615,7 @@ export const fetchModelOptions = () => {
 
 // Selectors
 export const selectProjects = state => state.projects.projects;
-export const selectSelectedProject = state => {
-  console.log(state);
-  return (
-    state.projects.projects.find((proj) => proj.selected)
-  )
-};
+export const selectSelectedProject = state => state.projects.projects.find((proj) => proj.selected);
 export const selectSelectedProjectId = createSelector([selectSelectedProject],
   (proj) => proj ? proj._id : null
 );
@@ -648,5 +645,7 @@ export const selectCreateProjectState = state => state.projects.loadingStates.cr
 export const selectCreateProjectsErrors = state => state.projects.loadingStates.createProject.errors;
 export const selectCreateProjectLoading = state => state.projects.loadingStates.createProject.isLoading;
 export const selectModelOptions = state => state.projects.modelOptions;
+export const selectModelOptionsLoading = state => state.projects.loadingStates.modelOptions.isLoading;
+
 
 export default projectsSlice.reducer;

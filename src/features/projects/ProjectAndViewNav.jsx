@@ -196,7 +196,6 @@ const ProjectAndViewNav = () => {
         // kick off pre-focused-image initialization sequence
         const query = routerLocation.query;
         if ('img' in query && checkIfValidMD5Hash(query.img.split(':')[1])) {
-          console.log('img found in query');
           dispatch(preFocusImageStart(query.img));
           dispatch(fetchImageContext(query.img));
         }

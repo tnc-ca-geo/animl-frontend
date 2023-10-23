@@ -26,7 +26,8 @@ import {
   dismissStateMsg,
   fetchModelOptions,
   selectModelOptions,
-  selectCreateProjectLoading
+  selectCreateProjectLoading,
+  selectModelOptionsLoading
 } from './projectsSlice.js';
 
 const PageWrapper = styled('div', {
@@ -55,7 +56,8 @@ const CreateProjectForm = () => {
   const dispatch = useDispatch();
   const stateMsg = useSelector(selectCreateProjectState);
   const mlModels = useSelector(selectModelOptions);
-  const isLoading = useSelector(selectCreateProjectLoading)
+  const createProjectIsLoading = useSelector(selectCreateProjectLoading);
+  const mlModelsOptionsIsLoading = useSelector(selectModelOptionsLoading)
 
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const mlModelOptions = useMemo(
@@ -72,7 +74,7 @@ const CreateProjectForm = () => {
 
   return (
     <PageWrapper>
-      {isLoading &&
+      {(createProjectIsLoading || mlModelsOptionsIsLoading) &&
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
