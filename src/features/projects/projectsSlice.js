@@ -309,11 +309,6 @@ export const {
 
   setModalOpen,
   setModalContent,
-
-  fetchUsersStart,
-  fetchUsersSuccess,
-  fetchUsersError
-
 } = projectsSlice.actions;
 
 
