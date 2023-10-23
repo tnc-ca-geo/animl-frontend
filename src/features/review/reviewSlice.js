@@ -17,11 +17,6 @@ const initialState = {
       isLoading: false,
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
-    },
-    images: {
-      isLoading: false,
-      operation: null, /* 'deleting' */
-      errors: null,
     }
   }
 };
