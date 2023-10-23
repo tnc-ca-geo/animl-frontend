@@ -38,7 +38,7 @@ const createProjectSchema = Yup.object().shape({
   name: Yup.string().required('Enter a project name'),
   description: Yup.string().required('Enter a short description'),
   timezone: Yup.string().required('Select a timezone'),
-  availableMLModels: Yup.array().required('Select a ML model'),
+  availableMLModels: Yup.array().min(1, "Select at least one ML model").required('Select a ML model'),
 });
 
 const CreateProjectForm = () => {
