@@ -643,6 +643,7 @@ export const selectDeploymentsErrors = state => state.projects.loadingStates.dep
 export const selectModelsErrors = state => state.projects.loadingStates.models.errors;
 export const selectCreateProjectState = state => state.projects.loadingStates.createProject.stateMsg;
 export const selectCreateProjectsErrors = state => state.projects.loadingStates.createProject.errors;
+export const selectCreateProjectLoading = state => state.projects.loadingStates.createProject.isLoading;
 export const selectModelOptions = state => state.projects.modelOptions;
 
 export default projectsSlice.reducer;

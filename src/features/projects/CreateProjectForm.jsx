@@ -18,12 +18,15 @@ import {
 } from '../../components/Toast';
 import IconButton from '../../components/IconButton';
 import ErrorAlerts from '../../components/ErrorAlerts.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+
 import {
   createProject,
   selectCreateProjectState,
   dismissStateMsg,
   fetchModelOptions,
-  selectModelOptions
+  selectModelOptions,
+  selectCreateProjectLoading
 } from './projectsSlice.js';
 
 const PageWrapper = styled('div', {
@@ -52,6 +55,7 @@ const CreateProjectForm = () => {
   const dispatch = useDispatch();
   const stateMsg = useSelector(selectCreateProjectState);
   const mlModels = useSelector(selectModelOptions);
+  const isLoading = useSelector(selectCreateProjectLoading)
 
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const mlModelOptions = useMemo(
@@ -68,6 +72,11 @@ const CreateProjectForm = () => {
 
   return (
     <PageWrapper>
+      {isLoading &&
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      }
       <Header>Create project</Header>
       <FormWrapper>
         <Formik
