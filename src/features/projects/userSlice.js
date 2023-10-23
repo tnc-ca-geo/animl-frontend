@@ -99,6 +99,12 @@ export const userSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.users = ls;
       state.mode = 'list';
+    },
+
+    clearUsers: (state) => {
+      state.users = [];
+      state.selectedUser = null;
+      state.mode = 'list';
     }
   }
 });
@@ -115,7 +121,8 @@ export const {
   addUserSuccess,
   addUserStart,
   addUserError,
-  cancel
+  cancel,
+  clearUsers
 } = userSlice.actions;
 
 export const fetchUsers = () => {

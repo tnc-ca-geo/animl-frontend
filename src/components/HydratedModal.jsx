@@ -18,6 +18,7 @@ import {
   setModalOpen,
   setModalContent
 } from '../features/projects/projectsSlice';
+import { clearUsers } from '../features/projects/userSlice.js';
 
 // Modal populated with content
 const HydratedModal = () => {
@@ -75,7 +76,7 @@ const HydratedModal = () => {
       title: 'Manage users',
       size: 'md',
       content: <ManageUsersModal/>,
-      callBackOnClose: () => true,
+      callBackOnClose: () => dispatch(clearUsers()),
     },
   };
 
