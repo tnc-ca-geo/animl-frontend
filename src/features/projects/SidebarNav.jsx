@@ -6,6 +6,7 @@ import {
   WRITE_AUTOMATION_RULES_ROLES,
   WRITE_VIEWS_ROLES,
   WRITE_IMAGES_ROLES,
+  MANAGE_USERS_ROLES,
 } from '../../auth/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -117,7 +118,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       }
 
       {/* bulk upload view */}
-      {/* {(hasRole(userRoles, WRITE_IMAGES_ROLES) && userHasBetaAccess) && */}
+      {(hasRole(userRoles, MANAGE_USERS_ROLES)) &&
         <SidebarNavItem 
           state={modalOpen && (modalContent === 'manage-users-form') ? 'active' : ''}
           disabled={!selectedProject}
@@ -125,7 +126,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
           icon={<FontAwesomeIcon icon={['fas', 'user']} />}
           tooltipContent='Manage users'
         />
-      {/* } */}
+      }
 
     </StyledSidebarNav>
   );
