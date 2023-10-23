@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
@@ -17,7 +18,13 @@ import {
 } from '../../components/Toast';
 import IconButton from '../../components/IconButton';
 import ErrorAlerts from '../../components/ErrorAlerts.jsx';
-import { createProject, selectCreateProjectState, dismissStateMsg } from './projectsSlice.js';
+import {
+  createProject,
+  selectCreateProjectState,
+  dismissStateMsg,
+  fetchModelOptions,
+  selectModelOptions
+} from './projectsSlice.js';
 
 const PageWrapper = styled('div', {
   maxWidth: '600px',
@@ -44,13 +51,20 @@ const createProjectSchema = Yup.object().shape({
 const CreateProjectForm = () => {
   const dispatch = useDispatch();
   const stateMsg = useSelector(selectCreateProjectState);
+  const mlModels = useSelector(selectModelOptions);
 
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
-  const mlModelOptions = [
-    {value: 'megadetector_v5a', label: 'megadetector_v5a'},
-    {value: 'megadetector_v5b', label: 'megadetector_v5b'},
-    {value: 'mirav2', label: 'mirav2'}
-  ];
+  const mlModelOptions = useMemo(
+    () => mlModels.map(({ _id, description }) => ({
+      value: _id,
+      label: description
+    })),
+    [mlModels]
+  );
+
+  useEffect(() => {
+    dispatch(fetchModelOptions());
+  }, []);
 
   return (
     <PageWrapper>

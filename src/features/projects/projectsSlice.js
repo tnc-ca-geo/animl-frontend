@@ -9,6 +9,7 @@ import {
 
 const initialState = {
   projects: [],
+  modelOptions: [],
   loadingStates: {
     projects: {
       isLoading: false,
@@ -38,6 +39,11 @@ const initialState = {
       errors: null,
     },
     models: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
+    modelsOptions: {
       isLoading: false,
       operation: null,
       errors: null,
@@ -288,6 +294,22 @@ export const projectsSlice = createSlice({
       });
     },
 
+    getModelOptionsStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.modelOptions = ls;
+    },
+
+    getModelOptionsFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.modelOptions = ls;
+    },
+
+    getModelOptionsSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.modelOptions = ls;
+      state.modelOptions = payload;
+    },
+
     setModalOpen: (state, { payload }) => {
       state.modalOpen = payload;
     },
@@ -358,6 +380,9 @@ export const {
   getModelsFailure,
   getModelsSuccess,
   dismissModelsError,
+  getModelOptionsStart,
+  getModelOptionsFailure,
+  getModelOptionsSuccess,
 
   setModalOpen,
   setModalContent,
@@ -564,6 +589,27 @@ export const fetchModels = (payload) => {
   };
 }
 
+export const fetchModelOptions = () => {
+  return async (dispatch) => {
+    try {
+      dispatch(getModelsStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
+      if (token) {
+        const res = await call({
+          request: 'getModels',
+          input: {},
+        });
+        dispatch(getModelOptionsSuccess(res.mlModels));
+      }
+
+    } catch (err) {
+      dispatch(getModelOptionsFailure(err));
+    }
+  };
+}
+
 
 // Selectors
 export const selectProjects = state => state.projects.projects;
@@ -597,6 +643,6 @@ export const selectDeploymentsErrors = state => state.projects.loadingStates.dep
 export const selectModelsErrors = state => state.projects.loadingStates.models.errors;
 export const selectCreateProjectState = state => state.projects.loadingStates.createProject.stateMsg;
 export const selectCreateProjectsErrors = state => state.projects.loadingStates.createProject.errors;
-
+export const selectModelOptions = state => state.projects.modelOptions;
 
 export default projectsSlice.reducer;
