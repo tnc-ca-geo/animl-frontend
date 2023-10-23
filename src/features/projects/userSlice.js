@@ -105,7 +105,12 @@ export const userSlice = createSlice({
       state.users = [];
       state.selectedUser = null;
       state.mode = 'list';
-    }
+    },
+
+    dismissManageUsersError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.users.errors.splice(index, 1);
+    },
   }
 });
 
@@ -122,7 +127,8 @@ export const {
   addUserStart,
   addUserError,
   cancel,
-  clearUsers
+  clearUsers,
+  dismissManageUsersError
 } = userSlice.actions;
 
 export const fetchUsers = () => {
@@ -203,5 +209,6 @@ export const selectUsers = state => state.users.users;
 export const selectMode = state => state.users.mode;
 export const selectSelectedUser = state => state.users.selectedUser;
 export const selectUsersLoading = state => state.users.loadingStates.users.isLoading;
+export const selectManageUserErrors = state => state.users.loadingStates.users.errors;
 
 export default userSlice.reducer;

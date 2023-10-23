@@ -27,6 +27,7 @@ const ManageUsersAddForm = () => {
 
   return (
     <FormWrapper>
+      <ErrorAlerts />
       <Formik
         initialValues={{ username: '', roles: [] }}
         validationSchema={createUserSchema}

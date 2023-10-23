@@ -23,6 +23,7 @@ const ManageUsersEditForm = () => {
 
   return (
     <FormWrapper>
+      <ErrorAlerts />
       <Formik
         initialValues={{ username, roles }}
         onSubmit={(values) => dispatch(updateUser(values))}

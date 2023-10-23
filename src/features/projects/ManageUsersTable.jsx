@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../com
 import { ButtonRow } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './userSlice.js';
+import ErrorAlerts from '../../components/ErrorAlerts';
 
 const ManageUsersTable = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const ManageUsersTable = () => {
 
   return (
     <Content>
+      <ErrorAlerts />
       {isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
