@@ -22,6 +22,8 @@ import {
   dismissDeploymentsError,
   selectModelsErrors,
   dismissModelsError,
+  selectCreateProjectsErrors,
+  dismissCreateProjectError,
 } from '../features/projects/projectsSlice';
 import {
   selectWirelessCamerasErrors,
@@ -53,7 +55,7 @@ const ErrorAlerts = () => {
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
   const exportErrors = useSelector(selectExportErrors);
-
+  const createProjectErrors = useSelector(selectCreateProjectsErrors);
   
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -66,6 +68,7 @@ const ErrorAlerts = () => {
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportErrors, 'Error Exporting Data', 'data'),
+    enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
   ];
 
   const errors = enrichedErrors.reduce((acc, curr) => (
@@ -114,6 +117,7 @@ const ErrorAlerts = () => {
 const dismissErrorActions = {
   'labels': (i) => dismissLabelsError(i),
   'projects': (i) => dismissProjectsError(i),
+  'createProject': (i) => dismissCreateProjectError(i),
   'views': (i) => dismissViewsError(i),
   'deployments': (i) => dismissDeploymentsError(i),
   'models': (i) => dismissModelsError(i),

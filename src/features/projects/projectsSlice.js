@@ -145,6 +145,11 @@ export const projectsSlice = createSlice({
       state.loadingStates.createProject = ls;
     },
 
+    dismissCreateProjectError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.createProject.errors.splice(index, 1);
+    },
+
     dismissStateMsg: (state) => {
       const ls = { isLoading: false, operation: null, errors: null, stateMsg: null };
       state.loadingStates.createProject = ls;
@@ -330,6 +335,7 @@ export const {
   createProjectStart,
   createProjectSuccess,
   createProjectFailure,
+  dismissCreateProjectError,
   dismissStateMsg,
 
   editViewStart,
@@ -590,6 +596,7 @@ export const selectViewsErrors = state => state.projects.loadingStates.views.err
 export const selectDeploymentsErrors = state => state.projects.loadingStates.deployments.errors;
 export const selectModelsErrors = state => state.projects.loadingStates.models.errors;
 export const selectCreateProjectState = state => state.projects.loadingStates.createProject.stateMsg;
+export const selectCreateProjectsErrors = state => state.projects.loadingStates.createProject.errors;
 
 
 export default projectsSlice.reducer;

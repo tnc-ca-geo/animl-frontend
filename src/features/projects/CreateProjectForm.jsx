@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { timeZonesNames } from '@vvo/tzdb';
 import _ from 'lodash';
+import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { styled } from '../../theme/stitches.config.js';
 import { FormWrapper, FormFieldWrapper, FieldRow, ButtonRow, FormError } from '../../components/Form';
@@ -15,7 +16,7 @@ import {
   ToastViewport
 } from '../../components/Toast';
 import IconButton from '../../components/IconButton';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import ErrorAlerts from '../../components/ErrorAlerts.jsx';
 import { createProject, selectCreateProjectState, dismissStateMsg } from './projectsSlice.js';
 
 const PageWrapper = styled('div', {
@@ -112,7 +113,6 @@ const CreateProjectForm = () => {
                     value={mlModelOptions.filter(({ value }) => values.availableMLModels.includes(value))}
                     touched={touched.availableMLModels}
                     onChange={(name, value) => {
-                      console.log(value);
                       setFieldValue(name, value.map((model) => model.value))
                     }}
                     onBlur={(name, { value }) => setFieldTouched(name, value)}
@@ -149,6 +149,7 @@ const CreateProjectForm = () => {
           )}
         </Formik>
       </FormWrapper>
+      <ErrorAlerts />
     </PageWrapper>
   );
 }
