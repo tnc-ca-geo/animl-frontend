@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
 import { ButtonRow } from '../../components/Form';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './userSlice.js';
 
 const ManageUsersTable = () => {
@@ -25,43 +26,44 @@ const ManageUsersTable = () => {
 
   return (
     <Content>
+      {isLoading && (
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      )}
       <TableContainer>
-        {isLoading ? (
-          <p>Loading users...</p>
-        ) : (
-          <Table>
-            <thead>
-              <tr>
-                <TableHeadCell>User email</TableHeadCell>
-                <TableHeadCell>Actions</TableHeadCell>
-              </tr>
-            </thead>
-            <tbody>
-              {userSorted.map(({ email }) => (
-                <TableRow key={email}>
-                  <TableCell>{email}</TableCell>
-                  <TableCell>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <IconButton
-                          variant='ghost'
-                          size='large'
-                          onClick={() => dispatch(editUser(email))}
-                        >
-                          <Pencil1Icon />
-                        </IconButton>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" sideOffset={5} >
-                        Edit user roles
-                        <TooltipArrow />
-                      </TooltipContent>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </tbody>
-          </Table>
-        )}
+        <Table>
+          <thead>
+            <tr>
+              <TableHeadCell>User email</TableHeadCell>
+              <TableHeadCell>Actions</TableHeadCell>
+            </tr>
+          </thead>
+          <tbody>
+            {userSorted.map(({ email }) => (
+              <TableRow key={email}>
+                <TableCell>{email}</TableCell>
+                <TableCell>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <IconButton
+                        variant='ghost'
+                        size='large'
+                        onClick={() => dispatch(editUser(email))}
+                      >
+                        <Pencil1Icon />
+                      </IconButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={5} >
+                      Edit user roles
+                      <TooltipArrow />
+                    </TooltipContent>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+          </tbody>
+        </Table>
       </TableContainer>
       <ButtonRow>
         <Button type='button' size='large' onClick={() => dispatch(addUser())}>
