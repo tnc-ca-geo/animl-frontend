@@ -38,66 +38,78 @@ export const reviewSlice = createSlice({
       object.bbox = payload.bbox;
     },
 
-    objectRemoved: (state, { payload }) => {
-      const image = findImage(state.workingImages, payload.imgId);
-      const objectIndex = image.objects.findIndex((obj) => (
-        obj._id === payload.objId
-      ));
-      image.objects.splice(objectIndex, 1);
-    },
-
-    labelAdded: (state, { payload }) => {
-      const { imgId, objId, objIsTemp, newObject, newLabel } = payload;
-      const image = findImage(state.workingImages, imgId);
-      if (objIsTemp && newObject) {
-        image.objects.unshift(newObject);
-      }
-      else {
-        const object = image.objects.find((obj) => obj._id === objId);
-        object.labels.unshift(newLabel);
-      }
-    },
-
-    labelRemoved: (state, { payload }) => {
-      const { imgId, objId, newLabel } = payload;
-      const image = findImage(state.workingImages, imgId);
-      const object = image.objects.find((obj) => obj._id === objId);
-      const labelIndex = object.labels.findIndex((lbl) => (
-        lbl._id === newLabel._id
-      ));
-      object.labels.splice(labelIndex, 1);
-
-      // remove object if there aren't any labels left 
-      if (!object.labels.length) {
-        const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
+    objectsRemoved: (state, { payload }) => {
+      for (const obj of payload.objects) {
+        const image = findImage(state.workingImages, obj.imgId);
+        const objectIndex = image.objects.findIndex((o) => o._id === obj.objId);
         image.objects.splice(objectIndex, 1);
       }
     },
 
-    labelValidated: (state, { payload }) => {
-      const { userId, imgId, objId, lblId, validated } = payload;
-      const label = findLabel(state.workingImages, imgId, objId, lblId);
-      label.validation = { validated, userId };
+    labelsAdded: (state, { payload }) => {
+      for (const label of payload.labels) {
+        const { imgId, objId, objIsTemp, newObject, newLabel } = label;
+        const image = findImage(state.workingImages, imgId);
+        if (objIsTemp && newObject) {
+          image.objects.unshift(newObject);
+        }
+        else {
+          const object = image.objects.find((obj) => obj._id === objId);
+          object.labels.unshift(newLabel);
+        }
+      }
     },
 
-    labelValidationReverted: (state, { payload }) => { // for undoing a validation
-      const { imgId, objId, lblId, oldValidation, oldLocked } = payload;
-      const object = findObject(state.workingImages, imgId, objId);
-      object.locked = oldLocked;
-      const label = findLabel(state.workingImages, imgId, objId, lblId);
-      label.validation = oldValidation;
+    labelsRemoved: (state, { payload }) => {
+      for (const label of payload.labels) {
+        const { imgId, objId, newLabel } = label;
+        const image = findImage(state.workingImages, imgId);
+        const object = image.objects.find((obj) => obj._id === objId);
+        const labelIndex = object.labels.findIndex((lbl) => (
+          lbl._id === newLabel._id
+        ));
+        object.labels.splice(labelIndex, 1);
+  
+        // remove object if there aren't any labels left 
+        if (!object.labels.length) {
+          const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
+          image.objects.splice(objectIndex, 1);
+        }
+      }
     },
 
-    objectLocked: (state, { payload }) => {
-      const { imgId, objId } = payload;
-      const object = findObject(state.workingImages, imgId, objId);
-      object.locked = payload.locked;
+    labelsValidated: (state, { payload }) => {
+      console.log('reviewSlice - labelsValidated - payload: ', payload);
+      payload.labels.forEach(({ userId, imgId, objId, lblId, validated }) => {
+        const label = findLabel(state.workingImages, imgId, objId, lblId);
+        label.validation = { validated, userId };
+      });
+    },
+
+    labelsValidationReverted: (state, { payload }) => { // for undoing a validation
+      console.log('reviewSlice - labelsValidationReverted - payload: ', payload);
+      payload.labels.forEach(({ imgId, objId, lblId, oldValidation, oldLocked }) => {
+        const object = findObject(state.workingImages, imgId, objId);
+        object.locked = oldLocked;
+        const label = findLabel(state.workingImages, imgId, objId, lblId);
+        label.validation = oldValidation;
+      });
+    },
+
+    objectsLocked: (state, { payload }) => {
+      console.log('reviewSlice - objectsLocked - payload: ', payload);
+      payload.objects.forEach(({ imgId, objId, locked }) => {
+        const object = findObject(state.workingImages, imgId, objId);
+        object.locked = locked;
+      });
     },
 
     markedEmpty: (state, { payload }) => {
-      if (payload.newObject) {
-        const image = findImage(state.workingImages, payload.imgId);
-        image.objects.push(payload.newObject);
+      for (const img of payload.images) {
+        if (img.newObject) {
+          const image = findImage(state.workingImages, img.imgId);
+          image.objects.push(img.newObject);
+        }
       }
     },
 
@@ -142,12 +154,12 @@ export const reviewSlice = createSlice({
 export const {
   setFocus,
   bboxUpdated,
-  objectRemoved,
-  labelAdded,
-  labelRemoved,
-  labelValidated,
-  labelValidationReverted,
-  objectLocked,
+  objectsRemoved,
+  labelsAdded,
+  labelsRemoved,
+  labelsValidated,
+  labelsValidationReverted,
+  objectsLocked,
   markedEmpty,
   editLabelStart,
   editLabelFailure,
@@ -166,6 +178,8 @@ export const editLabel = (operation, entity, payload, projId) => {
         throw new Error(msg);
       }
 
+      console.log(`Attempting ${operation} ${entity} with payload: `, payload);
+
       dispatch(editLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -173,8 +187,6 @@ export const editLabel = (operation, entity, payload, projId) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        // TODO: do we really need to pass in the operation and entity separately?
-        // why not just do one string, e.g.: 'createObject'
         const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
         const res = await call({
           projId: selectedProj._id, 

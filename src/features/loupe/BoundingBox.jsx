@@ -17,7 +17,7 @@ import {
 } from '../../components/ContextMenu';
 import { 
   bboxUpdated,
-  labelValidated, 
+  labelsValidated, 
   setFocus,
   objectManuallyUnlocked
 } from '../review/reviewSlice';
@@ -230,12 +230,14 @@ const BoundingBox = ({
 
   const handleValidationMenuItemClick = (e, validated) => {
     e.stopPropagation();
-    dispatch(labelValidated({
-      userId: username,
-      imgId,
-      objId: object._id,
-      lblId: label._id,
-      validated,
+    dispatch(labelsValidated({
+      labels: [{
+        userId: username,
+        imgId,
+        objId: object._id,
+        lblId: label._id,
+        validated,
+      }]
     }));
   };
 

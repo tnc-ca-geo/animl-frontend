@@ -195,7 +195,7 @@ const ProjectAndViewNav = () => {
         // if 'img' detected in query params, 
         // kick off pre-focused-image initialization sequence
         const query = routerLocation.query;
-        if ('img' in query && checkIfValidMD5Hash(query.img.split(':')[1])) {
+        if ('img' in query && validateImgId(query.img)) {
           dispatch(preFocusImageStart(query.img));
           dispatch(fetchImageContext(query.img));
         }
@@ -288,7 +288,8 @@ const ProjectAndViewNav = () => {
   );
 };
 
-function checkIfValidMD5Hash(hash) {
+function validateImgId(imgId) {
+  const hash = imgId.includes(':') ? imgId.split(':')[1] : imgId;
   const regexExp = /^[a-f0-9]{32}$/gi;
   return regexExp.test(hash);
 };
