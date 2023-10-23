@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@stitches/react';
 import { Pencil1Icon } from '@radix-ui/react-icons';
@@ -13,11 +13,15 @@ const ManageUsersTable = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
-  console.log(isLoading);
 
   useEffect(() => {
     dispatch(fetchUsers());
   }, []);
+
+  const userSorted = useMemo(
+    () => [...users].sort((u1, u2) => u1.email.toLowerCase() > u2.email.toLowerCase() ? 1 : -1),
+    [users]
+  );
 
   return (
     <Content>
@@ -33,7 +37,7 @@ const ManageUsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map(({ email }) => (
+              {userSorted.map(({ email }) => (
                 <TableRow key={email}>
                   <TableCell>{email}</TableCell>
                   <TableCell>
