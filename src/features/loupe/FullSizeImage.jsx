@@ -5,7 +5,7 @@ import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES, WRITE_IMAGES_ROLES } from '../../auth/roles';
+import { hasRole, WRITE_OBJECTS_ROLES, DELETE_IMAGES } from '../../auth/roles';
 import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
 import { selectWorkingImages, labelsValidated, markedEmpty } from '../review/reviewSlice';
 import { deleteImages } from '../images/imagesSlice';
@@ -195,7 +195,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
             </ContextMenuItemIconLeft>
             Mark empty
           </ContextMenuItem>
-          {hasRole(userRoles, WRITE_IMAGES_ROLES) &&
+          {hasRole(userRoles, DELETE_IMAGES) &&
             <ContextMenuItem
               onSelect={handleDeleteButtonClick}
             >
@@ -210,25 +210,29 @@ const FullSizeImage = ({ image, focusIndex }) => {
       <ShareImage>
         <ShareImageButton imageId={image._id}/>
       </ShareImage>
-      {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-        <EditObjectButtons>
+      <EditObjectButtons>
+        {hasRole(userRoles, DELETE_IMAGES) &&
           <EditObjectButton onClick={handleDeleteButtonClick}>
             <TrashIcon /> Delete
           </EditObjectButton>
-          <EditObjectButton onClick={handleMarkEmptyButtonClick}>
-            <Cross2Icon /> Mark empty
-          </EditObjectButton>
-          <EditObjectButton
-            onClick={handleAddObjectButtonClick}
-            css={{
-              color: '$loContrast',
-              backgroundColor: '$hiContrast',
-            }}
-          >
-            <PlusIcon /> Add object
-          </EditObjectButton>
-        </EditObjectButtons>
-      }
+        }
+        {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+          <>
+            <EditObjectButton onClick={handleMarkEmptyButtonClick}>
+              <Cross2Icon /> Mark empty
+            </EditObjectButton>
+            <EditObjectButton
+              onClick={handleAddObjectButtonClick}
+              css={{
+                color: '$loContrast',
+                backgroundColor: '$hiContrast',
+              }}
+            >
+              <PlusIcon /> Add object
+            </EditObjectButton>
+          </>
+        }
+      </EditObjectButtons>
     </ImageWrapper>
   );
 };
