@@ -36,13 +36,15 @@ const ManageUsersTable = () => {
           <thead>
             <tr>
               <TableHeadCell>User email</TableHeadCell>
+              <TableHeadCell>Roles</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
             </tr>
           </thead>
           <tbody>
-            {userSorted.map(({ email }) => (
+            {userSorted.map(({ email, roles }) => (
               <TableRow key={email}>
                 <TableCell>{email}</TableCell>
+                <TableCell>{roles.join(', ')}</TableCell>
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger asChild>
