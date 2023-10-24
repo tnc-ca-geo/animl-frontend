@@ -17,7 +17,6 @@ import {
   ToastViewport
 } from '../../components/Toast';
 import IconButton from '../../components/IconButton';
-import ErrorAlerts from '../../components/ErrorAlerts.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 import {
@@ -174,7 +173,6 @@ const CreateProjectForm = () => {
           )}
         </Formik>
       </FormWrapper>
-      <ErrorAlerts />
     </PageWrapper>
   );
 }
