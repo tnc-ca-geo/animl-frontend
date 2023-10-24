@@ -324,7 +324,6 @@ export const projectsSlice = createSlice({
       const index = payload;
       state.loadingStates.models.errors.splice(index, 1);
     },
-
   },
 
   extraReducers: (builder) => {
@@ -388,7 +387,6 @@ export const {
 
   setModalOpen,
   setModalContent,
-
 } = projectsSlice.actions;
 
 

@@ -40,6 +40,7 @@ import {
   dismissExportError,
 } from '../features/images/imagesSlice';
 import getErrorContent from '../content/Errors';
+import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/userSlice';
 
 // TODO: add updateAutomationRules errors
 
@@ -55,6 +56,7 @@ const ErrorAlerts = () => {
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
   const exportErrors = useSelector(selectExportErrors);
+  const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
   
   const enrichedErrors = [
@@ -68,6 +70,7 @@ const ErrorAlerts = () => {
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportErrors, 'Error Exporting Data', 'data'),
+    enrichErrors(manageUserErrors, 'Manage user error', 'manageUsers'),
     enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
   ];
 
@@ -126,6 +129,7 @@ const dismissErrorActions = {
   'imageContext': (i) => dismissImageContextError(i),
   'stats': (i) => dismissStatsError(i),
   'data': (i) => dismissExportError(i),
+  'manageUsers': (i) => dismissManageUsersError(i),
 };
 
 function enrichErrors(errors, title, entity) {
