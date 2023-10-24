@@ -211,11 +211,6 @@ const FullSizeImage = ({ image, focusIndex }) => {
         <ShareImageButton imageId={image._id}/>
       </ShareImage>
       <EditObjectButtons>
-        {hasRole(userRoles, DELETE_IMAGES) &&
-          <EditObjectButton onClick={handleDeleteButtonClick}>
-            <TrashIcon /> Delete
-          </EditObjectButton>
-        }
         {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
           <>
             <EditObjectButton onClick={handleMarkEmptyButtonClick}>
