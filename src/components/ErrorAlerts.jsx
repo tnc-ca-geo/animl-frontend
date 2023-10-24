@@ -66,7 +66,7 @@ const ErrorAlerts = () => {
     enrichErrors(depsErrors, 'Deployment Error', 'deployments'),
     enrichErrors(modelsErrors, 'Model Error', 'models'),
     enrichErrors(camerasErrors, 'Camera Error', 'cameras'),
-    enrichErrors(imagesErrors, 'Error Fetching Images', 'images'),
+    enrichErrors(imagesErrors, 'Image Error', 'images'),
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportErrors, 'Error Exporting Data', 'data'),

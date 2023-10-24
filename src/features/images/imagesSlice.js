@@ -97,7 +97,7 @@ export const imagesSlice = createSlice({
 
     dismissImagesError: (state, { payload }) => {
       const index = payload;
-      state.loadingStates.image.errors.splice(index, 1);
+      state.loadingStates.images.errors.splice(index, 1);
     },
 
     preFocusImageStart: (state, { payload }) => {
@@ -240,6 +240,22 @@ export const imagesSlice = createSlice({
       const index = payload;
       state.loadingStates.export.errors.splice(index, 1);
     },
+
+    deleteImagesStart: (state) => {
+      state.loadingStates.images.isLoading = true;
+      state.loadingStates.images.operation = 'deleting';
+      state.loadingStates.images.error = null;
+    },
+
+    deleteImagesSuccess: (state, { payload }) => {
+      state.loadingStates.images.isLoading = false;
+      state.loadingStates.images.operation = null;
+    },
+
+    deleteImagesError: (state, { payload }) => {
+      state.loadingStates.images.isLoading = false;
+      state.loadingStates.images.errors = payload;
+    },
   },
 });
 
@@ -268,6 +284,9 @@ export const {
   exportFailure,
   clearExport,
   dismissExportError,
+  deleteImagesStart,
+  deleteImagesSuccess,
+  deleteImagesError,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -450,6 +469,29 @@ export const getExportStatus = (documentId) => {
     }
   };
 };
+
+export const deleteImages = (imageIds) => async (dispatch, getState) => {
+  dispatch(deleteImagesStart(imageIds));
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
+    const projects = getState().projects.projects;
+    const selectedProj = projects.find((proj) => proj.selected);
+
+    if (token && selectedProj) {
+      const r = await call({
+        projId: selectedProj._id,
+        request: 'deleteImages',
+        input: { imageIds },
+      });
+    }
+    dispatch(deleteImagesSuccess(imageIds));
+  } catch (err) {
+    console.log(`error attempting to delete image: `, err);
+    dispatch(deleteImagesError(err));
+  }
+}
 
 export const selectPageInfo = state => state.images.pageInfo;
 export const selectPaginatedField = state => state.images.pageInfo.paginatedField;

@@ -203,6 +203,21 @@ const queries = {
     }
   },
 
+  deleteImages: (input) => {
+    return {
+      template: `
+        mutation DeleteImages($input: DeleteImagesInput!) {
+          deleteImages(input: $input) {
+            message
+          }
+        }
+      `,
+      variables: {
+        input
+      }
+    }
+  },
+
   getImages: ({ filters, pageInfo, page }) => ({
     template: `
       query GetImages($input: QueryImagesInput!) {

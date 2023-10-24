@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { Cross2Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { hasRole, WRITE_OBJECTS_ROLES, DELETE_IMAGES } from '../../auth/roles';
 import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
 import { selectWorkingImages, labelsValidated, markedEmpty } from '../review/reviewSlice';
+import { deleteImages } from '../images/imagesSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
@@ -145,6 +146,8 @@ const FullSizeImage = ({ image, focusIndex }) => {
 
   const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
 
+  const handleDeleteButtonClick = () => dispatch(deleteImages([image._id]));
+
   return (
     <ImageWrapper ref={containerEl} className='full-size-image'>
       {isDrawingBbox &&
@@ -192,27 +195,39 @@ const FullSizeImage = ({ image, focusIndex }) => {
             </ContextMenuItemIconLeft>
             Mark empty
           </ContextMenuItem>
+          {hasRole(userRoles, DELETE_IMAGES) &&
+            <ContextMenuItem
+              onSelect={handleDeleteButtonClick}
+            >
+              <ContextMenuItemIconLeft>
+                <TrashIcon />
+              </ContextMenuItemIconLeft>
+              Delete
+            </ContextMenuItem>
+          }
         </ContextMenuContent>
       </ContextMenu>
       <ShareImage>
         <ShareImageButton imageId={image._id}/>
       </ShareImage>
-      {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-        <EditObjectButtons>
-          <EditObjectButton onClick={handleMarkEmptyButtonClick}>
-            <Cross2Icon /> Mark empty
-          </EditObjectButton>
-          <EditObjectButton
-            onClick={handleAddObjectButtonClick}
-            css={{
-              color: '$loContrast',
-              backgroundColor: '$hiContrast',
-            }}
-          >
-            <PlusIcon /> Add object
-          </EditObjectButton>
-        </EditObjectButtons>
-      }
+      <EditObjectButtons>
+        {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+          <>
+            <EditObjectButton onClick={handleMarkEmptyButtonClick}>
+              <Cross2Icon /> Mark empty
+            </EditObjectButton>
+            <EditObjectButton
+              onClick={handleAddObjectButtonClick}
+              css={{
+                color: '$loContrast',
+                backgroundColor: '$hiContrast',
+              }}
+            >
+              <PlusIcon /> Add object
+            </EditObjectButton>
+          </>
+        }
+      </EditObjectButtons>
     </ImageWrapper>
   );
 };

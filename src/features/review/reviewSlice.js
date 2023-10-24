@@ -2,7 +2,7 @@ import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
-import { getImagesSuccess, clearImages } from '../images/imagesSlice';
+import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
 
 const initialState = {
   workingImages: [],
@@ -134,8 +134,7 @@ export const reviewSlice = createSlice({
     dismissLabelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.labels.errors.splice(index, 1);
-    },
-
+    }
   },
 
   extraReducers: (builder) => {
@@ -146,6 +145,11 @@ export const reviewSlice = createSlice({
       })
       .addCase(clearImages, (state) => {
         state.workingImages = [];
+      })
+      .addCase(deleteImagesSuccess, (state, { payload }) => {
+        state.workingImages = state.workingImages.filter(
+          ({ _id }) => !payload.includes(_id)
+        );
       })
   },
 
