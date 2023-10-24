@@ -165,6 +165,19 @@ const queries = {
     variables: { input: input }
   }),
 
+  createProject: (input) => ({
+    template: `
+      mutation CreateProject($input: CreateProjectInput!) {
+        createProject(input: $input) {
+          project {
+            ${projectFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input }
+  }),
+
   getViews: (input) => ({
     template: `
       {
@@ -603,7 +616,48 @@ const queries = {
       }
     `,
     variables: { input: { batch: id } }
-  })
+  }),
+
+  getUsers: () => ({
+    template: `
+      query ListUsers($input: QueryUsersInput!){
+        users(input: $input) {
+            users {
+                username,
+                email,
+                enabled,
+                status,
+                roles,
+                created,
+                enabled
+            }
+        }
+      }
+    `,
+    variables: { input: {}}
+  }),
+
+  updateUser: (input) => ({
+    template: `
+      mutation UpdateUser($input: UpdateUserInput!){
+        updateUser(input: $input) {
+            message
+        }
+      }
+    `,
+    variables: { input }
+  }),
+
+  createUser: (input) => ({
+    template: `
+      mutation createUser($input: CreateUserInput!){
+        createUser(input: $input) {
+            message
+        }
+      }
+    `,
+    variables: { input }
+  }),
 };
 
 export default queries;

@@ -26,7 +26,8 @@ import {
   faPen,
   faSync,
   faExclamation,
-  faUpload
+  faUpload,
+  faUser
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -56,5 +57,6 @@ library.add(
   faPen,
   faSync,
   faExclamation,
-  faUpload
+  faUpload,
+  faUser
 );

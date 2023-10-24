@@ -8,6 +8,7 @@ import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
+import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import { clearExport, clearStats } from '../features/images/imagesSlice';
 import { clearErrorsExport } from '../features/upload/uploadSlice.js'
@@ -17,6 +18,7 @@ import {
   setModalOpen,
   setModalContent
 } from '../features/projects/projectsSlice';
+import { clearUsers } from '../features/projects/userSlice.js';
 
 // Modal populated with content
 const HydratedModal = () => {
@@ -69,6 +71,12 @@ const HydratedModal = () => {
       size: 'lg',
       content: <BulkUploadForm/>,
       callBackOnClose: () => dispatch(clearErrorsExport()),
+    },
+    'manage-users-form': {
+      title: 'Manage users',
+      size: 'md',
+      content: <ManageUsersModal/>,
+      callBackOnClose: () => dispatch(clearUsers()),
     },
   };
 
