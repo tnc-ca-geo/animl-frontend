@@ -7,6 +7,7 @@ import NavBar from '../components/NavBar';
 import HomePage from '../pages/HomePage';
 import CaseStudiesPage from '../pages/CaseStudiesPage';
 import AppPage from '../pages/AppPage';
+import CreateProjectPage from '../pages/CreateProjectPage';
 import { Amplify } from 'aws-amplify';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import * as Tooltip from '@radix-ui/react-tooltip';
@@ -121,6 +122,7 @@ const App = () => {
                   <Route exact path="/" component={HomePage} />
                   <Route path="/app" component={AppPage} />
                   <Route path="/case-studies" component={CaseStudiesPage} />
+                  <Route path="/create-project" component={CreateProjectPage} />
                   {/*<Route component={NoMatch} />*/}
                 </Switch>
               </AppContainer>
