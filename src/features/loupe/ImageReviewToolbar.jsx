@@ -6,7 +6,7 @@ import CreatableSelect from 'react-select/creatable';
 import { createFilter } from 'react-select';
 import {
   Pencil1Icon,
-  PlusIcon,
+  GroupIcon,
   ValueNoneIcon,
   CheckIcon,
   Cross2Icon,
@@ -162,7 +162,7 @@ const ImageReviewToolbar = ({
       </ToolbarIconButton>
       <ToolbarSeparator />
       <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-        <PlusIcon /> Add object
+        <GroupIcon /> Add object
       </ToolbarIconButton>
       {/* <ToolbarButton css={{ marginLeft: 'auto' }}>Share</ToolbarButton> */}
     </StyledToolbarRoot>
