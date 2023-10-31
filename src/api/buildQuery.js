@@ -44,6 +44,7 @@ const imageFields = `
   cameraId
   make
   originalFileName
+  fileTypeExtension
   deploymentId
   projectId
   objects {
