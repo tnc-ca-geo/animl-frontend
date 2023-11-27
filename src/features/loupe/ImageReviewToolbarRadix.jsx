@@ -1,6 +1,10 @@
+// TODO: this and all dependencies can probably be removed if we stick with 
+// the non-radix based implementation, ImageReviewToolbar.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
+import { ToolbarRoot, ToolbarSeparator, ToolbarButton, ToolbarIconButton } from '../../components/Toolbar.jsx';
 import CreatableSelect from 'react-select/creatable';
 import { createFilter } from 'react-select';
 import {
@@ -14,52 +18,9 @@ import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { labelsAdded } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
 import { selectUserUsername } from '../user/userSlice.js';
-import { violet, blackA, mauve } from '@radix-ui/colors';
-import Button from '../../components/Button.jsx';
 
-
-const Toolbar = styled('div', {
-  marginTop: '$2',
-  display: 'flex',
-  padding: 10,
-  width: '100%',
-  minWidth: 'max-content',
-  borderRadius: 6,
-  backgroundColor: 'white',
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
-});
-
-export const itemStyles = {
-  all: 'unset',
-  flex: '0 0 auto',
-  color: mauve.mauve11,
-  height: 32,
-  padding: '0 5px',
-  borderRadius: 4,
-  display: 'inline-flex',
-  fontSize: 13,
-  lineHeight: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  '&:hover': { backgroundColor: violet.violet3, color: violet.violet11, cursor: 'pointer' },
-  '&:focus': { position: 'relative', boxShadow: `0 0 0 2px ${violet.violet7}` },
-};
-
-const Separator = styled('div', {
-  width: '1px',
-  backgroundColor: mauve.mauve6,
-  margin: '0 10px',
-});
-
-const ToolbarIconButton = styled(Button, {
-  ...itemStyles,
-  backgroundColor: 'white',
-  marginLeft: 2,
-  '&:first-child': { marginLeft: 0 },
-  '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
-  svg: {
-    marginRight: '$2',
-  }
+const StyledToolbarRoot = styled(ToolbarRoot, {
+  marginTop: '$2'
 });
 
 const StyledCategorySelector = styled(CreatableSelect, {
@@ -185,7 +146,7 @@ const ImageReviewToolbar = ({
   };
 
   return (
-    <Toolbar>
+    <StyledToolbarRoot aria-label="Formatting options">
       {catSelectorOpen
         ? (<CategorySelector 
             image={image} 
@@ -198,24 +159,24 @@ const ImageReviewToolbar = ({
             <Pencil1Icon /> Edit labels
           </ToolbarIconButton>)
       }
-      <Separator />
+      <ToolbarSeparator />
       <ToolbarIconButton onClick={(e) => handleValidateAllButtonClick(e, true)}>
-        <CheckIcon /> Validate all
+        <CheckIcon /> Validate
       </ToolbarIconButton>
-      <Separator />
+      <ToolbarSeparator />
       <ToolbarIconButton onClick={(e) => handleValidateAllButtonClick(e, false)}>
-        <Cross2Icon /> Invalidate all
+        <Cross2Icon /> Invalidate
       </ToolbarIconButton>
-      <Separator />
+      <ToolbarSeparator />
       <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
         <ValueNoneIcon /> Mark empty
       </ToolbarIconButton>
-      <Separator />
+      <ToolbarSeparator />
       <ToolbarIconButton onClick={handleAddObjectButtonClick}>
         <GroupIcon /> Add object
       </ToolbarIconButton>
       {/* <ToolbarButton css={{ marginLeft: 'auto' }}>Share</ToolbarButton> */}
-    </Toolbar>
+    </StyledToolbarRoot>
   );
 };
 

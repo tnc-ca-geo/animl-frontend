@@ -62,6 +62,10 @@ export const ToolbarIconButton = styled(Toolbar.Button, {
   marginLeft: 2,
   '&:first-child': { marginLeft: 0 },
   '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
+  '&:disabled': {
+    color: mauve.mauve7,
+    '&:hover': { backgroundColor: 'white', cursor: 'default', color: mauve.mauve7 }
+  },
   svg: {
     marginRight: '$2',
   }

@@ -145,8 +145,7 @@ const BoundingBoxLabel = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
-  // const catSelectorOpen = (addingLabel && selected);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState(isAddingLabel && selected);
 
   // manually focus catSelector if it's open
   useEffect(() => {
