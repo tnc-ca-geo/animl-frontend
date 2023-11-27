@@ -20,8 +20,7 @@ import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import PanelHeader from '../../components/PanelHeader.jsx';
 import ReviewSettingsForm from './ReviewSettingsForm.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
-import ImageReviewToolbar from './ImageReviewToolbarRadix.jsx';
-import ImageReviewToolbarNew from './ImageReviewToolbar.jsx';
+import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import LoupeFooter from './LoupeFooter.jsx';
 
 const ItemValue = styled('div', {

@@ -138,7 +138,6 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
         imgId: image._id
       }));
     console.log('handleCategoryChange - newLabels: ', newLabels);
-
     dispatch(labelsAdded({ labels: newLabels }));
     setCatSelectorOpen(false);
   };
@@ -159,7 +158,7 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
       menuPlacement='top'
       filterOption={createFilter({ matchFrom: 'start' })} // TODO: what does this do?
       isLoading={availLabels.isLoading}
-      isDisabled={availLabels.isLoading || image.objects.every((obj) => obj.locked)}
+      isDisabled={availLabels.isLoading}
       onChange={handleCategoryChange}
       onCreateOption={handleCategoryChange}
       onBlur={handleCategorySelectorBlur}
@@ -184,6 +183,8 @@ const ImageReviewToolbar = ({
     setCatSelectorOpen(true);
   };
 
+  const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
+  
   return (
     <Toolbar>
       {catSelectorOpen
@@ -193,17 +194,23 @@ const ImageReviewToolbar = ({
           />)
         : (<ToolbarIconButton
             onClick={handleEditAllLabelsButtonClick}
-            disabled={image.objects && image.objects.every((obj) => obj.locked)}
+            disabled={allObjectsLocked}
           >
             <Pencil1Icon /> Edit labels
           </ToolbarIconButton>)
       }
       <Separator />
-      <ToolbarIconButton onClick={(e) => handleValidateAllButtonClick(e, true)}>
+      <ToolbarIconButton
+        onClick={(e) => handleValidateAllButtonClick(e, true)}
+        disabled={allObjectsLocked}
+      >
         <CheckIcon /> Validate all
       </ToolbarIconButton>
       <Separator />
-      <ToolbarIconButton onClick={(e) => handleValidateAllButtonClick(e, false)}>
+      <ToolbarIconButton
+        onClick={(e) => handleValidateAllButtonClick(e, false)}
+        disabled={allObjectsLocked}
+      >
         <Cross2Icon /> Invalidate all
       </ToolbarIconButton>
       <Separator />
