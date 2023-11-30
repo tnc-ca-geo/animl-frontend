@@ -39,6 +39,7 @@
     "graphql": "^15.3.0",
     "graphql-request": "^4.2.0",
     "install": "^0.13.0",
+    "intrinsic-scale": "^3.0.4",
     "lodash": "^4.17.20",
     "luxon": "^3.0.1",
     "moment-timezone": "^0.5.34",

@@ -23,6 +23,9 @@ import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import LoupeFooter from './LoupeFooter.jsx';
 
+import { Image } from '../../components/Image';
+
+
 const ItemValue = styled('div', {
   fontSize: '$3',
   fontFamily: '$sourceSansPro',
@@ -67,12 +70,18 @@ const ImagePane = styled('div', {
   // display: 'flex',
   // justifyContent: 'center',
   // maxWidth: '900px',
+  width: '100%',
+  height: '100%',
 });
 
 const LoupeBody = styled('div', {
-  flexGrow: 1,
-  display: 'grid',
-  margin: '$3',
+  // flexGrow: 1,
+  // display: 'grid',
+  // $7 - height of panel header
+  // $8 - height of nav bar 
+  // 100px - height of toolbar
+  height: 'calc(100vh - $7 - $8 - 100px)',
+  backgroundColor: 'PapayaWhip'
 });
 
 const LoupeHeader = styled(PanelHeader, {
@@ -86,6 +95,16 @@ const StyledLoupe = styled('div', {
   position: 'relative',
   backgroundColor: '$backgroundLight',
   borderLeft: '1px solid $border',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const ToolbarPlaceholder = styled('div', {
+  backgroundColor: 'LightBlue',
+  height: '100px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
 });
 
 const Loupe = () => {
@@ -175,73 +194,78 @@ const Loupe = () => {
     .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 
   return (
-    <>
-      <StyledLoupe>
-        <LoupeHeader
-          handlePanelClose={handleCloseLoupe}
-          closeButtonPosition='left'
-        >
-          {image && 
-            <MetadataPane>
-              <MetadataList>
-                <Item label='Date created' value={dtCreated}/>
-                <Item label='Camera' value={image.cameraId}/>
-                <Item label='Deployment' value={image.deploymentName}/>
-                <Item label='File name' value={image.originalFileName}/>
-              </MetadataList>
-            </MetadataPane>
+    <StyledLoupe>
+      <LoupeHeader
+        handlePanelClose={handleCloseLoupe}
+        closeButtonPosition='left'
+      >
+        {image && 
+          <MetadataPane>
+            <MetadataList>
+              <Item label='Date created' value={dtCreated}/>
+              <Item label='Camera' value={image.cameraId}/>
+              <Item label='Deployment' value={image.deploymentName}/>
+              <Item label='File name' value={image.originalFileName}/>
+            </MetadataList>
+          </MetadataPane>
+        }
+        {/*<div>
+          Label review
+          <IconButton
+            variant='ghost'
+            onClick={handleToggleReviewMode}
+          >
+            <FontAwesomeIcon
+              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
+            />
+          </IconButton>
+          <IconButton
+            variant='ghost'
+            onClick={handleToggleReviewSettings}
+          >
+            <FontAwesomeIcon
+              icon={['fas', 'cog']}
+            />
+          </IconButton>
+          {reviewSettingsOpen && 
+            <ReviewSettingsForm
+              handleModalToggle={handleToggleReviewSettings}
+            />
           }
-          {/*<div>
-            Label review
-            <IconButton
-              variant='ghost'
-              onClick={handleToggleReviewMode}
-            >
-              <FontAwesomeIcon
-                icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-              />
-            </IconButton>
-            <IconButton
-              variant='ghost'
-              onClick={handleToggleReviewSettings}
-            >
-              <FontAwesomeIcon
-                icon={['fas', 'cog']}
-              />
-            </IconButton>
-            {reviewSettingsOpen && 
-              <ReviewSettingsForm
-                handleModalToggle={handleToggleReviewSettings}
+        </div>*/}
+      </LoupeHeader>
+      <LoupeBody>
+        {image &&
+          <ImagePane>
+            {/* <Image src={image.url} css={{ height: '100%', width: '100%', objectFit: 'contain' }} /> */}
+            
+            <FullSizeImage
+              workingImages={workingImages}
+              image={image}
+              focusIndex={focusIndex}
+              handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+              handleAddObjectButtonClick={handleAddObjectButtonClick}
+              css={{ height: '100%', width: '100%', objectFit: 'contain' }}
+            />
+            
+            {/*
+            {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+              <ImageReviewToolbar
+                image={image}
+                handleValidateAllButtonClick={handleValidateAllButtonClick}
+                handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+                handleAddObjectButtonClick={handleAddObjectButtonClick}
               />
             }
-          </div>*/}
-        </LoupeHeader>
-        <LoupeBody>
-          {image &&
-            <div>
-              <ImagePane>
-                <FullSizeImage
-                  workingImages={workingImages}
-                  image={image}
-                  focusIndex={focusIndex}
-                  handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
-                  handleAddObjectButtonClick={handleAddObjectButtonClick}
-                />
-                {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-                  <ImageReviewToolbar
-                    image={image}
-                    handleValidateAllButtonClick={handleValidateAllButtonClick}
-                    handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
-                    handleAddObjectButtonClick={handleAddObjectButtonClick}
-                  />
-                }
-              </ImagePane>
-            </div>
-          }
-        </LoupeBody>
-        <LoupeFooter image={image}/>
-      </StyledLoupe>
-    </>
+          */}
+          </ImagePane>
+        }
+      </LoupeBody>
+      {/*<LoupeFooter image={image}/>*/}
+      <ToolbarPlaceholder>
+        toolbar
+      </ToolbarPlaceholder>
+    </StyledLoupe>
   );
 };
 

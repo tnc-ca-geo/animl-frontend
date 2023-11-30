@@ -67,8 +67,8 @@ const IncrementControls = styled('div', {
 const StyledLoupeFooter = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  position: 'absolute',
-  bottom: 0,
+  // position: 'absolute',
+  // bottom: 0,
   width: '100%',
   height: '$7',
   borderTop: '1px solid $border',
