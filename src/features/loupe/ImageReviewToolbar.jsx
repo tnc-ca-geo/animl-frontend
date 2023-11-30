@@ -16,6 +16,12 @@ import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js
 import { selectUserUsername } from '../user/userSlice.js';
 import { violet, blackA, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../components/Tooltip.jsx';
 
 
 const Toolbar = styled('div', {
@@ -58,7 +64,8 @@ const ToolbarIconButton = styled(Button, {
   '&:first-child': { marginLeft: 0 },
   '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
   svg: {
-    marginRight: '$2',
+    marginRight: '$1',
+    marginLeft: '$1'
   }
 });
 
@@ -187,40 +194,88 @@ const ImageReviewToolbar = ({
   
   return (
     <Toolbar>
-      {catSelectorOpen
-        ? (<CategorySelector 
-            image={image} 
-            setCatSelectorOpen={setCatSelectorOpen}
-          />)
-        : (<ToolbarIconButton
-            onClick={handleEditAllLabelsButtonClick}
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {catSelectorOpen
+            ? (<CategorySelector 
+                image={image} 
+                setCatSelectorOpen={setCatSelectorOpen}
+              />)
+            : (<ToolbarIconButton
+                onClick={handleEditAllLabelsButtonClick}
+                disabled={allObjectsLocked}
+              >
+                <Pencil1Icon />
+              </ToolbarIconButton>)
+          }
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Edit all labels
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
+      <Separator />
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton
+            onClick={(e) => handleValidateAllButtonClick(e, true)}
             disabled={allObjectsLocked}
           >
-            <Pencil1Icon /> Edit labels
-          </ToolbarIconButton>)
-      }
+            <CheckIcon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Validate all labels
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton
+            onClick={(e) => handleValidateAllButtonClick(e, false)}
+            disabled={allObjectsLocked}
+          >
+            <Cross2Icon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Invalidate all labels
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
       <Separator />
-      <ToolbarIconButton
-        onClick={(e) => handleValidateAllButtonClick(e, true)}
-        disabled={allObjectsLocked}
-      >
-        <CheckIcon /> Validate all
-      </ToolbarIconButton>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
+            <ValueNoneIcon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Mark empty
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
       <Separator />
-      <ToolbarIconButton
-        onClick={(e) => handleValidateAllButtonClick(e, false)}
-        disabled={allObjectsLocked}
-      >
-        <Cross2Icon /> Invalidate all
-      </ToolbarIconButton>
-      <Separator />
-      <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
-        <ValueNoneIcon /> Mark empty
-      </ToolbarIconButton>
-      <Separator />
-      <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-        <GroupIcon /> Add object
-      </ToolbarIconButton>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+            <GroupIcon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Add object
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
       {/* <ToolbarButton css={{ marginLeft: 'auto' }}>Share</ToolbarButton> */}
     </Toolbar>
   );

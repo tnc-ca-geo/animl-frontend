@@ -238,7 +238,6 @@ const Loupe = () => {
         {image &&
           <ImagePane>
             {/* <Image src={image.url} css={{ height: '100%', width: '100%', objectFit: 'contain' }} /> */}
-            
             <FullSizeImage
               workingImages={workingImages}
               image={image}
@@ -247,23 +246,19 @@ const Loupe = () => {
               handleAddObjectButtonClick={handleAddObjectButtonClick}
               css={{ height: '100%', width: '100%', objectFit: 'contain' }}
             />
-            
-            {/*
-            {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-              <ImageReviewToolbar
-                image={image}
-                handleValidateAllButtonClick={handleValidateAllButtonClick}
-                handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
-                handleAddObjectButtonClick={handleAddObjectButtonClick}
-              />
-            }
-          */}
           </ImagePane>
         }
       </LoupeBody>
       {/*<LoupeFooter image={image}/>*/}
       <ToolbarPlaceholder>
-        toolbar
+        {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+          <ImageReviewToolbar
+            image={image}
+            handleValidateAllButtonClick={handleValidateAllButtonClick}
+            handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+            handleAddObjectButtonClick={handleAddObjectButtonClick}
+          />
+        }
       </ToolbarPlaceholder>
     </StyledLoupe>
   );
