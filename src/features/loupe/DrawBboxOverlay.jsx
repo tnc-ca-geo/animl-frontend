@@ -38,8 +38,12 @@ const Overlay = styled('div', {
   zIndex: '$4',
 });
 
-const DrawBboxOverlay = ({ imageDimensions, setTempObject }) => {
-  const { width, height, top, left } = imageDimensions;
+const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
+  console.log('imgContainerDims: ', imgContainerDims);
+  console.log('imgDims: ', imgDims);
+  const { width, height } = imgDims;
+  const top = imgContainerDims.top + imgDims.y;
+  const left = imgContainerDims.left + imgDims.x;
   const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
   const [ drawingBBox, setDrawingBBox ] = useState(false);
   const defaultBBox = { top: 0, left: 0, width: 0, height: 0 };
@@ -77,8 +81,7 @@ const DrawBboxOverlay = ({ imageDimensions, setTempObject }) => {
 
   const handleMouseUp = () => {
     // create bbox
-    const imageDims = { imageWidth: width, imageHeight: height };
-    const bbox = absToRel(tempBBox, imageDims);
+    const bbox = absToRel(tempBBox, { width, height });
     const newObject = {
       _id: new ObjectID().toString(),
       isTemp: true,

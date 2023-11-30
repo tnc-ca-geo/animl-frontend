@@ -195,6 +195,38 @@ const ImageReviewToolbar = ({
   return (
     <Toolbar>
 
+      {/* Validate/invalidate */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton
+            onClick={(e) => handleValidateAllButtonClick(e, true)}
+            disabled={allObjectsLocked}
+          >
+            <CheckIcon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Validate all labels
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton
+            onClick={(e) => handleValidateAllButtonClick(e, false)}
+            disabled={allObjectsLocked}
+          >
+            <Cross2Icon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Invalidate all labels
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
+      <Separator />
+      {/* Edit */}
       <Tooltip>
         <TooltipTrigger asChild>
           {catSelectorOpen
@@ -217,39 +249,8 @@ const ImageReviewToolbar = ({
       </Tooltip>
 
       <Separator />
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ToolbarIconButton
-            onClick={(e) => handleValidateAllButtonClick(e, true)}
-            disabled={allObjectsLocked}
-          >
-            <CheckIcon />
-          </ToolbarIconButton>
-        </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={5} >
-          Validate all labels
-          <TooltipArrow />
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ToolbarIconButton
-            onClick={(e) => handleValidateAllButtonClick(e, false)}
-            disabled={allObjectsLocked}
-          >
-            <Cross2Icon />
-          </ToolbarIconButton>
-        </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={5} >
-          Invalidate all labels
-          <TooltipArrow />
-        </TooltipContent>
-      </Tooltip>
-
-      <Separator />
-
+      
+      {/* Mark empty */}
       <Tooltip>
         <TooltipTrigger asChild>
           <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
@@ -264,6 +265,7 @@ const ImageReviewToolbar = ({
 
       <Separator />
 
+      {/* Add object */}
       <Tooltip>
         <TooltipTrigger asChild>
           <ToolbarIconButton onClick={handleAddObjectButtonClick}>
