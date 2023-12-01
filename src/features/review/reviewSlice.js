@@ -151,8 +151,9 @@ export const reviewSlice = createSlice({
       .addCase(clearImages, (state) => {
         state.workingImages = [];
       })
-      .addCase(toggleOpenLoupe, (state, { open }) => {
-        if (open = false) {
+      .addCase(toggleOpenLoupe, (state, { payload }) => {
+        console.log('toggle open loupe: ', payload)
+        if (payload === false) {
           state.lastAction = null;
           state.lastCategoryApplied = null;
         }
