@@ -53,9 +53,6 @@ export const labelMiddleware = store => next => action => {
     const tempObjs = action.payload.labels.filter((lbl) => lbl.objIsTemp );
     const nonTempObjs = action.payload.labels.filter((lbl) => !lbl.objIsTemp );
 
-    console.log('labelMiddleware - labelsAdded - tempObjs: ', tempObjs);
-    console.log('labelMiddleware - labelsAdded - nonTempObjs: ', nonTempObjs);
-
     if (tempObjs.length) {
       store.dispatch(editLabel('create', 'objects', {
         objects: tempObjs.map(({ newObject, imgId }) => ({

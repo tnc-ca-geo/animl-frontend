@@ -8,7 +8,9 @@ import {
   selectFocusIndex,
   labelsValidated,
   markedEmpty,
-  objectsManuallyUnlocked
+  objectsManuallyUnlocked,
+  selectLastAction,
+  selectLastCategoryApplied
 } from '../review/reviewSlice.js';
 import {
   toggleOpenLoupe,
@@ -133,6 +135,18 @@ const Loupe = () => {
   // const handleToggleReviewSettings = () => {
   //   setReviewSettingsOpen(!reviewSettingsOpen);
   // };]
+
+  const lastAction = useSelector(selectLastAction);
+  const lastCategoryApplied = useSelector(selectLastCategoryApplied);
+  const handleRepeatAction = () => {
+    const actionMap = {
+      'labels-validated': () => console.log('repeat labels-validated'),
+      'labels-invalidated': () => console.log('repeat labels-invalidated'),
+      'marked-empty': () => console.log('repeat marked-empty'),
+      'labels-added': () => console.log('repeat labels-added')
+    };
+    actionMap[lastAction]();
+  };
 
   const handleValidateAllButtonClick = (e, validated) => {
     e.stopPropagation();
@@ -259,6 +273,8 @@ const Loupe = () => {
         {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
           <ImageReviewToolbar
             image={image}
+            lastAction={lastAction}
+            handleRepeatAction={handleRepeatAction}
             handleValidateAllButtonClick={handleValidateAllButtonClick}
             handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
             handleAddObjectButtonClick={handleAddObjectButtonClick}

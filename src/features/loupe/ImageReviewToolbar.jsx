@@ -10,6 +10,7 @@ import {
   CheckIcon,
   Cross2Icon,
   LockOpen1Icon,
+  ReloadIcon,
 } from '@radix-ui/react-icons';
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { labelsAdded } from '../review/reviewSlice.js';
@@ -175,6 +176,8 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
 
 const ImageReviewToolbar = ({
   image,
+  lastAction,
+  handleRepeatAction,
   handleValidateAllButtonClick,
   handleMarkEmptyButtonClick,
   handleAddObjectButtonClick,
@@ -194,6 +197,25 @@ const ImageReviewToolbar = ({
   
   return (
     <Toolbar>
+
+      {/* Repeat last action */}
+      {/* TODO: disable if no previous action available */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton
+            onClick={handleRepeatAction}
+            disabled={!lastAction}
+          >
+            <ReloadIcon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Repeat last action
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+
+      <Separator />
 
       {/* Validate/invalidate */}
       <Tooltip>
