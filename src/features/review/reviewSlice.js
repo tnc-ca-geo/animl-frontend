@@ -152,7 +152,6 @@ export const reviewSlice = createSlice({
         state.workingImages = [];
       })
       .addCase(toggleOpenLoupe, (state, { payload }) => {
-        console.log('toggle open loupe: ', payload)
         if (payload === false) {
           state.lastAction = null;
           state.lastCategoryApplied = null;

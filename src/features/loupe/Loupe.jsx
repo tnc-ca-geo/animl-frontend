@@ -7,6 +7,7 @@ import {
   selectWorkingImages,
   selectFocusIndex,
   labelsValidated,
+  labelsAdded,
   markedEmpty,
   objectsManuallyUnlocked,
   selectLastAction,
@@ -136,21 +137,7 @@ const Loupe = () => {
   //   setReviewSettingsOpen(!reviewSettingsOpen);
   // };]
 
-  const lastAction = useSelector(selectLastAction);
-  const lastCategoryApplied = useSelector(selectLastCategoryApplied);
-  const handleRepeatAction = () => {
-    const actionMap = {
-      'labels-validated': () => console.log('repeat labels-validated'),
-      'labels-invalidated': () => console.log('repeat labels-invalidated'),
-      'marked-empty': () => console.log('repeat marked-empty'),
-      'labels-added': () => console.log('repeat labels-added')
-    };
-    actionMap[lastAction]();
-  };
-
-  const handleValidateAllButtonClick = (e, validated) => {
-    e.stopPropagation();
-    console.log('handleValidateAllButtonClick - validated: ', validated)
+  const validateLabels = (validated) => {
     const labelsToValidate = [];
     currImgObjects.forEach((object) => {
       if (object.locked) return;
@@ -164,8 +151,37 @@ const Loupe = () => {
         validated,
       });
     });
-    console.log('handleValidateAllButtonClick - labelsToValidate: ', labelsToValidate)
     dispatch(labelsValidated({ labels: labelsToValidate }));
+  };
+
+  const lastAction = useSelector(selectLastAction);
+  const lastCategoryApplied = useSelector(selectLastCategoryApplied);
+  const handleRepeatAction = () => {
+    const actionMap = {
+      'labels-validated': () => validateLabels(true),
+      'labels-invalidated': () => validateLabels(false),
+      'marked-empty': () => markEmpty(),
+      'labels-added': () => {
+        console.log('repeating labels-added with category: ', lastCategoryApplied)
+        const newLabels = image.objects
+          .filter((obj) => !obj.locked)
+          .map((obj) => ({
+            objIsTemp: obj.isTemp,
+            userId,
+            bbox: obj.bbox,
+            category: lastCategoryApplied,
+            objId: obj._id,
+            imgId: image._id
+          }));
+        dispatch(labelsAdded({ labels: newLabels }));
+      }
+    };
+    actionMap[lastAction]();
+  };
+
+  const handleValidateAllButtonClick = (e, validated) => {
+    e.stopPropagation();
+    validateLabels(validated);
   };
 
   // track whether the image has objects with empty, unvalidated labels
@@ -175,7 +191,7 @@ const Loupe = () => {
     )));
   }, []);
 
-  const handleMarkEmptyButtonClick = () => {
+  const markEmpty = () => {
     if (emptyLabels.length > 0) {
       const labelsToValidate = [];
       currImgObjects.forEach((obj) => {
@@ -261,7 +277,7 @@ const Loupe = () => {
               workingImages={workingImages}
               image={image}
               focusIndex={focusIndex}
-              handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+              handleMarkEmptyButtonClick={markEmpty}
               handleAddObjectButtonClick={handleAddObjectButtonClick}
               css={{ height: '100%', width: '100%', objectFit: 'contain' }}
             />
@@ -276,7 +292,7 @@ const Loupe = () => {
             lastAction={lastAction}
             handleRepeatAction={handleRepeatAction}
             handleValidateAllButtonClick={handleValidateAllButtonClick}
-            handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
+            handleMarkEmptyButtonClick={markEmpty}
             handleAddObjectButtonClick={handleAddObjectButtonClick}
             handleUnlockAllButtonClick={handleUnlockAllButtonClick}
           />

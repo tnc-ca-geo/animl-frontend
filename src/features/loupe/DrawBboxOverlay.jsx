@@ -39,8 +39,6 @@ const Overlay = styled('div', {
 });
 
 const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
-  console.log('imgContainerDims: ', imgContainerDims);
-  console.log('imgDims: ', imgDims);
   const { width, height } = imgDims;
   const top = imgContainerDims.top + imgDims.y;
   const left = imgContainerDims.left + imgDims.x;

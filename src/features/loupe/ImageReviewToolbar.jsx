@@ -122,7 +122,7 @@ const StyledCategorySelector = styled(CreatableSelect, {
 });
 
 const CategorySelector = ({ image, setCatSelectorOpen }) => {
-  const username = useSelector(selectUserUsername);
+  const userId = useSelector(selectUserUsername);
   const dispatch = useDispatch();
   // update selector options when new labels become available
   const createOption = (category) => ({
@@ -138,7 +138,7 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
       .filter((obj) => !obj.locked)
       .map((obj) => ({
         objIsTemp: obj.isTemp,
-        userId: username,
+        userId,
         bbox: obj.bbox,
         category: newValue.value || newValue,
         objId: obj._id,
@@ -199,7 +199,6 @@ const ImageReviewToolbar = ({
     <Toolbar>
 
       {/* Repeat last action */}
-      {/* TODO: disable if no previous action available */}
       <Tooltip>
         <TooltipTrigger asChild>
           <ToolbarIconButton
