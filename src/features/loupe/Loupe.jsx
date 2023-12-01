@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { actions as undoActions } from 'redux-undo-redo';
 import { styled } from '../../theme/stitches.config.js';
 import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import {
   selectWorkingImages,
   selectFocusIndex,
+  selectLastAction,
+  selectLastCategoryApplied,
   labelsValidated,
   labelsAdded,
   markedEmpty,
   objectsManuallyUnlocked,
-  selectLastAction,
-  selectLastCategoryApplied
+  incrementImage
 } from '../review/reviewSlice.js';
+import { selectModalOpen } from '../projects/projectsSlice.js';
 import {
   toggleOpenLoupe,
   reviewModeToggled,
   selectReviewMode,
+  selectIsAddingLabel,
   drawBboxStart,
 } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
@@ -162,7 +166,6 @@ const Loupe = () => {
       'labels-invalidated': () => validateLabels(false),
       'marked-empty': () => markEmpty(),
       'labels-added': () => {
-        console.log('repeating labels-added with category: ', lastCategoryApplied)
         const newLabels = image.objects
           .filter((obj) => !obj.locked)
           .map((obj) => ({
@@ -219,7 +222,13 @@ const Loupe = () => {
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   const handleUnlockAllButtonClick = () => {
-    const objIds = currImgObjects.filter((obj) => obj.locked).map((obj) => obj._id);
+    const objIds = currImgObjects
+      .filter((obj) => (
+        obj.locked && obj.labels.some((lbl) => (
+          lbl.validation === null || lbl.validation.validated
+        ))
+      ))
+      .map((obj) => obj._id);
     dispatch(objectsManuallyUnlocked({ imgId: image._id, objIds }));
   };
 
@@ -227,6 +236,54 @@ const Loupe = () => {
   const dtCreated = image && DateTime
     .fromISO(image.dateTimeOriginal)
     .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+
+  // Listen for arrow keydowns
+  // TODO: use react synthetic onKeyDown events instead?
+  const reviewMode = useSelector(selectReviewMode);
+  const isAddingLabel = useSelector(selectIsAddingLabel);
+  const modalOpen = useSelector(selectModalOpen);
+  const handleKeyDown = useCallback((e) => {
+    if (!image || isAddingLabel || modalOpen) return;
+    let charCode = String.fromCharCode(e.which).toLowerCase();
+
+    // key listeners for increment/decrement
+    const delta = (e.code === 'ArrowLeft' || charCode === 'a')
+      ? 'decrement'
+      : (e.code === 'ArrowRight' || charCode === 'd')
+        ? 'increment'
+        : null;
+
+    if (delta) {
+      reviewMode
+        ? dispatch(incrementFocusIndex(delta))
+        : dispatch(incrementImage(delta));
+    }
+
+    // handle ctrl-z/shift-ctrl-z (undo/redo)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
+      dispatch(undoActions.redo());
+    }
+    else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
+      dispatch(undoActions.undo());
+    }
+
+    // // handle ctrl-a (add object)
+    // if (reviewMode) {
+    //   let charCode = String.fromCharCode(e.which).toLowerCase();
+    //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
+    //     e.stopPropagation();
+    //     dispatch(drawBboxStart());
+    //   }
+    // }
+
+  }, [dispatch, image, isAddingLabel, modalOpen, reviewMode]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => { 
+      window.removeEventListener('keydown', handleKeyDown) 
+    }
+  }, [ handleKeyDown ]);
 
   return (
     <StyledLoupe>

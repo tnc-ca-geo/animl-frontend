@@ -182,6 +182,12 @@ export const editLabel = (operation, entity, payload, projId) => {
   return async (dispatch, getState) => {
     try {
 
+      if ((payload.updates && !payload.updates.length) || 
+          (payload.objects && !payload.objects.length) ||
+          (payload.labels && !payload.labels.length)) {
+          return;
+      }
+
       if (!operation || !entity || !payload) {
         const msg = `An operation (create, update, or delete) 
           and entity are required`;
@@ -193,7 +199,7 @@ export const editLabel = (operation, entity, payload, projId) => {
       dispatch(editLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects
+      const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {

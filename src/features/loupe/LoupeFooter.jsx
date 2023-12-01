@@ -163,7 +163,7 @@ const LoupeFooter = ({ image }) => {
     reviewMode
       ? dispatch(incrementFocusIndex(delta))
       : dispatch(incrementImage(delta));
-  }
+  };
 
   return (
     <StyledLoupeFooter>
