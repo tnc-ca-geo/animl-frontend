@@ -5,7 +5,7 @@ import {
   bboxUpdated,
   objectsRemoved,
   objectsLocked,
-  objectManuallyUnlocked,
+  objectsManuallyUnlocked,
   markedEmpty,
   markedEmptyReverted,
 } from './reviewSlice';
@@ -51,12 +51,12 @@ export const objectMiddleware = store => next => action => {
     store.dispatch(editLabel('update', 'objects', { updates }));
   }
 
-  /* objectManuallyUnlocked */
+  /* objectsManuallyUnlocked */
 
-  else if (objectManuallyUnlocked.match(action)) {
+  else if (objectsManuallyUnlocked.match(action)) {
     next(action);
-    const { imgId, objId } = action.payload;
-    const objects = [{ imgId, objId, locked: false }];
+    const { imgId, objIds } = action.payload;
+    const objects = objIds.map((objId) => ({ imgId, objId, locked: false }));
     store.dispatch(objectsLocked({ objects }));
   }
 

@@ -162,7 +162,11 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
             );
           })}
           {isDrawingBbox &&
-            <DrawBboxOverlay imgContainerDims={imgContainerDims} imgDims={imgDims} setTempObject={setTempObject} />
+            <DrawBboxOverlay
+              imgContainerDims={imgContainerDims}
+              imgDims={imgDims}
+              setTempObject={setTempObject}
+            />
           }
           {/*{!imgLoaded &&
             <SpinnerOverlay css={{ background: 'none'}}>

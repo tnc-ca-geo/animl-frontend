@@ -19,7 +19,7 @@ import {
   bboxUpdated,
   labelsValidated, 
   setFocus,
-  objectManuallyUnlocked
+  objectsManuallyUnlocked
 } from '../review/reviewSlice';
 import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
@@ -253,7 +253,7 @@ const BoundingBox = ({
   
   const handleUnlockMenuItemClick = (e) => {
     e.stopPropagation();
-    dispatch(objectManuallyUnlocked({ imgId, objId: object._id }));
+    dispatch(objectsManuallyUnlocked({ imgId, objIds: [object._id] }));
   };
 
   return (

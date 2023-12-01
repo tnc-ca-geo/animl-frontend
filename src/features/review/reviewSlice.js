@@ -208,7 +208,7 @@ export const editLabel = (operation, entity, payload, projId) => {
 // Actions only used in middlewares:
 export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
-export const objectManuallyUnlocked = createAction('review/objectManuallyUnlocked');
+export const objectsManuallyUnlocked = createAction('review/objectsManuallyUnlocked');
 export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 
 export const selectWorkingImages = state => state.review.workingImages;

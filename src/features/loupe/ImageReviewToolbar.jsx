@@ -9,6 +9,7 @@ import {
   ValueNoneIcon,
   CheckIcon,
   Cross2Icon,
+  LockOpen1Icon,
 } from '@radix-ui/react-icons';
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { labelsAdded } from '../review/reviewSlice.js';
@@ -25,9 +26,9 @@ import {
 
 
 const Toolbar = styled('div', {
-  marginTop: '$2',
   display: 'flex',
   padding: 10,
+  margin: '$2',
   width: '100%',
   minWidth: 'max-content',
   borderRadius: 6,
@@ -132,8 +133,6 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
-    console.log('handleCategoryChange - newValue: ', newValue);
-    console.log('handleCategoryChange - image.objects: ', image.objects);
     const newLabels = image.objects
       .filter((obj) => !obj.locked)
       .map((obj) => ({
@@ -144,7 +143,6 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
         objId: obj._id,
         imgId: image._id
       }));
-    console.log('handleCategoryChange - newLabels: ', newLabels);
     dispatch(labelsAdded({ labels: newLabels }));
     setCatSelectorOpen(false);
   };
@@ -173,13 +171,14 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
       options={options}
     />
   );
-}
+};
 
 const ImageReviewToolbar = ({
   image,
   handleValidateAllButtonClick,
   handleMarkEmptyButtonClick,
-  handleAddObjectButtonClick
+  handleAddObjectButtonClick,
+  handleUnlockAllButtonClick,
 }) => {
   const dispatch = useDispatch();
 
@@ -191,6 +190,7 @@ const ImageReviewToolbar = ({
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
+  const allObjectsUnlocked = image.objects && image.objects.every((obj) => !obj.locked);
   
   return (
     <Toolbar>
@@ -226,6 +226,7 @@ const ImageReviewToolbar = ({
       </Tooltip>
 
       <Separator />
+
       {/* Edit */}
       <Tooltip>
         <TooltipTrigger asChild>
@@ -274,6 +275,24 @@ const ImageReviewToolbar = ({
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={5} >
           Add object
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+      
+      <Separator />
+
+      {/* Unlock */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ToolbarIconButton
+            onClick={handleUnlockAllButtonClick}
+            disabled={allObjectsUnlocked}
+          >
+            <LockOpen1Icon />
+          </ToolbarIconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5} >
+          Unlock all objects
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>

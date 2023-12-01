@@ -7,7 +7,8 @@ import {
   selectWorkingImages,
   selectFocusIndex,
   labelsValidated,
-  markedEmpty
+  markedEmpty,
+  objectsManuallyUnlocked
 } from '../review/reviewSlice.js';
 import {
   toggleOpenLoupe,
@@ -81,7 +82,7 @@ const LoupeBody = styled('div', {
   // $8 - height of nav bar 
   // 100px - height of toolbar
   height: 'calc(100vh - $7 - $8 - 100px)',
-  backgroundColor: 'PapayaWhip'
+  backgroundColor: '$hiContrast'
 });
 
 const LoupeHeader = styled(PanelHeader, {
@@ -99,11 +100,10 @@ const StyledLoupe = styled('div', {
   flexDirection: 'column',
 });
 
-const ToolbarPlaceholder = styled('div', {
-  backgroundColor: 'LightBlue',
+const ToolbarContainer = styled('div', {
   height: '100px',
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'start',
   justifyContent: 'center'
 });
 
@@ -188,6 +188,11 @@ const Loupe = () => {
 
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
+  const handleUnlockAllButtonClick = () => {
+    const objIds = currImgObjects.filter((obj) => obj.locked).map((obj) => obj._id);
+    dispatch(objectsManuallyUnlocked({ imgId: image._id, objIds }));
+  };
+
   // format date created
   const dtCreated = image && DateTime
     .fromISO(image.dateTimeOriginal)
@@ -250,16 +255,17 @@ const Loupe = () => {
         }
       </LoupeBody>
       {/*<LoupeFooter image={image}/>*/}
-      <ToolbarPlaceholder>
+      <ToolbarContainer>
         {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
           <ImageReviewToolbar
             image={image}
             handleValidateAllButtonClick={handleValidateAllButtonClick}
             handleMarkEmptyButtonClick={handleMarkEmptyButtonClick}
             handleAddObjectButtonClick={handleAddObjectButtonClick}
+            handleUnlockAllButtonClick={handleUnlockAllButtonClick}
           />
         }
-      </ToolbarPlaceholder>
+      </ToolbarContainer>
     </StyledLoupe>
   );
 };
