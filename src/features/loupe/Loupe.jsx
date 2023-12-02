@@ -30,6 +30,8 @@ import ReviewSettingsForm from './ReviewSettingsForm.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import LoupeFooter from './LoupeFooter.jsx';
+import ShareImageButton from './ShareImageButton';
+
 
 import { Image } from '../../components/Image';
 
@@ -88,7 +90,7 @@ const LoupeBody = styled('div', {
   // $7 - height of panel header
   // $8 - height of nav bar 
   // 100px - height of toolbar
-  height: 'calc(100vh - $7 - $8 - 100px)',
+  height: 'calc(100vh - $7 - $8 - 96px)',
   backgroundColor: '$hiContrast'
 });
 
@@ -108,10 +110,16 @@ const StyledLoupe = styled('div', {
 });
 
 const ToolbarContainer = styled('div', {
-  height: '100px',
+  height: '96px',
+});
+
+const ShareImage = styled('div', {
   display: 'flex',
-  alignItems: 'start',
-  justifyContent: 'center'
+  justifyContent: 'flex-end',
+  padding: '$2',
+  bottom: '-40',
+  left: '0',
+  zIndex: '$3',
 });
 
 const Loupe = () => {
@@ -361,6 +369,9 @@ const Loupe = () => {
             handleIncrementClick={handleIncrementClick}
           />
         }
+        <ShareImage>
+          <ShareImageButton imageId={image?._id}/>
+        </ShareImage>
       </ToolbarContainer>
     </StyledLoupe>
   );

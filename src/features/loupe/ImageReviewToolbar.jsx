@@ -18,7 +18,8 @@ import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
-import { selectUserUsername } from '../user/userSlice.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { violet, blackA, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { 
@@ -32,13 +33,10 @@ import {
 const Toolbar = styled('div', {
   display: 'flex',
   justifyContent: 'space-between',
-  padding: 10,
-  margin: '$2',
+  padding: '$2',
   width: '100%',
   minWidth: 'max-content',
-  borderRadius: 6,
-  backgroundColor: 'white',
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
+  borderBottom: '1px solid $border'
 });
 
 export const itemStyles = {
@@ -197,6 +195,7 @@ const ImageReviewToolbar = ({
   handleUnlockAllButtonClick,
   handleIncrementClick
 }) => {
+  const userRoles = useSelector(selectUserCurrentRoles);
   const dispatch = useDispatch();
 
   const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
@@ -216,130 +215,129 @@ const ImageReviewToolbar = ({
   
   return (
     <Toolbar>
+      {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+        <AnnotationControls>
+          {/* Repeat last action */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton
+                onClick={handleRepeatAction}
+                disabled={!lastAction}
+              >
+                <ReloadIcon />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Repeat last action
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
 
-      <AnnotationControls>
-        {/* Repeat last action */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToolbarIconButton
-              onClick={handleRepeatAction}
-              disabled={!lastAction}
-            >
-              <ReloadIcon />
-            </ToolbarIconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Repeat last action
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
+          <Separator />
 
-        <Separator />
+          {/* Edit */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {catSelectorOpen
+                ? (<CategorySelector 
+                    image={image} 
+                    setCatSelectorOpen={setCatSelectorOpen}
+                  />)
+                : (<ToolbarIconButton
+                    onClick={handleEditAllLabelsButtonClick}
+                    disabled={allObjectsLocked}
+                  >
+                    <Pencil1Icon />
+                  </ToolbarIconButton>)
+              }
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Edit all labels
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
 
-        {/* Validate/invalidate */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToolbarIconButton
-              onClick={(e) => handleValidateAllButtonClick(e, true)}
-              disabled={allObjectsLocked}
-            >
-              <CheckIcon />
-            </ToolbarIconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Validate all labels
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToolbarIconButton
-              onClick={(e) => handleValidateAllButtonClick(e, false)}
-              disabled={allObjectsLocked}
-            >
-              <Cross2Icon />
-            </ToolbarIconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Invalidate all labels
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
+          <Separator />
 
-        <Separator />
+          {/* Validate/invalidate */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton
+                onClick={(e) => handleValidateAllButtonClick(e, true)}
+                disabled={allObjectsLocked}
+              >
+                <CheckIcon />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Validate all labels
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton
+                onClick={(e) => handleValidateAllButtonClick(e, false)}
+                disabled={allObjectsLocked}
+              >
+                <Cross2Icon />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Invalidate all labels
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
 
-        {/* Edit */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {catSelectorOpen
-              ? (<CategorySelector 
-                  image={image} 
-                  setCatSelectorOpen={setCatSelectorOpen}
-                />)
-              : (<ToolbarIconButton
-                  onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked}
-                >
-                  <Pencil1Icon />
-                </ToolbarIconButton>)
-            }
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Edit all labels
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
+          <Separator />
+          
+          {/* Mark empty */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
+                <ValueNoneIcon />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Mark empty
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
 
-        <Separator />
-        
-        {/* Mark empty */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
-              <ValueNoneIcon />
-            </ToolbarIconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Mark empty
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
+          <Separator />
 
-        <Separator />
+          {/* Add object */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                <GroupIcon />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Add object
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+          
+          <Separator />
 
-        {/* Add object */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-              <GroupIcon />
-            </ToolbarIconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Add object
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-        
-        <Separator />
-
-        {/* Unlock */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <ToolbarIconButton
-              onClick={handleUnlockAllButtonClick}
-              disabled={allObjectsUnlocked || renderedObjectsCount === 0}
-            >
-              <LockOpen1Icon />
-            </ToolbarIconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Unlock all objects
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      </AnnotationControls>
-
-      {/* <ToolbarButton css={{ marginLeft: 'auto' }}>Share</ToolbarButton> */}
+          {/* Unlock */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton
+                onClick={handleUnlockAllButtonClick}
+                disabled={allObjectsUnlocked || renderedObjectsCount === 0}
+              >
+                <LockOpen1Icon />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5} >
+              Unlock all objects
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+        </AnnotationControls>
+      }
 
       {/* Increment/Decrement */}
       <IncrementControls>

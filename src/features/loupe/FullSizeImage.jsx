@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { selectIsDrawingBbox} from './loupeSlice';
-import { labelsValidated, markedEmpty } from '../review/reviewSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
@@ -18,7 +16,6 @@ import {
   ContextMenuItem,
   ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
-import ShareImageButton from './ShareImageButton';
 import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
 import { contain } from 'intrinsic-scale';
 
@@ -200,28 +197,6 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
-      {/*
-      <ShareImage>
-        <ShareImageButton imageId={image._id}/>
-      </ShareImage>
-      */}
-      {/*
-      {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-        <EditObjectButtons>
-          <EditObjectButton onClick={handleMarkEmptyButtonClick}>
-            <Cross2Icon /> Mark empty
-          </EditObjectButton>
-          <EditObjectButton
-            onClick={handleAddObjectButtonClick}
-            css={{
-              color: '$loContrast',
-              backgroundColor: '$hiContrast',
-            }}
-          >
-            <PlusIcon /> Add object
-          </EditObjectButton>
-        </EditObjectButtons
-      */}
     </ImageContainer>
   );
 };
