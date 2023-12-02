@@ -232,6 +232,12 @@ const Loupe = () => {
     dispatch(objectsManuallyUnlocked({ imgId: image._id, objIds }));
   };
 
+  const handleIncrementClick = (delta) => {
+    reviewMode
+      ? dispatch(incrementFocusIndex(delta))
+      : dispatch(incrementImage(delta));
+  };
+
   // format date created
   const dtCreated = image && DateTime
     .fromISO(image.dateTimeOriginal)
@@ -352,6 +358,7 @@ const Loupe = () => {
             handleMarkEmptyButtonClick={markEmpty}
             handleAddObjectButtonClick={handleAddObjectButtonClick}
             handleUnlockAllButtonClick={handleUnlockAllButtonClick}
+            handleIncrementClick={handleIncrementClick}
           />
         }
       </ToolbarContainer>
