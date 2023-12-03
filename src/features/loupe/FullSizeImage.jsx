@@ -4,8 +4,10 @@ import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 // import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { selectIsDrawingBbox} from './loupeSlice';
+import { hasRole, WRITE_OBJECTS_ROLES, DELETE_IMAGES } from '../../auth/roles';
+import { selectWorkingImages, labelsValidated, markedEmpty } from '../review/reviewSlice';
+import { deleteImages } from '../images/imagesSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
@@ -133,6 +135,8 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
     objectsToRender.unshift(object);
   });
 
+  const handleDeleteButtonClick = () => dispatch(deleteImages([image._id]));
+
   return (
     <ImageContainer className='image-container'>
       {imgLoaded &&
@@ -195,6 +199,16 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
             </ContextMenuItemIconLeft>
             Mark empty
           </ContextMenuItem>
+          {hasRole(userRoles, DELETE_IMAGES) &&
+            <ContextMenuItem
+              onSelect={handleDeleteButtonClick}
+            >
+              <ContextMenuItemIconLeft>
+                <TrashIcon />
+              </ContextMenuItemIconLeft>
+              Delete
+            </ContextMenuItem>
+          }
         </ContextMenuContent>
       </ContextMenu>
     </ImageContainer>

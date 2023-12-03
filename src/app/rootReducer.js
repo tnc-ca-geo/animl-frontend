@@ -8,6 +8,7 @@ import wirelessCamerasReducer from '../features/cameras/wirelessCamerasSlice';
 import reviewReducer from '../features/review/reviewSlice';
 import loupeReducer from '../features/loupe/loupeSlice';
 import projectReducer from '../features/projects/projectsSlice';
+import usersReducer from '../features/projects/userSlice';
 import trackingReducer from '../features/tracking/trackingSlice';
 import uploadReducer from '../features/upload/uploadSlice';
 
@@ -15,6 +16,7 @@ const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
   user: userSlice,
   projects: projectReducer,
+  users: usersReducer,
   filters: filtersReducer,
   images: imagesReducer,
   wirelessCameras: wirelessCamerasReducer,

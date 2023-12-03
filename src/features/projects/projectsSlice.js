@@ -9,12 +9,19 @@ import {
 
 const initialState = {
   projects: [],
+  modelOptions: [],
   loadingStates: {
     projects: {
       isLoading: false,
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
       noneFound: false,
+    },
+    createProject: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+      stateMsg: null,
     },
     views: {
       isLoading: false,
@@ -36,6 +43,11 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    modelOptions: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
     uploads: {
       isLoading: false,
       operation: null,
@@ -52,6 +64,10 @@ export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
+    /* 
+     * Views CRUD 
+     */
+
     getProjectsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.projects = ls;
@@ -107,6 +123,42 @@ export const projectsSlice = createSlice({
 
     setUnsavedViewChanges: (state, { payload }) => {
       state.unsavedViewChanges = payload;
+    },
+
+    createProjectStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null, stateMsg: null };
+      state.loadingStates.createProject = ls;
+    },
+
+    createProjectSuccess: (state, { payload }) => {
+      const { project } = payload.createProject;
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        stateMsg: `Successfully created project ${project.name}`
+      };
+      state.loadingStates.createProject = ls;
+
+      state.projects = [
+        ...state.projects,
+        project
+      ];
+    },
+
+    createProjectFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      state.loadingStates.createProject = ls;
+    },
+
+    dismissCreateProjectError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.createProject.errors.splice(index, 1);
+    },
+
+    dismissStateMsg: (state) => {
+      const ls = { isLoading: false, operation: null, errors: null, stateMsg: null };
+      state.loadingStates.createProject = ls;
     },
 
 
@@ -242,6 +294,24 @@ export const projectsSlice = createSlice({
       });
     },
 
+    getModelOptionsStart: (state) => {
+      console.log('getModelOptionsStart')
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.modelOptions = ls;
+    },
+
+    getModelOptionsFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.modelOptions = ls;
+    },
+
+    getModelOptionsSuccess: (state, { payload }) => {
+      console.log('getModelOptionsSuccess')
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.modelOptions = ls;
+      state.modelOptions = payload;
+    },
+
     setModalOpen: (state, { payload }) => {
       state.modalOpen = payload;
     },
@@ -254,7 +324,6 @@ export const projectsSlice = createSlice({
       const index = payload;
       state.loadingStates.models.errors.splice(index, 1);
     },
-
   },
 
   extraReducers: (builder) => {
@@ -286,6 +355,11 @@ export const {
   setSelectedProjAndView,
   setUnsavedViewChanges,
   dismissProjectsError,
+  createProjectStart,
+  createProjectSuccess,
+  createProjectFailure,
+  dismissCreateProjectError,
+  dismissStateMsg,
 
   editViewStart,
   saveViewSuccess,
@@ -307,10 +381,12 @@ export const {
   getModelsFailure,
   getModelsSuccess,
   dismissModelsError,
+  getModelOptionsStart,
+  getModelOptionsFailure,
+  getModelOptionsSuccess,
 
   setModalOpen,
   setModalContent,
-
 } = projectsSlice.actions;
 
 
@@ -333,6 +409,25 @@ export const fetchProjects = (payload) => async dispatch => {
     dispatch(getProjectsFailure(err));
   }
 };
+
+export const createProject = (payload) => async dispatch => {
+  try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      // TODO make this work
+      if (token) {
+        dispatch(createProjectStart());
+        const project = await call({ 
+          request: 'createProject',
+          input: payload
+        });
+        dispatch(createProjectSuccess(project));
+      }
+  } catch (err) {
+    console.log('err: ', err)
+    dispatch(createProjectFailure(err));
+  }
+}
 
 // editView thunk
 // TODO: maybe break this up into discrete thunks?
@@ -494,12 +589,31 @@ export const fetchModels = (payload) => {
   };
 }
 
+export const fetchModelOptions = () => {
+  return async (dispatch) => {
+    try {
+      dispatch(getModelOptionsStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
+      if (token) {
+        const res = await call({
+          request: 'getModels',
+          input: {},
+        });
+        dispatch(getModelOptionsSuccess(res.mlModels));
+      }
+
+    } catch (err) {
+      dispatch(getModelOptionsFailure(err));
+    }
+  };
+}
+
 
 // Selectors
 export const selectProjects = state => state.projects.projects;
-export const selectSelectedProject = state => (
-  state.projects.projects.find((proj) => proj.selected)
-);
+export const selectSelectedProject = state => state.projects.projects.find((proj) => proj.selected);
 export const selectSelectedProjectId = createSelector([selectSelectedProject],
   (proj) => proj ? proj._id : null
 );
@@ -525,6 +639,11 @@ export const selectProjectsErrors = state => state.projects.loadingStates.projec
 export const selectViewsErrors = state => state.projects.loadingStates.views.errors;
 export const selectDeploymentsErrors = state => state.projects.loadingStates.deployments.errors;
 export const selectModelsErrors = state => state.projects.loadingStates.models.errors;
+export const selectCreateProjectState = state => state.projects.loadingStates.createProject.stateMsg;
+export const selectCreateProjectsErrors = state => state.projects.loadingStates.createProject.errors;
+export const selectCreateProjectLoading = state => state.projects.loadingStates.createProject.isLoading;
+export const selectModelOptions = state => state.projects.modelOptions;
+export const selectModelOptionsLoading = state => state.projects.loadingStates.modelOptions.isLoading;
 
 
 export default projectsSlice.reducer;

@@ -10,7 +10,7 @@ const enrichImages = (res, camConfigs) => {
     img.deploymentName = deployment;
 
     // build urls for small & medium size images
-    const ext = img.originalFileName.split('.').pop();
+    const ext = img.fileTypeExtension;
     img.url = IMAGES_URL + 'medium/' + img._id + '-medium.' + ext;
     img.thumbUrl = IMAGES_URL + 'small/' + img._id + '-small.' + ext;
 

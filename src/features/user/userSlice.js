@@ -50,7 +50,7 @@ export const selectUserAuthStatus = state => state.user.authStatus;
 export const selectUserGroups = state => state.user.groups;
 export const selectUserUsername = state => state.user.username;
 export const selectUserProjects = state => state.user.projects;
-export const selectUserIsSuperUser = state => state.user.groups.includes('animl_superuser');
+export const selectUserIsSuperUser = state => state.user.groups && state.user.groups.includes('animl_superuser');
 export const selectUserHasBetaAccess = state => state.user.groups.includes('beta_access');
 export const selectUserCurrentRoles = createSelector(
   [selectSelectedProject, selectUserProjects, selectUserIsSuperUser],

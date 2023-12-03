@@ -15,7 +15,7 @@ const render = () => {
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <Authenticator.Provider>
-            <Theme>
+            <Theme style={{ zIndex: 'auto' }}>
               <App />
             </Theme>
           </Authenticator.Provider>
