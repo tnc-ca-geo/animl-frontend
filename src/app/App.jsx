@@ -122,7 +122,10 @@ const App = () => {
         : (
           <Tooltip.Provider>
             <Toast.Provider>
-              <AppContainer onMouseUp={handleMouseUp}>
+              <AppContainer
+                onMouseUp={handleMouseUp}
+                css={isDrawingBbox && { userSelect: 'none' }}
+              >
                 <NavBar />
                 <Switch>
                   <Route exact path="/" component={HomePage} />
