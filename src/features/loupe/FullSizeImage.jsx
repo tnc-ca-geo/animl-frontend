@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
-// import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { selectIsDrawingBbox} from './loupeSlice';
 import { hasRole, WRITE_OBJECTS_ROLES, DELETE_IMAGES } from '../../auth/roles';
@@ -11,14 +10,6 @@ import { deleteImages } from '../images/imagesSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuItemIconLeft,
-} from '../../components/ContextMenu';
-import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
 import { contain } from 'intrinsic-scale';
 
 const EditObjectButton = styled('button', {
@@ -84,7 +75,6 @@ const ImageFrame = styled('div', {
 
 const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButtonClick, handleMarkEmptyButtonClick }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
-  const userId = useSelector(selectUserUsername);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const dispatch = useDispatch();
 
@@ -176,41 +166,7 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
           }*/}
         </ImageFrame>
       }
-      <ContextMenu>
-        <ContextMenuTrigger 
-          disabled={!hasRole(userRoles, WRITE_OBJECTS_ROLES)}
-        >
-          <FullImage ref={imgEl} src={image.url} onLoad={() => handleImgLoaded()} />
-        </ContextMenuTrigger>
-        <ContextMenuContent sideOffset={5} align="end">
-          <ContextMenuItem
-            onSelect={handleAddObjectButtonClick}
-          >
-            <ContextMenuItemIconLeft>
-              <Pencil1Icon />
-            </ContextMenuItemIconLeft>
-            Add object
-          </ContextMenuItem>
-          <ContextMenuItem
-            onSelect={handleMarkEmptyButtonClick}
-          >
-            <ContextMenuItemIconLeft>
-              <ValueNoneIcon />
-            </ContextMenuItemIconLeft>
-            Mark empty
-          </ContextMenuItem>
-          {hasRole(userRoles, DELETE_IMAGES) &&
-            <ContextMenuItem
-              onSelect={handleDeleteButtonClick}
-            >
-              <ContextMenuItemIconLeft>
-                <TrashIcon />
-              </ContextMenuItemIconLeft>
-              Delete
-            </ContextMenuItem>
-          }
-        </ContextMenuContent>
-      </ContextMenu>
+      <FullImage ref={imgEl} src={image.url} onLoad={() => handleImgLoaded()} />
     </ImageContainer>
   );
 };
