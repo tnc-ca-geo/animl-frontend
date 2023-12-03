@@ -6,7 +6,7 @@ const initialState = {
   reviewMode: false,
   isDrawingBbox: false,
   isAddingLabel: false,
-  mouseUpOutsideOverlay: false,
+  mouseEventOutsideOverlay: null,
   iterationOptions: {
     skipEmptyImages: false,
     skipLockedObjects: false,
@@ -29,12 +29,12 @@ export const loupeSlice = createSlice({
       if (state.isDrawingBbox) state.isDrawingBbox = false;
     },
 
-    mouseUpDetected: (state) => {
-      state.mouseUpOutsideOverlay = true;
+    mouseEventDetected: (state, { payload }) => {
+      state.mouseEventOutsideOverlay = payload.event;
     },
 
-    clearMouseUpDetected: (state) => {
-      state.mouseUpOutsideOverlay = false;
+    clearMouseEventDetected: (state) => {
+      state.mouseEventOutsideOverlay = null;
     },
 
     addLabelStart: (state) => { state.isAddingLabel = true; },
@@ -61,8 +61,8 @@ export const {
   reviewModeToggled,
   drawBboxStart,
   drawBboxEnd,
-  mouseUpDetected,
-  clearMouseUpDetected,
+  mouseEventDetected,
+  clearMouseEventDetected,
   addLabelStart,
   addLabelEnd,
   iterationOptionsChanged,
@@ -85,7 +85,7 @@ export const copyUrlToClipboard = (url) => {
 export const selectLoupeOpen = state => state.loupe.open;
 export const selectReviewMode = state => state.loupe.reviewMode;
 export const selectIsDrawingBbox = state => state.loupe.isDrawingBbox;
-export const selectMouseUpOutsideOverlay = state => state.loupe.mouseUpOutsideOverlay;
+export const selectMouseEventDetected = state => state.loupe.mouseEventOutsideOverlay;
 export const selectIsAddingLabel = state => state.loupe.isAddingLabel;
 export const selectIterationOptions = state => state.loupe.iterationOptions;
 

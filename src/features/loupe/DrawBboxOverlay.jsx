@@ -4,7 +4,12 @@ import { ObjectID } from 'bson';
 import { styled } from '../../theme/stitches.config';
 import { absToRel } from '../../app/utils';
 import { setFocus } from '../review/reviewSlice';
-import { drawBboxEnd, addLabelStart, clearMouseUpDetected, selectMouseUpOutsideOverlay } from './loupeSlice';
+import {
+  drawBboxEnd,
+  addLabelStart,
+  clearMouseEventDetected,
+  selectMouseEventDetected
+} from './loupeSlice';
 
 
 const CrossHairHorizontal = styled('div', {
@@ -59,6 +64,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     containerY = (e.clientY <= top) ? top : containerY;
 
     setMousePos({ x: containerX, y: containerY });
+
     if (drawingBBox) {
       // update tempBoxWidth and tempBoxHeight
       const newWidth = containerX - tempBBox.left;
@@ -68,13 +74,6 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
       // use absolute values, and update the top/left accordingly 
       // (so you can click and drag to the south west and it will still work)
     }
-  };
-
-  const handleMouseDown = (e) => {
-    const newTop = mousePos.y - 2;  // subtracting 2px for border
-    const newLeft = mousePos.x - 2;
-    setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
-    setDrawingBBox(true);
   };
 
   const createNewBBox = () => {
@@ -95,18 +94,37 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     dispatch(addLabelStart());
   };
 
+  const startDrawingBBox = () => {
+    let newTop = mousePos.y - 2;  // subtracting 2px for border
+    let newLeft = mousePos.x - 2;
+    newTop = (newTop < 0) ? 0 : newTop; // prevent negative values
+    newLeft = (newLeft < 0) ? 0 : newLeft;
+    setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
+    setDrawingBBox(true);
+  };
+
+  const mouseEventDetectedOutsideOverlay = useSelector(selectMouseEventDetected);
+  useEffect(() => {
+    if (!mouseEventDetectedOutsideOverlay) return;
+    if (mouseEventDetectedOutsideOverlay === 'mouse-up') {
+      createNewBBox();
+      dispatch(clearMouseEventDetected());
+    }
+    if (mouseEventDetectedOutsideOverlay === 'mouse-down') {
+      startDrawingBBox();
+      dispatch(clearMouseEventDetected());
+    }
+  }, [mouseEventDetectedOutsideOverlay]);
+
+
+  const handleMouseDown = (e) => {
+    startDrawingBBox();
+  };
+
   const handleMouseUp = (e) => {
     e.stopPropagation();
     createNewBBox();
   };
-
-  const mouseUpDetectedOutsideOverlay = useSelector(selectMouseUpOutsideOverlay);
-  useEffect(() => {
-    if (mouseUpDetectedOutsideOverlay) {
-      createNewBBox();
-      dispatch(clearMouseUpDetected());
-    }
-  }, [mouseUpDetectedOutsideOverlay])
 
   // listen for esc keydown and end drawBbox
   // TODO: should be able to use react synthetic onKeyDown events,
