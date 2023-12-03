@@ -52,7 +52,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
 
     let containerX = e.clientX - left;
     containerX = (e.clientX >= (left + width)) ? width : containerX;
-    containerX = (e.clientX <= left) ? left : containerX;
+    containerX = (e.clientX <= left) ? 0 : containerX;
 
     let containerY = e.clientY - top;
     containerY = (e.clientY >= (top + height)) ? height : containerY;
@@ -105,7 +105,6 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ dispatch ]);
-
 
   return (
     <Overlay
