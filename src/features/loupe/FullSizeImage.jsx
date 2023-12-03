@@ -1,26 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Cross2Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
-// import { CircleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
+import { selectIsDrawingBbox} from './loupeSlice';
 import { hasRole, WRITE_OBJECTS_ROLES, DELETE_IMAGES } from '../../auth/roles';
-import { drawBboxStart, selectIsDrawingBbox} from './loupeSlice';
 import { selectWorkingImages, labelsValidated, markedEmpty } from '../review/reviewSlice';
 import { deleteImages } from '../images/imagesSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuItemIconLeft,
-} from '../../components/ContextMenu';
-import ShareImageButton from './ShareImageButton';
-import { Pencil1Icon, ValueNoneIcon } from '@radix-ui/react-icons';
+import { contain } from 'intrinsic-scale';
 
 const EditObjectButton = styled('button', {
   display: 'flex',
@@ -67,21 +57,25 @@ const EditObjectButtons = styled('div', {
 });
 
 const FullImage = styled(Image, {
-  maxWidth: '100%',
-  height: 'fit-content',
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
 });
 
-const ImageWrapper = styled('div', {
+const ImageContainer = styled('div', {
   position: 'relative',
-  maxWidth: '940px',
+  // maxWidth: '940px',
+  width: '100%',
+  height: '100%',
 });
 
-const FullSizeImage = ({ image, focusIndex }) => {
+const ImageFrame = styled('div', {
+  position: 'absolute'
+});
+
+const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButtonClick, handleMarkEmptyButtonClick }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
-  const userId = useSelector(selectUserUsername);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
-  const containerEl = useRef(null);
-  const dims = useResizeObserver(containerEl);
   const dispatch = useDispatch();
 
   // track image loading state
@@ -90,8 +84,25 @@ const FullSizeImage = ({ image, focusIndex }) => {
     setImgLoaded(false);
   }, [ image._id ]);
   const handleImgLoaded = () => setImgLoaded(true);
+  
+  // track actual, rendered image dimensions. This is necessary because we're
+  // using the `object-fit: contain` css property on the <img/> tag itself
+  // to handle both horizontal and vertical auto-resizing, and use-resize-observer
+  // tracks the image's parent container's dims rather than the resized image's
+  // https://github.com/ZeeCoder/use-resize-observer/issues/106
+  const imgEl = useRef(null);
+  const imgContainerDims = useResizeObserver(imgEl);
+  const [ imgDims, setImgDims ] = useState({ width: 0, height: 0, x: 0, y: 0 });
+  useEffect(() => {
+    if (imgLoaded) {
+      const src = { width: imgEl.current.naturalWidth, height: imgEl.current.naturalHeight };
+      const dest = { width: imgContainerDims.width, height: imgContainerDims.height };
+      let containedImgDims = contain(dest.width, dest.height, src.width, src.height);
+      setImgDims(containedImgDims);
+    }
+  }, [ imgLoaded, imgContainerDims.width, imgContainerDims.height ]);
 
-  const workingImages = useSelector(selectWorkingImages);
+  // build array of objects to render
   const currImgObjects = workingImages[focusIndex.image].objects;
   const [ tempObject, setTempObject ] = useState(null);
   let objectsToRender = currImgObjects.filter((obj) => (
@@ -102,7 +113,7 @@ const FullSizeImage = ({ image, focusIndex }) => {
   if (tempObject) objectsToRender.push(tempObject);
 
   // if obejctsToRender contains any empties, order them first
-  // so that they get rendered below the smaller bboxes, 
+  // so that they get rendered below the smaller bboxes,
   // making them easier to select
   const emptyObjIndices = objectsToRender.reduce((acc, curr, i) => {
     if (curr.labels.some((lbl) => lbl.category === 'empty')) acc.push(i);
@@ -114,121 +125,49 @@ const FullSizeImage = ({ image, focusIndex }) => {
     objectsToRender.unshift(object);
   });
 
-  // track whether the image has objects with empty, unvalidated labels
-  const emptyLabels = currImgObjects.reduce((acc, curr) => {
-    return acc.concat(curr.labels.filter((lbl) => (
-      lbl.category === 'empty' && !lbl.validated
-    )));
-  }, []);
-
-  const handleMarkEmptyButtonClick = () => {
-    if (emptyLabels.length > 0) {
-      const labelsToValidate = [];
-      currImgObjects.forEach((obj) => {
-        obj.labels
-          .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
-          .forEach((lbl) => {
-            labelsToValidate.push({
-              imgId: image._id,
-              objId: obj._id,
-              lblId: lbl._id,
-              userId,
-              validated: true
-            });
-        });
-      });
-      dispatch(labelsValidated({ labels: labelsToValidate }))
-    }
-    else {
-      dispatch(markedEmpty({ images: [{ imgId: image._id }], userId }));
-    }
-  };
-
-  const handleAddObjectButtonClick = () => dispatch(drawBboxStart());
-
   const handleDeleteButtonClick = () => dispatch(deleteImages([image._id]));
 
   return (
-    <ImageWrapper ref={containerEl} className='full-size-image'>
-      {isDrawingBbox &&
-        <DrawBboxOverlay imageDimensions={dims} setTempObject={setTempObject} />
-      }
-      {imgLoaded && objectsToRender && objectsToRender.map((obj) => {
-        return (
-          <BoundingBox
-            key={obj._id}
-            imgId={image._id}
-            imageWidth={dims.width}
-            imageHeight={dims.height}
-            object={obj}
-            objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
-            focusIndex={focusIndex}
-            setTempObject={setTempObject}
-          />
-        );
-      })}
-      {/*{!imgLoaded &&
-        <SpinnerOverlay css={{ background: 'none'}}>
-          <CircleSpinner />
-        </SpinnerOverlay>
-      }*/}
-      <ContextMenu>
-        <ContextMenuTrigger 
-          disabled={!hasRole(userRoles, WRITE_OBJECTS_ROLES)}
+    <ImageContainer className='image-container'>
+      {imgLoaded &&
+        <ImageFrame
+          className='image-frame'
+          css={{
+            left: imgDims.x,
+            top: imgDims.y,
+            width: imgDims.width,
+            height: imgDims.height
+          }}
         >
-          <FullImage src={image.url} onLoad={() => handleImgLoaded()} />
-        </ContextMenuTrigger>
-        <ContextMenuContent sideOffset={5} align="end">
-          <ContextMenuItem
-            onSelect={handleAddObjectButtonClick}
-          >
-            <ContextMenuItemIconLeft>
-              <Pencil1Icon />
-            </ContextMenuItemIconLeft>
-            Add object
-          </ContextMenuItem>
-          <ContextMenuItem
-            onSelect={handleMarkEmptyButtonClick}
-          >
-            <ContextMenuItemIconLeft>
-              <ValueNoneIcon />
-            </ContextMenuItemIconLeft>
-            Mark empty
-          </ContextMenuItem>
-          {hasRole(userRoles, DELETE_IMAGES) &&
-            <ContextMenuItem
-              onSelect={handleDeleteButtonClick}
-            >
-              <ContextMenuItemIconLeft>
-                <TrashIcon />
-              </ContextMenuItemIconLeft>
-              Delete
-            </ContextMenuItem>
+          {objectsToRender && objectsToRender.map((obj) => {
+            return (
+              <BoundingBox
+                key={obj._id}
+                imgId={image._id}
+                imgDims={imgDims}
+                object={obj}
+                objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
+                focusIndex={focusIndex}
+                setTempObject={setTempObject}
+              />
+            );
+          })}
+          {isDrawingBbox &&
+            <DrawBboxOverlay
+              imgContainerDims={imgContainerDims}
+              imgDims={imgDims}
+              setTempObject={setTempObject}
+            />
           }
-        </ContextMenuContent>
-      </ContextMenu>
-      <ShareImage>
-        <ShareImageButton imageId={image._id}/>
-      </ShareImage>
-      <EditObjectButtons>
-        {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
-          <>
-            <EditObjectButton onClick={handleMarkEmptyButtonClick}>
-              <Cross2Icon /> Mark empty
-            </EditObjectButton>
-            <EditObjectButton
-              onClick={handleAddObjectButtonClick}
-              css={{
-                color: '$loContrast',
-                backgroundColor: '$hiContrast',
-              }}
-            >
-              <PlusIcon /> Add object
-            </EditObjectButton>
-          </>
-        }
-      </EditObjectButtons>
-    </ImageWrapper>
+          {/*{!imgLoaded &&
+            <SpinnerOverlay css={{ background: 'none'}}>
+              <CircleSpinner />
+            </SpinnerOverlay>
+          }*/}
+        </ImageFrame>
+      }
+      <FullImage ref={imgEl} src={image.url} onLoad={() => handleImgLoaded()} />
+    </ImageContainer>
   );
 };
 

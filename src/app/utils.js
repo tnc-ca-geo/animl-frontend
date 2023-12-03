@@ -91,13 +91,12 @@ export const truncateString = (str, n) => (
  * convert bbox in absolute vals ([left, top, width, height])
  * to relative values ([ymin, xmin, ymax, xmax])
  */
-export const absToRel = (rect, imageDims) => {
+export const absToRel = (rect, imgDims) => {
   const { left, top, width, height } = rect;
-  const { imageWidth, imageHeight } = imageDims;
-  const ymin = Math.round(top) / imageHeight;
-  const xmin = Math.round(left) / imageWidth;
-  const ymax = (Math.round(top) + Math.round(height)) / imageHeight;
-  const xmax = (Math.round(left) + Math.round(width)) / imageWidth;
+  const ymin = Math.round(top) / imgDims.height;
+  const xmin = Math.round(left) / imgDims.width;
+  const ymax = (Math.round(top) + Math.round(height)) / imgDims.height;
+  const xmax = (Math.round(left) + Math.round(width)) / imgDims.width;
   return [ymin, xmin, ymax, xmax];
 };
 

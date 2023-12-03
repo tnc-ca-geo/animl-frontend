@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Cross2Icon, CheckIcon, LockOpen1Icon } from '@radix-ui/react-icons';
-import { labelsValidated, objectManuallyUnlocked } from '../review/reviewSlice.js';
+import { labelsValidated, objectsManuallyUnlocked } from '../review/reviewSlice.js';
 
 const LabelButton = styled('button', {
   padding: '0',
@@ -33,7 +33,7 @@ const ValidationButtons = ({
 
   const handleLockButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(objectManuallyUnlocked({ imgId, objId: object._id }));
+    dispatch(objectsManuallyUnlocked({ imgId, objIds: [object._id] }));
   };
 
   const handleValidationButtonClick = (e, validated) => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import CreatableSelect from 'react-select/creatable';
@@ -144,28 +144,28 @@ const BoundingBoxLabel = ({
   const options = availLabels.ids.map((id) => createOption(id));
 
   // manage category selector state (open/closed)
-  const addingLabel = useSelector(selectIsAddingLabel);
-  const catSelectorOpen = (addingLabel && selected);
+  const isAddingLabel = useSelector(selectIsAddingLabel);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState(isAddingLabel && selected);
 
   // manually focus catSelector if it's open
   useEffect(() => {
     if (catSelectorOpen) catSelectorRef.current.focus();
   }, [catSelectorRef, catSelectorOpen])
 
-  // stop adding label if user clicks out of it
-  useEffect(() => {
-    const handleWindowClick = (e) => {
-      if (object.isTemp) setTempObject(null);
-      // unless the last click was on the "edit label" context menu item
-      if (!targetIsEditLabelMenuItem(e)) { 
-        dispatch(addLabelEnd());
-      }
-    };
-    addingLabel
-      ? window.addEventListener('click', handleWindowClick)
-      : window.removeEventListener('click', handleWindowClick);
-    return () => window.removeEventListener('click', handleWindowClick);
-  }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
+  // // stop adding label if user clicks out of it
+  // useEffect(() => {
+  //   const handleWindowClick = (e) => {
+  //     if (object.isTemp) setTempObject(null);
+  //     // unless the last click was on the "edit label" context menu item
+  //     if (!targetIsEditLabelMenuItem(e)) { 
+  //       dispatch(addLabelEnd());
+  //     }
+  //   };
+  //   ToggleGroup
+  //     ? window.addEventListener('click', handleWindowClick)
+  //     : window.removeEventListener('click', handleWindowClick);
+  //   return () => window.removeEventListener('click', handleWindowClick);
+  // }, [ ToggleGroup, imgId, object, setTempObject, dispatch ]);
 
   // listen for ctrl-e keydown and open cat selector to edit
   useEffect(() => {
@@ -187,6 +187,7 @@ const BoundingBoxLabel = ({
     if (!object.locked && isAuthorized && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
       dispatch(addLabelStart());
+      setCatSelectorOpen(true);
     }
   };
 
@@ -203,6 +204,13 @@ const BoundingBoxLabel = ({
         imgId
       }]
     }));
+    setCatSelectorOpen(false);
+  };
+
+  const handleCategorySelectorBlur = (e) => {
+    if (object.isTemp) setTempObject(null);
+    dispatch(addLabelEnd());
+    setCatSelectorOpen(false);
   };
 
   return (
@@ -229,6 +237,7 @@ const BoundingBoxLabel = ({
           isDisabled={availLabels.isLoading || !isAuthorized}
           onChange={handleCategoryChange}
           onCreateOption={handleCategoryChange}
+          onBlur={handleCategorySelectorBlur}
           value={createOption(label.category)}
           options={options}
           css={{ display: catSelectorOpen ? 'block' : 'none' }}

@@ -19,7 +19,7 @@ import {
   bboxUpdated,
   labelsValidated, 
   setFocus,
-  objectManuallyUnlocked
+  objectsManuallyUnlocked
 } from '../review/reviewSlice';
 import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
@@ -115,8 +115,7 @@ const StyledResizableBox = styled(ResizableBox, {
 
 const BoundingBox = ({ 
   imgId,
-  imageWidth,
-  imageHeight,
+  imgDims,
   object,
   objectIndex,
   focusIndex,
@@ -164,14 +163,14 @@ const BoundingBox = ({
 
   // track bounding box dimensions
   const [ bbox, setBbox ] = useState(object.bbox);
-  let { left, top, width, height } = relToAbs(bbox, imageWidth, imageHeight);
+  let { left, top, width, height } = relToAbs(bbox, imgDims.width, imgDims.height);
   useEffect(() => {
     setBbox(object.bbox);
   }, [ object.bbox ]);
 
   const onDrag = (event, { deltaX, deltaY }) => {
     const rect = { left: left + deltaX, top: top + deltaY, width, height };
-    const newBbox = absToRel(rect, { imageWidth, imageHeight });
+    const newBbox = absToRel(rect, imgDims);
     setBbox(newBbox);
   };
 
@@ -189,7 +188,7 @@ const BoundingBox = ({
   const [ constraintX, setConstraintX ] = useState(Infinity);
   const [ constraintY, setConstraintY ] = useState(Infinity);
   const onResize = (event, { size, handle }) => {
-    // drags from left or top handles need require repositioning the box.
+    // drags from left or top handles require repositioning the box.
     // bottom & right can be left alone
     if (['n', 'w', 'ne', 'nw', 'sw'].includes(handle)) {
       if (handle.indexOf('n') > -1) {
@@ -203,15 +202,15 @@ const BoundingBox = ({
     };
 
     // Prevent box from going out of bounds
-    const right = imageWidth - size.width - left;  
-    const bottom = imageHeight - size.height - top;  
+    const right = imgDims.width - size.width - left;  
+    const bottom = imgDims.height - size.height - top;
     if ((handle.indexOf('e') > -1) && (right <= 0)) setConstraintX(width);
     if ((handle.indexOf('w') > -1) && (left <= 0)) setConstraintX(width);
     if ((handle.indexOf('n') > -1) && (top <= 0)) setConstraintY(height);
     if ((handle.indexOf('s') > -1) && (bottom <= 0)) setConstraintY(height);
 
     const rect = { left, top, width: size.width, height: size.height };
-    const newBbox = absToRel(rect, { imageWidth, imageHeight });
+    const newBbox = absToRel(rect, imgDims);
     setBbox(newBbox);
   };
 
@@ -254,14 +253,14 @@ const BoundingBox = ({
   
   const handleUnlockMenuItemClick = (e) => {
     e.stopPropagation();
-    dispatch(objectManuallyUnlocked({ imgId, objId: object._id }));
+    dispatch(objectsManuallyUnlocked({ imgId, objIds: [object._id] }));
   };
 
   return (
     <ContextMenu>
       <ContextMenuTrigger disabled={!isAuthorized}>
         <Draggable
-          bounds='.full-size-image'
+          bounds='.image-frame'
           handle='.drag-handle'
           position={{ x: left, y: top }}
           onStart={onDragStart}
@@ -305,7 +304,7 @@ const BoundingBox = ({
                 showLabelButtons={showLabelButtons}
                 setTempObject={setTempObject}
                 verticalPos={(top > 30) ? 'top' : 'bottom'}
-                horizontalPos={((imageWidth - left - width) < 75) ? 'right' : 'left'}
+                horizontalPos={((imgDims.width - left - width) < 75) ? 'right' : 'left'}
                 catSelectorRef={catSelectorRef}
                 isAuthorized={isAuthorized}
                 username={username}

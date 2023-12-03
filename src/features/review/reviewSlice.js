@@ -2,6 +2,7 @@ import { createSlice, createAction } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
+import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
 
 const initialState = {
@@ -18,7 +19,9 @@ const initialState = {
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
     }
-  }
+  },
+  lastAction: null,
+  lastCategoryApplied: null,
 };
 
 export const reviewSlice = createSlice({
@@ -58,6 +61,8 @@ export const reviewSlice = createSlice({
           object.labels.unshift(newLabel);
         }
       }
+      state.lastAction = 'labels-added';
+      state.lastCategoryApplied = payload.labels[0].category;
     },
 
     labelsRemoved: (state, { payload }) => {
@@ -79,15 +84,14 @@ export const reviewSlice = createSlice({
     },
 
     labelsValidated: (state, { payload }) => {
-      console.log('reviewSlice - labelsValidated - payload: ', payload);
       payload.labels.forEach(({ userId, imgId, objId, lblId, validated }) => {
         const label = findLabel(state.workingImages, imgId, objId, lblId);
         label.validation = { validated, userId };
       });
+      state.lastAction = payload.labels[0].validated ? 'labels-validated' : 'labels-invalidated';
     },
 
     labelsValidationReverted: (state, { payload }) => { // for undoing a validation
-      console.log('reviewSlice - labelsValidationReverted - payload: ', payload);
       payload.labels.forEach(({ imgId, objId, lblId, oldValidation, oldLocked }) => {
         const object = findObject(state.workingImages, imgId, objId);
         object.locked = oldLocked;
@@ -97,7 +101,6 @@ export const reviewSlice = createSlice({
     },
 
     objectsLocked: (state, { payload }) => {
-      console.log('reviewSlice - objectsLocked - payload: ', payload);
       payload.objects.forEach(({ imgId, objId, locked }) => {
         const object = findObject(state.workingImages, imgId, objId);
         object.locked = locked;
@@ -111,6 +114,7 @@ export const reviewSlice = createSlice({
           image.objects.push(img.newObject);
         }
       }
+      state.lastAction = 'marked-empty';
     },
 
     editLabelStart: (state) => { 
@@ -146,6 +150,12 @@ export const reviewSlice = createSlice({
       .addCase(clearImages, (state) => {
         state.workingImages = [];
       })
+      .addCase(toggleOpenLoupe, (state, { payload }) => {
+        if (payload === false) {
+          state.lastAction = null;
+          state.lastCategoryApplied = null;
+        }
+      })
       .addCase(deleteImagesSuccess, (state, { payload }) => {
         state.workingImages = state.workingImages.filter(
           ({ _id }) => !payload.includes(_id)
@@ -176,6 +186,12 @@ export const editLabel = (operation, entity, payload, projId) => {
   return async (dispatch, getState) => {
     try {
 
+      if ((payload.updates && !payload.updates.length) || 
+          (payload.objects && !payload.objects.length) ||
+          (payload.labels && !payload.labels.length)) {
+          return;
+      }
+
       if (!operation || !entity || !payload) {
         const msg = `An operation (create, update, or delete) 
           and entity are required`;
@@ -187,7 +203,7 @@ export const editLabel = (operation, entity, payload, projId) => {
       dispatch(editLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects
+      const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
@@ -212,12 +228,14 @@ export const editLabel = (operation, entity, payload, projId) => {
 // Actions only used in middlewares:
 export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
-export const objectManuallyUnlocked = createAction('review/objectManuallyUnlocked');
+export const objectsManuallyUnlocked = createAction('review/objectsManuallyUnlocked');
 export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 
 export const selectWorkingImages = state => state.review.workingImages;
 export const selectFocusIndex = state => state.review.focusIndex;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
+export const selectLastAction = state => state.review.lastAction;
+export const selectLastCategoryApplied = state => state.review.lastCategoryApplied;
 
 export default reviewSlice.reducer;

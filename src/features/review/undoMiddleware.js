@@ -3,7 +3,7 @@ import {
   bboxUpdated,
   labelsAdded,
   objectsLocked,
-  objectManuallyUnlocked,
+  objectsManuallyUnlocked,
   labelsValidated,
   labelsValidationReverted,
   selectWorkingImages,
@@ -70,12 +70,12 @@ export const undoMiddleware = createUndoMiddleware({
       }
     },
 
-    // objectManuallyUnlocked
-    [objectManuallyUnlocked.toString()]: {
+    // objectsManuallyUnlocked
+    [objectsManuallyUnlocked.toString()]: {
       action: (action) => {
-        console.log("reverting objectManuallyUnlocked with action: ", action);
-        const { imgId, objId } = action.payload;
-        const objects = [{ imgId, objId, locked: true }]
+        console.log("reverting objectsManuallyUnlocked with action: ", action);
+        const { imgId, objIds } = action.payload;
+        const objects = objIds.map((objId) => ({ imgId, objId, locked: true }));
         return objectsLocked({ objects });
       },
     },
