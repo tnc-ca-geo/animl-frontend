@@ -61,7 +61,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
 
     let containerY = e.clientY - top;
     containerY = (e.clientY >= (top + height)) ? height : containerY;
-    containerY = (e.clientY <= top) ? top : containerY;
+    containerY = (e.clientY <= top) ? 0 : containerY;
 
     setMousePos({ x: containerX, y: containerY });
 
