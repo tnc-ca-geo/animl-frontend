@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ObjectID } from 'bson';
 import { styled } from '../../theme/stitches.config';
 import { absToRel } from '../../app/utils';
 import { setFocus } from '../review/reviewSlice';
-import { drawBboxEnd, addLabelStart } from './loupeSlice';
+import { drawBboxEnd, addLabelStart, clearMouseUpDetected, selectMouseUpOutsideOverlay } from './loupeSlice';
 
 
 const CrossHairHorizontal = styled('div', {
@@ -77,7 +77,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     setDrawingBBox(true);
   };
 
-  const handleMouseUp = () => {
+  const createNewBBox = () => {
     // create bbox
     const bbox = absToRel(tempBBox, { width, height });
     const newObject = {
@@ -92,8 +92,21 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     setTempBBox(defaultBBox);
     dispatch(setFocus({ index: { object: null }, type: 'auto' }));
     dispatch(drawBboxEnd());
-    dispatch(addLabelStart())
+    dispatch(addLabelStart());
   };
+
+  const handleMouseUp = (e) => {
+    e.stopPropagation();
+    createNewBBox();
+  };
+
+  const mouseUpDetectedOutsideOverlay = useSelector(selectMouseUpOutsideOverlay);
+  useEffect(() => {
+    if (mouseUpDetectedOutsideOverlay) {
+      createNewBBox();
+      dispatch(clearMouseUpDetected());
+    }
+  }, [mouseUpDetectedOutsideOverlay])
 
   // listen for esc keydown and end drawBbox
   // TODO: should be able to use react synthetic onKeyDown events,

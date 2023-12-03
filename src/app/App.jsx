@@ -15,6 +15,7 @@ import * as Toast from '@radix-ui/react-toast';
 import { initTracking } from '../features/tracking/trackingSlice';
 import { selectRouterLocation } from '../features/images/imagesSlice';
 import { userAuthStateChanged } from '../features/user/userSlice';
+import { mouseUpDetected, selectIsDrawingBbox } from '../features/loupe/loupeSlice';
 import logo from '../assets/animl-logo.svg';
 import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG } from '../config';
 
@@ -109,6 +110,11 @@ const App = () => {
     dispatch(initTracking(GA_CONFIG));
   }, [ dispatch ]);
 
+  const isDrawingBbox = useSelector(selectIsDrawingBbox);
+  const handleMouseUp = () => {
+    if (isDrawingBbox) dispatch(mouseUpDetected());
+  };
+
   return (
     <>
       {maintenanceMode === true
@@ -116,7 +122,7 @@ const App = () => {
         : (
           <Tooltip.Provider>
             <Toast.Provider>
-              <AppContainer>
+              <AppContainer onMouseUp={handleMouseUp}>
                 <NavBar />
                 <Switch>
                   <Route exact path="/" component={HomePage} />
