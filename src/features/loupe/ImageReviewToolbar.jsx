@@ -17,7 +17,7 @@ import {
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
-import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
+import { addLabelStart, addLabelEnd, selectIsDrawingBbox } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { violet, blackA, mauve } from '@radix-ui/colors';
@@ -28,6 +28,7 @@ import {
   TooltipArrow, 
   TooltipTrigger
 } from '../../components/Tooltip.jsx';
+import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
 
 
 const Toolbar = styled('div', {
@@ -132,6 +133,15 @@ const IncrementControls = styled('div', {
   padding: '$0 $2 $0 $1',
 });
 
+const CancelHint = styled('div', {
+  ...itemStyles,
+  '&:hover': {
+    backgroundColor: '$background',
+    color: mauve.mauve11,
+    cursor: 'default'
+  },
+});
+
 const CategorySelector = ({ image, setCatSelectorOpen }) => {
   const userId = useSelector(selectUserUsername);
   const dispatch = useDispatch();
@@ -196,6 +206,7 @@ const ImageReviewToolbar = ({
   handleIncrementClick
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
+  const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const dispatch = useDispatch();
 
   const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
@@ -307,17 +318,23 @@ const ImageReviewToolbar = ({
           <Separator />
 
           {/* Add object */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                <GroupIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
-              Add object
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
+          {isDrawingBbox 
+            ? <CancelHint>
+                <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
+                <span style={{ paddingBottom: '2px' }}>to cancel</span>
+              </CancelHint>
+            : <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                    <GroupIcon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5} >
+                  Add object
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
+          }
           
           <Separator />
 
@@ -361,7 +378,7 @@ const ImageReviewToolbar = ({
             </div>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={5} >
-            Hint: you can also use the WASD or arrow keys to navigate images
+            Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>

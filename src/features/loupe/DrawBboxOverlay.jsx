@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ObjectID } from 'bson';
 import { styled } from '../../theme/stitches.config';
 import { absToRel } from '../../app/utils';
 import { setFocus } from '../review/reviewSlice';
-import { drawBboxEnd, addLabelStart } from './loupeSlice';
+import {
+  drawBboxEnd,
+  addLabelStart,
+  clearMouseEventDetected,
+  selectMouseEventDetected
+} from './loupeSlice';
 
 
 const CrossHairHorizontal = styled('div', {
@@ -52,13 +57,14 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
 
     let containerX = e.clientX - left;
     containerX = (e.clientX >= (left + width)) ? width : containerX;
-    containerX = (e.clientX <= left) ? left : containerX;
+    containerX = (e.clientX <= left) ? 0 : containerX;
 
     let containerY = e.clientY - top;
     containerY = (e.clientY >= (top + height)) ? height : containerY;
-    containerY = (e.clientY <= top) ? top : containerY;
+    containerY = (e.clientY <= top) ? 0 : containerY;
 
     setMousePos({ x: containerX, y: containerY });
+
     if (drawingBBox) {
       // update tempBoxWidth and tempBoxHeight
       const newWidth = containerX - tempBBox.left;
@@ -70,14 +76,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     }
   };
 
-  const handleMouseDown = (e) => {
-    const newTop = mousePos.y - 2;  // subtracting 2px for border
-    const newLeft = mousePos.x - 2;
-    setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
-    setDrawingBBox(true);
-  };
-
-  const handleMouseUp = () => {
+  const createNewBBox = () => {
     // create bbox
     const bbox = absToRel(tempBBox, { width, height });
     const newObject = {
@@ -92,7 +91,39 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     setTempBBox(defaultBBox);
     dispatch(setFocus({ index: { object: null }, type: 'auto' }));
     dispatch(drawBboxEnd());
-    dispatch(addLabelStart())
+    dispatch(addLabelStart());
+  };
+
+  const startDrawingBBox = () => {
+    let newTop = mousePos.y - 2;  // subtracting 2px for border
+    let newLeft = mousePos.x - 2;
+    newTop = (newTop < 0) ? 0 : newTop; // prevent negative values
+    newLeft = (newLeft < 0) ? 0 : newLeft;
+    setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
+    setDrawingBBox(true);
+  };
+
+  const mouseEventDetectedOutsideOverlay = useSelector(selectMouseEventDetected);
+  useEffect(() => {
+    if (!mouseEventDetectedOutsideOverlay) return;
+    if (mouseEventDetectedOutsideOverlay === 'mouse-up') {
+      createNewBBox();
+      dispatch(clearMouseEventDetected());
+    }
+    if (mouseEventDetectedOutsideOverlay === 'mouse-down') {
+      startDrawingBBox();
+      dispatch(clearMouseEventDetected());
+    }
+  }, [mouseEventDetectedOutsideOverlay]);
+
+
+  const handleMouseDown = (e) => {
+    startDrawingBBox();
+  };
+
+  const handleMouseUp = (e) => {
+    e.stopPropagation();
+    createNewBBox();
   };
 
   // listen for esc keydown and end drawBbox
@@ -105,7 +136,6 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => { window.removeEventListener('keydown', handleKeyDown) }
   }, [ dispatch ]);
-
 
   return (
     <Overlay

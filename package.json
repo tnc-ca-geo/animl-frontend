@@ -74,10 +74,15 @@
     "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "plugins": ["react-refresh"],
+    "rules": {
+      "react-refresh/only-export-components": "warn"
+    }
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.1",
+    "eslint-plugin-react-refresh": "^0.4.5",
     "serverless-finch": "^4.0.3",
     "vite": "^4.3.9",
     "vite-plugin-svgr": "^3.2.0",
