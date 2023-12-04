@@ -26,12 +26,10 @@ import {
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import PanelHeader from '../../components/PanelHeader.jsx';
-import ReviewSettingsForm from './ReviewSettingsForm.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
-import LoupeFooter from './LoupeFooter.jsx';
 import ShareImageButton from './ShareImageButton';
-
+import LoupeDropdown from './LoupeDropdown.jsx';
 
 import { Image } from '../../components/Image';
 
@@ -315,6 +313,7 @@ const Loupe = () => {
             </MetadataList>
           </MetadataPane>
         }
+        <LoupeDropdown />
         {/*<div>
           Label review
           <IconButton
