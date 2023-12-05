@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
+import { deleteImages } from '../images/imagesSlice.js';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -21,16 +22,22 @@ const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   margin: '0 $2',
 });
 
-const LoupeDropdown = () => {
+const LoupeDropdown = ({ image }) => {
+  const dispatch = useDispatch();
+
+  const handleDeleteImageItemClick = () => {
+    dispatch(deleteImages([image._id]));
+  };
+
   return (
     <DropdownMenu>
       <StyledDropdownMenuTrigger asChild>
-        <IconButton variant='ghost' css={{ border: 'none' }}>
+        <IconButton variant='ghost'>
           <DotsHorizontalIcon />
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDeleteImageItemClick}>
           Delete Image
         </DropdownMenuItem>
         <DropdownMenuArrow offset={12} />

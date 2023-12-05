@@ -304,16 +304,18 @@ const Loupe = () => {
         closeButtonPosition='left'
       >
         {image && 
-          <MetadataPane>
-            <MetadataList>
-              <Item label='Date created' value={dtCreated}/>
-              <Item label='Camera' value={image.cameraId}/>
-              <Item label='Deployment' value={image.deploymentName}/>
-              <Item label='File name' value={image.originalFileName}/>
-            </MetadataList>
-          </MetadataPane>
+          <>
+            <MetadataPane>
+              <MetadataList>
+                <Item label='Date created' value={dtCreated}/>
+                <Item label='Camera' value={image.cameraId}/>
+                <Item label='Deployment' value={image.deploymentName}/>
+                <Item label='File name' value={image.originalFileName}/>
+              </MetadataList>
+            </MetadataPane>
+            <LoupeDropdown image={image} />
+          </>
         }
-        <LoupeDropdown />
         {/*<div>
           Label review
           <IconButton
