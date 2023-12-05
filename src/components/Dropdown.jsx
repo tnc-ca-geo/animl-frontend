@@ -32,6 +32,7 @@ const slideLeftAndFade = keyframes({
 const StyledContent = styled(DropdownMenuPrimitive.Content, {
   minWidth: 220,
   backgroundColor: 'white',
+  zIndex: '$6',
   borderRadius: '$2',
   padding: '$2',
   boxShadow:

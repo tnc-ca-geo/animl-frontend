@@ -253,34 +253,34 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
         console.log('Upload alert onOpenChange firing: ', e); // TODO: do we need this?
       }}
     >
-    <AlertPortal>
-      <AlertOverlay/>
-      <AlertContent>
-        <AlertTitle>Are you sure you'd like to proceed with this upload?</AlertTitle>
-        {warnings && warnings.map((warn) => (
-          <Warning key={warn} >
-            <WarningTitle><ExclamationTriangleIcon/>Warning</WarningTitle>
-            {alertContent[warn]}
-          </Warning>
-        ))}
-        <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
-          <Button size='small' css={{ border: 'none' }} onClick={() => setAlertOpen(false)}>Cancel</Button>
-          <Button
-            size='small'
-            css={{
-              backgroundColor: red.red4,
-              color: red.red11,
-              border: 'none',
-              '&:hover': { color: red.red11, backgroundColor: red.red5 }
-            }} 
-            onClick={handleConfirmUpload}
-          >
-            Yes, begin upload
-          </Button>
-        </div>
-      </AlertContent>
-    </AlertPortal>
-  </Alert>
+      <AlertPortal>
+        <AlertOverlay/>
+        <AlertContent>
+          <AlertTitle>Are you sure you'd like to proceed with this upload?</AlertTitle>
+          {warnings && warnings.map((warn) => (
+            <Warning key={warn} >
+              <WarningTitle><ExclamationTriangleIcon/>Warning</WarningTitle>
+              {alertContent[warn]}
+            </Warning>
+          ))}
+          <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
+            <Button size='small' css={{ border: 'none' }} onClick={() => setAlertOpen(false)}>Cancel</Button>
+            <Button
+              size='small'
+              css={{
+                backgroundColor: red.red4,
+                color: red.red11,
+                border: 'none',
+                '&:hover': { color: red.red11, backgroundColor: red.red5 }
+              }} 
+              onClick={handleConfirmUpload}
+            >
+              Yes, begin upload
+            </Button>
+          </div>
+        </AlertContent>
+      </AlertPortal>
+    </Alert>
   )
 };
 
