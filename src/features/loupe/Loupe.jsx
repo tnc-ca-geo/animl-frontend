@@ -251,6 +251,7 @@ const Loupe = () => {
     .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 
   // Listen for hotkeys
+  // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
   const isAddingLabel = useSelector(selectIsAddingLabel);
@@ -285,6 +286,14 @@ const Loupe = () => {
         hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
       dispatch(addLabelStart('to-all-objects'));
     }
+
+    // ctrl-v (repeat last action)
+    if (((e.ctrlKey || e.metaKey) && charCode === 'v') && 
+        hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
+      e.stopPropagation();
+      handleRepeatAction();
+    }
+
 
     // // handle ctrl-a (add object)
     // if (reviewMode) {
