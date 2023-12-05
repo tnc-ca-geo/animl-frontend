@@ -145,29 +145,20 @@ const BoundingBoxLabel = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(isAddingLabel && selected);
+  const open = ((isAddingLabel === 'to-single-object') && selected);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState(open);
+
+  useEffect(() => {
+    setCatSelectorOpen(((isAddingLabel === 'to-single-object') && selected));
+  }, [isAddingLabel, selected]);
 
   // manually focus catSelector if it's open
   useEffect(() => {
     if (catSelectorOpen) catSelectorRef.current.focus();
-  }, [catSelectorRef, catSelectorOpen])
-
-  // // stop adding label if user clicks out of it
-  // useEffect(() => {
-  //   const handleWindowClick = (e) => {
-  //     if (object.isTemp) setTempObject(null);
-  //     // unless the last click was on the "edit label" context menu item
-  //     if (!targetIsEditLabelMenuItem(e)) { 
-  //       dispatch(addLabelEnd());
-  //     }
-  //   };
-  //   ToggleGroup
-  //     ? window.addEventListener('click', handleWindowClick)
-  //     : window.removeEventListener('click', handleWindowClick);
-  //   return () => window.removeEventListener('click', handleWindowClick);
-  // }, [ ToggleGroup, imgId, object, setTempObject, dispatch ]);
+  }, [catSelectorRef, catSelectorOpen]);
 
   // listen for ctrl-e keydown and open cat selector to edit
+  // TODO: revisit this now that we have image review toolbar
   useEffect(() => {
     const handleKeyDown = (e) => {
       let charCode = String.fromCharCode(e.which).toLowerCase();
@@ -175,7 +166,7 @@ const BoundingBoxLabel = ({
           isAuthorized &&
           selected
         ) {
-        dispatch(addLabelStart());
+        dispatch(addLabelStart('to-single-object'));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -186,8 +177,8 @@ const BoundingBoxLabel = ({
     e.stopPropagation();
     if (!object.locked && isAuthorized && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
-      dispatch(addLabelStart());
-      setCatSelectorOpen(true);
+      dispatch(addLabelStart('to-single-object'));
+      // setCatSelectorOpen(true);
     }
   };
 
@@ -204,13 +195,13 @@ const BoundingBoxLabel = ({
         imgId
       }]
     }));
-    setCatSelectorOpen(false);
+    // setCatSelectorOpen(false);
   };
 
   const handleCategorySelectorBlur = (e) => {
     if (object.isTemp) setTempObject(null);
     dispatch(addLabelEnd());
-    setCatSelectorOpen(false);
+    // setCatSelectorOpen(false);
   };
 
   return (

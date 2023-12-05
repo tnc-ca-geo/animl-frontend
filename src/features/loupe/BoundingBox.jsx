@@ -248,7 +248,7 @@ const BoundingBox = ({
     focusRef.current = catSelectorRef.current;
     const newIndex = { image: focusIndex.image, object: objectIndex, label: null }
     dispatch(setFocus({ index: newIndex, type: 'manual'}));
-    dispatch(addLabelStart());
+    dispatch(addLabelStart('to-single-object'));
   };
   
   const handleUnlockMenuItemClick = (e) => {
