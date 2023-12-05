@@ -26,12 +26,10 @@ import {
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import PanelHeader from '../../components/PanelHeader.jsx';
-import ReviewSettingsForm from './ReviewSettingsForm.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
-import LoupeFooter from './LoupeFooter.jsx';
 import ShareImageButton from './ShareImageButton';
-
+import LoupeDropdown from './LoupeDropdown.jsx';
 
 import { Image } from '../../components/Image';
 
@@ -306,14 +304,17 @@ const Loupe = () => {
         closeButtonPosition='left'
       >
         {image && 
-          <MetadataPane>
-            <MetadataList>
-              <Item label='Date created' value={dtCreated}/>
-              <Item label='Camera' value={image.cameraId}/>
-              <Item label='Deployment' value={image.deploymentName}/>
-              <Item label='File name' value={image.originalFileName}/>
-            </MetadataList>
-          </MetadataPane>
+          <>
+            <MetadataPane>
+              <MetadataList>
+                <Item label='Date created' value={dtCreated}/>
+                <Item label='Camera' value={image.cameraId}/>
+                <Item label='Deployment' value={image.deploymentName}/>
+                <Item label='File name' value={image.originalFileName}/>
+              </MetadataList>
+            </MetadataPane>
+            <LoupeDropdown image={image} />
+          </>
         }
         {/*<div>
           Label review

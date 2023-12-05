@@ -5,7 +5,7 @@ const initialState = {
   open: false,
   reviewMode: false,
   isDrawingBbox: false,
-  isAddingLabel: false,
+  isAddingLabel: null,
   mouseEventOutsideOverlay: null,
   iterationOptions: {
     skipEmptyImages: false,
@@ -37,10 +37,13 @@ export const loupeSlice = createSlice({
       state.mouseEventOutsideOverlay = null;
     },
 
-    addLabelStart: (state) => { state.isAddingLabel = true; },
+    addLabelStart: (state, { payload }) => { 
+      // payload can be 'to-single-object' or 'all-objects
+      state.isAddingLabel = payload;
+    },
 
     addLabelEnd: (state) => {
-      if (state.isAddingLabel) state.isAddingLabel = false;
+      if (state.isAddingLabel) state.isAddingLabel = null;
     },
 
     iterationOptionsChanged: (state, { payload }) => {

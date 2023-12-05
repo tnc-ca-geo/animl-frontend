@@ -212,7 +212,7 @@ const ImageReviewToolbar = ({
   const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(addLabelStart());
+    dispatch(addLabelStart('to-all-objects'));
     setCatSelectorOpen(true);
   };
 

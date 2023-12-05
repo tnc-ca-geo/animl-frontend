@@ -91,7 +91,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     setTempBBox(defaultBBox);
     dispatch(setFocus({ index: { object: null }, type: 'auto' }));
     dispatch(drawBboxEnd());
-    dispatch(addLabelStart());
+    dispatch(addLabelStart('to-single-object'));
   };
 
   const startDrawingBBox = () => {

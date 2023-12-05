@@ -32,6 +32,7 @@ const slideLeftAndFade = keyframes({
 const StyledContent = styled(DropdownMenuPrimitive.Content, {
   minWidth: 220,
   backgroundColor: 'white',
+  zIndex: '$6',
   borderRadius: '$2',
   padding: '$2',
   boxShadow:
@@ -52,7 +53,8 @@ const StyledContent = styled(DropdownMenuPrimitive.Content, {
 
 const itemStyles = {
   all: 'unset',
-  fontSize: '$4',
+  fontSize: '$3',
+  fontWeight: '$2',
   lineHeight: 1,
   color: '$hiContrast',
   borderRadius: 3,
@@ -61,7 +63,7 @@ const itemStyles = {
   height: 27,
   padding: '0 5px',
   position: 'relative',
-  paddingLeft: 25,
+  paddingLeft: '$2',
   userSelect: 'none',
 
   '&[data-disabled]': {
@@ -70,13 +72,19 @@ const itemStyles = {
   },
 
   '&[data-state="checked"]': {
-    backgroundColor: '$blue200',
-    color: '$blue500',
+    backgroundColor: '$hiContrast',
+    color: '$loContrast',
+  },
+
+  '&[data-highlighted]': {
+    backgroundColor: '$hiContrast',
+    color: '$loContrast',
+    cursor: 'pointer',
   },
 
   '&:focus': {
-    backgroundColor: '$blue500',
-    color: indigo.indigo1,
+    // backgroundColor: '$blue500',
+    // color: indigo.indigo1,
   },
 };
 
@@ -93,7 +101,7 @@ const StyledTriggerItem = styled(DropdownMenuPrimitive.TriggerItem, {
 
 const StyledLabel = styled(DropdownMenuPrimitive.Label, {
   paddingLeft: 25,
-  fontSize: '$3',
+  // fontSize: '$3',
   lineHeight: '25px',
   color: mauve.mauve11,
 });
