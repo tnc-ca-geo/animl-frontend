@@ -17,17 +17,18 @@ import { HamburgerMenuIcon, DotFilledIcon, DotsHorizontalIcon} from '@radix-ui/r
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
+  right: 0,
   margin: '0 $2',
 });
 
 const LoupeDropdown = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <IconButton css={{ border: 'none' }}>
+      <StyledDropdownMenuTrigger asChild>
+        <IconButton variant='ghost' css={{ border: 'none' }}>
           <DotsHorizontalIcon />
         </IconButton>
-      </DropdownMenuTrigger>
+      </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
         <DropdownMenuItem>
           Delete Image

@@ -71,13 +71,14 @@ const itemStyles = {
   },
 
   '&[data-state="checked"]': {
-    backgroundColor: violet.violet9,
-    color: violet.violet1,
+    backgroundColor: '$hiContrast',
+    color: '$loContrast',
   },
 
   '&[data-highlighted]': {
-    backgroundColor: violet.violet9,
-    color: violet.violet1,
+    backgroundColor: '$hiContrast',
+    color: '$loContrast',
+    cursor: 'pointer',
   },
 
   '&:focus': {
