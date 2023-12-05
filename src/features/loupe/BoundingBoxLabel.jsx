@@ -147,7 +147,6 @@ const BoundingBoxLabel = ({
   const isAddingLabel = useSelector(selectIsAddingLabel);
   const open = ((isAddingLabel === 'to-single-object') && selected);
   const [ catSelectorOpen, setCatSelectorOpen ] = useState(open);
-
   useEffect(() => {
     setCatSelectorOpen(((isAddingLabel === 'to-single-object') && selected));
   }, [isAddingLabel, selected]);
@@ -157,28 +156,11 @@ const BoundingBoxLabel = ({
     if (catSelectorOpen) catSelectorRef.current.focus();
   }, [catSelectorRef, catSelectorOpen]);
 
-  // listen for ctrl-e keydown and open cat selector to edit
-  // TODO: revisit this now that we have image review toolbar
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      let charCode = String.fromCharCode(e.which).toLowerCase();
-      if (((e.ctrlKey || e.metaKey) && charCode === 'e') &&
-          isAuthorized &&
-          selected
-        ) {
-        dispatch(addLabelStart('to-single-object'));
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ isAuthorized, selected, dispatch ]);
-
   const handleLabelClick = (e) => {
     e.stopPropagation();
     if (!object.locked && isAuthorized && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
       dispatch(addLabelStart('to-single-object'));
-      // setCatSelectorOpen(true);
     }
   };
 
@@ -195,13 +177,11 @@ const BoundingBoxLabel = ({
         imgId
       }]
     }));
-    // setCatSelectorOpen(false);
   };
 
   const handleCategorySelectorBlur = (e) => {
     if (object.isTemp) setTempObject(null);
     dispatch(addLabelEnd());
-    // setCatSelectorOpen(false);
   };
 
   return (

@@ -17,7 +17,7 @@ import {
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
-import { addLabelStart, addLabelEnd, selectIsDrawingBbox } from './loupeSlice.js';
+import { addLabelStart, addLabelEnd, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { violet, blackA, mauve } from '@radix-ui/colors';
@@ -142,7 +142,7 @@ const CancelHint = styled('div', {
   },
 });
 
-const CategorySelector = ({ image, setCatSelectorOpen }) => {
+const CategorySelector = ({ image }) => {
   const userId = useSelector(selectUserUsername);
   const dispatch = useDispatch();
   // update selector options when new labels become available
@@ -166,12 +166,10 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
         imgId: image._id
       }));
     dispatch(labelsAdded({ labels: newLabels }));
-    setCatSelectorOpen(false);
   };
 
   const handleCategorySelectorBlur = (e) => {
     dispatch(addLabelEnd());
-    setCatSelectorOpen(false);
   };
 
   return (
@@ -203,17 +201,22 @@ const ImageReviewToolbar = ({
   handleMarkEmptyButtonClick,
   handleAddObjectButtonClick,
   handleUnlockAllButtonClick,
-  handleIncrementClick
+  handleIncrementClick,
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const dispatch = useDispatch();
 
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
+  // manage category selector state (open/closed)
+  const isAddingLabel = useSelector(selectIsAddingLabel);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'to-all-objects'));
+  useEffect(() => {
+    setCatSelectorOpen(((isAddingLabel === 'to-all-objects')));
+  }, [isAddingLabel]);
+
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
     dispatch(addLabelStart('to-all-objects'));
-    setCatSelectorOpen(true);
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
@@ -250,10 +253,7 @@ const ImageReviewToolbar = ({
           <Tooltip>
             <TooltipTrigger asChild>
               {catSelectorOpen
-                ? (<CategorySelector 
-                    image={image} 
-                    setCatSelectorOpen={setCatSelectorOpen}
-                  />)
+                ? (<CategorySelector image={image} />)
                 : (<ToolbarIconButton
                     onClick={handleEditAllLabelsButtonClick}
                     disabled={allObjectsLocked}

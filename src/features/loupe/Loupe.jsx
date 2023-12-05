@@ -22,6 +22,7 @@ import {
   selectReviewMode,
   selectIsAddingLabel,
   drawBboxStart,
+  addLabelStart,
 } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
@@ -249,7 +250,7 @@ const Loupe = () => {
     .fromISO(image.dateTimeOriginal)
     .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 
-  // Listen for arrow keydowns
+  // Listen for hotkeys
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
   const isAddingLabel = useSelector(selectIsAddingLabel);
@@ -258,7 +259,7 @@ const Loupe = () => {
     if (!image || isAddingLabel || modalOpen) return;
     let charCode = String.fromCharCode(e.which).toLowerCase();
 
-    // key listeners for increment/decrement
+    // arrows or WASD (increment/decrement)
     const delta = (e.code === 'ArrowLeft' || charCode === 'a')
       ? 'decrement'
       : (e.code === 'ArrowRight' || charCode === 'd')
@@ -271,12 +272,18 @@ const Loupe = () => {
         : dispatch(incrementImage(delta));
     }
 
-    // handle ctrl-z/shift-ctrl-z (undo/redo)
+    // ctrl-z/shift-ctrl-z (undo/redo)
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
       dispatch(undoActions.redo());
     }
     else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
       dispatch(undoActions.undo());
+    }
+
+    // ctrl-e (edit all)
+    if (((e.ctrlKey || e.metaKey) && charCode === 'e') && 
+        hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
+      dispatch(addLabelStart('to-all-objects'));
     }
 
     // // handle ctrl-a (add object)
