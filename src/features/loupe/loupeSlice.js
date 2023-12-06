@@ -38,7 +38,7 @@ export const loupeSlice = createSlice({
     },
 
     addLabelStart: (state, { payload }) => { 
-      // payload can be 'to-single-object' or 'all-objects
+      // payload can be 'from-object' or 'all-objects
       state.isAddingLabel = payload;
     },
 

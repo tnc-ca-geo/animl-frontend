@@ -209,14 +209,14 @@ const ImageReviewToolbar = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'to-all-objects'));
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-review-toolbar'));
   useEffect(() => {
-    setCatSelectorOpen(((isAddingLabel === 'to-all-objects')));
+    setCatSelectorOpen(((isAddingLabel === 'from-review-toolbar')));
   }, [isAddingLabel]);
 
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(addLabelStart('to-all-objects'));
+    dispatch(addLabelStart('from-review-toolbar'));
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);

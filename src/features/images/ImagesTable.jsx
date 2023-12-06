@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  forwardRef
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
@@ -26,10 +27,14 @@ import {
 } from './imagesSlice';
 import {
   setFocus,
+  labelsAdded,
   selectFocusIndex,
   selectFocusChangeType
 } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
+import { selectAvailLabels } from '../filters/filtersSlice.js';
+import { selectIsAddingLabel, addLabelStart, addLabelEnd } from '../loupe/loupeSlice.js';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -42,6 +47,9 @@ import {
   ContextMenuSeparator,
   ContextMenuItemIconLeft
 } from '../../components/ContextMenu';
+import CreatableSelect from 'react-select/creatable';
+import { createFilter } from 'react-select';
+
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -252,20 +260,17 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       setSelectedRows([]);
     }
   }, [focusIndex.image]);
-  console.log('selectedRows: ', selectedRows);
 
-  const handleRowClick = useCallback((e, rowId) => {
+  const handleRowClick = useCallback((e, rowIdx) => {
     if (e.shiftKey) {
-      // TODO: allow for selection of mulitple images to perform bulk actions on
-      console.log('shift + click detected. Current focusIndex: ', focusIndex);
-      console.log('row clicked: ', Number(rowId));
-      const start = Math.min(focusIndex.image, rowId);
-      const end = Math.max(focusIndex.image, rowId);
+      // allow for selection of multiple images to perform bulk actions on
+      const start = Math.min(focusIndex.image, rowIdx);
+      const end = Math.max(focusIndex.image, rowIdx);
       let selection = [];
       for (let i = start; i <= end; i++) { selection.push(i); }
       setSelectedRows(selection);
     } else {
-      const newIndex = { image: Number(rowId), object: null, label: null }
+      const newIndex = { image: Number(rowIdx), object: null, label: null }
       dispatch(setFocus({ index: newIndex, type: 'manual' }));
       dispatch(toggleOpenLoupe(true));
     }
@@ -409,6 +414,23 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const row = rows[index];
         prepareRow(row);
         const selected = selectedRows.includes(index);
+        const selectedImages = selectedRows.map((rowIdx) => workingImages[rowIdx]);
+
+        // manage category selector state (open/closed)
+        const isAddingLabel = useSelector(selectIsAddingLabel);
+        const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-image-table'));
+        useEffect(() => {
+          setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
+        }, [isAddingLabel]);
+
+        const catSelectorRef = useRef(null);
+
+        const handleEditAllLabelsButtonClick = (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          dispatch(addLabelStart('from-image-table'));
+        };
+
         return (
           <ContextMenu>
             <ContextMenuTrigger disabled={!selected}>
@@ -467,6 +489,18 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 </ContextMenuItemIconLeft>
                 Invalidate
               </ContextMenuItem>
+              {catSelectorOpen
+                ? (<CategorySelector selectedImages={selectedImages} />)
+                : (<ContextMenuItem
+                    onSelect={handleEditAllLabelsButtonClick}
+                    disabled={false}
+                  >
+                    <ContextMenuItemIconLeft>
+                      <Pencil1Icon />
+                    </ContextMenuItemIconLeft>
+                    Edit all labels
+                  </ContextMenuItem>)
+              }
             </ContextMenuContent>
           </ContextMenu>
         );
@@ -616,6 +650,112 @@ function makeRows(workingImages, focusIndex, selectedRows) {
       ...img,
     }
   })
-}
+};
+
+// TODO: make this it's own component. 
+// Used in ImageReviewToolbar and BoundingBoxLabel
+
+const StyledCategorySelector = styled(CreatableSelect, {
+  width: '155px',
+  fontFamily: '$mono',
+  fontSize: '$2',
+  fontWeight: '$1',
+  zIndex: '$5',
+  '.react-select__control': {
+    boxSizing: 'border-box',
+    // height: '24px',
+    minHeight: 'unset',
+    border: '1px solid',
+    borderColor: '$border',
+    borderRadius: '$2',
+    cursor: 'pointer',
+  },
+  '.react-select__single-value': {
+    // position: 'relative',
+  },
+  '.react-select__indicator-separator': {
+    display: 'none',
+  },
+  '.react-select__dropdown-indicator': {
+    paddingTop: '0',
+    paddingBottom: '0',
+  },
+  '.react-select__control--is-focused': {
+    transition: 'all 0.2s ease',
+    boxShadow: '0 0 0 3px $blue200',
+    borderColor: '$blue500',
+    '&:hover': {
+      boxShadow: '0 0 0 3px $blue200',
+      borderColor: '$blue500',
+    },
+  },
+  '.react-select__menu': {
+    color: '$textDark',
+    fontSize: '$3',
+    '.react-select__option': {
+      cursor: 'pointer',
+    },
+    '.react-select__option--is-selected': {
+      color: '$blue500',
+      backgroundColor: '$blue200',
+    },
+    '.react-select__option--is-focused': {
+      backgroundColor: '$gray3',
+    },
+  }
+});
+
+const CategorySelector = ({ selectedImages }) => {
+  const userId = useSelector(selectUserUsername);
+  const dispatch = useDispatch();
+  // update selector options when new labels become available
+  const createOption = (category) => ({ value: category.toLowerCase(), label: category });
+  const availLabels = useSelector(selectAvailLabels);
+  const options = availLabels.ids.map((id) => createOption(id));
+
+  const handleCategoryChange = (newValue) => {
+    if (!newValue) return;
+    let labelsToAdd = [];
+    for (const image of selectedImages) {
+      const newLabels = image.objects
+        .filter((obj) => !obj.locked)
+        .map((obj) => ({
+          objIsTemp: obj.isTemp,
+          userId,
+          bbox: obj.bbox,
+          category: newValue.value || newValue,
+          objId: obj._id,
+          imgId: image._id
+        }));
+        labelsToAdd = labelsToAdd.concat(newLabels);
+    }
+    dispatch(labelsAdded({ labels: labelsToAdd }));
+  };
+
+  const handleCategorySelectorBlur = (e) => {
+    console.log('handleCategorySelectorBlur')
+    dispatch(addLabelEnd());
+  };
+
+  return (
+    <StyledCategorySelector
+      autoFocus
+      isClearable
+      isSearchable
+      openMenuOnClick
+      className='react-select'
+      classNamePrefix='react-select'
+      menuPlacement='bottom'
+      filterOption={createFilter({ matchFrom: 'start' })} // TODO: what does this do?
+      isLoading={availLabels.isLoading}
+      isDisabled={availLabels.isLoading}
+      onChange={handleCategoryChange}
+      onCreateOption={handleCategoryChange}
+      onBlur={handleCategorySelectorBlur}
+      // value={createOption(label.category)}
+      options={options}
+    />
+  );
+};
 
 export default ImagesTable;

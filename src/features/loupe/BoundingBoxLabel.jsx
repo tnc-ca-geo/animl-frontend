@@ -145,10 +145,10 @@ const BoundingBoxLabel = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const open = ((isAddingLabel === 'to-single-object') && selected);
+  const open = ((isAddingLabel === 'from-object') && selected);
   const [ catSelectorOpen, setCatSelectorOpen ] = useState(open);
   useEffect(() => {
-    setCatSelectorOpen(((isAddingLabel === 'to-single-object') && selected));
+    setCatSelectorOpen(((isAddingLabel === 'from-object') && selected));
   }, [isAddingLabel, selected]);
 
   // manually focus catSelector if it's open
@@ -160,7 +160,7 @@ const BoundingBoxLabel = ({
     e.stopPropagation();
     if (!object.locked && isAuthorized && !catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
-      dispatch(addLabelStart('to-single-object'));
+      dispatch(addLabelStart('from-object'));
     }
   };
 

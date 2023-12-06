@@ -125,6 +125,8 @@ const BoundingBox = ({
   const username = useSelector(selectUserUsername);
   const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
   const handleRef = useRef(null);
+  // TODO: I'm pretty sure we want to wrap the bounding box label in react.forwardRef
+  // https://react.dev/reference/react/forwardRef
   const catSelectorRef = useRef(null);
   const focusRef = useRef(null);
   const dispatch = useDispatch();
@@ -248,7 +250,7 @@ const BoundingBox = ({
     focusRef.current = catSelectorRef.current;
     const newIndex = { image: focusIndex.image, object: objectIndex, label: null }
     dispatch(setFocus({ index: newIndex, type: 'manual'}));
-    dispatch(addLabelStart('to-single-object'));
+    dispatch(addLabelStart('from-object'));
   };
   
   const handleUnlockMenuItemClick = (e) => {

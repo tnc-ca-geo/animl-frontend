@@ -284,7 +284,7 @@ const Loupe = () => {
     // ctrl-e (edit all)
     if (((e.ctrlKey || e.metaKey) && charCode === 'e') && 
         hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
-      dispatch(addLabelStart('to-all-objects'));
+      dispatch(addLabelStart('from-review-toolbar'));
     }
 
     // ctrl-v (repeat last action)
