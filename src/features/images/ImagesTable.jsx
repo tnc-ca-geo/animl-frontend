@@ -8,7 +8,7 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
 import { green, orange } from '@radix-ui/colors';
-import { CheckIcon, Cross2Icon, TriangleUpIcon, TriangleDownIcon } from '@radix-ui/react-icons'
+import { CheckIcon, Cross2Icon, TriangleUpIcon, TriangleDownIcon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
@@ -34,6 +34,14 @@ import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuItemIconLeft
+} from '../../components/ContextMenu';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -400,25 +408,67 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       if (isImageLoaded(index)) {
         const row = rows[index];
         prepareRow(row);
+        const selected = selectedRows.includes(index);
         return (
-          <TableRow
-            {...row.getRowProps({ style })}
-            onClick={(e) => handleRowClick(e, row.id)}
-            selected={selectedRows.includes(index)}
-          >
-            {row.cells.map(cell => (
-              <DataCell
-                {...cell.getCellProps()}
-                selected={selectedRows.includes(index)}
-                scrollable={
-                  cell.column.Header === 'Labels' && 
-                  cell.value.props.objects.length > 3
-                }
+          <ContextMenu>
+            <ContextMenuTrigger disabled={!selected}>
+              <TableRow
+                {...row.getRowProps({ style })}
+                onClick={(e) => handleRowClick(e, row.id)}
+                selected={selected}
               >
-                {cell.render('Cell')}
-              </DataCell>
-            ))}
-          </TableRow>
+                {row.cells.map(cell => (
+                  <DataCell
+                    {...cell.getCellProps()}
+                    selected={selected}
+                    scrollable={
+                      cell.column.Header === 'Labels' && 
+                      cell.value.props.objects.length > 3
+                    }
+                  >
+                    {cell.render('Cell')}
+                  </DataCell>
+                ))}
+              </TableRow>
+            </ContextMenuTrigger>
+            <ContextMenuContent
+              sideOffset={5}
+              align='end'
+            >
+              <ContextMenuItem
+                onSelect={() => console.log('Validate all labels')}
+                disabled={false}
+                css={{
+                  color: '$successText',
+                  '&[data-highlighted]': {
+                    backgroundColor: '$successBase',
+                    color: '$successBg',
+                  },
+                }}
+              >
+                <ContextMenuItemIconLeft>
+                  <CheckIcon />
+                </ContextMenuItemIconLeft>
+                Validate
+              </ContextMenuItem>
+              <ContextMenuItem
+                onSelect={() => console.log('Invalidate all labels')}
+                disabled={false}
+                css={{
+                  color: '$errorText',
+                  '&[data-highlighted]': {
+                    backgroundColor: '$errorBase',
+                    color: '$errorBg',
+                  },
+                }}
+              >
+                <ContextMenuItemIconLeft>
+                  <Cross2Icon />
+                </ContextMenuItemIconLeft>
+                Invalidate
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         );
       }
       else {
