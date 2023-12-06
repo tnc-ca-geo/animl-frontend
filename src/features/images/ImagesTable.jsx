@@ -121,7 +121,7 @@ const DataCell = styled(TableCell, {
   variants: {
     selected: {
       true: {
-        backgroundColor: '$backgroundDark',
+        backgroundColor: '$backgroundExtraDark',
         // '&:first-child': {
         //   borderLeft: '4px solid $blue500',
         //   paddingLeft: '12px',
@@ -235,7 +235,35 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
 
-  const data = makeRows(workingImages, focusIndex);
+  const [ selectedRows, setSelectedRows ] = useState([]);
+  useEffect(() => {
+    if (focusIndex.image !== null) {
+      setSelectedRows([focusIndex.image]);
+    }
+    else {
+      setSelectedRows([]);
+    }
+  }, [focusIndex.image]);
+  console.log('selectedRows: ', selectedRows);
+
+  const handleRowClick = useCallback((e, rowId) => {
+    if (e.shiftKey) {
+      // TODO: allow for selection of mulitple images to perform bulk actions on
+      console.log('shift + click detected. Current focusIndex: ', focusIndex);
+      console.log('row clicked: ', Number(rowId));
+      const start = Math.min(focusIndex.image, rowId);
+      const end = Math.max(focusIndex.image, rowId);
+      let selection = [];
+      for (let i = start; i <= end; i++) { selection.push(i); }
+      setSelectedRows(selection);
+    } else {
+      const newIndex = { image: Number(rowId), object: null, label: null }
+      dispatch(setFocus({ index: newIndex, type: 'manual' }));
+      dispatch(toggleOpenLoupe(true));
+    }
+  }, [dispatch, focusIndex]);
+
+  const data = makeRows(workingImages, focusIndex, selectedRows);
 
   const defaultColumn = useMemo(() => ({
     minWidth: 30,
@@ -367,19 +395,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [breakpoint, isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
 
-  const handleRowClick = useCallback((e, id) => {
-    if (e.shiftKey) {
-      // TODO: allow for selection of mulitple images to perform bulk actions on
-      console.log('shift + click detected. Current focusIndex: ', focusIndex);
-      console.log('row clicked: ', Number(id));
-
-    } else {
-      const newIndex = { image: Number(id), object: null, label: null }
-      dispatch(setFocus({ index: newIndex, type: 'manual' }));
-      dispatch(toggleOpenLoupe(true));
-    }
-  }, [dispatch, focusIndex]);
-
   const RenderRow = useCallback(
     ({ index, style }) => {
       if (isImageLoaded(index)) {
@@ -389,12 +404,12 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           <TableRow
             {...row.getRowProps({ style })}
             onClick={(e) => handleRowClick(e, row.id)}
-            selected={focusIndex.image === index}
+            selected={selectedRows.includes(index)}
           >
             {row.cells.map(cell => (
               <DataCell
                 {...cell.getCellProps()}
-                selected={focusIndex.image === index}
+                selected={selectedRows.includes(index)}
                 scrollable={
                   cell.column.Header === 'Labels' && 
                   cell.value.props.objects.length > 3
@@ -509,10 +524,10 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   );  
 };
 
-function makeRows(workingImages, focusIndex) {
+function makeRows(workingImages, focusIndex, selectedRows) {
   return workingImages.map((img, imageIndex) => {
     // thumbnails
-    const isImageFocused = imageIndex === focusIndex.image;
+    const isImageFocused = selectedRows.includes(imageIndex);
     const thumbnail = <Image selected={isImageFocused} src={img.thumbUrl} />;
 
     // label pills
