@@ -460,7 +460,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
             >
               <ContextMenuItem
                 onSelect={() => console.log('Validate all labels')}
-                disabled={false}
+                disabled={isAddingLabel}
                 css={{
                   color: '$successText',
                   '&[data-highlighted]': {
@@ -476,7 +476,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => console.log('Invalidate all labels')}
-                disabled={false}
+                disabled={isAddingLabel}
                 css={{
                   color: '$errorText',
                   '&[data-highlighted]': {
