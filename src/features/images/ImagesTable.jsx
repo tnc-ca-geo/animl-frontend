@@ -33,6 +33,7 @@ import {
 } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { selectIsAddingLabel, addLabelStart, addLabelEnd } from '../loupe/loupeSlice.js';
 import { Image } from '../../components/Image';
@@ -416,14 +417,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const selected = selectedRows.includes(index);
         const selectedImages = selectedRows.map((rowIdx) => workingImages[rowIdx]);
 
+        const userRoles = useSelector(selectUserCurrentRoles);
+        const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
+
         // manage category selector state (open/closed)
         const isAddingLabel = useSelector(selectIsAddingLabel);
         const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-image-table'));
         useEffect(() => {
           setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
         }, [isAddingLabel]);
-
-        const catSelectorRef = useRef(null);
 
         const handleEditAllLabelsButtonClick = (e) => {
           e.stopPropagation();
@@ -433,7 +435,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
         return (
           <ContextMenu>
-            <ContextMenuTrigger disabled={!selected}>
+            <ContextMenuTrigger disabled={!selected || !isAuthorized}>
               <TableRow
                 {...row.getRowProps({ style })}
                 onClick={(e) => handleRowClick(e, row.id)}
@@ -454,6 +456,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               </TableRow>
             </ContextMenuTrigger>
             <ContextMenuContent
+              onCloseAutoFocus={() => dispatch(addLabelEnd()) }
               css={{ overflow: 'visible' }}
               sideOffset={5}
               align='end'
@@ -657,7 +660,7 @@ function makeRows(workingImages, focusIndex, selectedRows) {
 // Used in ImageReviewToolbar and BoundingBoxLabel
 
 const StyledCategorySelector = styled(CreatableSelect, {
-  width: '155px',
+  width: '100%',
   fontFamily: '$mono',
   fontSize: '$2',
   fontWeight: '$1',
@@ -734,7 +737,7 @@ const CategorySelector = ({ selectedImages }) => {
   };
 
   const handleCategorySelectorBlur = (e) => {
-    console.log('handleCategorySelectorBlur')
+    console.log('handleCategorySelectorBlur');
     dispatch(addLabelEnd());
   };
 
