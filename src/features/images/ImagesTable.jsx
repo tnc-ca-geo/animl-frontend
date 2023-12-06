@@ -454,6 +454,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               </TableRow>
             </ContextMenuTrigger>
             <ContextMenuContent
+              css={{ overflow: 'visible' }}
               sideOffset={5}
               align='end'
             >
@@ -745,7 +746,7 @@ const CategorySelector = ({ selectedImages }) => {
       openMenuOnClick
       className='react-select'
       classNamePrefix='react-select'
-      menuPlacement='bottom'
+      menuPlacement='top'
       filterOption={createFilter({ matchFrom: 'start' })} // TODO: what does this do?
       isLoading={availLabels.isLoading}
       isDisabled={availLabels.isLoading}
