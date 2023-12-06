@@ -60,6 +60,7 @@ const LabelContainer = styled('div', {
   width: '100%',
   display: 'flex',
   flexWrap: 'wrap',
+  userSelect: 'none'
 });
 
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
@@ -74,7 +75,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   };
 
   return (
-    <LabelContainer>
+    <LabelContainer >
       {objects.map((object, objIndex) => {
 
         // TODO: find a cleaner way to do this. Maybe make it a hook?

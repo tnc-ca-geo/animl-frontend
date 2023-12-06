@@ -235,21 +235,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
 
-  // // listen for shift + mousedown (selecting multiple rows)
-  // useEffect(() => {
-  //   const handleWindowClick = (e) => {
-  //     if (object.isTemp) setTempObject(null);
-  //     // unless the last click was on the "edit label" context menu item
-  //     if (!targetIsEditLabelMenuItem(e)) { 
-  //       dispatch(addLabelEnd());
-  //     }
-  //   };
-  //   addingLabel
-  //     ? window.addEventListener('click', handleWindowClick)
-  //     : window.removeEventListener('click', handleWindowClick);
-  //   return () => window.removeEventListener('click', handleWindowClick);
-  // }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
-
   const data = makeRows(workingImages, focusIndex);
 
   const defaultColumn = useMemo(() => ({
@@ -384,14 +369,16 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   const handleRowClick = useCallback((e, id) => {
     if (e.shiftKey) {
-      console.log('shift + click');
       // TODO: allow for selection of mulitple images to perform bulk actions on
+      console.log('shift + click detected. Current focusIndex: ', focusIndex);
+      console.log('row clicked: ', Number(id));
+
     } else {
       const newIndex = { image: Number(id), object: null, label: null }
       dispatch(setFocus({ index: newIndex, type: 'manual' }));
       dispatch(toggleOpenLoupe(true));
     }
-  }, [dispatch]);
+  }, [dispatch, focusIndex]);
 
   const RenderRow = useCallback(
     ({ index, style }) => {
