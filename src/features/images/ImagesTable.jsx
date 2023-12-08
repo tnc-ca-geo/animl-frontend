@@ -28,6 +28,7 @@ import {
 import {
   setFocus,
   labelsAdded,
+  labelsValidated,
   selectFocusIndex,
   selectFocusChangeType
 } from '../review/reviewSlice';
@@ -414,9 +415,10 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       if (isImageLoaded(index)) {
         const row = rows[index];
         prepareRow(row);
+
         const selected = selectedRows.includes(index);
         const selectedImages = selectedRows.map((rowIdx) => workingImages[rowIdx]);
-
+        const userId = useSelector(selectUserUsername);
         const userRoles = useSelector(selectUserCurrentRoles);
         const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
 
@@ -427,11 +429,37 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
         }, [isAddingLabel]);
 
+        // validate all labels
+        const handleValidationMenuItemClick = (e, validated) => {
+          e.stopPropagation();
+          let labelsToValidate = [];
+          for (const image of selectedImages) {
+            for (const object of image.objects) {
+              if (object.locked) return;
+              // find first non-invalidated label in array
+              const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
+              labelsToValidate.push({
+                imgId: image._id,
+                objId: object._id,
+                lblId: label._id,
+                userId,
+                validated,
+              });
+            }
+          }
+          dispatch(labelsValidated({ labels: labelsToValidate }));
+        };
+
+        // edit all labels
         const handleEditAllLabelsButtonClick = (e) => {
           e.stopPropagation();
           e.preventDefault();
           dispatch(addLabelStart('from-image-table'));
         };
+
+        // TODO: double check that all the "disabled" conditions are consistent 
+        // across bounding-box context menu items, ImageReviewToolbar, and the
+        // context menu items here
 
         return (
           <ContextMenu>
@@ -462,7 +490,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               align='end'
             >
               <ContextMenuItem
-                onSelect={() => console.log('Validate all labels')}
+                onSelect={(e) => handleValidationMenuItemClick(e, true)}
                 disabled={isAddingLabel}
                 css={{
                   color: '$successText',
@@ -478,7 +506,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 Validate
               </ContextMenuItem>
               <ContextMenuItem
-                onSelect={() => console.log('Invalidate all labels')}
+                onSelect={(e) => handleValidationMenuItemClick(e, false)}
                 disabled={isAddingLabel}
                 css={{
                   color: '$errorText',
@@ -494,7 +522,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 Invalidate
               </ContextMenuItem>
               {catSelectorOpen
-                ? (<CategorySelector selectedImages={selectedImages} />)
+                ? (<CategorySelector selectedImages={selectedImages} userId={userId} />)
                 : (<ContextMenuItem
                     onSelect={handleEditAllLabelsButtonClick}
                     disabled={false}
@@ -709,8 +737,7 @@ const StyledCategorySelector = styled(CreatableSelect, {
   }
 });
 
-const CategorySelector = ({ selectedImages }) => {
-  const userId = useSelector(selectUserUsername);
+const CategorySelector = ({ selectedImages, userId }) => {
   const dispatch = useDispatch();
   // update selector options when new labels become available
   const createOption = (category) => ({ value: category.toLowerCase(), label: category });
