@@ -38,7 +38,7 @@ const itemStyles = {
   all: 'unset',
   fontSize: 13,
   lineHeight: 1,
-  color: violet.violet11,
+  color: '$textDark',
   borderRadius: 3,
   display: 'flex',
   alignItems: 'center',
@@ -55,8 +55,8 @@ const itemStyles = {
   },
 
   '&[data-highlighted]': {
-    backgroundColor: violet.violet9,
-    color: violet.violet1,
+    backgroundColor: '$hiContrast',
+    color: '$loContrast',
   },
 };
 

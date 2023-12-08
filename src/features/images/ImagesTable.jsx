@@ -9,7 +9,14 @@ import React, {
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
 import { green, orange } from '@radix-ui/colors';
-import { CheckIcon, Cross2Icon, TriangleUpIcon, TriangleDownIcon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons'
+import { CheckIcon,
+  Cross2Icon,
+  TriangleUpIcon,
+  TriangleDownIcon,
+  LockOpen1Icon,
+  Pencil1Icon,
+  ValueNoneIcon
+} from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
@@ -29,6 +36,7 @@ import {
   setFocus,
   labelsAdded,
   labelsValidated,
+  markedEmpty,
   objectsManuallyUnlocked,
   selectFocusIndex,
   selectFocusChangeType
@@ -423,7 +431,17 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const userRoles = useSelector(selectUserCurrentRoles);
         const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
 
+        // TODO: double check that all the "disabled" conditions are consistent 
+        // across bounding-box context menu items, ImageReviewToolbar, and the
+        // context menu items here
+
+        // TODO: look for opportunities to abstract some of this. Lots of overlap
+        // with ImageReviewToolbar and BoundingBox context-menu logic
         // manage category selector state (open/closed)
+
+        // TODO: also, can we move this logic higher up the component tree?
+        // Seems crazy to stick it in every row component
+
         const isAddingLabel = useSelector(selectIsAddingLabel);
         const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-image-table'));
         useEffect(() => {
@@ -476,10 +494,41 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           dispatch(objectsManuallyUnlocked({ objects }));
         };
 
-      
-        // TODO: double check that all the "disabled" conditions are consistent 
-        // across bounding-box context menu items, ImageReviewToolbar, and the
-        // context menu items here
+        // mark all images as empty
+        const handleMarkEmptyMenuItemClick = () => {
+          let imagesToMarkEmpty = [];
+          let labelsToValidate = [];
+          for (const image of selectedImages) {
+
+            let existingEmptyLabels = [];
+            image.objects.forEach((obj) => {
+              obj.labels
+                .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
+                .forEach((lbl) => {
+                  existingEmptyLabels.push({
+                    imgId: image._id,
+                    objId: obj._id,
+                    lblId: lbl._id,
+                    userId,
+                    validated: true
+                  });
+              });
+            });
+
+            if (existingEmptyLabels.length > 0) {
+              labelsToValidate = labelsToValidate.concat(existingEmptyLabels);;
+            } else {
+              imagesToMarkEmpty.push({ imgId: image._id });
+            }
+          }
+
+          if (labelsToValidate.length > 0) {
+            dispatch(labelsValidated({ labels: labelsToValidate }))
+          }
+          if (imagesToMarkEmpty.length > 0) {
+            dispatch(markedEmpty({ images: imagesToMarkEmpty, userId }));
+          }
+        };
 
         return (
           <ContextMenu>
@@ -561,6 +610,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                   <LockOpen1Icon />
                 </ContextMenuItemIconLeft>
                 Unlock
+              </ContextMenuItem>
+              <ContextMenuItem
+                onSelect={handleMarkEmptyMenuItemClick}
+                disabled={isAddingLabel}
+              >
+                <ContextMenuItemIconLeft>
+                  <ValueNoneIcon />
+                </ContextMenuItemIconLeft>
+                Mark empty
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
