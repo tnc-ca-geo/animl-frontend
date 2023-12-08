@@ -229,14 +229,14 @@ const Loupe = () => {
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   const handleUnlockAllButtonClick = () => {
-    const objIds = currImgObjects
+    const objects = currImgObjects
       .filter((obj) => (
         obj.locked && obj.labels.some((lbl) => (
           lbl.validation === null || lbl.validation.validated
         ))
       ))
-      .map((obj) => obj._id);
-    dispatch(objectsManuallyUnlocked({ imgId: image._id, objIds }));
+      .map((obj) => ({ imgId: image._id, objId: obj._id }));
+    dispatch(objectsManuallyUnlocked({ objects }));
   };
 
   const handleIncrementClick = (delta) => {

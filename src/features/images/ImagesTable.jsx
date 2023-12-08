@@ -29,6 +29,7 @@ import {
   setFocus,
   labelsAdded,
   labelsValidated,
+  objectsManuallyUnlocked,
   selectFocusIndex,
   selectFocusChangeType
 } from '../review/reviewSlice';
@@ -457,6 +458,25 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           dispatch(addLabelStart('from-image-table'));
         };
 
+        // unlock all labels
+        const handleUnlockMenuItemClick = (e) => {
+          e.stopPropagation();
+          let objects = [];
+          for (const image of selectedImages) {
+            const objectsToUnlock = image.objects
+              .filter((obj) => (
+                obj.locked && obj.labels.some((lbl) => (
+                  lbl.validation === null || lbl.validation.validated
+                ))
+              ))
+              .map((obj) => ({ imgId: image._id, objId: obj._id }));
+            
+            objects = objects.concat(objectsToUnlock);
+          }
+          dispatch(objectsManuallyUnlocked({ objects }));
+        };
+
+      
         // TODO: double check that all the "disabled" conditions are consistent 
         // across bounding-box context menu items, ImageReviewToolbar, and the
         // context menu items here
@@ -533,6 +553,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                     Edit all labels
                   </ContextMenuItem>)
               }
+              <ContextMenuItem
+                onSelect={handleUnlockMenuItemClick}
+                disabled={isAddingLabel}
+              >
+                <ContextMenuItemIconLeft>
+                  <LockOpen1Icon />
+                </ContextMenuItemIconLeft>
+                Unlock
+              </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
         );

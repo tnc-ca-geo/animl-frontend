@@ -33,7 +33,7 @@ const ValidationButtons = ({
 
   const handleLockButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(objectsManuallyUnlocked({ imgId, objIds: [object._id] }));
+    dispatch(objectsManuallyUnlocked({ objects: [{ imgId, objId: object._id }] }));
   };
 
   const handleValidationButtonClick = (e, validated) => {

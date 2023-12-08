@@ -255,7 +255,7 @@ const BoundingBox = ({
   
   const handleUnlockMenuItemClick = (e) => {
     e.stopPropagation();
-    dispatch(objectsManuallyUnlocked({ imgId, objIds: [object._id] }));
+    dispatch(objectsManuallyUnlocked({ objects: [{ imgId, objId: object._id }] }));
   };
 
   return (

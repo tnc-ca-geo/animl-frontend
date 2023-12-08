@@ -74,8 +74,7 @@ export const undoMiddleware = createUndoMiddleware({
     [objectsManuallyUnlocked.toString()]: {
       action: (action) => {
         console.log("reverting objectsManuallyUnlocked with action: ", action);
-        const { imgId, objIds } = action.payload;
-        const objects = objIds.map((objId) => ({ imgId, objId, locked: true }));
+        const objects = action.payload.objects.map(({ imgId, objId }) => ({ imgId, objId, locked: true }));
         return objectsLocked({ objects });
       },
     },
