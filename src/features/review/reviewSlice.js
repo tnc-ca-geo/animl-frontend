@@ -1,4 +1,4 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
+import { createSlice, createAction, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
@@ -12,6 +12,7 @@ const initialState = {
     object: null,
     label: null,
   },
+  selectedImageIndices: [],
   focusChangeType: null,
   loadingStates: {
     labels: {
@@ -32,6 +33,14 @@ export const reviewSlice = createSlice({
     setFocus: (state, { payload }) => {
       state.focusIndex = { ...state.focusIndex, ...payload.index };
       state.focusChangeType = payload.type;
+      if (payload.index.image !== null) {
+        state.selectedImageIndices = [payload.index.image];
+      }
+    },
+
+    setSelectedImageIndices: (state, { payload }) => {
+      console.log('setSelectedImageIndices: ', payload)
+      state.selectedImageIndices = payload;
     },
 
     bboxUpdated: (state, { payload }) => {
@@ -167,6 +176,7 @@ export const reviewSlice = createSlice({
 
 export const {
   setFocus,
+  setSelectedImageIndices,
   bboxUpdated,
   objectsRemoved,
   labelsAdded,
@@ -233,9 +243,19 @@ export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 
 export const selectWorkingImages = state => state.review.workingImages;
 export const selectFocusIndex = state => state.review.focusIndex;
+export const selectSelectedImageIndices = state => state.review.selectedImageIndices;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
 export const selectLastAction = state => state.review.lastAction;
 export const selectLastCategoryApplied = state => state.review.lastCategoryApplied;
+export const selectSelectedImages = createSelector(
+  [selectWorkingImages, selectSelectedImageIndices],
+  (workingImages, selectedImageIndices) => {
+    if (workingImages && selectedImageIndices) {
+      return selectedImageIndices.map((i) => workingImages[i]);
+    }
+    return [];
+  }
+);
 
 export default reviewSlice.reducer;

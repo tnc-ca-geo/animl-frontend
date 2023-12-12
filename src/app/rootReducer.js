@@ -14,7 +14,7 @@ import uploadReducer from '../features/upload/uploadSlice';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
-  user: userSlice,
+  user: userSlice,  // TODO: we have two separate usersSlices. Fix 
   projects: projectReducer,
   users: usersReducer,
   filters: filtersReducer,

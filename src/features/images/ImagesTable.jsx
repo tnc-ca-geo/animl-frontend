@@ -15,7 +15,8 @@ import { CheckIcon,
   TriangleDownIcon,
   LockOpen1Icon,
   Pencil1Icon,
-  ValueNoneIcon
+  ValueNoneIcon,
+  TrashIcon
 } from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
@@ -28,6 +29,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import {
   sortChanged,
   // visibleRowsChanged,
+  setDeleteImagesAlertOpen,
   selectImagesLoading,
   selectPaginatedField,
   selectSortAscending,
@@ -39,7 +41,10 @@ import {
   markedEmpty,
   objectsManuallyUnlocked,
   selectFocusIndex,
-  selectFocusChangeType
+  selectFocusChangeType,
+  selectSelectedImages,
+  setSelectedImageIndices,
+  selectSelectedImageIndices
 } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
 import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
@@ -56,11 +61,11 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuItemIconLeft
+  ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
 import CreatableSelect from 'react-select/creatable';
 import { createFilter } from 'react-select';
-
+import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -262,15 +267,9 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
 
-  const [ selectedRows, setSelectedRows ] = useState([]);
-  useEffect(() => {
-    if (focusIndex.image !== null) {
-      setSelectedRows([focusIndex.image]);
-    }
-    else {
-      setSelectedRows([]);
-    }
-  }, [focusIndex.image]);
+  // manage image selection
+  const selectedImageIndices = useSelector(selectSelectedImageIndices);
+  const selectedImages = useSelector(selectSelectedImages);
 
   const handleRowClick = useCallback((e, rowIdx) => {
     if (e.shiftKey) {
@@ -279,7 +278,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       const end = Math.max(focusIndex.image, rowIdx);
       let selection = [];
       for (let i = start; i <= end; i++) { selection.push(i); }
-      setSelectedRows(selection);
+      dispatch(setSelectedImageIndices(selection));
     } else {
       const newIndex = { image: Number(rowIdx), object: null, label: null }
       dispatch(setFocus({ index: newIndex, type: 'manual' }));
@@ -287,7 +286,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [dispatch, focusIndex]);
 
-  const data = makeRows(workingImages, focusIndex, selectedRows);
+  const data = makeRows(workingImages, focusIndex, selectedImageIndices);
 
   const defaultColumn = useMemo(() => ({
     minWidth: 30,
@@ -425,8 +424,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const row = rows[index];
         prepareRow(row);
 
-        const selected = selectedRows.includes(index);
-        const selectedImages = selectedRows.map((rowIdx) => workingImages[rowIdx]);
+        const selected = selectedImageIndices.includes(index);
         const userId = useSelector(selectUserUsername);
         const userRoles = useSelector(selectUserCurrentRoles);
         const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
@@ -530,8 +528,12 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           }
         };
 
+        const handleDeleteImagesMenuItemClick = () => {
+          dispatch(setDeleteImagesAlertOpen(true));
+        };
+
         return (
-          <ContextMenu>
+          <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
             <ContextMenuTrigger disabled={!selected || !isAuthorized}>
               <TableRow
                 {...row.getRowProps({ style })}
@@ -619,6 +621,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                   <ValueNoneIcon />
                 </ContextMenuItemIconLeft>
                 Mark empty
+              </ContextMenuItem>
+              <ContextMenuItem
+                onSelect={handleDeleteImagesMenuItemClick}
+                disabled={isAddingLabel}
+              >
+                <ContextMenuItemIconLeft>
+                  <TrashIcon />
+                </ContextMenuItemIconLeft>
+                Delete images
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
@@ -723,14 +734,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           </AutoSizer>
         </Table>
       }
+      <DeleteImagesAlert />
     </TableContainer>
   );  
 };
 
-function makeRows(workingImages, focusIndex, selectedRows) {
+function makeRows(workingImages, focusIndex, selectedImageIndices) {
   return workingImages.map((img, imageIndex) => {
     // thumbnails
-    const isImageFocused = selectedRows.includes(imageIndex);
+    const isImageFocused = selectedImageIndices.includes(imageIndex);
     const thumbnail = <Image selected={isImageFocused} src={img.thumbUrl} />;
 
     // label pills
