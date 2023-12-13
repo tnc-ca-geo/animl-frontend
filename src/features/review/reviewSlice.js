@@ -251,10 +251,11 @@ export const selectLastCategoryApplied = state => state.review.lastCategoryAppli
 export const selectSelectedImages = createSelector(
   [selectWorkingImages, selectSelectedImageIndices],
   (workingImages, selectedImageIndices) => {
-    if (workingImages && selectedImageIndices) {
-      return selectedImageIndices.map((i) => workingImages[i]);
+    let selectedImages = [];
+    if (workingImages.length && selectedImageIndices.length) {
+      selectedImages = selectedImageIndices.map((i) => workingImages[i]);
     }
-    return [];
+    return selectedImages;
   }
 );
 
