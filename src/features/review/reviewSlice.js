@@ -157,7 +157,9 @@ export const reviewSlice = createSlice({
         state.workingImages = state.workingImages.concat(newImages);
       })
       .addCase(clearImages, (state) => {
-        state.workingImages = [];
+        state.workingImages = initialState.workingImages;
+        state.selectedImageIndices = initialState.selectedImageIndices;
+        state.focusIndex = initialState.focusIndex;
       })
       .addCase(toggleOpenLoupe, (state, { payload }) => {
         if (payload === false) {
