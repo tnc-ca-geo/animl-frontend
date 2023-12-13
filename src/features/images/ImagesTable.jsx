@@ -435,26 +435,51 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
         // TODO: look for opportunities to abstract some of this. Lots of overlap
         // with ImageReviewToolbar and BoundingBox context-menu logic
-        // manage category selector state (open/closed)
 
+        // TODO: e.g. the category selector used in this context-menu, in BoundingBoxLabel, 
+        // and ImageReviewToolbar might be able to abstract into its own component
+        
         // TODO: also, can we move this logic higher up the component tree?
         // Seems crazy to stick it in every row component
 
+        // manage category selector state (open/closed)
         const isAddingLabel = useSelector(selectIsAddingLabel);
         const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-image-table'));
         useEffect(() => {
           setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
         }, [isAddingLabel]);
 
+        // track object states of selected images for disabling context-menu items
+        // NOTE: if this evaluation seems to cause performance issues
+        // we can always not disable the buttons and perform these checks
+        // in the handleMenuItemClick functions
+        const allObjectsLocked = selectedImages.every((img) => (
+          img.objects && img.objects.every((obj) => obj.locked)
+        ));
+
+        const allObjectsUnlocked = selectedImages.every((img) => (
+          img.objects && img.objects.every((obj) => !obj.locked)
+        ));
+
+        const hasRenderedObjects = selectedImages.some((img) => (
+          img.objects && img.objects.some((obj) => (
+            obj.labels.some((lbl) => (
+              lbl.validation === null || lbl.validation.validated
+            ))
+          ))
+        ));
+
         // validate all labels
         const handleValidationMenuItemClick = (e, validated) => {
           e.stopPropagation();
           let labelsToValidate = [];
           for (const image of selectedImages) {
-            for (const object of image.objects) {
-              if (object.locked) return;
+            const unlockedObjects = image.objects.filter((obj) => !obj.locked);
+            for (const object of unlockedObjects) {
               // find first non-invalidated label in array
-              const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
+              const label = object.labels.find((lbl) => (
+                lbl.validation === null || lbl.validation.validated
+              ));
               labelsToValidate.push({
                 imgId: image._id,
                 objId: object._id,
@@ -562,7 +587,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
             >
               <ContextMenuItem
                 onSelect={(e) => handleValidationMenuItemClick(e, true)}
-                disabled={isAddingLabel}
+                disabled={isAddingLabel || allObjectsLocked}
                 css={{
                   color: '$successText',
                   '&[data-highlighted]': {
@@ -578,7 +603,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={(e) => handleValidationMenuItemClick(e, false)}
-                disabled={isAddingLabel}
+                disabled={isAddingLabel || allObjectsLocked}
                 css={{
                   color: '$errorText',
                   '&[data-highlighted]': {
@@ -596,7 +621,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 ? (<CategorySelector selectedImages={selectedImages} userId={userId} />)
                 : (<ContextMenuItem
                     onSelect={handleEditAllLabelsButtonClick}
-                    disabled={false}
+                    disabled={allObjectsLocked}
                   >
                     <ContextMenuItemIconLeft>
                       <Pencil1Icon />
@@ -606,7 +631,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               }
               <ContextMenuItem
                 onSelect={handleUnlockMenuItemClick}
-                disabled={isAddingLabel}
+                disabled={isAddingLabel || allObjectsUnlocked || !hasRenderedObjects}
               >
                 <ContextMenuItemIconLeft>
                   <LockOpen1Icon />

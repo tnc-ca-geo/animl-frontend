@@ -221,11 +221,11 @@ const ImageReviewToolbar = ({
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
   const allObjectsUnlocked = image.objects && image.objects.every((obj) => !obj.locked);
-  const renderedObjectsCount = image.objects && image.objects.filter((obj) => (
+  const hasRenderedObjects = image.objects && image.objects.some((obj) => (
     obj.labels.some((lbl) => (
       lbl.validation === null || lbl.validation.validated
     ))
-  )).length;
+  ));
   
   return (
     <Toolbar>
@@ -343,7 +343,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={handleUnlockAllButtonClick}
-                disabled={allObjectsUnlocked || renderedObjectsCount === 0}
+                disabled={allObjectsUnlocked || !hasRenderedObjects}
               >
                 <LockOpen1Icon />
               </ToolbarIconButton>
