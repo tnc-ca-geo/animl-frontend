@@ -273,18 +273,27 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   const handleRowClick = useCallback((e, rowIdx) => {
     if (e.shiftKey) {
-      // allow for selection of multiple images to perform bulk actions on
+      // allow for selection of multiple consecutive images
+      // with shift + click
       const start = Math.min(focusIndex.image, rowIdx);
       const end = Math.max(focusIndex.image, rowIdx);
       let selection = [];
       for (let i = start; i <= end; i++) { selection.push(i); }
       dispatch(setSelectedImageIndices(selection));
-    } else {
+    } else if (e.metaKey || e.ctrlKey) {
+      // allow for selection of multiple non-consecutive images
+      // with command + click on Macs and ctrl + click in Windows
+      let selection = [...selectedImageIndices];
+      selection.push(Number(rowIdx));
+      dispatch(setSelectedImageIndices(selection));
+    }
+    else {
+      // normal click
       const newIndex = { image: Number(rowIdx), object: null, label: null }
       dispatch(setFocus({ index: newIndex, type: 'manual' }));
       dispatch(toggleOpenLoupe(true));
     }
-  }, [dispatch, focusIndex]);
+  }, [dispatch, focusIndex, selectedImageIndices]);
 
   const data = makeRows(workingImages, focusIndex, selectedImageIndices);
 
@@ -429,10 +438,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const userRoles = useSelector(selectUserCurrentRoles);
         const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
 
-        // TODO: double check that all the "disabled" conditions are consistent 
-        // across bounding-box context menu items, ImageReviewToolbar, and the
-        // context menu items here
-
         // TODO: look for opportunities to abstract some of this. Lots of overlap
         // with ImageReviewToolbar and BoundingBox context-menu logic
 
@@ -456,11 +461,9 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const allObjectsLocked = selectedImages.every((img) => (
           img.objects && img.objects.every((obj) => obj.locked)
         ));
-
         const allObjectsUnlocked = selectedImages.every((img) => (
           img.objects && img.objects.every((obj) => !obj.locked)
         ));
-
         const hasRenderedObjects = selectedImages.some((img) => (
           img.objects && img.objects.some((obj) => (
             obj.labels.some((lbl) => (
@@ -558,7 +561,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         };
 
         return (
-          <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
+          <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
             <ContextMenuTrigger disabled={!selected || !isAuthorized}>
               <TableRow
                 {...row.getRowProps({ style })}
