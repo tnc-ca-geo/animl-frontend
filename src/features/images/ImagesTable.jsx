@@ -654,7 +654,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 <ContextMenuItemIconLeft>
                   <TrashIcon />
                 </ContextMenuItemIconLeft>
-                Delete images
+                {`Delete image${selectedImageIndices.length > 1 ? 's' : ''}`}
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
