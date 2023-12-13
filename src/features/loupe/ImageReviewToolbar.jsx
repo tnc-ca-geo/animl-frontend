@@ -18,8 +18,8 @@ import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import { violet, blackA, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { 

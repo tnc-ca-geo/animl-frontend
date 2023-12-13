@@ -5,8 +5,8 @@ import _ from 'lodash';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles';
 import {
   ContextMenu,
   ContextMenuTrigger,

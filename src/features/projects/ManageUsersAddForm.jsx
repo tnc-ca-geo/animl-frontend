@@ -3,7 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import { styled } from "@stitches/react";
 import * as Yup from 'yup';
 
-import { createUser, cancel } from './userSlice.js';
+import { createUser, cancel } from './usersSlice.js';
 import {
   FormWrapper,
   FormSubheader,

@@ -5,7 +5,7 @@ import { indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import '@aws-amplify/ui-react/styles.css';
 import { useSelector } from 'react-redux';
-import { selectUserUsername } from './userSlice.js';
+import { selectUserUsername } from './authSlice.js';
 
 const LoginScreen = styled('div', {
   display: 'flex',

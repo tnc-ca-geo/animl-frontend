@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Formik, Form } from 'formik';
 import { styled } from "@stitches/react";
 
-import { selectUsers, selectSelectedUser, updateUser, cancel } from './userSlice.js';
+import { selectUsers, selectSelectedUser, updateUser, cancel } from './usersSlice.js';
 import {
   FormWrapper,
   FormSubheader,

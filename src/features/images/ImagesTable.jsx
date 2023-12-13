@@ -47,8 +47,8 @@ import {
   selectSelectedImageIndices
 } from '../review/reviewSlice';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
-import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles';
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { selectIsAddingLabel, addLabelStart, addLabelEnd } from '../loupe/loupeSlice.js';
 import { Image } from '../../components/Image';

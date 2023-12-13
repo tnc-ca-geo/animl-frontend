@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 
 import { Page } from '../components/Page.jsx';
 import { NotFound } from '../components/NotFound.jsx'
-import { selectUserUsername, selectUserAuthStatus, selectUserIsSuperUser } from '../features/user/userSlice.js';
-import LoginForm from '../features/user/LoginForm.jsx';
+import { selectUserUsername, selectUserAuthStatus, selectUserIsSuperUser } from '../features/auth/authSlice.js';
+import LoginForm from '../features/auth/LoginForm.jsx';
 import CreateProjectForm from '../features/projects/CreateProjectForm.jsx';
 
 const CreateProjectPage = () => {

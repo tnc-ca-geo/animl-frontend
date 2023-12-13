@@ -14,7 +14,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import * as Toast from '@radix-ui/react-toast';
 import { initTracking } from '../features/tracking/trackingSlice';
 import { selectRouterLocation } from '../features/images/imagesSlice';
-import { userAuthStateChanged } from '../features/user/userSlice';
+import { userAuthStateChanged } from '../features/auth/authSlice';
 import { mouseEventDetected, selectIsDrawingBbox } from '../features/loupe/loupeSlice';
 import logo from '../assets/animl-logo.svg';
 import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG } from '../config';

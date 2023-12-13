@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-import { selectMode } from './userSlice.js';
+import { selectMode } from './usersSlice.js';
 import ManageUsersAddForm from './ManageUsersAddForm.jsx';
 import ManageUsersEditForm from './ManageUsersEditForm.jsx';
 import ManageUsersTable from "./ManageUsersTable";

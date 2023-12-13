@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectUserCurrentRoles } from '../user/userSlice.js';
-import { hasRole, QUERY_WITH_CUSTOM_FILTER } from '../../auth/roles.js';
+import { selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, QUERY_WITH_CUSTOM_FILTER } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
 import StyledScrollArea from '../../components/ScrollArea.jsx';
 import DeploymentFilter from './DeploymentFilter.jsx';

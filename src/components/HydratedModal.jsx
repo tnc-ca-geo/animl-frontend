@@ -18,7 +18,7 @@ import {
   setModalOpen,
   setModalContent
 } from '../features/projects/projectsSlice';
-import { clearUsers } from '../features/projects/userSlice.js';
+import { clearUsers } from '../features/projects/usersSlice.js';
 
 // Modal populated with content
 const HydratedModal = () => {

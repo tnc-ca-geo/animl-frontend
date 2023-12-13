@@ -8,8 +8,8 @@ const initialState = {
   authStatus: null,
 };
 
-export const userSlice = createSlice({
-  name: 'user',
+export const authSlice = createSlice({
+  name: 'auth',
   initialState,
   reducers: {
 
@@ -43,15 +43,15 @@ export const userSlice = createSlice({
 
 export const {
   userAuthStateChanged,
-} = userSlice.actions;
+} = authSlice.actions;
 
 // Selectors
-export const selectUserAuthStatus = state => state.user.authStatus;
-export const selectUserGroups = state => state.user.groups;
-export const selectUserUsername = state => state.user.username;
-export const selectUserProjects = state => state.user.projects;
-export const selectUserIsSuperUser = state => state.user.groups && state.user.groups.includes('animl_superuser');
-export const selectUserHasBetaAccess = state => state.user.groups.includes('beta_access');
+export const selectUserAuthStatus = state => state.auth.authStatus;
+export const selectUserGroups = state => state.auth.groups;
+export const selectUserUsername = state => state.auth.username;
+export const selectUserProjects = state => state.auth.projects;
+export const selectUserIsSuperUser = state => state.auth.groups && state.auth.groups.includes('animl_superuser');
+export const selectUserHasBetaAccess = state => state.auth.groups.includes('beta_access');
 export const selectUserCurrentRoles = createSelector(
   [selectSelectedProject, selectUserProjects, selectUserIsSuperUser],
   (selectedProject, userProjects, isSuperUser) => {
@@ -67,4 +67,4 @@ export const selectUserCurrentRoles = createSelector(
 );
 
 
-export default userSlice.reducer;
+export default authSlice.reducer;
