@@ -8,7 +8,7 @@ import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 
 const initialState = {
-  images: [], // we aren't using this... consider removing?
+  // images: [], // we aren't using this... consider removing?
   loadingStates: {
     images: {
       isLoading: false,
@@ -54,7 +54,6 @@ export const imagesSlice = createSlice({
   reducers: {
 
     clearImages: (state) => { 
-      state.images = []; 
       state.loadingStates.images = {
         isLoading: false,
         operation: null,
@@ -93,7 +92,6 @@ export const imagesSlice = createSlice({
           state.pageInfo[key] = payload.images.pageInfo[key];
         }
       });
-      state.images =  state.images.concat(payload.images.images);
     },
 
     dismissImagesError: (state, { payload }) => {
@@ -498,7 +496,6 @@ export const selectPaginatedField = state => state.images.pageInfo.paginatedFiel
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
-export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectImagesLoading = state => state.images.loadingStates.images;
 export const selectImagesErrors = state => state.images.loadingStates.images.errors;
