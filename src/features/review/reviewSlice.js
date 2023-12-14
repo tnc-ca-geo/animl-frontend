@@ -33,7 +33,7 @@ export const reviewSlice = createSlice({
     setFocus: (state, { payload }) => {
       state.focusIndex = { ...state.focusIndex, ...payload.index };
       state.focusChangeType = payload.type;
-      if (payload.index.image && payload.index.image !== null) {
+      if (payload.index.image !== undefined && payload.index.image !== null) {
         state.selectedImageIndices = [payload.index.image];
       }
     },
