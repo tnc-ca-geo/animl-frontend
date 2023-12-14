@@ -1,22 +1,15 @@
 import React, {
-  useState,
   useMemo,
   useEffect,
   useRef,
   useCallback,
-  forwardRef
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
-import { green, orange } from '@radix-ui/colors';
 import { CheckIcon,
   Cross2Icon,
   TriangleUpIcon,
   TriangleDownIcon,
-  LockOpen1Icon,
-  Pencil1Icon,
-  ValueNoneIcon,
-  TrashIcon
 } from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
@@ -26,45 +19,24 @@ import useBreakpoints from '../../hooks/useBreakpoints';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import ImagesTableRow from './ImagesTableRow.jsx';
 import {
   sortChanged,
-  // visibleRowsChanged,
-  setDeleteImagesAlertOpen,
   selectImagesLoading,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
 import {
-  setFocus,
-  labelsAdded,
-  labelsValidated,
-  markedEmpty,
-  objectsManuallyUnlocked,
   selectFocusIndex,
   selectFocusChangeType,
-  selectSelectedImages,
-  setSelectedImageIndices,
   selectSelectedImageIndices
 } from '../review/reviewSlice';
-import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles';
-import { selectAvailLabels } from '../filters/filtersSlice.js';
-import { selectIsAddingLabel, addLabelStart, addLabelEnd } from '../loupe/loupeSlice.js';
+import { selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuItemIconLeft,
-} from '../../components/ContextMenu';
 import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
-import CategorySelector from '../../components/CategorySelector.jsx';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -258,51 +230,23 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useScrollbarSize();
-  // const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const imagesCount = hasNext ? workingImages.length + 1 : workingImages.length;
   const isImageLoaded = useCallback((index) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
-
-  // manage image selection
   const selectedImageIndices = useSelector(selectSelectedImageIndices);
-  const selectedImages = useSelector(selectSelectedImages);
-
-  const handleRowClick = useCallback((e, rowIdx) => {
-    if (e.shiftKey) {
-      // allow for selection of multiple consecutive images
-      // with shift + click
-      const start = Math.min(focusIndex.image, rowIdx);
-      const end = Math.max(focusIndex.image, rowIdx);
-      let selection = [];
-      for (let i = start; i <= end; i++) { selection.push(i); }
-      dispatch(setSelectedImageIndices(selection));
-    } else if (e.metaKey || e.ctrlKey) {
-      // allow for selection of multiple non-consecutive images
-      // with command + click on Macs and ctrl + click in Windows
-      let selection = [...selectedImageIndices];
-      selection.push(Number(rowIdx));
-      dispatch(setSelectedImageIndices(selection));
-    }
-    else {
-      // normal click
-      const newIndex = { image: Number(rowIdx), object: null, label: null }
-      dispatch(setFocus({ index: newIndex, type: 'manual' }));
-      dispatch(toggleOpenLoupe(true));
-    }
-  }, [dispatch, focusIndex, selectedImageIndices]);
 
   const data = makeRows(workingImages, focusIndex, selectedImageIndices);
 
-  const defaultColumn = useMemo(() => ({
+  const defaultColumn = useMemo(() => ({ // TODO: move to config
     minWidth: 30,
     width: 100, // width is used for both the flex-basis and flex-grow
     maxWidth: 400,
   }), []);
 
-  const columns = useMemo(() => [
+  const columns = useMemo(() => [ // TODO: move to config
     {
       accessor: 'thumbnail',
       disableSortBy: true,
@@ -371,10 +315,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     useSortBy,
   );
 
-  // useEffect(() => {
-  //   dispatch(visibleRowsChanged(visibleRows))
-  // }, [dispatch, visibleRows]);
-
   const focusChangeType = useSelector(selectFocusChangeType);
   useEffect(() => {
     if (focusIndex.image && focusChangeType === 'auto') {
@@ -395,7 +335,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   }, [sortBy, dispatch]);
 
   // responsively hide/show table columns
-  const { ref, breakpoint } = useBreakpoints([
+  const { ref, breakpoint } = useBreakpoints([  // TODO: move to config
     ['xxs', 540],
     ['xs', 640],
     ['sm', 740],
@@ -404,7 +344,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     ['xl', Infinity]
   ]);
 
-  const columnsToHide = useMemo(() => ({
+  const columnsToHide = useMemo(() => ({  // TODO: move to config
     'loupeOpen': ['dtOriginal', 'dtAdded', 'reviewed', 'cameraId', 'deploymentName'],
     'xxs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed', 'dtOriginal'],
     'xs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed'],
@@ -428,266 +368,22 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   const RenderRow = useCallback(
     ({ index, style }) => {
-      if (isImageLoaded(index)) {
-        const row = rows[index];
-        prepareRow(row);
+      if (!isImageLoaded(index)) return (<TableRow />);
 
-        const selected = selectedImageIndices.includes(index);
-        const userId = useSelector(selectUserUsername);
-        const userRoles = useSelector(selectUserCurrentRoles);
-        const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
+      const row = rows[index];
+      prepareRow(row);
 
-        // TODO: look for opportunities to abstract some of this. Lots of overlap
-        // with ImageReviewToolbar and BoundingBox context-menu logic
-
-        // TODO: also, can we move this logic higher up the component tree?
-        // Seems crazy to stick it in every row component
-
-        // manage category selector state (open/closed)
-        const isAddingLabel = useSelector(selectIsAddingLabel);
-        const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-image-table'));
-        useEffect(() => {
-          setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
-        }, [isAddingLabel]);
-
-        const handleCategoryChange = (newValue) => {
-          if (!newValue) return;
-          let labelsToAdd = [];
-          for (const image of selectedImages) {
-            const newLabels = image.objects
-              .filter((obj) => !obj.locked)
-              .map((obj) => ({
-                objIsTemp: obj.isTemp,
-                userId,
-                bbox: obj.bbox,
-                category: newValue.value || newValue,
-                objId: obj._id,
-                imgId: image._id
-              }));
-              labelsToAdd = labelsToAdd.concat(newLabels);
-          }
-          dispatch(labelsAdded({ labels: labelsToAdd }));
-        };
-
-        // track object states of selected images for disabling context-menu items
-        // NOTE: if this evaluation seems to cause performance issues
-        // we can always not disable the buttons and perform these checks
-        // in the handleMenuItemClick functions
-        const allObjectsLocked = selectedImages.every((img) => (
-          img.objects && img.objects.every((obj) => obj.locked)
-        ));
-        const allObjectsUnlocked = selectedImages.every((img) => (
-          img.objects && img.objects.every((obj) => !obj.locked)
-        ));
-        const hasRenderedObjects = selectedImages.some((img) => (
-          img.objects && img.objects.some((obj) => (
-            obj.labels.some((lbl) => (
-              lbl.validation === null || lbl.validation.validated
-            ))
-          ))
-        ));
-
-        // validate all labels
-        const handleValidationMenuItemClick = (e, validated) => {
-          e.stopPropagation();
-          if (allObjectsLocked) return;
-          let labelsToValidate = [];
-          for (const image of selectedImages) {
-            const unlockedObjects = image.objects.filter((obj) => !obj.locked);
-            for (const object of unlockedObjects) {
-              // find first non-invalidated label in array
-              const label = object.labels.find((lbl) => (
-                lbl.validation === null || lbl.validation.validated
-              ));
-              labelsToValidate.push({
-                imgId: image._id,
-                objId: object._id,
-                lblId: label._id,
-                userId,
-                validated,
-              });
-            }
-          }
-          dispatch(labelsValidated({ labels: labelsToValidate }));
-        };
-
-        // edit all labels
-        const handleEditAllLabelsButtonClick = (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (allObjectsLocked) return;
-          dispatch(addLabelStart('from-image-table'));
-        };
-
-        // unlock all labels
-        const handleUnlockMenuItemClick = (e) => {
-          e.stopPropagation();
-          if (allObjectsUnlocked || !hasRenderedObjects) return;
-          let objects = [];
-          for (const image of selectedImages) {
-            const objectsToUnlock = image.objects
-              .filter((obj) => (
-                obj.locked && obj.labels.some((lbl) => (
-                  lbl.validation === null || lbl.validation.validated
-                ))
-              ))
-              .map((obj) => ({ imgId: image._id, objId: obj._id }));
-            
-            objects = objects.concat(objectsToUnlock);
-          }
-          dispatch(objectsManuallyUnlocked({ objects }));
-        };
-
-        // mark all images as empty
-        const handleMarkEmptyMenuItemClick = () => {
-          let imagesToMarkEmpty = [];
-          let labelsToValidate = [];
-          for (const image of selectedImages) {
-
-            let existingEmptyLabels = [];
-            image.objects.forEach((obj) => {
-              obj.labels
-                .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
-                .forEach((lbl) => {
-                  existingEmptyLabels.push({
-                    imgId: image._id,
-                    objId: obj._id,
-                    lblId: lbl._id,
-                    userId,
-                    validated: true
-                  });
-              });
-            });
-
-            if (existingEmptyLabels.length > 0) {
-              labelsToValidate = labelsToValidate.concat(existingEmptyLabels);;
-            } else {
-              imagesToMarkEmpty.push({ imgId: image._id });
-            }
-          }
-
-          if (labelsToValidate.length > 0) {
-            dispatch(labelsValidated({ labels: labelsToValidate }))
-          }
-          if (imagesToMarkEmpty.length > 0) {
-            dispatch(markedEmpty({ images: imagesToMarkEmpty, userId }));
-          }
-        };
-
-        const handleDeleteImagesMenuItemClick = () => {
-          dispatch(setDeleteImagesAlertOpen(true));
-        };
-
-        return (
-          <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
-            <ContextMenuTrigger disabled={!selected || !isAuthorized}>
-              <TableRow
-                {...row.getRowProps({ style })}
-                onClick={(e) => handleRowClick(e, row.id)}
-                selected={selected}
-              >
-                {row.cells.map(cell => (
-                  <DataCell
-                    {...cell.getCellProps()}
-                    selected={selected}
-                    scrollable={
-                      cell.column.Header === 'Labels' && 
-                      cell.value.props.objects.length > 3
-                    }
-                  >
-                    {cell.render('Cell')}
-                  </DataCell>
-                ))}
-              </TableRow>
-            </ContextMenuTrigger>
-            <ContextMenuContent
-              onCloseAutoFocus={() => dispatch(addLabelEnd()) }
-              css={{ overflow: 'visible' }}
-              sideOffset={5}
-              align='end'
-            >
-              <ContextMenuItem
-                onSelect={(e) => handleValidationMenuItemClick(e, true)}
-                disabled={isAddingLabel}
-                css={{
-                  color: '$successText',
-                  '&[data-highlighted]': {
-                    backgroundColor: '$successBase',
-                    color: '$successBg',
-                  },
-                }}
-              >
-                <ContextMenuItemIconLeft>
-                  <CheckIcon />
-                </ContextMenuItemIconLeft>
-                Validate
-              </ContextMenuItem>
-              <ContextMenuItem
-                onSelect={(e) => handleValidationMenuItemClick(e, false)}
-                disabled={isAddingLabel}
-                css={{
-                  color: '$errorText',
-                  '&[data-highlighted]': {
-                    backgroundColor: '$errorBase',
-                    color: '$errorBg',
-                  },
-                }}
-              >
-                <ContextMenuItemIconLeft>
-                  <Cross2Icon />
-                </ContextMenuItemIconLeft>
-                Invalidate
-              </ContextMenuItem>
-              {catSelectorOpen
-                ? (<CategorySelector 
-                    css={{ width: '100%' }}
-                    handleCategoryChange={handleCategoryChange}
-                  />)
-                : (<ContextMenuItem onSelect={handleEditAllLabelsButtonClick}>
-                    <ContextMenuItemIconLeft>
-                      <Pencil1Icon />
-                    </ContextMenuItemIconLeft>
-                    Edit all labels
-                  </ContextMenuItem>)
-              }
-              <ContextMenuItem
-                onSelect={handleUnlockMenuItemClick}
-                disabled={isAddingLabel}
-              >
-                <ContextMenuItemIconLeft>
-                  <LockOpen1Icon />
-                </ContextMenuItemIconLeft>
-                Unlock
-              </ContextMenuItem>
-              <ContextMenuItem
-                onSelect={handleMarkEmptyMenuItemClick}
-                disabled={isAddingLabel}
-              >
-                <ContextMenuItemIconLeft>
-                  <ValueNoneIcon />
-                </ContextMenuItemIconLeft>
-                Mark empty
-              </ContextMenuItem>
-              <ContextMenuItem
-                onSelect={handleDeleteImagesMenuItemClick}
-                disabled={isAddingLabel}
-              >
-                <ContextMenuItemIconLeft>
-                  <TrashIcon />
-                </ContextMenuItemIconLeft>
-                {`Delete image${selectedImageIndices.length > 1 ? 's' : ''}`}
-              </ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
-        );
-      }
-      else {
-        return (
-          <TableRow />
-        )
-      };
+      return (
+        <ImagesTableRow 
+          row={row}
+          index={index}
+          focusIndex={focusIndex}
+          style={style}
+          selectedImageIndices={selectedImageIndices}
+        />
+      );
     },
-    [prepareRow, rows, handleRowClick, isImageLoaded, focusIndex]
+    [prepareRow, rows, isImageLoaded, focusIndex]
   );
 
   const InfiniteList = useCallback(
@@ -705,20 +401,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               height={height - 33}
               itemCount={imagesCount}
               itemSize={91}
-              onItemsRendered={({
-                overscanStartIndex,
-                overscanStopIndex,
-                visibleStartIndex,
-                visibleStopIndex
-              }) => {
-                // setVisibleRows([visibleStartIndex, visibleStopIndex]);
-                onItemsRendered({
-                  overscanStartIndex,
-                  overscanStopIndex,
-                  visibleStartIndex,
-                  visibleStopIndex
-                });
-              }}              
+              onItemsRendered={onItemsRendered}
               ref={list => {
                 // https://github.com/bvaughn/react-window/issues/324
                 ref(list);
