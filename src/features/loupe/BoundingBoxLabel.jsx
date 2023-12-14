@@ -93,10 +93,7 @@ const BoundingBoxLabel = forwardRef(({
 
   // manually focus catSelector if it's open
   useEffect(() => {
-    if (catSelectorOpen) {
-      console.log('catSelectorRef.current: ', ref.current)
-      ref.current.focus();
-    }
+    if (catSelectorOpen) ref.current.focus();
   }, [ref, catSelectorOpen]);
 
   const handleLabelClick = (e) => {

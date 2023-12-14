@@ -33,18 +33,16 @@ export const reviewSlice = createSlice({
     setFocus: (state, { payload }) => {
       state.focusIndex = { ...state.focusIndex, ...payload.index };
       state.focusChangeType = payload.type;
-      if (payload.index.image !== null) {
+      if (payload.index.image && payload.index.image !== null) {
         state.selectedImageIndices = [payload.index.image];
       }
     },
 
     setSelectedImageIndices: (state, { payload }) => {
-      console.log('setSelectedImageIndices: ', payload)
       state.selectedImageIndices = payload;
     },
 
     bboxUpdated: (state, { payload }) => {
-      console.log('reviewSlice.bboxUpdated() - ', payload);
       const { imgId, objId } = payload;
       const object = findObject(state.workingImages, imgId, objId);
       object.bbox = payload.bbox;
