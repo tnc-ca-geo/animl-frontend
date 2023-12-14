@@ -248,6 +248,7 @@ const BoundingBox = ({
     // focus to shift to the react-select category selector component.
     // see https://github.com/radix-ui/primitives/issues/1446
     focusRef.current = catSelectorRef.current;
+    console.log('focusRef.current: ', focusRef.current)
     const newIndex = { image: focusIndex.image, object: objectIndex, label: null }
     dispatch(setFocus({ index: newIndex, type: 'manual'}));
     dispatch(addLabelStart('from-object'));
@@ -307,7 +308,7 @@ const BoundingBox = ({
                 setTempObject={setTempObject}
                 verticalPos={(top > 30) ? 'top' : 'bottom'}
                 horizontalPos={((imgDims.width - left - width) < 75) ? 'right' : 'left'}
-                catSelectorRef={catSelectorRef}
+                ref={catSelectorRef}
                 isAuthorized={isAuthorized}
                 username={username}
               />
@@ -323,10 +324,13 @@ const BoundingBox = ({
         onCloseAutoFocus={(e) => {
           // NOTE: if user selects the "edit label" item, we need to force
           // focus to shift to the react-select category selector component
+          console.log('trying to focus the bbox catSelector')
           if (focusRef.current) {
             e.preventDefault();
             focusRef.current.focus();
             focusRef.current = null;
+          } else {
+            console.log('but theres no current focusRef')
           }
         }}
         sideOffset={5}

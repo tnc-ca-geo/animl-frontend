@@ -63,9 +63,8 @@ import {
   ContextMenuSeparator,
   ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
-import CreatableSelect from 'react-select/creatable';
-import { createFilter } from 'react-select';
 import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
+import CategorySelector from '../../components/CategorySelector.jsx';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -454,6 +453,25 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
         }, [isAddingLabel]);
 
+        const handleCategoryChange = (newValue) => {
+          if (!newValue) return;
+          let labelsToAdd = [];
+          for (const image of selectedImages) {
+            const newLabels = image.objects
+              .filter((obj) => !obj.locked)
+              .map((obj) => ({
+                objIsTemp: obj.isTemp,
+                userId,
+                bbox: obj.bbox,
+                category: newValue.value || newValue,
+                objId: obj._id,
+                imgId: image._id
+              }));
+              labelsToAdd = labelsToAdd.concat(newLabels);
+          }
+          dispatch(labelsAdded({ labels: labelsToAdd }));
+        };
+
         // track object states of selected images for disabling context-menu items
         // NOTE: if this evaluation seems to cause performance issues
         // we can always not disable the buttons and perform these checks
@@ -621,7 +639,10 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 Invalidate
               </ContextMenuItem>
               {catSelectorOpen
-                ? (<CategorySelector selectedImages={selectedImages} userId={userId} />)
+                ? (<CategorySelector 
+                    css={{ width: '100%' }}
+                    handleCategoryChange={handleCategoryChange}
+                  />)
                 : (<ContextMenuItem
                     onSelect={handleEditAllLabelsButtonClick}
                     disabled={allObjectsLocked}
@@ -809,111 +830,6 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
       ...img,
     }
   })
-};
-
-// TODO: make this it's own component. 
-// Used in ImageReviewToolbar and BoundingBoxLabel
-
-const StyledCategorySelector = styled(CreatableSelect, {
-  width: '100%',
-  fontFamily: '$mono',
-  fontSize: '$2',
-  fontWeight: '$1',
-  zIndex: '$5',
-  '.react-select__control': {
-    boxSizing: 'border-box',
-    // height: '24px',
-    minHeight: 'unset',
-    border: '1px solid',
-    borderColor: '$border',
-    borderRadius: '$2',
-    cursor: 'pointer',
-  },
-  '.react-select__single-value': {
-    // position: 'relative',
-  },
-  '.react-select__indicator-separator': {
-    display: 'none',
-  },
-  '.react-select__dropdown-indicator': {
-    paddingTop: '0',
-    paddingBottom: '0',
-  },
-  '.react-select__control--is-focused': {
-    transition: 'all 0.2s ease',
-    boxShadow: '0 0 0 3px $blue200',
-    borderColor: '$blue500',
-    '&:hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
-    },
-  },
-  '.react-select__menu': {
-    color: '$textDark',
-    fontSize: '$3',
-    '.react-select__option': {
-      cursor: 'pointer',
-    },
-    '.react-select__option--is-selected': {
-      color: '$blue500',
-      backgroundColor: '$blue200',
-    },
-    '.react-select__option--is-focused': {
-      backgroundColor: '$gray3',
-    },
-  }
-});
-
-const CategorySelector = ({ selectedImages, userId }) => {
-  const dispatch = useDispatch();
-  // update selector options when new labels become available
-  const createOption = (category) => ({ value: category.toLowerCase(), label: category });
-  const availLabels = useSelector(selectAvailLabels);
-  const options = availLabels.ids.map((id) => createOption(id));
-
-  const handleCategoryChange = (newValue) => {
-    if (!newValue) return;
-    let labelsToAdd = [];
-    for (const image of selectedImages) {
-      const newLabels = image.objects
-        .filter((obj) => !obj.locked)
-        .map((obj) => ({
-          objIsTemp: obj.isTemp,
-          userId,
-          bbox: obj.bbox,
-          category: newValue.value || newValue,
-          objId: obj._id,
-          imgId: image._id
-        }));
-        labelsToAdd = labelsToAdd.concat(newLabels);
-    }
-    dispatch(labelsAdded({ labels: labelsToAdd }));
-  };
-
-  const handleCategorySelectorBlur = (e) => {
-    console.log('handleCategorySelectorBlur');
-    dispatch(addLabelEnd());
-  };
-
-  return (
-    <StyledCategorySelector
-      autoFocus
-      isClearable
-      isSearchable
-      openMenuOnClick
-      className='react-select'
-      classNamePrefix='react-select'
-      menuPlacement='top'
-      filterOption={createFilter({ matchFrom: 'start' })} // TODO: what does this do?
-      isLoading={availLabels.isLoading}
-      isDisabled={availLabels.isLoading}
-      onChange={handleCategoryChange}
-      onCreateOption={handleCategoryChange}
-      onBlur={handleCategorySelectorBlur}
-      // value={createOption(label.category)}
-      options={options}
-    />
-  );
 };
 
 export default ImagesTable;

@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import CreatableSelect from 'react-select/creatable';
-import { createFilter } from 'react-select';
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { labelsAdded, setFocus } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
 import ValidationButtons from './ValidationButtons.jsx';
+import CategorySelector from '../../components/CategorySelector.jsx';
 
 const StyledBoundingBoxLabel = styled('div', {
   // backgroundColor: '#345EFF',
@@ -66,57 +65,7 @@ const LabelDisplay = styled('div', {
   padding: '$1 $2',
 });
 
-const CategorySelector = styled(CreatableSelect, {
-  width: '155px',
-  fontFamily: '$mono',
-  fontSize: '$2',
-  fontWeight: '$1',
-  zIndex: '$5',
-  '.react-select__control': {
-    boxSizing: 'border-box',
-    // height: '24px',
-    minHeight: 'unset',
-    border: '1px solid',
-    borderColor: '$border',
-    borderRadius: '0',
-    cursor: 'pointer',
-  },
-  '.react-select__single-value': {
-    // position: 'relative',
-  },
-  '.react-select__indicator-separator': {
-    display: 'none',
-  },
-  '.react-select__dropdown-indicator': {
-    paddingTop: '0',
-    paddingBottom: '0',
-  },
-  '.react-select__control--is-focused': {
-    transition: 'all 0.2s ease',
-    boxShadow: '0 0 0 3px $blue200',
-    borderColor: '$blue500',
-    '&:hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
-    },
-  },
-  '.react-select__menu': {
-    color: '$textDark',
-    fontSize: '$3',
-    '.react-select__option': {
-      cursor: 'pointer',
-    },
-    '.react-select__option--is-selected': {
-      color: '$blue500',
-      backgroundColor: '$blue200',
-    },
-    '.react-select__option--is-focused': {
-      backgroundColor: '$gray3',
-    },
-  }
-});
-
-const BoundingBoxLabel = ({
+const BoundingBoxLabel = forwardRef(({
   imgId,
   index,
   object,
@@ -128,20 +77,11 @@ const BoundingBoxLabel = ({
   setTempObject,
   verticalPos,
   horizontalPos,
-  catSelectorRef,
   isAuthorized,
   username,
-}) => {
+}, ref) => {
   const textColor = labelColor.isLowContrast ? labelColor.textDark : labelColor.textLight;
   const dispatch = useDispatch();
-
-  // update selector options when new labels become available
-  const createOption = (category) => ({
-    value: category.toLowerCase(),
-    label: category,
-  });
-  const availLabels = useSelector(selectAvailLabels);
-  const options = availLabels.ids.map((id) => createOption(id));
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
@@ -153,8 +93,11 @@ const BoundingBoxLabel = ({
 
   // manually focus catSelector if it's open
   useEffect(() => {
-    if (catSelectorOpen) catSelectorRef.current.focus();
-  }, [catSelectorRef, catSelectorOpen]);
+    if (catSelectorOpen) {
+      console.log('catSelectorRef.current: ', ref.current)
+      ref.current.focus();
+    }
+  }, [ref, catSelectorOpen]);
 
   const handleLabelClick = (e) => {
     e.stopPropagation();
@@ -192,30 +135,18 @@ const BoundingBoxLabel = ({
       selected={selected}
       css={{
         backgroundColor: labelColor.base,
-        color: textColor,// labelColor.bg  
+        color: textColor, // labelColor.bg  
       }}
     >
       <div onClick={handleLabelClick}>
         <CategorySelector
-          autoFocus
-          isClearable
-          isSearchable
-          className='react-select'
-          classNamePrefix='react-select'
-          ref={catSelectorRef}
-          filterOption={createFilter({ matchFrom: 'start' })}
-          isLoading={availLabels.isLoading}
-          isDisabled={availLabels.isLoading || !isAuthorized}
-          onChange={handleCategoryChange}
-          onCreateOption={handleCategoryChange}
-          onBlur={handleCategorySelectorBlur}
-          value={createOption(label.category)}
-          options={options}
           css={{ display: catSelectorOpen ? 'block' : 'none' }}
+          ref={ref}
+          handleCategoryChange={handleCategoryChange}
+          handleCategorySelectorBlur={handleCategorySelectorBlur}
+          menuPlacement='bottom'
         />
-        <LabelDisplay
-          css={{ display: catSelectorOpen ? 'none' : 'block' }}
-        >
+        <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block' }}>
           <Category>{label.category}</Category>
           {!object.locked && <Confidence>{conf}%</Confidence>}
         </LabelDisplay>
@@ -231,19 +162,7 @@ const BoundingBoxLabel = ({
       }
     </StyledBoundingBoxLabel>
   );
-};
-
-const targetIsEditLabelMenuItem = (e) => {
-  let isEditLabelMenuItem = false;
-  const composedPath = e.composedPath();
-  composedPath.forEach((el) => {
-    if (el.classList && 
-        el.classList.contains('edit-label-menu-item')) {
-      isEditLabelMenuItem = true;
-    }
-  });
-  return isEditLabelMenuItem;
-};
+});
 
 export default BoundingBoxLabel;
 
