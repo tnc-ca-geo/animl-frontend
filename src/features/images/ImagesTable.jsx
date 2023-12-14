@@ -440,9 +440,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         // TODO: look for opportunities to abstract some of this. Lots of overlap
         // with ImageReviewToolbar and BoundingBox context-menu logic
 
-        // TODO: e.g. the category selector used in this context-menu, in BoundingBoxLabel, 
-        // and ImageReviewToolbar might be able to abstract into its own component
-        
         // TODO: also, can we move this logic higher up the component tree?
         // Seems crazy to stick it in every row component
 
@@ -493,6 +490,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         // validate all labels
         const handleValidationMenuItemClick = (e, validated) => {
           e.stopPropagation();
+          if (allObjectsLocked) return;
           let labelsToValidate = [];
           for (const image of selectedImages) {
             const unlockedObjects = image.objects.filter((obj) => !obj.locked);
@@ -517,12 +515,14 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         const handleEditAllLabelsButtonClick = (e) => {
           e.stopPropagation();
           e.preventDefault();
+          if (allObjectsLocked) return;
           dispatch(addLabelStart('from-image-table'));
         };
 
         // unlock all labels
         const handleUnlockMenuItemClick = (e) => {
           e.stopPropagation();
+          if (allObjectsUnlocked || !hasRenderedObjects) return;
           let objects = [];
           for (const image of selectedImages) {
             const objectsToUnlock = image.objects
@@ -608,7 +608,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
             >
               <ContextMenuItem
                 onSelect={(e) => handleValidationMenuItemClick(e, true)}
-                disabled={isAddingLabel || allObjectsLocked}
+                disabled={isAddingLabel}
                 css={{
                   color: '$successText',
                   '&[data-highlighted]': {
@@ -624,7 +624,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={(e) => handleValidationMenuItemClick(e, false)}
-                disabled={isAddingLabel || allObjectsLocked}
+                disabled={isAddingLabel}
                 css={{
                   color: '$errorText',
                   '&[data-highlighted]': {
@@ -643,10 +643,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                     css={{ width: '100%' }}
                     handleCategoryChange={handleCategoryChange}
                   />)
-                : (<ContextMenuItem
-                    onSelect={handleEditAllLabelsButtonClick}
-                    disabled={allObjectsLocked}
-                  >
+                : (<ContextMenuItem onSelect={handleEditAllLabelsButtonClick}>
                     <ContextMenuItemIconLeft>
                       <Pencil1Icon />
                     </ContextMenuItemIconLeft>
@@ -655,7 +652,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               }
               <ContextMenuItem
                 onSelect={handleUnlockMenuItemClick}
-                disabled={isAddingLabel || allObjectsUnlocked || !hasRenderedObjects}
+                disabled={isAddingLabel}
               >
                 <ContextMenuItemIconLeft>
                   <LockOpen1Icon />
