@@ -37,6 +37,7 @@ import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
 import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
+import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -114,7 +115,7 @@ const HeaderCell = styled(TableCell, {
   },
 });
 
-const DataCell = styled(TableCell, {
+const DataCell = styled(TableCell, { // TODO: doesn't seem to be used?
   margin: '0px',
   display: 'flex',
   alignItems: 'center',
@@ -227,8 +228,6 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const imagesLoading = useSelector(selectImagesLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
-  const paginatedField = useSelector(selectPaginatedField);
-  const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useScrollbarSize();
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
@@ -238,59 +237,13 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   }, [hasNext, workingImages]);
   const selectedImageIndices = useSelector(selectSelectedImageIndices);
 
+  // prepare table
   const data = makeRows(workingImages, focusIndex, selectedImageIndices);
-
-  const defaultColumn = useMemo(() => ({ // TODO: move to config
-    minWidth: 30,
-    width: 100, // width is used for both the flex-basis and flex-grow
-    maxWidth: 400,
-  }), []);
-
-  const columns = useMemo(() => [ // TODO: move to config
-    {
-      accessor: 'thumbnail',
-      disableSortBy: true,
-      width: '155',
-      disableResizing: true,
-    },
-    {
-      Header: 'Labels',
-      accessor: 'labelPills',
-      disableSortBy: true,
-      width: '260',
-    },
-    {
-      Header: 'Date created',
-      accessor: 'dtOriginal',
-    },
-    {
-      Header: 'Date added',
-      accessor: 'dtAdded',
-    },
-    {
-      Header: 'Reviewed',
-      accessor: 'reviewed',
-      disableSortBy: true,
-    },
-    {
-      Header: 'Camera',
-      accessor: 'cameraId',
-    },
-    {
-      Header: 'Deployment',
-      accessor: 'deploymentName',
-      disableSortBy: true,
-    },
-  ], []);
-
-  const initialState = {
-    sortBy: [
-      {
-        id: paginatedField,
-        desc: !sortAscending,
-      }
-    ],
-  };
+  const defaultColumn = useMemo(() => defaultColumnDims, []);
+  const columns = useMemo(() => columnConfig, []);
+  const paginatedField = useSelector(selectPaginatedField);
+  const sortAscending = useSelector(selectSortAscending);
+  const initialState = { sortBy: [{ id: paginatedField, desc: !sortAscending }] };
 
   const {
     getTableProps,
@@ -314,7 +267,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     useFlexLayout,
     useSortBy,
   );
-
+  
+  // manage auto-scrolling
   const focusChangeType = useSelector(selectFocusChangeType);
   useEffect(() => {
     if (focusIndex.image && focusChangeType === 'auto') {
@@ -324,6 +278,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [focusIndex.image, focusChangeType]);
 
+  // manage clearing list cache when sort changes
   useEffectAfterMount(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
     // to clear the infinite list's cache. This effect will run on mount too;
@@ -335,24 +290,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   }, [sortBy, dispatch]);
 
   // responsively hide/show table columns
-  const { ref, breakpoint } = useBreakpoints([  // TODO: move to config
-    ['xxs', 540],
-    ['xs', 640],
-    ['sm', 740],
-    ['md', 840],
-    ['lg', 940],
-    ['xl', Infinity]
-  ]);
-
-  const columnsToHide = useMemo(() => ({  // TODO: move to config
-    'loupeOpen': ['dtOriginal', 'dtAdded', 'reviewed', 'cameraId', 'deploymentName'],
-    'xxs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed', 'dtOriginal'],
-    'xs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed'],
-    'sm': ['dtAdded', 'deploymentName', 'cameraId'],
-    'md': ['dtAdded', 'deploymentName'],
-    'lg': ['dtAdded']
-  }), []);
-
+  const { ref, breakpoint } = useBreakpoints(tableBreakpoints);
+  const columnsToHide = useMemo(() => columnsToHideMap, []);
   useEffect(() => {
     if (!breakpoint) return;
     if (isLoupeOpen) {
