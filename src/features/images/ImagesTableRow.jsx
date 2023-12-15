@@ -20,6 +20,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuItemIconLeft,
+  ContextMenuSeparator
 } from '../../components/ContextMenu.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
 import { 
@@ -319,6 +320,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           </ContextMenuItemIconLeft>
           Validate
         </ContextMenuItem>
+
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, false)}
           disabled={isAddingLabel}
@@ -335,6 +337,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           </ContextMenuItemIconLeft>
           Invalidate
         </ContextMenuItem>
+
         {catSelectorOpen
           ? (<CategorySelector 
               css={{ width: '100%' }}
@@ -347,15 +350,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
               Edit all labels
             </ContextMenuItem>)
         }
-        <ContextMenuItem
-          onSelect={handleUnlockMenuItemClick}
-          disabled={isAddingLabel}
-        >
-          <ContextMenuItemIconLeft>
-            <LockOpen1Icon />
-          </ContextMenuItemIconLeft>
-          Unlock
-        </ContextMenuItem>
+
         <ContextMenuItem
           onSelect={handleMarkEmptyMenuItemClick}
           disabled={isAddingLabel}
@@ -365,6 +360,19 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           </ContextMenuItemIconLeft>
           Mark empty
         </ContextMenuItem>
+
+        <ContextMenuSeparator /> 
+
+        <ContextMenuItem
+          onSelect={handleUnlockMenuItemClick}
+          disabled={isAddingLabel}
+        >
+          <ContextMenuItemIconLeft>
+            <LockOpen1Icon />
+          </ContextMenuItemIconLeft>
+          Unlock
+        </ContextMenuItem>
+        
         <ContextMenuItem
           onSelect={handleDeleteImagesMenuItemClick}
           disabled={isAddingLabel}

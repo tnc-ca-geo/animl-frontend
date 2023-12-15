@@ -322,13 +322,10 @@ const BoundingBox = ({
         onCloseAutoFocus={(e) => {
           // NOTE: if user selects the "edit label" item, we need to force
           // focus to shift to the react-select category selector component
-          console.log('trying to focus the bbox catSelector')
           if (focusRef.current) {
             e.preventDefault();
             focusRef.current.focus();
             focusRef.current = null;
-          } else {
-            console.log('but theres no current focusRef')
           }
         }}
         sideOffset={5}
