@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../theme/stitches.config.js';
 import { Link } from 'react-router-dom';
-import { selectUserUsername, selectUserAuthStatus } from '../features/user/userSlice.js';
+import { selectUserUsername, selectUserAuthStatus } from '../features/auth/authSlice.js';
 import { selectRouterLocation } from '../features/images/imagesSlice.js';
 import ProjectAndViewNav from '../features/projects/ProjectAndViewNav.jsx';
 import { useAuthenticator } from '@aws-amplify/ui-react';

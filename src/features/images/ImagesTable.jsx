@@ -1,5 +1,4 @@
 import React, {
-  useState,
   useMemo,
   useEffect,
   useRef,
@@ -7,8 +6,11 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
-import { green, orange } from '@radix-ui/colors';
-import { CheckIcon, Cross2Icon, TriangleUpIcon, TriangleDownIcon } from '@radix-ui/react-icons'
+import { CheckIcon,
+  Cross2Icon,
+  TriangleUpIcon,
+  TriangleDownIcon,
+} from '@radix-ui/react-icons'
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
@@ -17,23 +19,25 @@ import useBreakpoints from '../../hooks/useBreakpoints';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import ImagesTableRow from './ImagesTableRow.jsx';
 import {
   sortChanged,
-  // visibleRowsChanged,
   selectImagesLoading,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
 import {
-  setFocus,
   selectFocusIndex,
-  selectFocusChangeType
+  selectFocusChangeType,
+  selectSelectedImageIndices
 } from '../review/reviewSlice';
-import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice';
+import { selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
+import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
+import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -111,7 +115,7 @@ const HeaderCell = styled(TableCell, {
   },
 });
 
-const DataCell = styled(TableCell, {
+const DataCell = styled(TableCell, { // TODO: doesn't seem to be used?
   margin: '0px',
   display: 'flex',
   alignItems: 'center',
@@ -121,7 +125,7 @@ const DataCell = styled(TableCell, {
   variants: {
     selected: {
       true: {
-        backgroundColor: '$backgroundDark',
+        backgroundColor: '$backgroundExtraDark',
         // '&:first-child': {
         //   borderLeft: '4px solid $blue500',
         //   paddingLeft: '12px',
@@ -224,85 +228,22 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const imagesLoading = useSelector(selectImagesLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen)
   const focusIndex = useSelector(selectFocusIndex);
-  const paginatedField = useSelector(selectPaginatedField);
-  const sortAscending = useSelector(selectSortAscending);
   const scrollBarSize = useScrollbarSize();
-  // const [ visibleRows, setVisibleRows ] = useState([null, null]);
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const imagesCount = hasNext ? workingImages.length + 1 : workingImages.length;
   const isImageLoaded = useCallback((index) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
+  const selectedImageIndices = useSelector(selectSelectedImageIndices);
 
-  // // listen for shift + mousedown (selecting multiple rows)
-  // useEffect(() => {
-  //   const handleWindowClick = (e) => {
-  //     if (object.isTemp) setTempObject(null);
-  //     // unless the last click was on the "edit label" context menu item
-  //     if (!targetIsEditLabelMenuItem(e)) { 
-  //       dispatch(addLabelEnd());
-  //     }
-  //   };
-  //   addingLabel
-  //     ? window.addEventListener('click', handleWindowClick)
-  //     : window.removeEventListener('click', handleWindowClick);
-  //   return () => window.removeEventListener('click', handleWindowClick);
-  // }, [ addingLabel, imgId, object, setTempObject, dispatch ]);
-
-  const data = makeRows(workingImages, focusIndex);
-
-  const defaultColumn = useMemo(() => ({
-    minWidth: 30,
-    width: 100, // width is used for both the flex-basis and flex-grow
-    maxWidth: 400,
-  }), []);
-
-  const columns = useMemo(() => [
-    {
-      accessor: 'thumbnail',
-      disableSortBy: true,
-      width: '155',
-      disableResizing: true,
-    },
-    {
-      Header: 'Labels',
-      accessor: 'labelPills',
-      disableSortBy: true,
-      width: '260',
-    },
-    {
-      Header: 'Date created',
-      accessor: 'dtOriginal',
-    },
-    {
-      Header: 'Date added',
-      accessor: 'dtAdded',
-    },
-    {
-      Header: 'Reviewed',
-      accessor: 'reviewed',
-      disableSortBy: true,
-    },
-    {
-      Header: 'Camera',
-      accessor: 'cameraId',
-    },
-    {
-      Header: 'Deployment',
-      accessor: 'deploymentName',
-      disableSortBy: true,
-    },
-  ], []);
-
-  const initialState = {
-    sortBy: [
-      {
-        id: paginatedField,
-        desc: !sortAscending,
-      }
-    ],
-  };
+  // prepare table
+  const data = makeRows(workingImages, focusIndex, selectedImageIndices);
+  const defaultColumn = useMemo(() => defaultColumnDims, []);
+  const columns = useMemo(() => columnConfig, []);
+  const paginatedField = useSelector(selectPaginatedField);
+  const sortAscending = useSelector(selectSortAscending);
+  const initialState = { sortBy: [{ id: paginatedField, desc: !sortAscending }] };
 
   const {
     getTableProps,
@@ -326,11 +267,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     useFlexLayout,
     useSortBy,
   );
-
-  // useEffect(() => {
-  //   dispatch(visibleRowsChanged(visibleRows))
-  // }, [dispatch, visibleRows]);
-
+  
+  // manage auto-scrolling
   const focusChangeType = useSelector(selectFocusChangeType);
   useEffect(() => {
     if (focusIndex.image && focusChangeType === 'auto') {
@@ -340,6 +278,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [focusIndex.image, focusChangeType]);
 
+  // manage clearing list cache when sort changes
   useEffectAfterMount(() => {
     // Each time the sortBy changes we call resetloadMoreItemsCache 
     // to clear the infinite list's cache. This effect will run on mount too;
@@ -351,24 +290,8 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   }, [sortBy, dispatch]);
 
   // responsively hide/show table columns
-  const { ref, breakpoint } = useBreakpoints([
-    ['xxs', 540],
-    ['xs', 640],
-    ['sm', 740],
-    ['md', 840],
-    ['lg', 940],
-    ['xl', Infinity]
-  ]);
-
-  const columnsToHide = useMemo(() => ({
-    'loupeOpen': ['dtOriginal', 'dtAdded', 'reviewed', 'cameraId', 'deploymentName'],
-    'xxs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed', 'dtOriginal'],
-    'xs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed'],
-    'sm': ['dtAdded', 'deploymentName', 'cameraId'],
-    'md': ['dtAdded', 'deploymentName'],
-    'lg': ['dtAdded']
-  }), []);
-
+  const { ref, breakpoint } = useBreakpoints(tableBreakpoints);
+  const columnsToHide = useMemo(() => columnsToHideMap, []);
   useEffect(() => {
     if (!breakpoint) return;
     if (isLoupeOpen) {
@@ -382,50 +305,24 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     }
   }, [breakpoint, isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
 
-  const handleRowClick = useCallback((e, id) => {
-    if (e.shiftKey) {
-      console.log('shift + click');
-      // TODO: allow for selection of mulitple images to perform bulk actions on
-    } else {
-      const newIndex = { image: Number(id), object: null, label: null }
-      dispatch(setFocus({ index: newIndex, type: 'manual' }));
-      dispatch(toggleOpenLoupe(true));
-    }
-  }, [dispatch]);
-
   const RenderRow = useCallback(
     ({ index, style }) => {
-      if (isImageLoaded(index)) {
-        const row = rows[index];
-        prepareRow(row);
-        return (
-          <TableRow
-            {...row.getRowProps({ style })}
-            onClick={(e) => handleRowClick(e, row.id)}
-            selected={focusIndex.image === index}
-          >
-            {row.cells.map(cell => (
-              <DataCell
-                {...cell.getCellProps()}
-                selected={focusIndex.image === index}
-                scrollable={
-                  cell.column.Header === 'Labels' && 
-                  cell.value.props.objects.length > 3
-                }
-              >
-                {cell.render('Cell')}
-              </DataCell>
-            ))}
-          </TableRow>
-        );
-      }
-      else {
-        return (
-          <TableRow />
-        )
-      };
+      if (!isImageLoaded(index)) return (<TableRow />);
+
+      const row = rows[index];
+      prepareRow(row);
+
+      return (
+        <ImagesTableRow 
+          row={row}
+          index={index}
+          focusIndex={focusIndex}
+          style={style}
+          selectedImageIndices={selectedImageIndices}
+        />
+      );
     },
-    [prepareRow, rows, handleRowClick, isImageLoaded, focusIndex]
+    [prepareRow, rows, isImageLoaded, focusIndex]
   );
 
   const InfiniteList = useCallback(
@@ -443,20 +340,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
               height={height - 33}
               itemCount={imagesCount}
               itemSize={91}
-              onItemsRendered={({
-                overscanStartIndex,
-                overscanStopIndex,
-                visibleStartIndex,
-                visibleStopIndex
-              }) => {
-                // setVisibleRows([visibleStartIndex, visibleStopIndex]);
-                onItemsRendered({
-                  overscanStartIndex,
-                  overscanStopIndex,
-                  visibleStartIndex,
-                  visibleStopIndex
-                });
-              }}              
+              onItemsRendered={onItemsRendered}
               ref={list => {
                 // https://github.com/bvaughn/react-window/issues/324
                 ref(list);
@@ -518,14 +402,15 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           </AutoSizer>
         </Table>
       }
+      <DeleteImagesAlert />
     </TableContainer>
   );  
 };
 
-function makeRows(workingImages, focusIndex) {
+function makeRows(workingImages, focusIndex, selectedImageIndices) {
   return workingImages.map((img, imageIndex) => {
     // thumbnails
-    const isImageFocused = imageIndex === focusIndex.image;
+    const isImageFocused = selectedImageIndices.includes(imageIndex);
     const thumbnail = <Image selected={isImageFocused} src={img.thumbUrl} />;
 
     // label pills
@@ -564,6 +449,6 @@ function makeRows(workingImages, focusIndex) {
       ...img,
     }
   })
-}
+};
 
 export default ImagesTable;

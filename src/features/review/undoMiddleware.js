@@ -19,7 +19,6 @@ export const undoMiddleware = createUndoMiddleware({
     // labelsAdded
     [labelsAdded.toString()]: {
       action: (action) => {
-        console.log('reverting labelsAdded with action: ', action);
         return labelsRemoved(action.payload);
       },
     },
@@ -27,7 +26,6 @@ export const undoMiddleware = createUndoMiddleware({
     // labelsValidated
     [labelsValidated.toString()]: {
       action: (action, oldLabelsState) => {
-        console.log("reverting labelsValidated with action: ", action);
         const labels = oldLabelsState.map(({ oldValidation, oldLocked }, i) => {
           const { imgId, objId, lblId } = action.payload.labels[i];
           return {
@@ -41,7 +39,6 @@ export const undoMiddleware = createUndoMiddleware({
         return labelsValidationReverted({ labels });
       },
       createArgs: (state, action) => {
-        console.log('undoMiddleware - labelsValidated - createArgs - action ', action);
         const workingImages = selectWorkingImages(state);
         const oldLabelsState = action.payload.labels.map(({ imgId, objId, lblId }) => {
           const object = findObject(workingImages, imgId, objId);
@@ -55,7 +52,6 @@ export const undoMiddleware = createUndoMiddleware({
     // bboxUpdated
     [bboxUpdated.toString()]: {
       action: (action, { oldBbox }) => {
-        console.log("reverting bboxUpdated with action: ", action);
         return bboxUpdated({
           imgId: action.payload.imgId,
           objId: action.payload.objId,
@@ -73,9 +69,7 @@ export const undoMiddleware = createUndoMiddleware({
     // objectsManuallyUnlocked
     [objectsManuallyUnlocked.toString()]: {
       action: (action) => {
-        console.log("reverting objectsManuallyUnlocked with action: ", action);
-        const { imgId, objIds } = action.payload;
-        const objects = objIds.map((objId) => ({ imgId, objId, locked: true }));
+        const objects = action.payload.objects.map(({ imgId, objId }) => ({ imgId, objId, locked: true }));
         return objectsLocked({ objects });
       },
     },
@@ -83,7 +77,6 @@ export const undoMiddleware = createUndoMiddleware({
     // markedEmpty
     [markedEmpty.toString()]: {
       action: (action) => {
-        console.log("reverting markedEmpty with action: ", action);
         return markedEmptyReverted(action.payload);
       },
     },

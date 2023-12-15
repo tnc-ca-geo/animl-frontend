@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { styled } from '../../theme/stitches.config';
-import { selectUserCurrentRoles } from '../user/userSlice';
+import { selectUserCurrentRoles } from '../auth/authSlice';
 import { unregisterCamera } from './wirelessCamerasSlice';
 import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
@@ -11,7 +11,7 @@ import {
   hasRole,
   WRITE_CAMERA_REGISTRATION_ROLES,
   WRITE_DEPLOYMENTS_ROLES
-} from '../../auth/roles';
+} from '../auth/roles';
 
 
 const StyledCameraList = styled('div', {

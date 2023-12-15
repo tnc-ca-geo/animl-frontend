@@ -55,8 +55,12 @@ export const objectMiddleware = store => next => action => {
 
   else if (objectsManuallyUnlocked.match(action)) {
     next(action);
-    const { imgId, objIds } = action.payload;
-    const objects = objIds.map((objId) => ({ imgId, objId, locked: false }));
+    console.log('objectMiddleware - objectsManuallyUnlocked: ', action.payload)
+    // const { imgId, objIds } = action.payload;
+    // const objects = objIds.map((objId) => ({ imgId, objId, locked: false }));
+    const objects = action.payload.objects.map(({ imgId, objId }) => ({
+      imgId, objId, locked: false
+    }));
     store.dispatch(objectsLocked({ objects }));
   }
 

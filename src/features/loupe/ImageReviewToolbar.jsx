@@ -17,9 +17,9 @@ import {
 import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
-import { addLabelStart, addLabelEnd, selectIsDrawingBbox } from './loupeSlice.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { addLabelStart, addLabelEnd, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import { violet, blackA, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { 
@@ -29,6 +29,7 @@ import {
   TooltipTrigger
 } from '../../components/Tooltip.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
+import CategorySelector from '../../components/CategorySelector.jsx';
 
 
 const Toolbar = styled('div', {
@@ -74,56 +75,6 @@ const ToolbarIconButton = styled(Button, {
   }
 });
 
-const StyledCategorySelector = styled(CreatableSelect, {
-  width: '155px',
-  fontFamily: '$mono',
-  fontSize: '$2',
-  fontWeight: '$1',
-  zIndex: '$5',
-  '.react-select__control': {
-    boxSizing: 'border-box',
-    // height: '24px',
-    minHeight: 'unset',
-    border: '1px solid',
-    borderColor: '$border',
-    borderRadius: '$2',
-    cursor: 'pointer',
-  },
-  '.react-select__single-value': {
-    // position: 'relative',
-  },
-  '.react-select__indicator-separator': {
-    display: 'none',
-  },
-  '.react-select__dropdown-indicator': {
-    paddingTop: '0',
-    paddingBottom: '0',
-  },
-  '.react-select__control--is-focused': {
-    transition: 'all 0.2s ease',
-    boxShadow: '0 0 0 3px $blue200',
-    borderColor: '$blue500',
-    '&:hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
-    },
-  },
-  '.react-select__menu': {
-    color: '$textDark',
-    fontSize: '$3',
-    '.react-select__option': {
-      cursor: 'pointer',
-    },
-    '.react-select__option--is-selected': {
-      color: '$blue500',
-      backgroundColor: '$blue200',
-    },
-    '.react-select__option--is-focused': {
-      backgroundColor: '$gray3',
-    },
-  }
-});
-
 const AnnotationControls = styled('div', {
   display: 'flex'
 });
@@ -142,16 +93,27 @@ const CancelHint = styled('div', {
   },
 });
 
-const CategorySelector = ({ image, setCatSelectorOpen }) => {
+const ImageReviewToolbar = ({
+  image,
+  lastAction,
+  handleRepeatAction,
+  handleValidateAllButtonClick,
+  handleMarkEmptyButtonClick,
+  handleAddObjectButtonClick,
+  handleUnlockAllButtonClick,
+  handleIncrementClick,
+}) => {
+  const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
+  const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const dispatch = useDispatch();
-  // update selector options when new labels become available
-  const createOption = (category) => ({
-    value: category.toLowerCase(),
-    label: category,
-  });
-  const availLabels = useSelector(selectAvailLabels);
-  const options = availLabels.ids.map((id) => createOption(id));
+
+  // manage category selector state (open/closed)
+  const isAddingLabel = useSelector(selectIsAddingLabel);
+  const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-review-toolbar'));
+  useEffect(() => {
+    setCatSelectorOpen(((isAddingLabel === 'from-review-toolbar')));
+  }, [isAddingLabel]);
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
@@ -166,63 +128,20 @@ const CategorySelector = ({ image, setCatSelectorOpen }) => {
         imgId: image._id
       }));
     dispatch(labelsAdded({ labels: newLabels }));
-    setCatSelectorOpen(false);
   };
 
-  const handleCategorySelectorBlur = (e) => {
-    dispatch(addLabelEnd());
-    setCatSelectorOpen(false);
-  };
-
-  return (
-    <StyledCategorySelector
-      autoFocus
-      isClearable
-      isSearchable
-      openMenuOnClick
-      className='react-select'
-      classNamePrefix='react-select'
-      menuPlacement='top'
-      filterOption={createFilter({ matchFrom: 'start' })} // TODO: what does this do?
-      isLoading={availLabels.isLoading}
-      isDisabled={availLabels.isLoading}
-      onChange={handleCategoryChange}
-      onCreateOption={handleCategoryChange}
-      onBlur={handleCategorySelectorBlur}
-      // value={createOption(label.category)}
-      options={options}
-    />
-  );
-};
-
-const ImageReviewToolbar = ({
-  image,
-  lastAction,
-  handleRepeatAction,
-  handleValidateAllButtonClick,
-  handleMarkEmptyButtonClick,
-  handleAddObjectButtonClick,
-  handleUnlockAllButtonClick,
-  handleIncrementClick
-}) => {
-  const userRoles = useSelector(selectUserCurrentRoles);
-  const isDrawingBbox = useSelector(selectIsDrawingBbox);
-  const dispatch = useDispatch();
-
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(false);
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(addLabelStart('to-all-objects'));
-    setCatSelectorOpen(true);
+    dispatch(addLabelStart('from-review-toolbar'));
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
   const allObjectsUnlocked = image.objects && image.objects.every((obj) => !obj.locked);
-  const renderedObjectsCount = image.objects && image.objects.filter((obj) => (
+  const hasRenderedObjects = image.objects && image.objects.some((obj) => (
     obj.labels.some((lbl) => (
       lbl.validation === null || lbl.validation.validated
     ))
-  )).length;
+  ));
   
   return (
     <Toolbar>
@@ -250,9 +169,8 @@ const ImageReviewToolbar = ({
           <Tooltip>
             <TooltipTrigger asChild>
               {catSelectorOpen
-                ? (<CategorySelector 
-                    image={image} 
-                    setCatSelectorOpen={setCatSelectorOpen}
+                ? (<CategorySelector
+                    handleCategoryChange={handleCategoryChange} 
                   />)
                 : (<ToolbarIconButton
                     onClick={handleEditAllLabelsButtonClick}
@@ -343,7 +261,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={handleUnlockAllButtonClick}
-                disabled={allObjectsUnlocked || renderedObjectsCount === 0}
+                disabled={allObjectsUnlocked || !hasRenderedObjects}
               >
                 <LockOpen1Icon />
               </ToolbarIconButton>

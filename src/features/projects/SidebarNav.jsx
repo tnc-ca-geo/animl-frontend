@@ -1,13 +1,13 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserCurrentRoles, selectUserHasBetaAccess } from '../user/userSlice';
+import { selectUserCurrentRoles, selectUserHasBetaAccess } from '../auth/authSlice';
 import {
   hasRole,
   WRITE_AUTOMATION_RULES_ROLES,
   WRITE_VIEWS_ROLES,
   WRITE_IMAGES_ROLES,
   MANAGE_USERS_ROLES,
-} from '../../auth/roles';
+} from '../auth/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

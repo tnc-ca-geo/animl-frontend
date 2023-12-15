@@ -113,6 +113,7 @@ export const {
       textLight: slate.slate9,
 
       // backgrounds
+      backgroundExtraDark: slate.slate4,
       backgroundDark: slate.slate3,
       backgroundMedium: slate.slate2,
       backgroundLight: slate.slate1,

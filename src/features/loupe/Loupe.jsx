@@ -22,9 +22,10 @@ import {
   selectReviewMode,
   selectIsAddingLabel,
   drawBboxStart,
+  addLabelStart,
 } from './loupeSlice.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
@@ -145,7 +146,7 @@ const Loupe = () => {
   // const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
   // const handleToggleReviewSettings = () => {
   //   setReviewSettingsOpen(!reviewSettingsOpen);
-  // };]
+  // };
 
   const validateLabels = (validated) => {
     const labelsToValidate = [];
@@ -193,32 +194,24 @@ const Loupe = () => {
     validateLabels(validated);
   };
 
-  // track whether the image has objects with empty, unvalidated labels
-  const emptyLabels = currImgObjects.reduce((acc, curr) => {
-    return acc.concat(curr.labels.filter((lbl) => (
-      lbl.category === 'empty' && !lbl.validated
-    )));
-  }, []);
-
   const markEmpty = () => {
-    if (emptyLabels.length > 0) {
-      const labelsToValidate = [];
-      currImgObjects.forEach((obj) => {
-        obj.labels
-          .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
-          .forEach((lbl) => {
-            labelsToValidate.push({
-              imgId: image._id,
-              objId: obj._id,
-              lblId: lbl._id,
-              userId,
-              validated: true
-            });
-        });
+    const labelsToValidate = [];
+    currImgObjects.forEach((obj) => {
+      obj.labels
+        .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
+        .forEach((lbl) => {
+          labelsToValidate.push({
+            imgId: image._id,
+            objId: obj._id,
+            lblId: lbl._id,
+            userId,
+            validated: true
+          });
       });
-      dispatch(labelsValidated({ labels: labelsToValidate }))
-    }
-    else {
+    });
+    if (labelsToValidate.length > 0) {
+      dispatch(labelsValidated({ labels: labelsToValidate }));
+    } else {
       dispatch(markedEmpty({ images: [{ imgId: image._id }], userId }));
     }
   };
@@ -228,14 +221,14 @@ const Loupe = () => {
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   const handleUnlockAllButtonClick = () => {
-    const objIds = currImgObjects
+    const objects = currImgObjects
       .filter((obj) => (
         obj.locked && obj.labels.some((lbl) => (
           lbl.validation === null || lbl.validation.validated
         ))
       ))
-      .map((obj) => obj._id);
-    dispatch(objectsManuallyUnlocked({ imgId: image._id, objIds }));
+      .map((obj) => ({ imgId: image._id, objId: obj._id }));
+    dispatch(objectsManuallyUnlocked({ objects }));
   };
 
   const handleIncrementClick = (delta) => {
@@ -249,7 +242,8 @@ const Loupe = () => {
     .fromISO(image.dateTimeOriginal)
     .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 
-  // Listen for arrow keydowns
+  // Listen for hotkeys
+  // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
   const isAddingLabel = useSelector(selectIsAddingLabel);
@@ -258,7 +252,7 @@ const Loupe = () => {
     if (!image || isAddingLabel || modalOpen) return;
     let charCode = String.fromCharCode(e.which).toLowerCase();
 
-    // key listeners for increment/decrement
+    // arrows or WASD (increment/decrement)
     const delta = (e.code === 'ArrowLeft' || charCode === 'a')
       ? 'decrement'
       : (e.code === 'ArrowRight' || charCode === 'd')
@@ -271,13 +265,27 @@ const Loupe = () => {
         : dispatch(incrementImage(delta));
     }
 
-    // handle ctrl-z/shift-ctrl-z (undo/redo)
+    // ctrl-z/shift-ctrl-z (undo/redo)
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
       dispatch(undoActions.redo());
     }
     else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
       dispatch(undoActions.undo());
     }
+
+    // ctrl-e (edit all)
+    if (((e.ctrlKey || e.metaKey) && charCode === 'e') && 
+        hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
+      dispatch(addLabelStart('from-review-toolbar'));
+    }
+
+    // ctrl-v (repeat last action)
+    if (((e.ctrlKey || e.metaKey) && charCode === 'v') && 
+        hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
+      e.stopPropagation();
+      handleRepeatAction();
+    }
+
 
     // // handle ctrl-a (add object)
     // if (reviewMode) {

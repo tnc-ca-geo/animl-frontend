@@ -40,7 +40,7 @@ import {
   dismissExportError,
 } from '../features/images/imagesSlice';
 import getErrorContent from '../content/Errors';
-import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/userSlice';
+import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
 
 // TODO: add updateAutomationRules errors
 

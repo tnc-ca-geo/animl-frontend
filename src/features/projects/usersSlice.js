@@ -15,7 +15,7 @@ const initialState = {
   }
 }
 
-export const userSlice = createSlice({
+export const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
@@ -129,7 +129,7 @@ export const {
   cancel,
   clearUsers,
   dismissManageUsersError
-} = userSlice.actions;
+} = usersSlice.actions;
 
 export const fetchUsers = () => {
   return async (dispatch, getState) => {
@@ -211,4 +211,4 @@ export const selectSelectedUser = state => state.users.selectedUser;
 export const selectUsersLoading = state => state.users.loadingStates.users.isLoading;
 export const selectManageUserErrors = state => state.users.loadingStates.users.errors;
 
-export default userSlice.reducer;
+export default usersSlice.reducer;

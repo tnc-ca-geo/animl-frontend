@@ -8,7 +8,7 @@ import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 
 const initialState = {
-  images: [], // we aren't using this... consider removing?
+  // images: [], // we aren't using this... consider removing?
   loadingStates: {
     images: {
       isLoading: false,
@@ -35,6 +35,7 @@ const initialState = {
   export: null,
   preFocusImage: null,
   visibleRows: [],
+  deleteImagesAlertOpen: false,
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[1],
     paginatedField: 'dateTimeOriginal',
@@ -53,7 +54,6 @@ export const imagesSlice = createSlice({
   reducers: {
 
     clearImages: (state) => { 
-      state.images = []; 
       state.loadingStates.images = {
         isLoading: false,
         operation: null,
@@ -92,7 +92,6 @@ export const imagesSlice = createSlice({
           state.pageInfo[key] = payload.images.pageInfo[key];
         }
       });
-      state.images =  state.images.concat(payload.images.images);
     },
 
     dismissImagesError: (state, { payload }) => {
@@ -245,6 +244,7 @@ export const imagesSlice = createSlice({
       state.loadingStates.images.isLoading = true;
       state.loadingStates.images.operation = 'deleting';
       state.loadingStates.images.error = null;
+      state.deleteImagesAlertOpen = false;
     },
 
     deleteImagesSuccess: (state, { payload }) => {
@@ -256,6 +256,11 @@ export const imagesSlice = createSlice({
       state.loadingStates.images.isLoading = false;
       state.loadingStates.images.errors = payload;
     },
+
+    setDeleteImagesAlertOpen: (state, { payload }) => {
+      state.deleteImagesAlertOpen = payload;
+    }
+
   },
 });
 
@@ -287,12 +292,12 @@ export const {
   deleteImagesStart,
   deleteImagesSuccess,
   deleteImagesError,
+  setDeleteImagesAlertOpen
 } = imagesSlice.actions;
 
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current' ) => {
   return async (dispatch, getState) => {
-    console.log('iamgesSlice - fetchingImages() - filters: ', filters)
     try {
 
       dispatch(getImagesStart());
@@ -312,7 +317,6 @@ export const fetchImages = (filters, page = 'current' ) => {
 
         res = enrichImages(res, selectedProj.cameraConfigs);
         if (page !== 'next') dispatch(clearImages());
-        console.log('iamgesSlice - fetchingImages() - res: ', res)
         dispatch(getImagesSuccess(res));
         
       }
@@ -328,7 +332,6 @@ export const fetchImageContext = (imgId) => {
   return async (dispatch, getState) => {
     try {
 
-      console.log('fetchImageContext() - imgId: ', imgId);
       dispatch(getImageContextStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -386,7 +389,6 @@ export const fetchImageContext = (imgId) => {
 // fetchStats thunk
 export const fetchStats = (filters) => {
   return async (dispatch, getState) => {
-    console.log('iamgesSlice - fetchingStats() - filters: ', filters)
     try {
 
       dispatch(getStatsStart());
@@ -413,7 +415,6 @@ export const fetchStats = (filters) => {
 // export thunk
 export const exportData = ({ format, filters }) => {
   return async (dispatch, getState) => {
-    console.log(`imagesSlice - exportData() - exporting ${format} with filters: `, filters);
     try {
 
       dispatch(exportStart());
@@ -428,7 +429,6 @@ export const exportData = ({ format, filters }) => {
           request: 'export',
           input: { format, filters },
         });  
-        console.log('imagesSlice() - exportData() - res: ', res);
         dispatch(exportUpdate({ documentId: res.export.documentId }));
       }
     } catch (err) {
@@ -440,7 +440,6 @@ export const exportData = ({ format, filters }) => {
 // getExportStatus thunk
 export const getExportStatus = (documentId) => {
   return async (dispatch, getState) => {
-    console.log('imagesSlice() - getExportStatus() - docId: ', documentId);
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -453,7 +452,6 @@ export const getExportStatus = (documentId) => {
           request: 'getExportStatus',
           input: { documentId },
         });  
-        console.log('imagesSlice() - getExportStatus() - exportStatus: ', exportStatus)
         
         if (exportStatus.status === 'Success') {
           dispatch(exportSuccess(exportStatus));
@@ -498,7 +496,6 @@ export const selectPaginatedField = state => state.images.pageInfo.paginatedFiel
 export const selectSortAscending = state => state.images.pageInfo.sortAscending;
 export const selectHasPrevious = state => state.images.pageInfo.hasPrevious;
 export const selectHasNext = state => state.images.pageInfo.hasNext;
-export const selectImages = state => state.images.images;
 export const selectImagesCount = state => state.images.pageInfo.count;
 export const selectImagesLoading = state => state.images.loadingStates.images;
 export const selectImagesErrors = state => state.images.loadingStates.images.errors;
@@ -512,7 +509,7 @@ export const selectStatsErrors = state => state.images.loadingStates.stats.error
 export const selectExport = state => state.images.export;
 export const selectExportLoading = state => state.images.loadingStates.export;
 export const selectExportErrors = state => state.images.loadingStates.export.errors;
-
+export const selectDeleteImagesAlertOpen = state => state.images.deleteImagesAlertOpen;
 
 // TODO: find a different place for this?
 export const selectRouterLocation = state => state.router.location;

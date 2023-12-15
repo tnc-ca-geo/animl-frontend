@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { selectUserCurrentRoles } from '../user/userSlice.js';
-import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../../auth/roles.js';
+import { selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../auth/roles.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, fetchImages } from '../images/imagesSlice.js';
 import { selectActiveFilters  } from './filtersSlice.js';

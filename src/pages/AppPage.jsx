@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { selectUserUsername, selectUserAuthStatus } from '../features/user/userSlice.js';
+import { selectUserUsername, selectUserAuthStatus } from '../features/auth/authSlice.js';
 import { Page } from '../components/Page.jsx';
 import ViewExplorer from '../features/projects/ViewExplorer.jsx';
-import LoginForm from '../features/user/LoginForm.jsx';
+import LoginForm from '../features/auth/LoginForm.jsx';
 
 const AppPage = () => {
   const authStatus = useSelector(selectUserAuthStatus);

@@ -8,7 +8,7 @@ import IconButton from '../../components/IconButton.jsx';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
 import { ButtonRow } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './userSlice.js';
+import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './usersSlice.js';
 
 const ManageUsersTable = () => {
   const dispatch = useDispatch();

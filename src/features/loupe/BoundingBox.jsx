@@ -5,8 +5,8 @@ import _ from 'lodash';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../../auth/roles';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles';
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -246,14 +246,15 @@ const BoundingBox = ({
     // focus to shift to the react-select category selector component.
     // see https://github.com/radix-ui/primitives/issues/1446
     focusRef.current = catSelectorRef.current;
+    console.log('focusRef.current: ', focusRef.current)
     const newIndex = { image: focusIndex.image, object: objectIndex, label: null }
     dispatch(setFocus({ index: newIndex, type: 'manual'}));
-    dispatch(addLabelStart('to-single-object'));
+    dispatch(addLabelStart('from-object'));
   };
   
   const handleUnlockMenuItemClick = (e) => {
     e.stopPropagation();
-    dispatch(objectsManuallyUnlocked({ imgId, objIds: [object._id] }));
+    dispatch(objectsManuallyUnlocked({ objects: [{ imgId, objId: object._id }] }));
   };
 
   return (
@@ -305,7 +306,7 @@ const BoundingBox = ({
                 setTempObject={setTempObject}
                 verticalPos={(top > 30) ? 'top' : 'bottom'}
                 horizontalPos={((imgDims.width - left - width) < 75) ? 'right' : 'left'}
-                catSelectorRef={catSelectorRef}
+                ref={catSelectorRef}
                 isAuthorized={isAuthorized}
                 username={username}
               />

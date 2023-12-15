@@ -60,6 +60,7 @@ const LabelContainer = styled('div', {
   width: '100%',
   display: 'flex',
   flexWrap: 'wrap',
+  userSelect: 'none'
 });
 
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
@@ -67,14 +68,16 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   const dispatch = useDispatch();
 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
-    e.stopPropagation();
-    const newIndex = { image: imageIndex, object: objIndex, label: lblIndex };
-    dispatch(setFocus({ index: newIndex, type: 'manual' }));
-    dispatch(toggleOpenLoupe(true));
+    // if user isn't attempting a multi-row selection, update focus
+    if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      const newIndex = { image: imageIndex, object: objIndex, label: lblIndex };
+      dispatch(setFocus({ index: newIndex, type: 'manual' }));
+      dispatch(toggleOpenLoupe(true));
+    }
   };
 
   return (
-    <LabelContainer>
+    <LabelContainer >
       {objects.map((object, objIndex) => {
 
         // TODO: find a cleaner way to do this. Maybe make it a hook?

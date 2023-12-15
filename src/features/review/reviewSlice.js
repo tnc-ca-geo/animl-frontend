@@ -1,4 +1,4 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
+import { createSlice, createAction, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel } from '../../app/utils';
@@ -12,6 +12,7 @@ const initialState = {
     object: null,
     label: null,
   },
+  selectedImageIndices: [],
   focusChangeType: null,
   loadingStates: {
     labels: {
@@ -32,10 +33,16 @@ export const reviewSlice = createSlice({
     setFocus: (state, { payload }) => {
       state.focusIndex = { ...state.focusIndex, ...payload.index };
       state.focusChangeType = payload.type;
+      if (payload.index.image !== undefined && payload.index.image !== null) {
+        state.selectedImageIndices = [payload.index.image];
+      }
+    },
+
+    setSelectedImageIndices: (state, { payload }) => {
+      state.selectedImageIndices = payload;
     },
 
     bboxUpdated: (state, { payload }) => {
-      console.log('reviewSlice.bboxUpdated() - ', payload);
       const { imgId, objId } = payload;
       const object = findObject(state.workingImages, imgId, objId);
       object.bbox = payload.bbox;
@@ -148,7 +155,9 @@ export const reviewSlice = createSlice({
         state.workingImages = state.workingImages.concat(newImages);
       })
       .addCase(clearImages, (state) => {
-        state.workingImages = [];
+        state.workingImages = initialState.workingImages;
+        state.selectedImageIndices = initialState.selectedImageIndices;
+        state.focusIndex = initialState.focusIndex;
       })
       .addCase(toggleOpenLoupe, (state, { payload }) => {
         if (payload === false) {
@@ -167,6 +176,7 @@ export const reviewSlice = createSlice({
 
 export const {
   setFocus,
+  setSelectedImageIndices,
   bboxUpdated,
   objectsRemoved,
   labelsAdded,
@@ -197,8 +207,6 @@ export const editLabel = (operation, entity, payload, projId) => {
           and entity are required`;
         throw new Error(msg);
       }
-
-      console.log(`Attempting ${operation} ${entity} with payload: `, payload);
 
       dispatch(editLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
@@ -233,9 +241,20 @@ export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 
 export const selectWorkingImages = state => state.review.workingImages;
 export const selectFocusIndex = state => state.review.focusIndex;
+export const selectSelectedImageIndices = state => state.review.selectedImageIndices;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
 export const selectLastAction = state => state.review.lastAction;
 export const selectLastCategoryApplied = state => state.review.lastCategoryApplied;
+export const selectSelectedImages = createSelector(
+  [selectWorkingImages, selectSelectedImageIndices],
+  (workingImages, selectedImageIndices) => {
+    let selectedImages = [];
+    if (workingImages.length && selectedImageIndices.length) {
+      selectedImages = selectedImageIndices.map((i) => workingImages[i]);
+    }
+    return selectedImages;
+  }
+);
 
 export default reviewSlice.reducer;

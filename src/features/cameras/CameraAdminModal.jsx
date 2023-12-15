@@ -1,7 +1,7 @@
 import React, { useEffect, useState }from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserCurrentRoles } from '../user/userSlice';
-import { hasRole, WRITE_CAMERA_REGISTRATION_ROLES } from '../../auth/roles';
+import { selectUserCurrentRoles } from '../auth/authSlice';
+import { hasRole, WRITE_CAMERA_REGISTRATION_ROLES } from '../auth/roles';
 import {
   selectWirelessCamerasLoading,
   selectWirelessCameras,
