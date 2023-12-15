@@ -32,7 +32,7 @@ import {
   TrashIcon
 } from '@radix-ui/react-icons'
 
-// TODO: redundant (exists in ImagesTable)
+// TODO: redundant component (exists in ImagesTable)
 const TableRow = styled('div', {
   backgroundColor: '$backgroundLight',
   '&:hover': {
@@ -55,7 +55,7 @@ const TableRow = styled('div', {
   }
 });
 
-// TODO: redundant (exists in ImagesTable)
+// TODO: redundant component (exists in ImagesTable)
 const TableCell = styled('div', {
   margin: '$0',
   padding: '$0',

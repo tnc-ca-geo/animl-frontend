@@ -208,8 +208,6 @@ export const editLabel = (operation, entity, payload, projId) => {
         throw new Error(msg);
       }
 
-      console.log(`Attempting ${operation} ${entity} with payload: `, payload);
-
       dispatch(editLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
