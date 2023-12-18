@@ -477,7 +477,7 @@ const queries = {
   }),
 
   createImageComment: (input) => ({
-    templaste: `
+    template: `
       mutation CreateImageComment($input: CreateImageCommentInput!){
         createImageComment(input: $input) {
           comment {
@@ -493,7 +493,7 @@ const queries = {
   }),
 
   updateImageComment: (input) => ({
-    templaste: `
+    template: `
       mutation UpdateImageComment($input: UpdateImageCommentInput!){
         updateImageComment(input: $input) {
           comment {
@@ -509,7 +509,7 @@ const queries = {
   }),
 
   deleteImageComment: (input) => ({
-    templaste: `
+    template: `
       mutation DeleteImageComment($input: DeleteImageCommentInput!){
         deleteImageComment(input: $input) {
           message

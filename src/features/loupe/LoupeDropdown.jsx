@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
   DropdownMenu,
@@ -11,7 +12,7 @@ import IconButton from '../../components/IconButton.jsx';
 import { DotsHorizontalIcon} from '@radix-ui/react-icons';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertOpen } from '../images/imagesSlice';
-import { useDispatch } from 'react-redux';
+import { editComment } from '../review/reviewSlice';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -26,6 +27,23 @@ const LoupeDropdown = ({ image }) => {
     dispatch(setDeleteImagesAlertOpen(true));
   };
 
+  // NOTE: just testing image.comments CRUD operations
+  const handleCreateCommentItemClick = () => {
+    const comment = 'TEST COMMENT 2';
+    dispatch(editComment('create', { comment, imageId: image._id }));
+  };
+
+  const handleUpdateCommentItemClick = () => {
+    const _id = 'b5f8c278-c631-4338-a76c-10b358422646';
+    const comment = 'UPDATED COMMENT';
+    dispatch(editComment('update', { comment, id: _id, imageId: image._id }));
+  };
+
+  const handleDeleteCommentItemClick = () => {
+    const _id = 'b5f8c278-c631-4338-a76c-10b358422646';
+    dispatch(editComment('delete', { id: _id, imageId: image._id }));
+  };
+
   return (
     <DropdownMenu>
       <StyledDropdownMenuTrigger asChild>
@@ -36,6 +54,15 @@ const LoupeDropdown = ({ image }) => {
       <DropdownMenuContent sideOffset={5}>
         <DropdownMenuItem onClick={handleDeleteImageItemClick}>
           Delete Image
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleCreateCommentItemClick}>
+          Create Comment
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleUpdateCommentItemClick}>
+          Update Comment
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDeleteCommentItemClick}>
+          Delete Comment
         </DropdownMenuItem>
         <DropdownMenuArrow offset={12} />
       </DropdownMenuContent>

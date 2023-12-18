@@ -129,9 +129,6 @@ export const reviewSlice = createSlice({
       state.lastAction = 'marked-empty';
     },
 
-    // TODO: add edit comments handlers to add comments directly to images in state immediately? 
-    // or update image.comments after we have a response from the backend? 
-
     editLabelStart: (state) => { 
       state.loadingStates.labels.isLoading = true;
       state.loadingStates.labels.operation = 'updating';
@@ -165,6 +162,8 @@ export const reviewSlice = createSlice({
       state.loadingStates.comments.isLoading = false;
       state.loadingStates.comments.operation = null;
       state.loadingStates.comments.errors = null;
+      const image = findImage(state.workingImages, payload.imageId);
+      image.comments = payload.comments;
     },
     
     dismissLabelsError: (state, { payload }) => {
@@ -274,12 +273,7 @@ export const editComment = (operation, payload, projId) => {
     try {
 
       console.log('editComment - operation: ', operation);
-      console.log('editComment - operation: ', payload);
-      // if ((payload.updates && !payload.updates.length) || 
-      //     (payload.objects && !payload.objects.length) ||
-      //     (payload.labels && !payload.labels.length)) {
-      //     return;
-      // }
+      console.log('editComment - payload: ', payload);
 
       if (!operation || !payload) {
         const msg = `An operation (create, update, or delete) and payload is required`;
@@ -294,17 +288,18 @@ export const editComment = (operation, payload, projId) => {
 
       if (token && selectedProj) {
         const req = `${operation}ImageComment`;
+        console.log('req: ', req);
+
         const res = await call({
           projId: selectedProj._id, 
           request: req,
           input: payload 
         });
         console.log('editComment - res: ', res);
-        // const mutation = Object.keys(res)[0];
-        // const image = res[mutation].image;
-        // dispatch(editCommentSuccess(image));
+        const mutation = Object.keys(res)[0];
+        const comments = res[mutation].comments;
+        dispatch(editCommentSuccess({ imageId: payload.imageId, comments }));
       }
-
     } catch (err) {
       console.log(`error attempting to ${operation}ImageComment: `, err);
       dispatch(editCommentFailure(err));
