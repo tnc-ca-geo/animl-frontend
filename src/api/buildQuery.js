@@ -49,7 +49,14 @@ const imageFields = `
   projectId
   objects {
     ${objectFields}
-  }`;
+  }
+  comments {
+    _id
+    author
+    created
+    comment
+  }
+`;
 
 const pageInfoFields = `
   previous
@@ -460,9 +467,52 @@ const queries = {
 
   deleteLabels: (input) => ({
     template: `
-      mutation DeleteLabels($input: DeleteLabelsInput!) {
-        deleteLabels(input: $input) {
+      mutation CreateLabels($input: CreateLabelsInput!) {
+        createLabels(input: $input) {
           isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createImageComment: (input) => ({
+    templaste: `
+      mutation CreateImageComment($input: CreateImageCommentInput!){
+        createImageComment(input: $input) {
+          comment {
+            _id
+            author
+            created
+            comment
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateImageComment: (input) => ({
+    templaste: `
+      mutation UpdateImageComment($input: UpdateImageCommentInput!){
+        updateImageComment(input: $input) {
+          comment {
+            _id
+            author
+            created
+            comment
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteImageComment: (input) => ({
+    templaste: `
+      mutation DeleteImageComment($input: DeleteImageCommentInput!){
+        deleteImageComment(input: $input) {
+          message
         }
       }
     `,
