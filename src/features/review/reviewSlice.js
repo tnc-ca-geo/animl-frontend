@@ -19,6 +19,11 @@ const initialState = {
       isLoading: false,
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
+    },
+    comments: {
+      isLoading: false,
+      operation: null, /* 'fetching', 'updating', 'deleting' */
+      errors: null,
     }
   },
   lastAction: null,
@@ -124,6 +129,9 @@ export const reviewSlice = createSlice({
       state.lastAction = 'marked-empty';
     },
 
+    // TODO: add edit comments handlers to add comments directly to images in state immediately? 
+    // or update image.comments after we have a response from the backend? 
+
     editLabelStart: (state) => { 
       state.loadingStates.labels.isLoading = true;
       state.loadingStates.labels.operation = 'updating';
@@ -142,9 +150,32 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors = null;
     },
 
+    editCommentStart: (state, { payload }) => { 
+      state.loadingStates.comments.isLoading = true;
+      state.loadingStates.comments.operation = payload;
+    },
+
+    editCommentFailure: (state, { payload }) => {
+      state.loadingStates.comments.isLoading = false;
+      state.loadingStates.comments.operation = null;
+      state.loadingStates.comments.errors = payload;
+    },
+
+    editCommentSuccess: (state, { payload }) => {
+      state.loadingStates.comments.isLoading = false;
+      state.loadingStates.comments.operation = null;
+      state.loadingStates.comments.errors = null;
+    },
+    
     dismissLabelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.labels.errors.splice(index, 1);
+    },
+
+    // TODO: Don't forget to wire up edit comments errors
+    dismissCommentsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.comments.errors.splice(index, 1);
     }
   },
 
@@ -188,11 +219,15 @@ export const {
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
+  editCommentStart,
+  editCommentFailure,
+  editCommentSuccess,
   dismissLabelsError,
+  dismissCommentsError
 } = reviewSlice.actions;
 
 // editLabel thunk
-export const editLabel = (operation, entity, payload, projId) => {
+export const editLabel = (operation, entity, payload) => {
   return async (dispatch, getState) => {
     try {
 
@@ -229,6 +264,50 @@ export const editLabel = (operation, entity, payload, projId) => {
     } catch (err) {
       console.log(`error attempting to ${operation} ${entity}: `, err);
       dispatch(editLabelFailure(err));
+    }
+  };
+};
+
+// editComment thunk
+export const editComment = (operation, payload, projId) => {
+  return async (dispatch, getState) => {
+    try {
+
+      console.log('editComment - operation: ', operation);
+      console.log('editComment - operation: ', payload);
+      // if ((payload.updates && !payload.updates.length) || 
+      //     (payload.objects && !payload.objects.length) ||
+      //     (payload.labels && !payload.labels.length)) {
+      //     return;
+      // }
+
+      if (!operation || !payload) {
+        const msg = `An operation (create, update, or delete) and payload is required`;
+        throw new Error(msg);
+      }
+
+      dispatch(editCommentStart(operation));
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const req = `${operation}ImageComment`;
+        const res = await call({
+          projId: selectedProj._id, 
+          request: req,
+          input: payload 
+        });
+        console.log('editComment - res: ', res);
+        // const mutation = Object.keys(res)[0];
+        // const image = res[mutation].image;
+        // dispatch(editCommentSuccess(image));
+      }
+
+    } catch (err) {
+      console.log(`error attempting to ${operation}ImageComment: `, err);
+      dispatch(editCommentFailure(err));
     }
   };
 };
