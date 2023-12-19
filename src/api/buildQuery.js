@@ -11,6 +11,13 @@ const wirelessCameraFields = `
   }
 `;
 
+const imageCommentFields = `
+  _id
+  author
+  created
+  comment
+`;
+
 const labelFields = `
   _id
   type
@@ -51,10 +58,7 @@ const imageFields = `
     ${objectFields}
   }
   comments {
-    _id
-    author
-    created
-    comment
+    ${imageCommentFields}
   }
 `;
 
@@ -480,11 +484,8 @@ const queries = {
     template: `
       mutation CreateImageComment($input: CreateImageCommentInput!){
         createImageComment(input: $input) {
-          comment {
-            _id
-            author
-            created
-            comment
+          comments {
+            ${imageCommentFields}
           }
         }
       }
@@ -496,11 +497,8 @@ const queries = {
     template: `
       mutation UpdateImageComment($input: UpdateImageCommentInput!){
         updateImageComment(input: $input) {
-          comment {
-            _id
-            author
-            created
-            comment
+          comments {
+            ${imageCommentFields}
           }
         }
       }
@@ -512,7 +510,9 @@ const queries = {
     template: `
       mutation DeleteImageComment($input: DeleteImageCommentInput!){
         deleteImageComment(input: $input) {
-          message
+          comments {
+            ${imageCommentFields}
+          }
         }
       }
     `,

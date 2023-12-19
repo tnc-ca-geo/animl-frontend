@@ -29,18 +29,18 @@ const LoupeDropdown = ({ image }) => {
 
   // NOTE: just testing image.comments CRUD operations
   const handleCreateCommentItemClick = () => {
-    const comment = 'TEST COMMENT 2';
+    const comment = 'TEST COMMENT 4';
     dispatch(editComment('create', { comment, imageId: image._id }));
   };
 
   const handleUpdateCommentItemClick = () => {
-    const _id = 'b5f8c278-c631-4338-a76c-10b358422646';
-    const comment = 'UPDATED COMMENT';
+    const _id = '6582030e05256f8bff29ba43';
+    const comment = 'UPDATED COMMENT 4';
     dispatch(editComment('update', { comment, id: _id, imageId: image._id }));
   };
 
   const handleDeleteCommentItemClick = () => {
-    const _id = 'b5f8c278-c631-4338-a76c-10b358422646';
+    const _id = '6582030e05256f8bff29ba43';
     dispatch(editComment('delete', { id: _id, imageId: image._id }));
   };
 
