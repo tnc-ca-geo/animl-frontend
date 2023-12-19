@@ -27,23 +27,6 @@ const LoupeDropdown = ({ image }) => {
     dispatch(setDeleteImagesAlertOpen(true));
   };
 
-  // NOTE: just testing image.comments CRUD operations
-  const handleCreateCommentItemClick = () => {
-    const comment = 'TEST COMMENT 4';
-    dispatch(editComment('create', { comment, imageId: image._id }));
-  };
-
-  const handleUpdateCommentItemClick = () => {
-    const _id = '6582030e05256f8bff29ba43';
-    const comment = 'UPDATED COMMENT 4';
-    dispatch(editComment('update', { comment, id: _id, imageId: image._id }));
-  };
-
-  const handleDeleteCommentItemClick = () => {
-    const _id = '6582030e05256f8bff29ba43';
-    dispatch(editComment('delete', { id: _id, imageId: image._id }));
-  };
-
   return (
     <DropdownMenu>
       <StyledDropdownMenuTrigger asChild>
@@ -54,15 +37,6 @@ const LoupeDropdown = ({ image }) => {
       <DropdownMenuContent sideOffset={5}>
         <DropdownMenuItem onClick={handleDeleteImageItemClick}>
           Delete Image
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleCreateCommentItemClick}>
-          Create Comment
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleUpdateCommentItemClick}>
-          Update Comment
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDeleteCommentItemClick}>
-          Delete Comment
         </DropdownMenuItem>
         <DropdownMenuArrow offset={12} />
       </DropdownMenuContent>
