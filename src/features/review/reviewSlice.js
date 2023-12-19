@@ -19,6 +19,11 @@ const initialState = {
       isLoading: false,
       operation: null, /* 'fetching', 'updating', 'deleting' */
       errors: null,
+    },
+    comments: {
+      isLoading: false,
+      operation: null, /* 'fetching', 'updating', 'deleting' */
+      errors: null,
     }
   },
   lastAction: null,
@@ -142,9 +147,33 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors = null;
     },
 
+    editCommentStart: (state, { payload }) => { 
+      state.loadingStates.comments.isLoading = true;
+      state.loadingStates.comments.operation = payload;
+    },
+
+    editCommentFailure: (state, { payload }) => {
+      state.loadingStates.comments.isLoading = false;
+      state.loadingStates.comments.operation = null;
+      state.loadingStates.comments.errors = payload;
+    },
+
+    editCommentSuccess: (state, { payload }) => {
+      state.loadingStates.comments.isLoading = false;
+      state.loadingStates.comments.operation = null;
+      state.loadingStates.comments.errors = null;
+      const image = findImage(state.workingImages, payload.imageId);
+      image.comments = payload.comments;
+    },
+    
     dismissLabelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.labels.errors.splice(index, 1);
+    },
+
+    dismissCommentsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.comments.errors.splice(index, 1);
     }
   },
 
@@ -188,11 +217,15 @@ export const {
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
+  editCommentStart,
+  editCommentFailure,
+  editCommentSuccess,
   dismissLabelsError,
+  dismissCommentsError
 } = reviewSlice.actions;
 
 // editLabel thunk
-export const editLabel = (operation, entity, payload, projId) => {
+export const editLabel = (operation, entity, payload) => {
   return async (dispatch, getState) => {
     try {
 
@@ -233,6 +266,46 @@ export const editLabel = (operation, entity, payload, projId) => {
   };
 };
 
+// editComment thunk
+export const editComment = (operation, payload, projId) => {
+  return async (dispatch, getState) => {
+    try {
+
+      console.log('editComment - operation: ', operation);
+      console.log('editComment - payload: ', payload);
+
+      if (!operation || !payload) {
+        const msg = `An operation (create, update, or delete) and payload is required`;
+        throw new Error(msg);
+      }
+
+      dispatch(editCommentStart(operation));
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const req = `${operation}ImageComment`;
+        console.log('req: ', req);
+
+        const res = await call({
+          projId: selectedProj._id, 
+          request: req,
+          input: payload 
+        });
+        console.log('editComment - res: ', res);
+        const mutation = Object.keys(res)[0];
+        const comments = res[mutation].comments;
+        dispatch(editCommentSuccess({ imageId: payload.imageId, comments }));
+      }
+    } catch (err) {
+      console.log(`error attempting to ${operation}ImageComment: `, err);
+      dispatch(editCommentFailure(err));
+    }
+  };
+};
+
 // Actions only used in middlewares:
 export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
@@ -244,6 +317,7 @@ export const selectFocusIndex = state => state.review.focusIndex;
 export const selectSelectedImageIndices = state => state.review.selectedImageIndices;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
+export const selectCommentsErrors = state => state.review.loadingStates.comments.errors;
 export const selectLastAction = state => state.review.lastAction;
 export const selectLastCategoryApplied = state => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(

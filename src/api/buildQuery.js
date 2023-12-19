@@ -11,6 +11,13 @@ const wirelessCameraFields = `
   }
 `;
 
+const imageCommentFields = `
+  _id
+  author
+  created
+  comment
+`;
+
 const labelFields = `
   _id
   type
@@ -49,7 +56,11 @@ const imageFields = `
   projectId
   objects {
     ${objectFields}
-  }`;
+  }
+  comments {
+    ${imageCommentFields}
+  }
+`;
 
 const pageInfoFields = `
   previous
@@ -460,9 +471,48 @@ const queries = {
 
   deleteLabels: (input) => ({
     template: `
-      mutation DeleteLabels($input: DeleteLabelsInput!) {
-        deleteLabels(input: $input) {
+      mutation CreateLabels($input: CreateLabelsInput!) {
+        createLabels(input: $input) {
           isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createImageComment: (input) => ({
+    template: `
+      mutation CreateImageComment($input: CreateImageCommentInput!){
+        createImageComment(input: $input) {
+          comments {
+            ${imageCommentFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateImageComment: (input) => ({
+    template: `
+      mutation UpdateImageComment($input: UpdateImageCommentInput!){
+        updateImageComment(input: $input) {
+          comments {
+            ${imageCommentFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteImageComment: (input) => ({
+    template: `
+      mutation DeleteImageComment($input: DeleteImageCommentInput!){
+        deleteImageComment(input: $input) {
+          comments {
+            ${imageCommentFields}
+          }
         }
       }
     `,

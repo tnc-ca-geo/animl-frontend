@@ -12,6 +12,8 @@ import {
 import {
   selectLabelsErrors,
   dismissLabelsError,
+  selectCommentsErrors,
+  dismissCommentsError
 } from '../features/review/reviewSlice';
 import { 
   selectProjectsErrors,
@@ -47,6 +49,7 @@ import { selectManageUserErrors, dismissManageUsersError } from '../features/pro
 const ErrorAlerts = () => {
   const dispatch = useDispatch();
   const labelsErrors = useSelector(selectLabelsErrors);
+  const commentsErrors = useSelector(selectCommentsErrors);
   const projectsErrors = useSelector(selectProjectsErrors);
   const viewsErrors = useSelector(selectViewsErrors);
   const depsErrors = useSelector(selectDeploymentsErrors);
@@ -61,6 +64,7 @@ const ErrorAlerts = () => {
   
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
+    enrichErrors(commentsErrors, 'Comment Error', 'comments'),
     enrichErrors(projectsErrors, 'Project Error', 'projects'),
     enrichErrors(viewsErrors, 'View Error', 'views'),
     enrichErrors(depsErrors, 'Deployment Error', 'deployments'),
@@ -119,6 +123,7 @@ const ErrorAlerts = () => {
 
 const dismissErrorActions = {
   'labels': (i) => dismissLabelsError(i),
+  'comments': (i) => dismissCommentsError(i),
   'projects': (i) => dismissProjectsError(i),
   'createProject': (i) => dismissCreateProjectError(i),
   'views': (i) => dismissViewsError(i),

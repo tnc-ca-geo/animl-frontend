@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
   DropdownMenu,
@@ -11,7 +12,7 @@ import IconButton from '../../components/IconButton.jsx';
 import { DotsHorizontalIcon} from '@radix-ui/react-icons';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertOpen } from '../images/imagesSlice';
-import { useDispatch } from 'react-redux';
+import { editComment } from '../review/reviewSlice';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
