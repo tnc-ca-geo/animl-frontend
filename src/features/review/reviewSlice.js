@@ -171,7 +171,6 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors.splice(index, 1);
     },
 
-    // TODO: Don't forget to wire up edit comments errors
     dismissCommentsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.comments.errors.splice(index, 1);
@@ -318,6 +317,7 @@ export const selectFocusIndex = state => state.review.focusIndex;
 export const selectSelectedImageIndices = state => state.review.selectedImageIndices;
 export const selectFocusChangeType = state => state.review.focusChangeType;
 export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
+export const selectCommentsErrors = state => state.review.loadingStates.comments.errors;
 export const selectLastAction = state => state.review.lastAction;
 export const selectLastCategoryApplied = state => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(
