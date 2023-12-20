@@ -54,7 +54,7 @@ export const uploadSlice = createSlice({
         operation: 'uploading',
         errors: null,
         progress: 0,
-      }
+      };
       state.loadingStates.upload = {
         ...state.loadingStates.upload,
         ...ls
@@ -94,12 +94,34 @@ export const uploadSlice = createSlice({
 
     initMultipartUploadStart: (state, { payload }) => {
       console.log('initMultipartUploadStart - payload: ', payload);
+      const ls = {
+        isLoading: true,
+        operation: 'uploading',
+        errors: null,
+        progress: 0,
+      };
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
+        ...ls
+      };
     },
 
     initMultipartUploadSuccess: (state, { payload }) => {
       console.log('initMultipartUploadSuccess - payload: ', payload);
       state.multipart.batch = payload.batch;
       state.multipart.urls = payload.urls;
+    },
+
+    initMultipartUploadFailure: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: payload,
+      }
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
+        ...ls
+      };
     },
 
     fetchBatchesStart: (state) => {
@@ -263,6 +285,7 @@ export const {
   uploadProgress,
   initMultipartUploadStart,
   initMultipartUploadSuccess,
+  initMultipartUploadFailure,
   fetchBatchesStart,
   fetchBatchesSuccess,
   fetchBatchesFailure,
@@ -279,7 +302,7 @@ export const {
   filterBatches
 } = uploadSlice.actions;
 
-// multi-threaded upload thunk
+// init multipart upload thunk
 export const initMultipartUpload = (payload) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
@@ -291,9 +314,8 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       const chunkSizeInMB = 100;
-      const chunkSizeInBytes =  1000 * 1000 * chunkSizeInMB; // TODO: not sure if we should use 1000 here or 1024
-      console.log('chunkSizeInBytes: ', chunkSizeInBytes)
-      const partCount = Math.ceil(file.size / chunkSizeInBytes);
+      const chunkSize =  1000 * 1000 * chunkSizeInMB; // TODO: not sure if we should use 1000 here or 1024
+      const partCount = Math.ceil(file.size / chunkSize);
       console.log('partCount: ', partCount);
 
       const res = await call({
@@ -305,45 +327,60 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
         }
       });
 
-      dispatch(initMultipartUploadSuccess({ ...res.createUpload }));
+      // if overrideSerial is provided by user, call updateBatch to set it
+      if (overrideSerial.length) {
+        await call({
+          request: 'updateBatch',
+          projId: selectedProj._id,
+          input: {
+            _id: res.createUpload.batch,
+            overrideSerial
+          }
+        });
+      }
 
-      // const signedUrl = uploadUrl.createUpload.url;
+      // dispatch(initMultipartUploadSuccess({ ...res.createUpload }));
+      const uploadedParts = [];
+      const activeUploads = res.createUpload.urls.map((url, index) => {
+        // iterate over presigned urls, reading and chunking file as we go,
+        // and creating upload promises for each one
+        const sentSize = index * chunkSize;
+        const chunk = file.slice(sentSize, sentSize + chunkSize);
 
-      // // if overrideSerial is provided by user, call updateBatch to set it
-      // if (overrideSerial.length) {
-      //   const batch = await call({
-      //     request: 'updateBatch',
-      //     projId: selectedProj._id,
-      //     input: {
-      //       _id: uploadUrl.createUpload.batch,
-      //       overrideSerial
-      //     }
-      //   });
-      // }
+        const xhr = new XMLHttpRequest();
+        return new Promise((resolve) => {
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              // dispatch(uploadProgress({ progress: event.loaded / event.total }));
+            }
+          });
+          xhr.addEventListener('loadend', () => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              const ETag = xhr.getResponseHeader('Etag');
+              if (ETag) {
+                const uploadedPart = {
+                  PartNumber: index + 1,
+                  ETag: ETag.replaceAll('"', ""),
+                };
+                uploadedParts.push(uploadedPart);
+                resolve(xhr.status);
+              }
+            }
+          });
+          xhr.open('PUT', url, true);
+          xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+          xhr.send(chunk);
+        });
+      });
 
-      // const xhr = new XMLHttpRequest();
-      // await new Promise((resolve) => {
-      //   xhr.upload.addEventListener('progress', (event) => {
-      //     if (event.lengthComputable) {
-      //       dispatch(uploadProgress({ progress: event.loaded / event.total }));
-      //     }
-      //   });
-      //   xhr.addEventListener('loadend', () => {
-      //     resolve(xhr.readyState === 4 && xhr.status === 200);
-      //   });
+      const completedUploads = await Promise.all(activeUploads);
+      console.log('initMultipartUpload - completed uploads: ', completedUploads);
+      console.log('initMultipartUpload - uploaded parts: ', uploadedParts);
 
-      //   xhr.open('PUT', signedUrl, true);
-      //   xhr.setRequestHeader('Content-Type', file.type);
-      //   xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
-      //   xhr.send(file);
-      // });
-
-      // dispatch(uploadSuccess());
-      // dispatch(fetchBatches());
     }
   } catch (err) {
     // console.log('err: ', err)
-    // dispatch(uploadFailure(err))
+    dispatch(initMultipartUploadFailure(err))
   }
 };
 

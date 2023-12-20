@@ -102,10 +102,14 @@ const BulkUploadForm = ({ handleClose }) => {
     } else {
       // regular, single-part upload
       console.log('file is under 5GB');
-      dispatch(uploadFile({ 
-        file: values.zipFile,
+      dispatch(initMultipartUpload({
+        file: values.zipFile, 
         overrideSerial: values.overrideSerial
       }));
+      // dispatch(uploadFile({ 
+      //   file: values.zipFile,
+      //   overrideSerial: values.overrideSerial
+      // }));
     }
   };
 
@@ -252,7 +256,7 @@ const alertContent = {
     </p>
 };
 
-const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
+const UploadAlert = ({ open, setAlertOpen, initializeUpload, formValues, warnings }) => {
 
   const handleConfirmUpload = () => {
     initializeUpload(formValues);
