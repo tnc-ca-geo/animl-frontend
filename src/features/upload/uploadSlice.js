@@ -14,6 +14,7 @@ const initialState = {
   multipart: {
     batch: null,
     urls: [],
+    progressCache: {}
   },
   loadingStates: {
     upload: {
@@ -118,6 +119,22 @@ export const uploadSlice = createSlice({
         operation: null,
         errors: payload,
       }
+      state.loadingStates.upload = {
+        ...state.loadingStates.upload,
+        ...ls
+      };
+    },
+
+    multipartUploadProgress: (state, { payload }) => {
+      const { partNumber, loaded, fileSize } = payload;
+      state.multipart.progressCache[partNumber] = loaded;
+
+      const bytesUploaded = Object.keys(state.multipart.progressCache)
+        .map(Number)
+        .reduce((memo, id) => (memo += state.multipart.progressCache[id]), 0);
+      const sent = Math.min(bytesUploaded, fileSize);
+
+      const ls = { progress: sent / fileSize };
       state.loadingStates.upload = {
         ...state.loadingStates.upload,
         ...ls
@@ -286,6 +303,7 @@ export const {
   initMultipartUploadStart,
   initMultipartUploadSuccess,
   initMultipartUploadFailure,
+  multipartUploadProgress,
   fetchBatchesStart,
   fetchBatchesSuccess,
   fetchBatchesFailure,
@@ -342,19 +360,25 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
       }
 
       // dispatch(initMultipartUploadSuccess({ ...initRes.createUpload }));
+      
+      // iterate over presigned urls, reading and chunking file as we go,
+      // and creating upload promises for each one
       const uploadedParts = [];
       const activeUploads = initRes.createUpload.urls.map((url, index) => {
-        // iterate over presigned urls, reading and chunking file as we go,
-        // and creating upload promises for each one
+
         const sentSize = index * chunkSize;
         const chunk = file.slice(sentSize, sentSize + chunkSize);
+        const partNumber = index + 1;
 
         const xhr = new XMLHttpRequest();
         return new Promise((resolve) => {
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
-              // TODO: figure out how to track progress
-              // dispatch(uploadProgress({ progress: event.loaded / event.total }));
+              dispatch(multipartUploadProgress({ 
+                partNumber,
+                loaded: event.loaded,
+                fileSize: file.size
+              }));
             }
           });
           xhr.addEventListener('loadend', () => {
@@ -362,7 +386,7 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
               const ETag = xhr.getResponseHeader('Etag');
               if (ETag) {
                 const uploadedPart = {
-                  PartNumber: index + 1,
+                  PartNumber: partNumber,
                   ETag: ETag.replaceAll('"', ""),
                 };
                 uploadedParts.push(uploadedPart);

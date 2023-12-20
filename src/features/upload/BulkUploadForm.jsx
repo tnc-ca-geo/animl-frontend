@@ -5,7 +5,7 @@ import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormErr
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
-import ProgressBar from '../../components/ProgressBar';
+// import ProgressBar from '../../components/ProgressBar';
 import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../../components/AlertDialog';
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
