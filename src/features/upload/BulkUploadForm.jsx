@@ -11,7 +11,7 @@ import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { green, red, mauve } from '@radix-ui/colors';
-import { uploadFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
+import { uploadFile, initMultipartUpload, selectUploadsLoading, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
 import BulkUploadTable from './BulkUploadTable.jsx';
@@ -89,11 +89,24 @@ const BulkUploadForm = ({ handleClose }) => {
     rule.event.type === 'image-added' && rule.action.type === 'run-inference'
   ));
 
-  const upload = (values) => {
-    dispatch(uploadFile({ 
-      file: values.zipFile, 
-      overrideSerial: values.overrideSerial
-    }));
+  const initializeUpload = (values) => {
+    console.log(values)
+    const fileSize = values.zipFile.size; 
+    if ((fileSize / 1000000000) > 5) {
+      // file is over 5GB limit; initiate multi-part upload
+      console.log('file is over 5GB');
+      dispatch(initMultipartUpload({
+        file: values.zipFile, 
+        overrideSerial: values.overrideSerial
+      }));
+    } else {
+      // regular, single-part upload
+      console.log('file is under 5GB');
+      dispatch(uploadFile({ 
+        file: values.zipFile,
+        overrideSerial: values.overrideSerial
+      }));
+    }
   };
 
   const handleSubmit = (values) => {
@@ -105,7 +118,7 @@ const BulkUploadForm = ({ handleClose }) => {
       setAlertOpen(true);
     }
     else {
-      upload(values);
+      initializeUpload(values);
     }
   };
 
@@ -194,7 +207,7 @@ const BulkUploadForm = ({ handleClose }) => {
         open={alertOpen}
         setAlertOpen={setAlertOpen}
         formValues={formikRef.current?.values}
-        upload={upload}
+        initializeUpload={initializeUpload}
         warnings={warnings}
       />
     </div>
@@ -242,7 +255,7 @@ const alertContent = {
 const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
 
   const handleConfirmUpload = () => {
-    upload(formValues);
+    initializeUpload(formValues);
     setAlertOpen(false);
   };
 

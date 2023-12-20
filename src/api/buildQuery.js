@@ -597,6 +597,7 @@ const queries = {
             batch
             user
             url
+            urls
         }
       }
     `,

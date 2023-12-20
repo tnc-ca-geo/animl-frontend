@@ -11,6 +11,10 @@ const initialState = {
     hasNext: false,
     hasPrevious: false,
   },
+  multipart: {
+    batch: null,
+    urls: [],
+  },
   loadingStates: {
     upload: {
       isLoading: false,
@@ -43,6 +47,7 @@ export const uploadSlice = createSlice({
   name: 'uploads',
   initialState,
   reducers: {
+
     uploadStart: (state) => {
       const ls = {
         isLoading: true,
@@ -85,6 +90,16 @@ export const uploadSlice = createSlice({
         ...state.loadingStates.upload,
         ...ls
       };
+    },
+
+    initMultipartUploadStart: (state, { payload }) => {
+      console.log('initMultipartUploadStart - payload: ', payload);
+    },
+
+    initMultipartUploadSuccess: (state, { payload }) => {
+      console.log('initMultipartUploadSuccess - payload: ', payload);
+      state.multipart.batch = payload.batch;
+      state.multipart.urls = payload.urls;
     },
 
     fetchBatchesStart: (state) => {
@@ -246,6 +261,8 @@ export const {
   uploadSuccess,
   uploadFailure,
   uploadProgress,
+  initMultipartUploadStart,
+  initMultipartUploadSuccess,
   fetchBatchesStart,
   fetchBatchesSuccess,
   fetchBatchesFailure,
@@ -262,7 +279,75 @@ export const {
   filterBatches
 } = uploadSlice.actions;
 
-// bulk upload thunk
+// multi-threaded upload thunk
+export const initMultipartUpload = (payload) => async (dispatch, getState) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      const { file, overrideSerial } = payload;
+      dispatch(initMultipartUploadStart());
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      const chunkSizeInMB = 100;
+      const chunkSizeInBytes =  1000 * 1000 * chunkSizeInMB; // TODO: not sure if we should use 1000 here or 1024
+      console.log('chunkSizeInBytes: ', chunkSizeInBytes)
+      const partCount = Math.ceil(file.size / chunkSizeInBytes);
+      console.log('partCount: ', partCount);
+
+      const res = await call({
+        request: 'createUpload',
+        projId: selectedProj._id,
+        input: {
+          originalFile: file.name,
+          partCount
+        }
+      });
+
+      dispatch(initMultipartUploadSuccess({ ...res.createUpload }));
+
+      // const signedUrl = uploadUrl.createUpload.url;
+
+      // // if overrideSerial is provided by user, call updateBatch to set it
+      // if (overrideSerial.length) {
+      //   const batch = await call({
+      //     request: 'updateBatch',
+      //     projId: selectedProj._id,
+      //     input: {
+      //       _id: uploadUrl.createUpload.batch,
+      //       overrideSerial
+      //     }
+      //   });
+      // }
+
+      // const xhr = new XMLHttpRequest();
+      // await new Promise((resolve) => {
+      //   xhr.upload.addEventListener('progress', (event) => {
+      //     if (event.lengthComputable) {
+      //       dispatch(uploadProgress({ progress: event.loaded / event.total }));
+      //     }
+      //   });
+      //   xhr.addEventListener('loadend', () => {
+      //     resolve(xhr.readyState === 4 && xhr.status === 200);
+      //   });
+
+      //   xhr.open('PUT', signedUrl, true);
+      //   xhr.setRequestHeader('Content-Type', file.type);
+      //   xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+      //   xhr.send(file);
+      // });
+
+      // dispatch(uploadSuccess());
+      // dispatch(fetchBatches());
+    }
+  } catch (err) {
+    // console.log('err: ', err)
+    // dispatch(uploadFailure(err))
+  }
+};
+
+// single-threaded upload thunk
 export const uploadFile = (payload) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
@@ -315,8 +400,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       dispatch(fetchBatches());
     }
   } catch (err) {
-    console.log('err: ', err)
-    dispatch(uploadFailure(err))
+    dispatch(uploadFailure(err));
   }
 };
 
