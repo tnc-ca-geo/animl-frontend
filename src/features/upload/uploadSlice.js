@@ -314,11 +314,12 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       const chunkSizeInMB = 100;
-      const chunkSize =  1000 * 1000 * chunkSizeInMB; // TODO: not sure if we should use 1000 here or 1024
+      const chunkSize =  1024 * 1024 * chunkSizeInMB;
       const partCount = Math.ceil(file.size / chunkSize);
       console.log('partCount: ', partCount);
 
-      const res = await call({
+      // initialize multipart upload
+      const initRes = await call({
         request: 'createUpload',
         projId: selectedProj._id,
         input: {
@@ -326,6 +327,7 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
           partCount
         }
       });
+      console.log('createUpload initRes: ', initRes)
 
       // if overrideSerial is provided by user, call updateBatch to set it
       if (overrideSerial.length) {
@@ -333,15 +335,15 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
           request: 'updateBatch',
           projId: selectedProj._id,
           input: {
-            _id: res.createUpload.batch,
+            _id: initRes.createUpload.batch,
             overrideSerial
           }
         });
       }
 
-      // dispatch(initMultipartUploadSuccess({ ...res.createUpload }));
+      // dispatch(initMultipartUploadSuccess({ ...initRes.createUpload }));
       const uploadedParts = [];
-      const activeUploads = res.createUpload.urls.map((url, index) => {
+      const activeUploads = initRes.createUpload.urls.map((url, index) => {
         // iterate over presigned urls, reading and chunking file as we go,
         // and creating upload promises for each one
         const sentSize = index * chunkSize;
@@ -351,6 +353,7 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
         return new Promise((resolve) => {
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
+              // TODO: figure out how to track progress
               // dispatch(uploadProgress({ progress: event.loaded / event.total }));
             }
           });
@@ -373,13 +376,24 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
         });
       });
 
-      const completedUploads = await Promise.all(activeUploads);
-      console.log('initMultipartUpload - completed uploads: ', completedUploads);
-      console.log('initMultipartUpload - uploaded parts: ', uploadedParts);
+      await Promise.all(activeUploads);
+
+      // close mulitpart upload
+      uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
+      const closeRes = await call({
+        request: 'closeUpload',
+        projId: selectedProj._id,
+        input: {
+          batchId: initRes.createUpload.batch,
+          multipartUploadId: initRes.createUpload.multipartUploadId,
+          parts: uploadedParts
+        }
+      });
+      console.log('closeRes: ', closeRes);
 
     }
   } catch (err) {
-    // console.log('err: ', err)
+    console.log('err: ', err)
     dispatch(initMultipartUploadFailure(err))
   }
 };

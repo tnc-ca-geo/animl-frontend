@@ -92,24 +92,20 @@ const BulkUploadForm = ({ handleClose }) => {
   const initializeUpload = (values) => {
     console.log(values)
     const fileSize = values.zipFile.size; 
-    if ((fileSize / 1000000000) > 5) {
-      // file is over 5GB limit; initiate multi-part upload
-      console.log('file is over 5GB');
+    if ((fileSize / (1024 * 1024)) > 100) {
+      // file is over 100 MB limit; initiate multi-part upload
+      console.log('file is over 100 MB');
       dispatch(initMultipartUpload({
         file: values.zipFile, 
         overrideSerial: values.overrideSerial
       }));
     } else {
       // regular, single-part upload
-      console.log('file is under 5GB');
-      dispatch(initMultipartUpload({
-        file: values.zipFile, 
+      console.log('file is under 100 MB');
+      dispatch(uploadFile({ 
+        file: values.zipFile,
         overrideSerial: values.overrideSerial
       }));
-      // dispatch(uploadFile({ 
-      //   file: values.zipFile,
-      //   overrideSerial: values.overrideSerial
-      // }));
     }
   };
 

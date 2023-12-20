@@ -159,7 +159,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
           {sortedBatches.map((batch) => {
             const { _id, originalFile, processingEnd, total, remaining } = batch;
             const status = getStatus(percentUploaded, batch);
-            console.log(`status of ${batch.originalFile}: `, status)
+            // console.log(`status of ${batch.originalFile}: `, status)
             const statusMsg = getStatusMessage(status, batch);
             const isFetchingErrors = errorsExportLoading.batch === _id && errorsExportLoading.isLoading;
             const isStoppingBatch = (stopBatchLoading.batch === _id && stopBatchLoading.isLoading) || 

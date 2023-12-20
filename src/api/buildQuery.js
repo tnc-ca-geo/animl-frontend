@@ -594,10 +594,22 @@ const queries = {
     template: `
       mutation CreateUpload($input: CreateUploadInput!) {
         createUpload(input: $input) {
-            batch
-            user
-            url
-            urls
+          batch
+          multipartUploadId
+          user
+          url
+          urls
+        }
+      }
+    `,
+    variables: { input }
+  }),
+
+  closeUpload: (input) => ({
+    template: `
+      mutation CloseUpload($input: CloseUploadInput!) {
+        closeUpload(input: $input) {
+          message
         }
       }
     `,
