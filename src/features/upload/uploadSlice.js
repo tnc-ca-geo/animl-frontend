@@ -31,6 +31,12 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    redriveBatch: {
+      batch: null,
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
     errorsExport: {
       batch: null,
       isLoading: false,
@@ -44,6 +50,8 @@ export const uploadSlice = createSlice({
   name: 'uploads',
   initialState,
   reducers: {
+
+    // upload batch 
 
     uploadStart: (state) => {
       const ls = {
@@ -96,6 +104,8 @@ export const uploadSlice = createSlice({
       };
     },
 
+    // fetch batch 
+
     fetchBatchesStart: (state) => {
       const ls = {
         isLoading: true,
@@ -135,6 +145,8 @@ export const uploadSlice = createSlice({
       };
     },
 
+    // stop batch 
+
     stopBatchStart: (state, { payload }) => {
       const ls = {
         batch: payload.batch,
@@ -172,6 +184,49 @@ export const uploadSlice = createSlice({
         ...ls
       };
     },
+
+    // redrive batch
+
+    redriveBatchStart: (state, { payload }) => {
+      const ls = {
+        batch: payload.batch,
+        isLoading: true,
+        operation: 'redriving',
+        errors: null,
+      }
+      state.loadingStates.redriveBatch = {
+        ...state.loadingStates.redriveBatch,
+        ...ls
+      };
+    },
+
+    redriveBatchSuccess: (state) => {
+      const ls = {
+        batch: null,
+        isLoading: false,
+        operation: null,
+        errors: null,
+      }
+      state.loadingStates.redriveBatch = {
+        ...state.loadingStates.redriveBatch,
+        ...ls
+      };
+    },
+
+    // TODO: don't forget to wire up redriveBatch errors
+    redriveBatchFailure: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: payload,
+      }
+      state.loadingStates.redriveBatch = {
+        ...state.loadingStates.redriveBatch,
+        ...ls
+      };
+    },
+
+    // export image errors 
 
     exportErrorsStart: (state, { payload }) => {
       state.errorsExport = null; 
@@ -233,19 +288,7 @@ export const uploadSlice = createSlice({
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         if (payload.newProjSelected) {
           // reset upload states
-          state.batchStates = [];
-          state.filter = 'CURRENT';
-          state.errorsExport = null;
-          state.pageInfo  = { hasNext: false, hasPrevious: false };
-
-          const loadingReset = { isLoading: false, operation: null,errors: null };
-          state.loadingStates = {
-            upload: { ...loadingReset, progress: 0 },
-            batchStates: { ...loadingReset, progress: 0 },
-            stopBatch: loadingReset,
-            errorsExport: loadingReset,
-          }
-        }
+          state = initialState;        }
       })
   },
 });
@@ -263,6 +306,9 @@ export const {
   stopBatchStart,
   stopBatchSuccess,
   stopBatchFailure,
+  redriveBatchStart,
+  redriveBatchSuccess,
+  redriveBatchFailure,
   exportErrorsStart,
   exportErrorsSuccess,
   exportErrorsUpdate,
@@ -275,18 +321,20 @@ export const {
 // multipart upload thunk (for zip files > 100 MB)
 export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
   try {
+
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
     if (token) {
-      const { file, overrideSerial } = payload;
       dispatch(uploadStart());
+
+      const { file, overrideSerial } = payload;
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
       const chunkSizeInMB = 100;
       const chunkSize =  1024 * 1024 * chunkSizeInMB;
       const partCount = Math.ceil(file.size / chunkSize);
-      console.log('partCount: ', partCount);
 
       // initialize multipart upload
       const initRes = await call({
@@ -297,7 +345,6 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
           partCount
         }
       });
-      console.log('createUpload initRes: ', initRes)
 
       // if overrideSerial is provided by user, call updateBatch to set it
       if (overrideSerial.length) {
@@ -363,14 +410,12 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
           parts: uploadedParts
         }
       });
-      console.log('closeRes: ', closeRes);
 
       dispatch(uploadSuccess());
       dispatch(fetchBatches());
     }
   } catch (err) {
-    console.log('err: ', err)
-    dispatch(uploadFailure(err))
+    dispatch(uploadFailure(err));
   }
 };
 
@@ -396,7 +441,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
 
       // if overrideSerial is provided by user, call updateBatch to set it
       if (overrideSerial.length) {
-        const batch = await call({
+        await call({
           request: 'updateBatch',
           projId: selectedProj._id,
           input: {
@@ -479,6 +524,30 @@ export const stopBatch = (id) => async (dispatch, getState) => {
   }
 };
 
+export const redriveBatch = (id) => async (dispatch, getState) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      dispatch(redriveBatchStart({ batch: id }));
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      await call({
+        request: 'redriveBatch',
+        projId: selectedProj._id,
+        input: { id }
+      });
+
+      dispatch(redriveBatchSuccess());
+      dispatch(fetchBatches());
+    }
+  } catch (err) {
+    console.log('err: ', err)
+    dispatch(redriveBatchFailure(err))
+  }
+};
+
 // export errors thunk
 export const exportErrors = ({ filters }) => {
   return async (dispatch, getState) => {
@@ -547,6 +616,6 @@ export const selectErrorsExport = state => state.uploads.errorsExport;
 export const selectErrorsExportLoading = state => state.uploads.loadingStates.errorsExport;
 export const selectErrorsExportErrors = state => state.uploads.loadingStates.errorsExport.errors;
 export const selectStopBatchLoading = state => state.uploads.loadingStates.stopBatch;
-
+export const selectRedriveBatchLoading = state => state.uploads.loadingStates.redriveBatch;
 
 export default uploadSlice.reducer;

@@ -35,14 +35,28 @@ const FileUpload = styled('div', {
   position: 'relative',
 });
 
+const ProgressBar = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: '$4'
+});
+
+const ProgressTicker = styled('div', {
+  color: '$textMedium',
+  fontSize: '$3',
+  marginLeft: '$2',
+  textAlign: 'right',
+  width: 120
+});
+
 const ProgressRoot = styled(Progress.Root, {
   position: 'relative',
   overflow: 'hidden',
-  background: '$backgroundLight',
+  background: '$backgroundDark',
   borderRadius: '99999px',
   width: '100%',
   height: '8px',
-  marginBottom: '$4',
 
   /* Fix overflow clipping in Safari */
   /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
@@ -89,8 +103,7 @@ const BulkUploadForm = ({ handleClose }) => {
     rule.event.type === 'image-added' && rule.action.type === 'run-inference'
   ));
 
-  const initializeUpload = (values) => {
-    console.log(values)
+  const upload = (values) => {
     const fileSize = values.zipFile.size; 
     if ((fileSize / (1024 * 1024)) > 100) {
       // file is over 100 MB limit; initiate multi-part upload
@@ -100,7 +113,7 @@ const BulkUploadForm = ({ handleClose }) => {
         overrideSerial: values.overrideSerial
       }));
     } else {
-      // regular, single-part upload
+      // else initiate single-part upload
       console.log('file is under 100 MB');
       dispatch(uploadFile({ 
         file: values.zipFile,
@@ -118,20 +131,18 @@ const BulkUploadForm = ({ handleClose }) => {
       setAlertOpen(true);
     }
     else {
-      initializeUpload(values);
+      upload(values);
     }
   };
 
   const formikRef = useRef();
   const fileInputRef = useRef();
   const reset = () => {
-    console.log('resetting form');
     fileInputRef.current.value = null;
     formikRef.current?.resetForm();
   };
   useEffect(() => {
     if (percentUploaded === 100) {
-      console.log('upload complete');
       reset();
     }
   }, [percentUploaded, reset, dispatch]);
@@ -193,9 +204,14 @@ const BulkUploadForm = ({ handleClose }) => {
                 </ButtonRow>
               </FieldRow>
 
-              <ProgressRoot>
-                <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
-              </ProgressRoot>
+              <ProgressBar css={{ opacity: isLoading ? 1 : 0 }}>
+                <ProgressRoot>
+                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
+                </ProgressRoot>
+                <ProgressTicker>
+                  {percentUploaded}% Uploaded
+                </ProgressTicker>
+              </ProgressBar>
 
             </Form>
           )}
@@ -206,7 +222,7 @@ const BulkUploadForm = ({ handleClose }) => {
         open={alertOpen}
         setAlertOpen={setAlertOpen}
         formValues={formikRef.current?.values}
-        initializeUpload={initializeUpload}
+        upload={upload}
         warnings={warnings}
       />
     </div>
@@ -251,10 +267,10 @@ const alertContent = {
     </p>
 };
 
-const UploadAlert = ({ open, setAlertOpen, initializeUpload, formValues, warnings }) => {
+const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
 
   const handleConfirmUpload = () => {
-    initializeUpload(formValues);
+    upload(formValues);
     setAlertOpen(false);
   };
 

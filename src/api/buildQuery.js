@@ -682,6 +682,17 @@ const queries = {
     variables: { input: { batch: id } }
   }),
 
+  redriveBatch: ({ id }) => ({
+    template: `
+      mutation RedriveBatch($input: RedriveBatchInput!){
+        redriveBatch(input: $input) {
+          message
+        }
+      }
+    `,
+    variables: { input: { batch: id } }
+  }),
+
   getUsers: () => ({
     template: `
       query ListUsers($input: QueryUsersInput!){
