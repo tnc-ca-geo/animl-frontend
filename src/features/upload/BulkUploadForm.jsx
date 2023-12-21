@@ -11,7 +11,7 @@ import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { green, red, mauve } from '@radix-ui/colors';
-import { uploadFile, initMultipartUpload, selectUploadsLoading, uploadProgress } from './uploadSlice';
+import { uploadFile, uploadMultipartFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
 import BulkUploadTable from './BulkUploadTable.jsx';
@@ -95,7 +95,7 @@ const BulkUploadForm = ({ handleClose }) => {
     if ((fileSize / (1024 * 1024)) > 100) {
       // file is over 100 MB limit; initiate multi-part upload
       console.log('file is over 100 MB');
-      dispatch(initMultipartUpload({
+      dispatch(uploadMultipartFile({
         file: values.zipFile, 
         overrideSerial: values.overrideSerial
       }));
@@ -132,7 +132,6 @@ const BulkUploadForm = ({ handleClose }) => {
   useEffect(() => {
     if (percentUploaded === 100) {
       console.log('upload complete');
-      dispatch(uploadProgress({ progress: 0 }));
       reset();
     }
   }, [percentUploaded, reset, dispatch]);

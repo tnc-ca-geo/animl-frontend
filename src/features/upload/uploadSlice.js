@@ -11,17 +11,13 @@ const initialState = {
     hasNext: false,
     hasPrevious: false,
   },
-  multipart: {
-    batch: null,
-    urls: [],
-    progressCache: {}
-  },
   loadingStates: {
     upload: {
       isLoading: false,
       operation: null,
       errors: null,
       progress: 0,
+      partsProgress: {},
     },
     batchStates: {
       isLoading: false,
@@ -52,36 +48,26 @@ export const uploadSlice = createSlice({
     uploadStart: (state) => {
       const ls = {
         isLoading: true,
-        operation: 'uploading',
-        errors: null,
-        progress: 0,
+        operation: 'uploading'
       };
       state.loadingStates.upload = {
-        ...state.loadingStates.upload,
+        ...initialState.loadingStates.upload,
         ...ls
       };
     },
 
     uploadFailure: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: payload,
-      }
+      const ls = { errors: payload };
       state.loadingStates.upload = {
-        ...state.loadingStates.upload,
+        ...initialState.loadingStates.upload,
         ...ls
       };
     },
 
     uploadSuccess: (state) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-      }
       state.loadingStates.upload = {
         ...state.loadingStates.upload,
-        ...ls
+        ...initialState.loadingStates.upload
       };
     },
 
@@ -93,45 +79,14 @@ export const uploadSlice = createSlice({
       };
     },
 
-    initMultipartUploadStart: (state, { payload }) => {
-      console.log('initMultipartUploadStart - payload: ', payload);
-      const ls = {
-        isLoading: true,
-        operation: 'uploading',
-        errors: null,
-        progress: 0,
-      };
-      state.loadingStates.upload = {
-        ...state.loadingStates.upload,
-        ...ls
-      };
-    },
-
-    initMultipartUploadSuccess: (state, { payload }) => {
-      console.log('initMultipartUploadSuccess - payload: ', payload);
-      state.multipart.batch = payload.batch;
-      state.multipart.urls = payload.urls;
-    },
-
-    initMultipartUploadFailure: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: payload,
-      }
-      state.loadingStates.upload = {
-        ...state.loadingStates.upload,
-        ...ls
-      };
-    },
-
     multipartUploadProgress: (state, { payload }) => {
       const { partNumber, loaded, fileSize } = payload;
-      state.multipart.progressCache[partNumber] = loaded;
+      const { partsProgress } = state.loadingStates.upload;
+      partsProgress[partNumber] = loaded;
 
-      const bytesUploaded = Object.keys(state.multipart.progressCache)
+      const bytesUploaded = Object.keys(partsProgress)
         .map(Number)
-        .reduce((memo, id) => (memo += state.multipart.progressCache[id]), 0);
+        .reduce((memo, id) => (memo += partsProgress[id]), 0);
       const sent = Math.min(bytesUploaded, fileSize);
 
       const ls = { progress: sent / fileSize };
@@ -300,9 +255,6 @@ export const {
   uploadSuccess,
   uploadFailure,
   uploadProgress,
-  initMultipartUploadStart,
-  initMultipartUploadSuccess,
-  initMultipartUploadFailure,
   multipartUploadProgress,
   fetchBatchesStart,
   fetchBatchesSuccess,
@@ -320,14 +272,14 @@ export const {
   filterBatches
 } = uploadSlice.actions;
 
-// init multipart upload thunk
-export const initMultipartUpload = (payload) => async (dispatch, getState) => {
+// multipart upload thunk (for zip files > 100 MB)
+export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
       const { file, overrideSerial } = payload;
-      dispatch(initMultipartUploadStart());
+      dispatch(uploadStart());
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
@@ -359,8 +311,6 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
         });
       }
 
-      // dispatch(initMultipartUploadSuccess({ ...initRes.createUpload }));
-      
       // iterate over presigned urls, reading and chunking file as we go,
       // and creating upload promises for each one
       const uploadedParts = [];
@@ -402,7 +352,7 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
 
       await Promise.all(activeUploads);
 
-      // close mulitpart upload
+      // close multipart upload
       uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
       const closeRes = await call({
         request: 'closeUpload',
@@ -415,14 +365,16 @@ export const initMultipartUpload = (payload) => async (dispatch, getState) => {
       });
       console.log('closeRes: ', closeRes);
 
+      dispatch(uploadSuccess());
+      dispatch(fetchBatches());
     }
   } catch (err) {
     console.log('err: ', err)
-    dispatch(initMultipartUploadFailure(err))
+    dispatch(uploadFailure(err))
   }
 };
 
-// single-threaded upload thunk
+// single-threaded upload thunk (for zip files < 100 MB)
 export const uploadFile = (payload) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
