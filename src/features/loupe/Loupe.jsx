@@ -32,8 +32,6 @@ import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import ShareImageButton from './ShareImageButton';
 import LoupeDropdown from './LoupeDropdown.jsx';
 
-import { Image } from '../../components/Image';
-
 
 const ItemValue = styled('div', {
   fontSize: '$3',
@@ -126,14 +124,8 @@ const Loupe = () => {
   const userId = useSelector(selectUserUsername);
   const workingImages = useSelector(selectWorkingImages);
   const focusIndex = useSelector(selectFocusIndex);
-  const currImgObjects = workingImages[focusIndex.image].objects;
+  const image = workingImages[focusIndex.image];
   const dispatch = useDispatch();
-
-  // track focused image
-  const [ image, setImage ] = useState();
-  useEffect(() => {
-    setImage(workingImages[focusIndex.image]);
-  }, [ workingImages, focusIndex ]);
 
   // // track reivew mode
   // const reviewMode = useSelector(selectReviewMode);
@@ -150,7 +142,7 @@ const Loupe = () => {
 
   const validateLabels = (validated) => {
     const labelsToValidate = [];
-    currImgObjects.forEach((object) => {
+    image.objects.forEach((object) => {
       if (object.locked) return;
       // find first non-invalidated label in array
       const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
@@ -196,7 +188,7 @@ const Loupe = () => {
 
   const markEmpty = () => {
     const labelsToValidate = [];
-    currImgObjects.forEach((obj) => {
+    image.objects.forEach((obj) => {
       obj.labels
         .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
         .forEach((lbl) => {
@@ -221,7 +213,7 @@ const Loupe = () => {
   const handleCloseLoupe = () => dispatch(toggleOpenLoupe(false));
 
   const handleUnlockAllButtonClick = () => {
-    const objects = currImgObjects
+    const objects = image.objects
       .filter((obj) => (
         obj.locked && obj.labels.some((lbl) => (
           lbl.validation === null || lbl.validation.validated
