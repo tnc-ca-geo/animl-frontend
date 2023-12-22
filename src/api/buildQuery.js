@@ -594,9 +594,22 @@ const queries = {
     template: `
       mutation CreateUpload($input: CreateUploadInput!) {
         createUpload(input: $input) {
-            batch
-            user
-            url
+          batch
+          multipartUploadId
+          user
+          url
+          urls
+        }
+      }
+    `,
+    variables: { input }
+  }),
+
+  closeUpload: (input) => ({
+    template: `
+      mutation CloseUpload($input: CloseUploadInput!) {
+        closeUpload(input: $input) {
+          message
         }
       }
     `,
@@ -662,6 +675,17 @@ const queries = {
     template: `
       mutation StopBatch($input: StopBatchInput!) {
         stopBatch(input: $input) {
+          message
+        }
+      }
+    `,
+    variables: { input: { batch: id } }
+  }),
+
+  redriveBatch: ({ id }) => ({
+    template: `
+      mutation RedriveBatch($input: RedriveBatchInput!){
+        redriveBatch(input: $input) {
           message
         }
       }

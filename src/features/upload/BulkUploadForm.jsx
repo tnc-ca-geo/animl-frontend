@@ -5,13 +5,13 @@ import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormErr
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
-import ProgressBar from '../../components/ProgressBar';
+// import ProgressBar from '../../components/ProgressBar';
 import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../../components/AlertDialog';
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { green, red, mauve } from '@radix-ui/colors';
-import { uploadFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
+import { uploadFile, uploadMultipartFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
 import BulkUploadTable from './BulkUploadTable.jsx';
@@ -35,14 +35,28 @@ const FileUpload = styled('div', {
   position: 'relative',
 });
 
+const ProgressBar = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: '$4'
+});
+
+const ProgressTicker = styled('div', {
+  color: '$textMedium',
+  fontSize: '$3',
+  marginLeft: '$2',
+  textAlign: 'right',
+  width: 120
+});
+
 const ProgressRoot = styled(Progress.Root, {
   position: 'relative',
   overflow: 'hidden',
-  background: '$backgroundLight',
+  background: '$backgroundDark',
   borderRadius: '99999px',
   width: '100%',
   height: '8px',
-  marginBottom: '$4',
 
   /* Fix overflow clipping in Safari */
   /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
@@ -90,10 +104,22 @@ const BulkUploadForm = ({ handleClose }) => {
   ));
 
   const upload = (values) => {
-    dispatch(uploadFile({ 
-      file: values.zipFile, 
-      overrideSerial: values.overrideSerial
-    }));
+    const fileSize = values.zipFile.size; 
+    if ((fileSize / (1024 * 1024)) > 100) {
+      // file is over 100 MB limit; initiate multi-part upload
+      console.log('file is over 100 MB');
+      dispatch(uploadMultipartFile({
+        file: values.zipFile, 
+        overrideSerial: values.overrideSerial
+      }));
+    } else {
+      // else initiate single-part upload
+      console.log('file is under 100 MB');
+      dispatch(uploadFile({ 
+        file: values.zipFile,
+        overrideSerial: values.overrideSerial
+      }));
+    }
   };
 
   const handleSubmit = (values) => {
@@ -112,14 +138,11 @@ const BulkUploadForm = ({ handleClose }) => {
   const formikRef = useRef();
   const fileInputRef = useRef();
   const reset = () => {
-    console.log('resetting form');
     fileInputRef.current.value = null;
     formikRef.current?.resetForm();
   };
   useEffect(() => {
     if (percentUploaded === 100) {
-      console.log('upload complete');
-      dispatch(uploadProgress({ progress: 0 }));
       reset();
     }
   }, [percentUploaded, reset, dispatch]);
@@ -181,9 +204,14 @@ const BulkUploadForm = ({ handleClose }) => {
                 </ButtonRow>
               </FieldRow>
 
-              <ProgressRoot>
-                <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
-              </ProgressRoot>
+              <ProgressBar css={{ opacity: isLoading ? 1 : 0 }}>
+                <ProgressRoot>
+                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
+                </ProgressRoot>
+                <ProgressTicker>
+                  {percentUploaded}% Uploaded
+                </ProgressTicker>
+              </ProgressBar>
 
             </Form>
           )}

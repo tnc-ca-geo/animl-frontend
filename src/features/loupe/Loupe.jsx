@@ -88,8 +88,8 @@ const LoupeBody = styled('div', {
   // display: 'grid',
   // $7 - height of panel header
   // $8 - height of nav bar 
-  // 100px - height of toolbar
-  height: 'calc(100vh - $7 - $8 - 96px)',
+  // 98px - height of toolbar plus height of 2 borders
+  height: 'calc(100vh - $7 - $8 - 98px)',
   backgroundColor: '$hiContrast'
 });
 
@@ -109,7 +109,7 @@ const StyledLoupe = styled('div', {
 });
 
 const ToolbarContainer = styled('div', {
-  height: '96px',
+  height: '97px',
 });
 
 const ShareImage = styled('div', {
