@@ -7,7 +7,6 @@ import { Grid } from '../components/Grid';
 import { Container } from '../components/Container';
 import { MagicWandIcon, LapTimerIcon, BellIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import Footer from '../components/Footer';
-import StyledScrollArea from '../components/ScrollArea';
 
 const Gradient = styled(Box, {
   width: '100vw',
