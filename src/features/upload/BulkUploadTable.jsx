@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches, selectStopBatchLoading, selectRedriveBatchLoading, redriveBatch } from './uploadSlice';
+import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches, selectStopBatchLoading, selectRedriveBatchLoading, redriveBatch, selectBatchStatesLoading } from './uploadSlice';
 import { selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading, selectBatchFilter } from './uploadSlice';
 import { styled, keyframes } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
@@ -9,6 +9,7 @@ import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 
 const Table = styled('table', {
@@ -91,6 +92,7 @@ const Error = styled('span', {
 const BulkUploadTable = ({ percentUploaded }) => {
   const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
   const batchStates = useSelector(selectBatchStates);
+  const batchStatesLoading = useSelector(selectBatchStatesLoading);
   const errorsExport = useSelector(selectErrorsExport);
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const stopBatchLoading = useSelector(selectStopBatchLoading);
@@ -148,7 +150,12 @@ const BulkUploadTable = ({ percentUploaded }) => {
   }, [errorsExportReady, errorsExport, dispatch]);
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
+      {batchStatesLoading.isLoading &&
+        <SpinnerOverlay>
+          <SimpleSpinner/>
+        </SpinnerOverlay>
+      }
       <CurrentCompletedToggle />
       <Table>
         <thead>
@@ -225,6 +232,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
                         variant='ghost'
                         state={isRedrivingImages && 'loading'}
                         size='large'
+                        css={{ color: '$errorText' }}
                         disabled={!(status['processing-complete'] && status['has-failed-images'])}
                         onClick={() => dispatch(redriveBatch(_id))}
                       >

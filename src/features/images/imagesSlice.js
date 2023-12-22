@@ -514,7 +514,7 @@ export const selectStatsLoading = state => state.images.loadingStates.stats;
 export const selectStatsErrors = state => state.images.loadingStates.stats.errors;
 export const selectExport = state => state.images.export;
 export const selectExportLoading = state => state.images.loadingStates.export;
-export const selectExportErrors = state => state.images.loadingStates.export.errors;
+export const selectExportDataErrors = state => state.images.loadingStates.export.errors;
 export const selectDeleteImagesAlertOpen = state => state.images.deleteImagesAlertOpen;
 
 // TODO: find a different place for this?

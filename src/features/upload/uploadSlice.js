@@ -121,7 +121,7 @@ export const uploadSlice = createSlice({
     fetchBatchesSuccess: (state, { payload }) => {
       const { batches, pageInfo } = payload.batches.batches;
       const ls = {
-        isLoading: true,
+        isLoading: false,
         operation: null,
         errors: null,
       }
@@ -213,7 +213,6 @@ export const uploadSlice = createSlice({
       };
     },
 
-    // TODO: don't forget to wire up redriveBatch errors
     redriveBatchFailure: (state, { payload }) => {
       const ls = {
         isLoading: false,
@@ -224,6 +223,11 @@ export const uploadSlice = createSlice({
         ...state.loadingStates.redriveBatch,
         ...ls
       };
+    },
+
+    dismissRedriveBatchError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.redriveBatch.errors.splice(index, 1);
     },
 
     // export image errors 
@@ -270,7 +274,6 @@ export const uploadSlice = createSlice({
       }
     },
 
-    // TODO: remember to wire up exportErrors errors
     dismissExportErrorsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.errorsExport.errors.splice(index, 1);
@@ -308,6 +311,7 @@ export const {
   redriveBatchStart,
   redriveBatchSuccess,
   redriveBatchFailure,
+  dismissRedriveBatchError,
   exportErrorsStart,
   exportErrorsSuccess,
   exportErrorsUpdate,
@@ -480,6 +484,7 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
+      dispatch(fetchBatchesStart());
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const pageInfo = getState().uploads.pageInfo;
@@ -604,10 +609,13 @@ export const selectBatchStates = state => state.uploads.batchStates;
 export const selectBatchFilter = state => state.uploads.filter;
 export const selectBatchPageInfo = state => state.uploads.pageInfo;
 export const selectUploadsLoading = state => state.uploads.loadingStates.upload;
+export const selectBatchStatesLoading = state => state.uploads.loadingStates.batchStates;
 export const selectErrorsExport = state => state.uploads.errorsExport;
 export const selectErrorsExportLoading = state => state.uploads.loadingStates.errorsExport;
-export const selectErrorsExportErrors = state => state.uploads.loadingStates.errorsExport.errors;
+export const selectExportImageErrorsErrors = state => state.uploads.loadingStates.errorsExport.errors;
 export const selectStopBatchLoading = state => state.uploads.loadingStates.stopBatch;
 export const selectRedriveBatchLoading = state => state.uploads.loadingStates.redriveBatch;
+export const selectRedriveBatchErrors = state => state.uploads.loadingStates.redriveBatch.errors;
+
 
 export default uploadSlice.reducer;
