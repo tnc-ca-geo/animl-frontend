@@ -80,7 +80,8 @@ const DataCell = styled(TableCell, {
   margin: '0px',
   display: 'flex',
   alignItems: 'center',
-  fontSize: '$3',
+  fontSize: '$2',
+  // fontFamily: '$mono',
   color: '$textDark',
   borderBottom: '1px solid $border',
   variants: {

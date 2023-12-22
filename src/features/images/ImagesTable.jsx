@@ -116,32 +116,6 @@ const HeaderCell = styled(TableCell, {
   },
 });
 
-const DataCell = styled(TableCell, { // TODO: doesn't seem to be used?
-  margin: '0px',
-  display: 'flex',
-  alignItems: 'center',
-  fontSize: '$3',
-  color: '$textDark',
-  borderBottom: '1px solid $border',
-  variants: {
-    selected: {
-      true: {
-        backgroundColor: '$backgroundExtraDark',
-        // '&:first-child': {
-        //   borderLeft: '4px solid $blue500',
-        //   paddingLeft: '12px',
-        // },
-      }
-    },
-    scrollable: {
-      true: {
-        overflowY: 'scroll',
-        alignItems: 'start',
-      }
-    }
-  }
-});
-
 const TableHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
@@ -426,7 +400,7 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
     // date created
     const dtOriginal = DateTime
       .fromISO(img.dateTimeOriginal)
-      .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+      .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
 
     // date added
     const dtAdded = DateTime

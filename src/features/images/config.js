@@ -20,6 +20,7 @@ export const columnConfig = [
   {
     Header: 'Date created',
     accessor: 'dtOriginal',
+    width: '150'
   },
   {
     Header: 'Date added',
@@ -29,6 +30,7 @@ export const columnConfig = [
     Header: 'Reviewed',
     accessor: 'reviewed',
     disableSortBy: true,
+    width: '50'
   },
   {
     Header: 'Camera',
