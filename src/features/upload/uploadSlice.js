@@ -262,7 +262,6 @@ export const uploadSlice = createSlice({
     },
 
     clearErrorsExport: (state) => { 
-      console.log('clearing export errors')
       state.errorsExport = null; 
       state.loadingStates.errorsExport = {
         isLoading: false,
@@ -495,7 +494,6 @@ export const fetchBatches = (page = 'current') => async (dispatch, getState) => 
       dispatch(fetchBatchesSuccess({ batches }));
     }
   } catch (err) {
-    console.log('err: ', err)
     dispatch(fetchBatchesFailure(err))
   }
 };
@@ -519,7 +517,6 @@ export const stopBatch = (id) => async (dispatch, getState) => {
       dispatch(fetchBatches());
     }
   } catch (err) {
-    console.log('err: ', err)
     dispatch(stopBatchFailure(err))
   }
 };
@@ -543,7 +540,6 @@ export const redriveBatch = (id) => async (dispatch, getState) => {
       dispatch(fetchBatches());
     }
   } catch (err) {
-    console.log('err: ', err)
     dispatch(redriveBatchFailure(err))
   }
 };
@@ -551,7 +547,6 @@ export const redriveBatch = (id) => async (dispatch, getState) => {
 // export errors thunk
 export const exportErrors = ({ filters }) => {
   return async (dispatch, getState) => {
-    console.log(`uploadSlice - exportErrors() - exporting with filters: `, filters);
     try {
 
       dispatch(exportErrorsStart({ batch: filters.batch }));
@@ -566,7 +561,6 @@ export const exportErrors = ({ filters }) => {
           request: 'exportErrors',
           input: { filters },
         });  
-        console.log('imagesSlice() - exportErrors() - res: ', res);
         dispatch(exportErrorsUpdate({ documentId: res.exportErrors.documentId }));
       }
     } catch (err) {
@@ -578,7 +572,6 @@ export const exportErrors = ({ filters }) => {
 // getErrorsExportStatus thunk
 export const getErrorsExportStatus = (documentId) => {
   return async (dispatch, getState) => {
-    console.log('uploadSlice() - getErrorsExportStatus() - docId: ', documentId);
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -591,7 +584,6 @@ export const getErrorsExportStatus = (documentId) => {
           request: 'getExportStatus',
           input: { documentId },
         });  
-        console.log('uploadSlice() - getErrorsExportStatus() - exportStatus: ', exportStatus)
         
         if (exportStatus.status === 'Success') {
           dispatch(exportErrorsSuccess(exportStatus));
