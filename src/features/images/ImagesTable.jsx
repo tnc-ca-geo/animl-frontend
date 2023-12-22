@@ -38,6 +38,7 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
 import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
 import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
+import StyledScrollArea from '../../components/ScrollArea.jsx';
 
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -115,39 +116,13 @@ const HeaderCell = styled(TableCell, {
   },
 });
 
-const DataCell = styled(TableCell, { // TODO: doesn't seem to be used?
-  margin: '0px',
-  display: 'flex',
-  alignItems: 'center',
-  fontSize: '$3',
-  color: '$textDark',
-  borderBottom: '1px solid $border',
-  variants: {
-    selected: {
-      true: {
-        backgroundColor: '$backgroundExtraDark',
-        // '&:first-child': {
-        //   borderLeft: '4px solid $blue500',
-        //   paddingLeft: '12px',
-        // },
-      }
-    },
-    scrollable: {
-      true: {
-        overflowY: 'scroll',
-        alignItems: 'start',
-      }
-    }
-  }
-});
-
 const TableHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  paddingTop: '$2',
-  paddingBottom: '$2',
+  paddingTop: '$1',
+  paddingBottom: '$1',
   backgroundColor: '$backgroundDark',
-  fontSize: '$3',
+  fontSize: '$2',
   'svg': {
     marginLeft: '$2',
     'path': {
@@ -236,6 +211,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     return !hasNext || index < workingImages.length;
   }, [hasNext, workingImages]);
   const selectedImageIndices = useSelector(selectSelectedImageIndices);
+  const headerHeight = 27;
 
   // prepare table
   const data = makeRows(workingImages, focusIndex, selectedImageIndices);
@@ -336,20 +312,21 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           loadMoreItems={loadNextPage}
         >
           {({ onItemsRendered, ref }) => (
-            <List
-              height={height - 33}
-              itemCount={imagesCount}
-              itemSize={91}
-              onItemsRendered={onItemsRendered}
-              ref={list => {
-                // https://github.com/bvaughn/react-window/issues/324
-                ref(list);
-                listRef.current = list;
-              }}
-              width={width}
-            >
-              { RenderRow }
-            </List>
+              <List
+                height={height - headerHeight}
+                itemCount={imagesCount}
+                itemSize={91}
+                onItemsRendered={onItemsRendered}
+                style={{ overflowX: 'clip' }}
+                ref={list => {
+                  // https://github.com/bvaughn/react-window/issues/324
+                  ref(list);
+                  listRef.current = list;
+                }}
+                width={width}
+              >
+                { RenderRow }
+              </List>
           )}
         </InfiniteLoader>
       </div>
@@ -373,7 +350,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
       {workingImages.length > 0 &&
         <Table {...getTableProps()}>
           <div
-            style={{ height: '33px', width: `calc(100% - ${scrollBarSize.width}px)` }}
+            style={{ height: headerHeight, width: `calc(100% - ${scrollBarSize.width}px)` }}
           >
             {headerGroups.map(headerGroup => (
               <TableRow
@@ -423,7 +400,7 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
     // date created
     const dtOriginal = DateTime
       .fromISO(img.dateTimeOriginal)
-      .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+      .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
 
     // date added
     const dtAdded = DateTime

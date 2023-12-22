@@ -80,7 +80,8 @@ const DataCell = styled(TableCell, {
   margin: '0px',
   display: 'flex',
   alignItems: 'center',
-  fontSize: '$3',
+  fontSize: '$2',
+  // fontFamily: '$mono',
   color: '$textDark',
   borderBottom: '1px solid $border',
   variants: {
@@ -275,7 +276,6 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   const handleDeleteImagesMenuItemClick = () => {
     dispatch(setDeleteImagesAlertOpen(true));
   };
-
 
   return (
     <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}

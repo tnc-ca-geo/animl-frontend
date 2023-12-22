@@ -38,9 +38,15 @@ import {
   dismissImageContextError,
   selectStatsErrors,
   dismissStatsError,
-  selectExportErrors,
+  selectExportDataErrors,
   dismissExportError,
 } from '../features/images/imagesSlice';
+import {
+  selectExportImageErrorsErrors,
+  dismissExportErrorsError,
+  selectRedriveBatchErrors,
+  dismissRedriveBatchError
+} from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
 import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
 
@@ -58,7 +64,9 @@ const ErrorAlerts = () => {
   const imagesErrors = useSelector(selectImagesErrors);
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
-  const exportErrors = useSelector(selectExportErrors);
+  const exportDataErrors = useSelector(selectExportDataErrors);
+  const exportImageErrorsErrors = useSelector(selectExportImageErrorsErrors);
+  const redriveBatchErrors = useSelector(selectRedriveBatchErrors);
   const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
   
@@ -73,7 +81,9 @@ const ErrorAlerts = () => {
     enrichErrors(imagesErrors, 'Image Error', 'images'),
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
-    enrichErrors(exportErrors, 'Error Exporting Data', 'data'),
+    enrichErrors(exportDataErrors, 'Error Exporting Data', 'data'),
+    enrichErrors(exportImageErrorsErrors, 'Error downloading errors CSV', 'uploadImageErrors'),
+    enrichErrors(redriveBatchErrors, 'Error retrying failed images in batch', 'redriveBatch'),
     enrichErrors(manageUserErrors, 'Manage user error', 'manageUsers'),
     enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
   ];
@@ -134,6 +144,8 @@ const dismissErrorActions = {
   'imageContext': (i) => dismissImageContextError(i),
   'stats': (i) => dismissStatsError(i),
   'data': (i) => dismissExportError(i),
+  'uploadImageErrors': (i) => dismissExportErrorsError(i),
+  'redriveBatch': (i) => dismissRedriveBatchError(i),
   'manageUsers': (i) => dismissManageUsersError(i),
 };
 

@@ -6,6 +6,7 @@ import { call } from '../../api';
 import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
+import { setFocus, setSelectedImageIndices } from '../review/reviewSlice';
 
 const initialState = {
   // images: [], // we aren't using this... consider removing?
@@ -484,6 +485,11 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
         input: { imageIds },
       });
     }
+    dispatch(setFocus({ 
+      index: { image: null, object: null, label: null }, 
+      type: 'auto' 
+    }));
+    dispatch(setSelectedImageIndices([]));
     dispatch(deleteImagesSuccess(imageIds));
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
@@ -508,7 +514,7 @@ export const selectStatsLoading = state => state.images.loadingStates.stats;
 export const selectStatsErrors = state => state.images.loadingStates.stats.errors;
 export const selectExport = state => state.images.export;
 export const selectExportLoading = state => state.images.loadingStates.export;
-export const selectExportErrors = state => state.images.loadingStates.export.errors;
+export const selectExportDataErrors = state => state.images.loadingStates.export.errors;
 export const selectDeleteImagesAlertOpen = state => state.images.deleteImagesAlertOpen;
 
 // TODO: find a different place for this?
