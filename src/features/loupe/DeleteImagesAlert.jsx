@@ -28,7 +28,13 @@ const DeleteImagesAlert = () => {
       <AlertPortal>
         <AlertOverlay/>
         <AlertContent>
-          <AlertTitle>Are you sure you'd like to delete this image?</AlertTitle>
+          <AlertTitle>
+            Are you sure you'd like to  
+            delete {selectedImages.length > 1 
+              ? `these ${selectedImages.length} images` 
+              : `this image`
+            }?
+          </AlertTitle>
           <p>This action can not be undone.</p>
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
             <Button size='small' css={{ border: 'none' }} onClick={handleCancelDelete}>Cancel</Button>
@@ -42,7 +48,7 @@ const DeleteImagesAlert = () => {
               }} 
               onClick={handleConfirmDelete}
             >
-              Yes, delete image
+              Yes, delete
             </Button>
           </div>
         </AlertContent>
