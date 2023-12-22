@@ -329,7 +329,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   const InfiniteList = useCallback(
     ({ height, width }) => (
-      <div className='infinte-loader-container' {...getTableBodyProps()}>
+      <div {...getTableBodyProps()}>
         <InfiniteLoader
           ref={infiniteLoaderRef}
           items={workingImages}
@@ -339,11 +339,11 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         >
           {({ onItemsRendered, ref }) => (
               <List
-                className='list'
                 height={height - headerHeight}
                 itemCount={imagesCount}
                 itemSize={91}
                 onItemsRendered={onItemsRendered}
+                style={{ overflowX: 'clip' }}
                 ref={list => {
                   // https://github.com/bvaughn/react-window/issues/324
                   ref(list);
@@ -351,9 +351,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
                 }}
                 width={width}
               >
-                
-                  { RenderRow }
-                
+                { RenderRow }
               </List>
           )}
         </InfiniteLoader>

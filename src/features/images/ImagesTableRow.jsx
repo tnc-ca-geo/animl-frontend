@@ -276,7 +276,6 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
     dispatch(setDeleteImagesAlertOpen(true));
   };
 
-
   return (
     <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
       <ContextMenuTrigger disabled={!selected || !isAuthorized}>
