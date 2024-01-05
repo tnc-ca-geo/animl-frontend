@@ -159,7 +159,10 @@ const projectFields = `
     ${cameraConfigFields}
   }
   labels {
-    categories
+    _id
+    name
+    color
+    source
   }
   availableMLModels 
 `
