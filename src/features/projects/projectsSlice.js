@@ -330,6 +330,31 @@ export const projectsSlice = createSlice({
       state.loadingStates.models.errors.splice(index, 1);
     },
 
+    createLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'creating', errors: null };
+      state.loadingStates.labels = ls;
+    },
+
+    createLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.loadingStates.labels = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.labels = [
+        ...proj.labels,
+        payload.label
+      ]
+    },
+
+    createLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      state.loadingStates.labels = ls;
+    },
+
     updateLabelStart: (state) => {
       const ls = { isLoading: true, operation: 'updating', errors: null };
       state.loadingStates.labels = ls;
@@ -417,6 +442,10 @@ export const {
   getModelOptionsStart,
   getModelOptionsFailure,
   getModelOptionsSuccess,
+
+  createLabelStart,
+  createLabelSuccess,
+  createLabelFailure,
 
   updateLabelStart,
   updateLabelSuccess,
@@ -669,6 +698,32 @@ export const updateLabel = (payload) => {
     } catch (err) {
       console.log(`error attempting to update label: `, err);
       dispatch(updateLabelFailure(err));
+    }
+  };
+};
+
+// updateLabel thunk
+export const createLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(createLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'createLabels', 
+          input: payload
+        });
+        dispatch(createLabelSuccess({ projId, label: res.createProjectLabel.label}));
+      }
+    } catch (err) {
+      console.log(`error attempting to create label: `, err);
+      dispatch(createLabelFailure(err));
     }
   };
 };

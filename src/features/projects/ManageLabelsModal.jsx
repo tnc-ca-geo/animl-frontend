@@ -4,7 +4,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
 import { styled } from "../../theme/stitches.config";
-import { selectLabels, updateLabel } from "./projectsSlice";
+import { selectLabels, updateLabel, createLabel } from "./projectsSlice";
 import LabelPill from "../../components/LabelPill";
 import Button from "../../components/Button";
 import {
@@ -13,6 +13,11 @@ import {
   FormError,
   ButtonRow,
 } from '../../components/Form';
+
+const LabelList = styled('div', {
+  overflowY: 'scroll',
+  maxHeight: '500px'
+});
 
 const LabelRow = styled('div', {
   marginBottom: '$3',
@@ -47,17 +52,13 @@ const FormButtons = styled(ButtonRow, {
   marginLeft: '$3',
 })
 
-const LabelForm = ({ _id, name, color, onClose }) => {
-  const dispatch = useDispatch();
+const LabelForm = ({ _id, name = '', color = '', onClose, onSubmit }) => {
   return (
     <FormWrapper>
       <Formik
         initialValues={{ _id, name, color }}
         validationSchema={label}
-        onSubmit={(values) => {
-          dispatch(updateLabel(values));
-          onClose();
-        }}
+        onSubmit={onSubmit}
       >
         {({ errors, touched }) => (
           <Form>
@@ -81,8 +82,8 @@ const LabelForm = ({ _id, name, color, onClose }) => {
                 )}
               </FormFieldWrapper>
               <FormButtons>
-                <Button size='large' type='submit'>Save</Button>
-                <Button size='large' type='button' onClick={onClose}>Cancel</Button>
+                <Button size='small' type='submit'>Save</Button>
+                <Button size='small' type='button' onClick={onClose}>Cancel</Button>
               </FormButtons>
             </FormRow>
           </Form>
@@ -93,8 +94,14 @@ const LabelForm = ({ _id, name, color, onClose }) => {
 }
 
 const Label = ({ _id, name, color, source }) => {
+  const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
+
   const onClose = useCallback(() => setShowForm((prev) => !prev), []);
+  const onSubmit = useCallback((values) => {
+    dispatch(updateLabel(values));
+    setShowForm(false);
+  }, []);
 
   return (
     <LabelRow>
@@ -108,21 +115,47 @@ const Label = ({ _id, name, color, source }) => {
           {name}
         </LabelPill>
         <LabelActions>
-          <Button onClick={onClose} type='button' size='large'>Edit</Button>
+          <Button onClick={onClose} type='button' size='small'>Edit</Button>
         </LabelActions>
       </LabelHeader>
-      {showForm && <LabelForm _id={_id} name={name} color={color} source={source} onClose={onClose} />}
+      {showForm && (
+        <LabelForm
+          _id={_id}
+          name={name}
+          color={color}
+          source={source}
+          onClose={onClose}
+          onSubmit={onSubmit}
+        />
+      )}
     </LabelRow>
   );
 }
 
 const ManageLabelsModal = () => {
+  const dispatch = useDispatch();
   const labels = useSelector(selectLabels);
+  const [ showNewLabelForm, setShowNewLabelForm ] = useState(false);
+
+  const onClose = useCallback(() => setShowNewLabelForm(false), []);
+  const onSubmit = useCallback((values) => {
+    dispatch(createLabel(values));
+    setShowNewLabelForm(false)
+  });
+
   return (
     <>
-      {labels.map(({ _id, name, color, source }) => (
-        <Label key={_id} _id={_id} name={name} color={color} source={source} />
-      ))}
+      <LabelList>
+        {labels.map(({ _id, name, color, source }) => (
+          <Label key={_id} _id={_id} name={name} color={color} source={source} />
+        ))}
+      </LabelList>
+      <ButtonRow>
+        <Button size="small" onClick={() => setShowNewLabelForm(prev => !prev)}>New label</Button>
+      </ButtonRow>
+      { showNewLabelForm && (
+        <LabelForm onClose={onClose} onSubmit={onSubmit} />
+      )}
     </>
   )
 }

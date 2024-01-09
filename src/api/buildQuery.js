@@ -452,9 +452,14 @@ const queries = {
 
   createLabels: (input) => ({
     template: `
-      mutation CreateLabels($input: CreateLabelsInput!) {
-        createLabels(input: $input) {
-          isOk
+      mutation CreateProjectLabel($input: CreateProjectLabelInput!) {
+        createProjectLabel(input: $input) {
+            label {
+                _id
+                name
+                color
+                source
+            }
         }
       }
     `,
