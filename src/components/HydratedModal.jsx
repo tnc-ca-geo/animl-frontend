@@ -9,6 +9,7 @@ import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
+import ManageLabelsModal from '../features/projects/ManageLabelsModal.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import { clearExport, clearStats } from '../features/images/imagesSlice';
 import { clearErrorsExport } from '../features/upload/uploadSlice.js'
@@ -76,6 +77,12 @@ const HydratedModal = () => {
       title: 'Manage users',
       size: 'md',
       content: <ManageUsersModal/>,
+      callBackOnClose: () => dispatch(clearUsers()),
+    },
+    'manage-labels-form': {
+      title: 'Manage labels',
+      size: 'md',
+      content: <ManageLabelsModal/>,
       callBackOnClose: () => dispatch(clearUsers()),
     },
   };

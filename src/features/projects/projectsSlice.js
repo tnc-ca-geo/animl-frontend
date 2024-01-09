@@ -53,6 +53,11 @@ const initialState = {
       operation: null,
       errors: null,
       progress: 0
+    },
+    labels: {
+      isLoading: false,
+      operation: null,
+      errors: null,
     }
   },
   unsavedViewChanges: false,
@@ -324,6 +329,34 @@ export const projectsSlice = createSlice({
       const index = payload;
       state.loadingStates.models.errors.splice(index, 1);
     },
+
+    updateLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };
+      state.loadingStates.labels = ls;
+    },
+
+    updateLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.loadingStates.labels = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.labels = proj.labels.map((label) => {
+        if (label._id === payload.label._id) {
+          return payload.label;
+        } else {
+          return label;
+        }
+      })
+    },
+
+    updateLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      state.loadingStates.labels = ls;
+    },
   },
 
   extraReducers: (builder) => {
@@ -384,6 +417,10 @@ export const {
   getModelOptionsStart,
   getModelOptionsFailure,
   getModelOptionsSuccess,
+
+  updateLabelStart,
+  updateLabelSuccess,
+  updateLabelFailure,
 
   setModalOpen,
   setModalContent,
@@ -610,12 +647,41 @@ export const fetchModelOptions = () => {
   };
 }
 
+// updateLabel thunk
+export const updateLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'updateLabels', 
+          input: payload
+        });
+        dispatch(updateLabelSuccess({ projId, label: res.updateProjectLabel.label}));
+      }
+    } catch (err) {
+      console.log(`error attempting to update label: `, err);
+      dispatch(updateLabelFailure(err));
+    }
+  };
+};
+
 
 // Selectors
 export const selectProjects = state => state.projects.projects;
 export const selectSelectedProject = state => state.projects.projects.find((proj) => proj.selected);
 export const selectSelectedProjectId = createSelector([selectSelectedProject],
   (proj) => proj ? proj._id : null
+);
+export const selectLabels = createSelector([selectSelectedProject],
+  (proj) => proj ? proj.labels : null
 );
 export const selectViews = createSelector([selectSelectedProject],
   (proj) => proj ? proj.views : null

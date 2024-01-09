@@ -128,6 +128,16 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         />
       }
 
+      {(hasRole(userRoles, MANAGE_USERS_ROLES)) &&  // TODO: Update role
+        <SidebarNavItem 
+          state={modalOpen && (modalContent === 'manage-labels-form') ? 'active' : ''}
+          disabled={!selectedProject}
+          handleClick={() => handleModalToggle('manage-labels-form')}
+          icon={<FontAwesomeIcon icon={['fas', 'tag']} />}
+          tooltipContent='Manage label'
+        />
+      }
+
     </StyledSidebarNav>
   );
 };

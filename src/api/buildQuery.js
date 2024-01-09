@@ -463,9 +463,14 @@ const queries = {
 
   updateLabels: (input) => ({
     template: `
-      mutation UpdateLabels($input: UpdateLabelsInput!) {
-        updateLabels(input: $input) {
-          isOk
+      mutation UpdateProjectLabel($input: UpdateProjectLabelInput!) {
+        updateProjectLabel(input: $input) {
+          label {
+              _id
+              name
+              color
+              source
+          }
         }
       }
     `,

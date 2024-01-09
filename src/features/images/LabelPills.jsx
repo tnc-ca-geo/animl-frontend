@@ -4,7 +4,6 @@ import { styled, labelColors } from '../../theme/stitches.config.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 
-
 const LabelPill = styled('div', {
   color: '$textDark',
   fontSize: '$2',
