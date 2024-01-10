@@ -97,7 +97,6 @@ const BulkUploadTable = ({ percentUploaded }) => {
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const stopBatchLoading = useSelector(selectStopBatchLoading);
   const redriveBatchLoading = useSelector(selectRedriveBatchLoading);
-  console.log('redriveBatchLoading: ', redriveBatchLoading)
 
   const dispatch = useDispatch();
 

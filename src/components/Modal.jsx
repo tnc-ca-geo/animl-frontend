@@ -5,7 +5,9 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import PanelHeader from './PanelHeader';
 
 const ModalBody = styled('div', {
-  margin: '$3',
+  padding: '$3',
+  maxHeight: 'calc(85vh - $7)',
+  overflowY: 'scroll'
 });
 
 const overlayShow = keyframes({
