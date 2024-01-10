@@ -7,6 +7,7 @@ import {
   WRITE_VIEWS_ROLES,
   WRITE_IMAGES_ROLES,
   MANAGE_USERS_ROLES,
+  MANAGE_LABELS,
 } from '../auth/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -128,13 +129,14 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
         />
       }
 
-      {(hasRole(userRoles, MANAGE_USERS_ROLES)) &&  // TODO: Update role
+      {/* Manage label view */}
+      {(hasRole(userRoles, MANAGE_LABELS)) &&
         <SidebarNavItem 
           state={modalOpen && (modalContent === 'manage-labels-form') ? 'active' : ''}
           disabled={!selectedProject}
           handleClick={() => handleModalToggle('manage-labels-form')}
           icon={<FontAwesomeIcon icon={['fas', 'tag']} />}
-          tooltipContent='Manage label'
+          tooltipContent='Manage labels'
         />
       }
 
