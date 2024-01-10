@@ -50,7 +50,13 @@ const FormRow = styled('div', {
 
 const FormButtons = styled(ButtonRow, {
   marginLeft: '$3',
-})
+});
+
+const ColorPicker = styled('div', {
+  display: 'flex',
+  gap: '$1',
+  alignItems: 'center'
+});
 
 const LabelForm = ({ _id, name = '', color = '', onClose, onSubmit }) => {
   return (
@@ -60,7 +66,7 @@ const LabelForm = ({ _id, name = '', color = '', onClose, onSubmit }) => {
         validationSchema={label}
         onSubmit={onSubmit}
       >
-        {({ errors, touched }) => (
+        {({ values, errors, touched, setFieldValue }) => (
           <Form>
             <FormRow>
               <FormFieldWrapper>
@@ -74,7 +80,21 @@ const LabelForm = ({ _id, name = '', color = '', onClose, onSubmit }) => {
               </FormFieldWrapper>
               <FormFieldWrapper>
                 <label htmlFor='name'>Color</label>
-                <Field name='color' id='color' />
+                <ColorPicker>
+                  <Button
+                    type="button"
+                    aria-label="Get a new color"
+                    size="small"
+                    onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
+                    css={{
+                      backgroundColor: values.color,
+                      borderColor: values.color
+                    }}
+                  >
+                    /\
+                  </Button>
+                  <Field name='color' id='color' />
+                </ColorPicker>
                 {!!errors.color && touched.color && (
                   <FormError>
                     {errors.color}
