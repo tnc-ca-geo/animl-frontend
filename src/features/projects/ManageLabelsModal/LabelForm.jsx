@@ -1,5 +1,7 @@
 import { Form, Field, useFormikContext } from 'formik';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from "../../../components/Button";
+import IconButton from '../../../components/IconButton.jsx';
 import {
   FormWrapper,
   FormFieldWrapper,
@@ -30,18 +32,18 @@ const LabelForm = ({ onCancel }) => {
           <FormFieldWrapper>
             <label htmlFor='name'>Color</label>
             <ColorPicker>
-              <Button
+              <IconButton
                 type="button"
                 aria-label="Get a new color"
                 size="small"
                 onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
                 css={{
                   backgroundColor: values.color,
-                  borderColor: values.color
+                  borderColor: values.color,
                 }}
               >
-                /\
-              </Button>
+                <FontAwesomeIcon icon={['fas', 'retweet']} />
+              </IconButton>
               <Field name='color' id='color' />
             </ColorPicker>
             {!!errors.color && touched.color && (
