@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
 import { styled } from "../../theme/stitches.config";
@@ -58,62 +58,65 @@ const ColorPicker = styled('div', {
   alignItems: 'center'
 });
 
-const LabelForm = ({ _id, name = '', color = '', onClose, onSubmit }) => {
+const LabelForm = ({ onCancel }) => {
+  const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
+
   return (
     <FormWrapper>
-      <Formik
-        initialValues={{ _id, name, color }}
-        validationSchema={label}
-        onSubmit={onSubmit}
-      >
-        {({ values, errors, touched, setFieldValue }) => (
-          <Form>
-            <FormRow>
-              <FormFieldWrapper>
-                <label htmlFor='name'>Name</label>
-                <Field name='name' id='name' />
-                {!!errors.name && touched.name && (
-                  <FormError>
-                    {errors.name}
-                  </FormError>
-                )}
-              </FormFieldWrapper>
-              <FormFieldWrapper>
-                <label htmlFor='name'>Color</label>
-                <ColorPicker>
-                  <Button
-                    type="button"
-                    aria-label="Get a new color"
-                    size="small"
-                    onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
-                    css={{
-                      backgroundColor: values.color,
-                      borderColor: values.color
-                    }}
-                  >
-                    /\
-                  </Button>
-                  <Field name='color' id='color' />
-                </ColorPicker>
-                {!!errors.color && touched.color && (
-                  <FormError>
-                    {errors.color}
-                  </FormError>
-                )}
-              </FormFieldWrapper>
-              <FormButtons>
-                <Button size='small' type='submit'>Save</Button>
-                <Button size='small' type='button' onClick={onClose}>Cancel</Button>
-              </FormButtons>
-            </FormRow>
-          </Form>
-        )}
-      </Formik>
+      <Form>
+        <FormRow>
+          <FormFieldWrapper>
+            <label htmlFor='name'>Name</label>
+            <Field name='name' id='name' />
+            {!!errors.name && touched.name && (
+              <FormError>
+                {errors.name}
+              </FormError>
+            )}
+          </FormFieldWrapper>
+          <FormFieldWrapper>
+            <label htmlFor='name'>Color</label>
+            <ColorPicker>
+              <Button
+                type="button"
+                aria-label="Get a new color"
+                size="small"
+                onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
+                css={{
+                  backgroundColor: values.color,
+                  borderColor: values.color
+                }}
+              >
+                /\
+              </Button>
+              <Field name='color' id='color' />
+            </ColorPicker>
+            {!!errors.color && touched.color && (
+              <FormError>
+                {errors.color}
+              </FormError>
+            )}
+          </FormFieldWrapper>
+          <FormButtons>
+            <Button size='small' type='submit'>Save</Button>
+            <Button
+              size='small'
+              type='button'
+              onClick={() => {
+                resetForm();
+                onCancel();
+              }}
+            >
+              Cancel
+            </Button>
+          </FormButtons>
+        </FormRow>
+      </Form>
     </FormWrapper>
   );
 }
 
-const Label = ({ _id, name, color, source }) => {
+const EditLabelForm = ({ _id, name, color, source }) => {
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 
@@ -124,58 +127,88 @@ const Label = ({ _id, name, color, source }) => {
   }, []);
 
   return (
-    <LabelRow>
-      <LabelHeader>
-        <LabelPill
-          css={{
-            backgroundColor: color, 
-            color: '#000',
-          }}
-        >
-          {name}
-        </LabelPill>
-        <LabelActions>
-          <Button onClick={onClose} type='button' size='small'>Edit</Button>
-        </LabelActions>
-      </LabelHeader>
-      {showForm && (
-        <LabelForm
-          _id={_id}
-          name={name}
-          color={color}
-          source={source}
-          onClose={onClose}
-          onSubmit={onSubmit}
-        />
+    <Formik
+      initialValues={{ _id, name, color }}
+      validationSchema={label}
+      onSubmit={onSubmit}
+    >
+      {({ values }) => (
+        <LabelRow>
+          <LabelHeader>
+            <LabelPill
+              css={{
+                backgroundColor: values.color, 
+                color: '#000'
+              }}
+            >
+              {values.name}
+            </LabelPill>
+            <LabelActions>
+              <Button onClick={onClose} type='button' size='small'>Edit</Button>
+            </LabelActions>
+          </LabelHeader>
+          {showForm && (
+            <LabelForm onCancel={onClose} />
+          )}
+        </LabelRow>
       )}
-    </LabelRow>
+    </Formik>
   );
 }
 
-const ManageLabelsModal = () => {
+const NewLabelForm = () => {
   const dispatch = useDispatch();
-  const labels = useSelector(selectLabels);
   const [ showNewLabelForm, setShowNewLabelForm ] = useState(false);
 
   const onClose = useCallback(() => setShowNewLabelForm(false), []);
   const onSubmit = useCallback((values) => {
     dispatch(createLabel(values));
-    setShowNewLabelForm(false)
+    setShowNewLabelForm(false);
   });
+
+  return (
+      <Formik
+        initialValues={{ name: '', color: initialLabelColor }}
+        validationSchema={label}
+        onSubmit={onSubmit}
+      >
+        {({ values }) => (
+          <LabelRow>
+            <LabelHeader>
+            { showNewLabelForm && (
+              <LabelPill
+                css={{
+                  backgroundColor: values.color, 
+                  color: '#000',
+                }}
+              >
+                { name || "New Label"}
+              </LabelPill>
+            )}
+              <LabelActions>
+                <Button size="small" onClick={() => setShowNewLabelForm(prev => !prev)}>New label</Button>
+              </LabelActions>
+            </LabelHeader>
+            { showNewLabelForm && (
+              <LabelForm onCancel={onClose} />
+            )}
+          </LabelRow>
+        )}
+      </Formik>
+  )
+}
+
+const ManageLabelsModal = () => {
+  const labels = useSelector(selectLabels);
 
   return (
     <>
       <LabelList>
         {labels.map(({ _id, name, color, source }) => (
-          <Label key={_id} _id={_id} name={name} color={color} source={source} />
+          <EditLabelForm key={_id} _id={_id} name={name} color={color} source={source} />
         ))}
       </LabelList>
-      <ButtonRow>
-        <Button size="small" onClick={() => setShowNewLabelForm(prev => !prev)}>New label</Button>
-      </ButtonRow>
-      { showNewLabelForm && (
-        <LabelForm onClose={onClose} onSubmit={onSubmit} />
-      )}
+      <NewLabelForm />
     </>
   )
 }
