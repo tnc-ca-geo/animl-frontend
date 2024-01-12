@@ -1,8 +1,9 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
+import { selectLabels } from '../projects/projectsSlice.js';
 
 const LabelPill = styled('div', {
   color: '$textDark',
@@ -65,6 +66,7 @@ const LabelContainer = styled('div', {
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
+  const availableLabels = useSelector(selectLabels);
 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
     // if user isn't attempting a multi-row selection, update focus
@@ -78,7 +80,6 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   return (
     <LabelContainer >
       {objects.map((object, objIndex) => {
-
         // TODO: find a cleaner way to do this. Maybe make it a hook?
         // We also need filtered objects in FullSizeImage component...
         // and reviewMiddleware so consider encapsulating 
@@ -106,6 +107,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
             >
               {labels.map((label, i) => {
                 const lblIndex = object.labels.indexOf(label);
+                const l = availableLabels.find(({ _id }) => label.labelId === _id);
                 return (
                   <LabelPill
                     key={label._id}
@@ -115,12 +117,12 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
                     }
                     onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
                     css={{
-                      backgroundColor: labelColors(label.category).bg, 
-                      borderColor: labelColors(label.category).border,
+                      backgroundColor: l.color, 
+                      borderColor: l.color,
                       color: labelColors(label.category).textDark,
                     }}
                   >
-                    {label.category}
+                    {l?.name || "ERROR FINDING LABEL"}
                   </LabelPill>
                 )
               })}

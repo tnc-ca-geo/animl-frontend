@@ -22,7 +22,7 @@ const initialState = {
     cameras: { ids: [] },
     deployments: { ids: [] },
     labels: {
-      ids: [],
+      options: [],
       loadingState: {
         isLoading: false,
         operation: null,
@@ -81,7 +81,7 @@ export const filtersSlice = createSlice({
     checkboxFilterToggled: (state, { payload }) => {
       const { filterCat, val } = payload;
       const activeIds = state.activeFilters[filterCat];
-      const availIds = state.availFilters[filterCat].ids;
+      const availIds = state.availFilters[filterCat].options.map(({ _id }) => _id);
 
       if (activeIds === null) {
         // if null, all filters are selected, so toggling one = unselecting it
@@ -130,7 +130,7 @@ export const filtersSlice = createSlice({
     bulkSelectToggled: (state, { payload }) => {
       const { currState, filterCat, managedIds } = payload;
       const activeIds = state.activeFilters[filterCat];
-      const availIds = state.availFilters[filterCat].ids;
+      const availIds = state.availFilters[filterCat].options.map(({id}) => id);
       let newActiveIds;
 
       if (currState === 'noneSelected') {

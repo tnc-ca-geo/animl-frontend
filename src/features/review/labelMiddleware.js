@@ -22,16 +22,15 @@ export const labelMiddleware = store => next => action => {
   if (labelsAdded.match(action)) {
 
     action.payload.labels.map((label) => {
-      const { newLabel, bbox, userId, category } = label;
+      const { newLabel, bbox, userId, labelId } = label;
       const { objIsTemp, imgId, objId, newObject } = label;
       // if we are redoing a previous labelsAdded action, 
       // there will already be a newLabel in the payload 
       label.newLabel = newLabel || {
         _id: new ObjectID().toString(),
-        category,
+        labelId,
         bbox,
         validation: { validated: true, userId },  
-        type: 'manual',
         conf: 1,
         userId: userId
       };

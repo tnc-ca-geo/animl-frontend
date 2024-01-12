@@ -1,7 +1,6 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { labelsAdded, setFocus } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
 import ValidationButtons from './ValidationButtons.jsx';
@@ -71,6 +70,7 @@ const BoundingBoxLabel = forwardRef(({
   object,
   label,
   labelColor,
+  displayLabel,
   conf,
   selected,
   showLabelButtons,
@@ -112,7 +112,7 @@ const BoundingBoxLabel = forwardRef(({
         objIsTemp: object.isTemp,
         userId: username,
         bbox: object.bbox,
-        category: newValue.value || newValue,
+        labelId: newValue.value,
         objId: object._id,
         imgId
       }]
@@ -131,7 +131,7 @@ const BoundingBoxLabel = forwardRef(({
       catSelectorOpen={catSelectorOpen}
       selected={selected}
       css={{
-        backgroundColor: labelColor.base,
+        backgroundColor: displayLabel?.color,
         color: textColor, // labelColor.bg  
       }}
     >
@@ -144,7 +144,7 @@ const BoundingBoxLabel = forwardRef(({
           menuPlacement='bottom'
         />
         <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block' }}>
-          <Category>{label.category}</Category>
+          <Category>{displayLabel?.name || "ERROR FINDING LABEL"}</Category>
           {!object.locked && <Confidence>{conf}%</Confidence>}
         </LabelDisplay>
       </div>
@@ -153,7 +153,7 @@ const BoundingBoxLabel = forwardRef(({
           imgId={imgId}
           object={object}
           label={label}
-          labelColor={labelColor}
+          labelColor={displayLabel?.color}
           username={username}
         />
       }

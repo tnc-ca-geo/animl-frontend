@@ -25,6 +25,7 @@ import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
 import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons';
+import { selectAvailLabels } from '../filters/filtersSlice';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -146,6 +147,9 @@ const BoundingBox = ({
     // or obj & label are focused
     label = object.labels[focusIndex.label];
   }
+
+  const availableLabels = useSelector(selectAvailLabels);
+  const displayLabel = availableLabels.options.find(({ _id }) => _id === label.labelId);
 
   // set label color and confidence
   // TODO: maybe this belongs in label component?
@@ -289,8 +293,8 @@ const BoundingBox = ({
             selected={objectFocused}
             locked={object.locked}
             css={{
-              borderColor: labelColor.base,
-              background: labelColor.base + '0D',
+              borderColor: displayLabel?.color,
+              background: displayLabel?.color + '0D',
             }}
           >
             {label &&
@@ -300,6 +304,7 @@ const BoundingBox = ({
                 object={object}
                 label={label}
                 labelColor={labelColor}
+                displayLabel={displayLabel}
                 conf={conf}
                 selected={objectFocused}
                 showLabelButtons={showLabelButtons}

@@ -66,9 +66,9 @@ const CategorySelector = forwardRef(({
 }, ref) => {
 
   // update selector options when new labels become available
-  const createOption = (category) => ({ value: category.toLowerCase(), label: category });
+  const createOption = (category) => ({ value: category._id, label: category.name });
   const availLabels = useSelector(selectAvailLabels);
-  const options = availLabels.ids.map((id) => createOption(id));
+  const options = availLabels.options.map(createOption);
   const dispatch = useDispatch();
 
   const defaultHandleBlur = (e) => dispatch(addLabelEnd());

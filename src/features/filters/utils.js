@@ -29,9 +29,8 @@ const updateAvailCamFilters = (state, camConfigs) => {
 };
 
 const updateAvailLabelFilters = (state, labels) => {
-  const categories = labels.map(({ name }) => name);
-  state.availFilters.labels.ids = categories;
-  const noneFound = (categories.length === 0);
+  state.availFilters.labels.options =  labels;
+  const noneFound = (labels.length === 0);
   state.availFilters.labels.loadingState = {
     isLoading: false,
     operation: null,

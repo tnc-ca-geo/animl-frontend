@@ -21,10 +21,10 @@ const imageCommentFields = `
 const labelFields = `
   _id
   type
-  category
   conf
   bbox
   labeledDate
+  labelId
   validation {
     validated
     validationDate

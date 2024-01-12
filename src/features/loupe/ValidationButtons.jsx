@@ -59,8 +59,8 @@ const ValidationButtons = ({
               alignItems: 'center',
               justifyContent: 'center',
               color: '$loContrast',
-              backgroundColor: labelColor.base,
-              borderColor: labelColor.base,
+              backgroundColor: labelColor,
+              borderColor: labelColor,
               '&:hover': {
                 backgroundColor: '$loContrast',
                 color: '$hiContrast',
@@ -77,11 +77,11 @@ const ValidationButtons = ({
                 justifyContent: 'center',
                 backgroundColor: '#E04040',
                 color: '$loContrast',
-                borderColor: labelColor.base,
+                borderColor: labelColor,
                 '&:hover': {
                   color: '#E04040',
                   backgroundColor: '$loContrast',
-                  borderColor: labelColor.base,
+                  borderColor: labelColor,
                 }
               }}
             >
@@ -95,11 +95,11 @@ const ValidationButtons = ({
                 justifyContent: 'center',
                 backgroundColor: '#00C797',
                 color: '$loContrast',
-                borderColor: labelColor.base,
+                borderColor: labelColor,
                 '&:hover': {
                   color: '#00C797',
                   backgroundColor: '$loContrast',
-                  borderColor: labelColor.base,
+                  borderColor: labelColor,
                 }
               }}
             >

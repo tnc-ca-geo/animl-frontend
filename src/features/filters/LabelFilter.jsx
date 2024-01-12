@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
@@ -29,36 +29,39 @@ const LabelFilter = () => {
     dispatch(checkboxFilterToggled(payload));
   };
 
+  const managedIds = useMemo(() => availLabels.options.map(({ _id}) => _id), [availLabels.options]);
+
   return (
     <Accordion
       label='Labels'
-      selectedCount={activeLabels ? activeLabels.length : availLabels.ids.length}
+      selectedCount={activeLabels ? activeLabels.length : availLabels.options.length}
       expandedDefault={false}
     > 
       {labelsLoading.noneFound && <NoneFoundAlert>no labels found</NoneFoundAlert>}
-      {availLabels.ids.length > 0 &&
+      {availLabels.options.length > 0 &&
         <>
           <BulkSelectCheckbox
             filterCat='labels'
-            managedIds={availLabels.ids}
+            managedIds={managedIds}
             isHeader={true}
           />
-            {availLabels.ids.map((id) => {
-              const checked = activeLabels === null || activeLabels.includes(id);
+            {availLabels.options.map(({ _id, name }) => {
+              const checked = activeLabels === null || activeLabels.includes(_id);
               return (
-                <CheckboxWrapper key={id}>
+                <CheckboxWrapper key={_id}>
                   <label>
                     <Checkbox
                       checked={checked}
                       active={checked}
-                      data-category={id}
+                      data-category={_id}
                       onChange={handleCheckboxChange}
                     />
                     <LabelCheckboxLabel
                       checked={checked}
                       active={checked}
                       filterCat='labels'
-                      id={id}
+                      id={_id}
+                      name={name}
                     />
                   </label>
                 </CheckboxWrapper>
@@ -87,6 +90,7 @@ const OnlyButton = styled('div', {
 
 const LabelCheckboxLabel = ({
   id,
+  name,
   checked,
   active,
   filterCat,
@@ -106,7 +110,7 @@ const LabelCheckboxLabel = ({
       onMouseEnter={() => setShowOnlyButton(true)}
       onMouseLeave={() => setShowOnlyButton(false)}
     >
-      {id}
+      {name}
       {showOnlyButton &&
         <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>
       }
