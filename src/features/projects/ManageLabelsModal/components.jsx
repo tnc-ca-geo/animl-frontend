@@ -2,13 +2,12 @@ import { styled } from "../../../theme/stitches.config";
 import { ButtonRow } from '../../../components/Form';
 
 export const LabelList = styled('div', {
-  overflowY: 'scroll',
+  overflowY: 'auto',
   maxHeight: '500px'
 });
 
 export const LabelRow = styled('div', {
-  marginBottom: '$3',
-  paddingBottom: '$3',
+  padding: '$3 0',
   borderBottom: '1px solid $border'
 });
 
@@ -27,11 +26,12 @@ export const LabelActions = styled(ButtonRow, {
 
 export const FormRow = styled('div', {
   display: 'flex',
-  alignItems: 'flex-end'
+  alignItems: 'flex-start'
 });
 
 export const FormButtons = styled(ButtonRow, {
   marginLeft: '$3',
+  marginTop: '$3'
 });
 
 export const ColorPicker = styled('div', {
