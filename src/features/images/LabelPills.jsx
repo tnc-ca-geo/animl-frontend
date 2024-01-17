@@ -4,29 +4,30 @@ import { styled, labelColors } from '../../theme/stitches.config.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 import { selectLabels } from '../projects/projectsSlice.js';
+import LabelPill from '../../components/LabelPill.jsx';
 
-const LabelPill = styled('div', {
-  color: '$textDark',
-  fontSize: '$2',
-  fontWeight: '$5',
-  fontFamily: '$mono',
-  padding: '$1 $3',
-  '&:not(:last-child)': {
-    marginRight: '$2',
-  },
-  borderRadius: '$3',
-  border: '1px solid rgba(0,0,0,0)',
-  transition: 'all 0.2s ease',
-  variants: {
-    focused: {
-      true: {
-        outline: 'none',
-        boxShadow: '0 0 0 3px $blue200',
-        borderColor: '$blue500',  
-      }
-    }
-  }
-});
+// const LabelPill = styled('div', {
+//   color: '$textDark',
+//   fontSize: '$2',
+//   fontWeight: '$5',
+//   fontFamily: '$mono',
+//   padding: '$1 $3',
+//   '&:not(:last-child)': {
+//     marginRight: '$2',
+//   },
+//   borderRadius: '$3',
+//   border: '1px solid rgba(0,0,0,0)',
+//   transition: 'all 0.2s ease',
+//   variants: {
+//     focused: {
+//       true: {
+//         outline: 'none',
+//         boxShadow: '0 0 0 3px $blue200',
+//         borderColor: '$blue500',  
+//       }
+//     }
+//   }
+// });
 
 const ObjectPill = styled('div', {
   display: 'flex',
@@ -116,11 +117,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
                       lblIndex === focusIndex.label
                     }
                     onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
-                    css={{
-                      backgroundColor: l.color, 
-                      borderColor: l.color,
-                      color: labelColors(label.category).textDark,
-                    }}
+                    color={l.color}
                   >
                     {l?.name || "ERROR FINDING LABEL"}
                   </LabelPill>

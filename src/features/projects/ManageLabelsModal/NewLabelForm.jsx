@@ -39,12 +39,7 @@ const NewLabelForm = () => {
           <LabelRow>
             <LabelHeader>
             { showNewLabelForm && (
-              <LabelPill
-                css={{
-                  backgroundColor: values.color, 
-                  color: '#000',
-                }}
-              >
+              <LabelPill color={values.color}>
                 { values.name || "New Label"}
               </LabelPill>
             )}

@@ -37,12 +37,7 @@ const EditLabelForm = ({ _id, name, color, source }) => {
       {({ values }) => (
         <LabelRow>
           <LabelHeader>
-            <LabelPill
-              css={{
-                backgroundColor: values.color, 
-                color: '#000'
-              }}
-            >
+            <LabelPill color={values.color}>
               {values.name}
             </LabelPill>
             <LabelActions>

@@ -1,7 +1,6 @@
 import { styled } from '../theme/stitches.config.js';
 
-const LabelPill = styled('div', {
-  color: '$textDark',
+const Pill = styled('div', {
   fontSize: '$2',
   fontWeight: '$5',
   fontFamily: '$mono',
@@ -22,5 +21,27 @@ const LabelPill = styled('div', {
     }
   }
 });
+
+function getColor(bgColor) {
+  const threshold = 0.6
+  const [red, green, blue] = [0, 2, 4].map((i) => parseInt(bgColor.slice(i + 1, i + 3), 16));
+  const l = (red * 0.299 + green * 0.587 + blue * 0.114) / 255;
+  return l < threshold ? '#fff' : '$textDark';
+}
+
+function LabelPill ({ color, children, ...props }) {
+  return (
+    <Pill
+      css={{
+        backgroundColor: color,
+        borderColor: color,
+        color: getColor(color),
+      }}
+      {...props}
+    >
+      {children}
+    </Pill>
+  );
+}
 
 export default LabelPill;
