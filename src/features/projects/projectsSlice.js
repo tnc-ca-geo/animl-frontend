@@ -330,12 +330,12 @@ export const projectsSlice = createSlice({
       state.loadingStates.models.errors.splice(index, 1);
     },
 
-    createLabelStart: (state) => {
+    createProjectLabelStart: (state) => {
       const ls = { isLoading: true, operation: 'creating', errors: null };
       state.loadingStates.labels = ls;
     },
 
-    createLabelSuccess: (state, { payload }) => {
+    createProjectLabelSuccess: (state, { payload }) => {
       const ls = {
         isLoading: false,
         operation: null,
@@ -350,17 +350,17 @@ export const projectsSlice = createSlice({
       ]
     },
 
-    createLabelFailure: (state, { payload }) => {
+    createProjectLabelFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
       state.loadingStates.labels = ls;
     },
 
-    updateLabelStart: (state) => {
+    updateProjectLabelStart: (state) => {
       const ls = { isLoading: true, operation: 'updating', errors: null };
       state.loadingStates.labels = ls;
     },
 
-    updateLabelSuccess: (state, { payload }) => {
+    updateProjectLabelSuccess: (state, { payload }) => {
       const ls = {
         isLoading: false,
         operation: null,
@@ -443,12 +443,12 @@ export const {
   getModelOptionsFailure,
   getModelOptionsSuccess,
 
-  createLabelStart,
-  createLabelSuccess,
-  createLabelFailure,
+  createProjectLabelStart,
+  createProjectLabelSuccess,
+  createProjectLabelFailure,
 
-  updateLabelStart,
-  updateLabelSuccess,
+  updateProjectLabelStart,
+  updateProjectLabelSuccess,
   updateLabelFailure,
 
   setModalOpen,
@@ -677,10 +677,10 @@ export const fetchModelOptions = () => {
 }
 
 // updateLabel thunk
-export const updateLabel = (payload) => {
+export const updateProjectLabel = (payload) => {
   return async (dispatch, getState) => {
     try {
-      dispatch(updateLabelStart());
+      dispatch(updateProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -690,10 +690,10 @@ export const updateLabel = (payload) => {
       if (token && selectedProj) {
         const res = await call({
           projId,
-          request: 'updateLabels', 
+          request: 'updateProjectLabel', 
           input: payload
         });
-        dispatch(updateLabelSuccess({ projId, label: res.updateProjectLabel.label}));
+        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label}));
       }
     } catch (err) {
       console.log(`error attempting to update label: `, err);
@@ -703,10 +703,10 @@ export const updateLabel = (payload) => {
 };
 
 // updateLabel thunk
-export const createLabel = (payload) => {
+export const createProjectLabel = (payload) => {
   return async (dispatch, getState) => {
     try {
-      dispatch(createLabelStart());
+      dispatch(createProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -716,14 +716,14 @@ export const createLabel = (payload) => {
       if (token && selectedProj) {
         const res = await call({
           projId,
-          request: 'createLabels', 
+          request: 'createProjectLabel', 
           input: payload
         });
-        dispatch(createLabelSuccess({ projId, label: res.createProjectLabel.label}));
+        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label}));
       }
     } catch (err) {
       console.log(`error attempting to create label: `, err);
-      dispatch(createLabelFailure(err));
+      dispatch(createProjectLabelFailure(err));
     }
   };
 };

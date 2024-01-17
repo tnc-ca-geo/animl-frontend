@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { updateLabel } from "../projectsSlice";
+import { updateProjectLabel } from "../projectsSlice";
 import LabelPill from "../../../components/LabelPill";
 import Button from "../../../components/Button";
 import LabelForm from './LabelForm';
@@ -18,13 +18,13 @@ export const label = Yup.object().shape({
   color: Yup.string().required('Select a color.'),
 });
 
-const EditLabelForm = ({ _id, name, color, source }) => {
+const EditLabelForm = ({ _id, name, color }) => {
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 
   const onClose = useCallback(() => setShowForm((prev) => !prev), []);
   const onSubmit = useCallback((values) => {
-    dispatch(updateLabel(values));
+    dispatch(updateProjectLabel(values));
     setShowForm(false);
   }, []);
 

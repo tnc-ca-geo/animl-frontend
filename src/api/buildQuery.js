@@ -452,6 +452,39 @@ const queries = {
 
   createLabels: (input) => ({
     template: `
+      mutation UpdateLabels($input: UpdateLabelsInput!) {
+        updateLabels(input: $input) {
+          isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateLabels: (input) => ({
+    template: `
+      mutation CreateLabels($input: CreateLabelsInput!) {
+        createLabels(input: $input) {
+          isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteLabels: (input) => ({
+    template: `
+      mutation CreateLabels($input: CreateLabelsInput!) {
+        createLabels(input: $input) {
+          isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createProjectLabel: (input) => ({
+    template: `
       mutation CreateProjectLabel($input: CreateProjectLabelInput!) {
         createProjectLabel(input: $input) {
             label {
@@ -466,7 +499,7 @@ const queries = {
     variables: { input: input },
   }),
 
-  updateLabels: (input) => ({
+  updateProjectLabel: (input) => ({
     template: `
       mutation UpdateProjectLabel($input: UpdateProjectLabelInput!) {
         updateProjectLabel(input: $input) {
@@ -476,17 +509,6 @@ const queries = {
               color
               source
           }
-        }
-      }
-    `,
-    variables: { input: input },
-  }),
-
-  deleteLabels: (input) => ({
-    template: `
-      mutation CreateLabels($input: CreateLabelsInput!) {
-        createLabels(input: $input) {
-          isOk
         }
       }
     `,

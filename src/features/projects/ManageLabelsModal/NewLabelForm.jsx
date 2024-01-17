@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { createLabel } from "../projectsSlice";
+import { createProjectLabel } from "../projectsSlice";
 import LabelPill from "../../../components/LabelPill";
 import Button from "../../../components/Button";
 import LabelForm from './LabelForm';
@@ -25,7 +25,7 @@ const NewLabelForm = () => {
 
   const onClose = useCallback(() => setShowNewLabelForm(false), []);
   const onSubmit = useCallback((values) => {
-    dispatch(createLabel(values));
+    dispatch(createProjectLabel(values));
     setShowNewLabelForm(false);
   });
 
