@@ -452,8 +452,8 @@ const queries = {
 
   createLabels: (input) => ({
     template: `
-      mutation UpdateLabels($input: UpdateLabelsInput!) {
-        updateLabels(input: $input) {
+      mutation CreateLabels($input: CreateLabelsInput!) {
+        createLabels(input: $input) {
           isOk
         }
       }
@@ -463,8 +463,8 @@ const queries = {
 
   updateLabels: (input) => ({
     template: `
-      mutation CreateLabels($input: CreateLabelsInput!) {
-        createLabels(input: $input) {
+      mutation UpdateLabels($input: UpdateLabelsInput!) {
+        updateLabels(input: $input) {
           isOk
         }
       }
