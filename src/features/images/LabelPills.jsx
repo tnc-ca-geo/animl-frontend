@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
+import { selectAvailLabels } from '../filters/filtersSlice.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
-import { selectLabels } from '../projects/projectsSlice.js';
 import LabelPill from '../../components/LabelPill.jsx';
 
 // const LabelPill = styled('div', {
@@ -67,7 +67,7 @@ const LabelContainer = styled('div', {
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
-  const availableLabels = useSelector(selectLabels);
+  const availableLabels = useSelector(selectAvailLabels).options;
 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
     // if user isn't attempting a multi-row selection, update focus

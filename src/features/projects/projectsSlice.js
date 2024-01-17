@@ -735,9 +735,6 @@ export const selectSelectedProject = state => state.projects.projects.find((proj
 export const selectSelectedProjectId = createSelector([selectSelectedProject],
   (proj) => proj ? proj._id : null
 );
-export const selectLabels = createSelector([selectSelectedProject],
-  (proj) => proj ? proj.labels : null
-);
 export const selectViews = createSelector([selectSelectedProject],
   (proj) => proj ? proj.views : null
 );
