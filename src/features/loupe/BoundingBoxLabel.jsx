@@ -5,6 +5,7 @@ import { labelsAdded, setFocus } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
 import ValidationButtons from './ValidationButtons.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
+import { getColor } from '../../components/LabelPill.jsx';
 
 const StyledBoundingBoxLabel = styled('div', {
   // backgroundColor: '#345EFF',
@@ -143,7 +144,7 @@ const BoundingBoxLabel = forwardRef(({
           handleCategorySelectorBlur={handleCategorySelectorBlur}
           menuPlacement='bottom'
         />
-        <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block' }}>
+        <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block', color: getColor(displayLabel.color) }}>
           <Category>{displayLabel?.name || "ERROR FINDING LABEL"}</Category>
           {!object.locked && <Confidence>{conf}%</Confidence>}
         </LabelDisplay>
