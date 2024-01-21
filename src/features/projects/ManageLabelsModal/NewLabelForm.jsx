@@ -36,7 +36,7 @@ const NewLabelForm = () => {
         onSubmit={onSubmit}
       >
         {({ values }) => (
-          <LabelRow>
+          <LabelRow css={{ borderBottom: 'none' }}>
             <LabelHeader>
             { showNewLabelForm && (
               <LabelPill color={values.color}>

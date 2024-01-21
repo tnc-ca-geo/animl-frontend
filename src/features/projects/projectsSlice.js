@@ -676,7 +676,6 @@ export const fetchModelOptions = () => {
   };
 }
 
-// updateLabel thunk
 export const updateProjectLabel = (payload) => {
   return async (dispatch, getState) => {
     try {
@@ -702,7 +701,6 @@ export const updateProjectLabel = (payload) => {
   };
 };
 
-// updateLabel thunk
 export const createProjectLabel = (payload) => {
   return async (dispatch, getState) => {
     try {

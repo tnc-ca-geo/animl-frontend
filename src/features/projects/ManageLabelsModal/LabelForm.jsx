@@ -50,8 +50,8 @@ const LabelForm = ({ onCancel }) => {
                       backgroundColor: values.color,
                       borderColor: values.color,
                       color: getTextColor(values.color),
-                      ':hover': {
-                        borderColor:  values.color,
+                      '&:hover': {
+                        borderColor: values.color,
                       }
                     }}
                   >

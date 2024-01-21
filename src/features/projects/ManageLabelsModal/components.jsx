@@ -7,7 +7,7 @@ export const LabelList = styled('div', {
 });
 
 export const LabelRow = styled('div', {
-  padding: '$3 0',
+  padding: '$2 0',
   borderBottom: '1px solid $border'
 });
 
