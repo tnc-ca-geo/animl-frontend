@@ -1,13 +1,13 @@
 import React, { forwardRef } from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { useSelector, useDispatch } from 'react-redux';
-import CreatableSelect from 'react-select/creatable';
+import Select from 'react-select';
 import { createFilter } from 'react-select';
 import { selectAvailLabels } from '../features/filters/filtersSlice.js';
 import { addLabelEnd } from '../features/loupe/loupeSlice.js';
 
 
-const StyledCategorySelector = styled(CreatableSelect, {
+const StyledCategorySelector = styled(Select, {
   width: '155px',
   fontFamily: '$mono',
   fontSize: '$2',
@@ -88,7 +88,6 @@ const CategorySelector = forwardRef(({
       isLoading={availLabels.isLoading}
       isDisabled={availLabels.isLoading}
       onChange={handleCategoryChange}
-      onCreateOption={handleCategoryChange}
       onBlur={handleCategorySelectorBlur || defaultHandleBlur}
       options={options}
     />

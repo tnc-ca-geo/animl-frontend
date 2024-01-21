@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import CreatableSelect from 'react-select/creatable';
-import { createFilter } from 'react-select';
 import {
   Pencil1Icon,
   GroupIcon,
