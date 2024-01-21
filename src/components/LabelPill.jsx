@@ -1,4 +1,5 @@
 import { styled } from '../theme/stitches.config.js';
+import { getTextColor } from '../app/utils.js';
 
 const Pill = styled('div', {
   fontSize: '$2',
@@ -22,20 +23,13 @@ const Pill = styled('div', {
   }
 });
 
-export function getColor(bgColor) {
-  const threshold = 0.6
-  const [red, green, blue] = [0, 2, 4].map((i) => parseInt(bgColor.slice(i + 1, i + 3), 16));
-  const l = (red * 0.299 + green * 0.587 + blue * 0.114) / 255;
-  return l < threshold ? '#fff' : '$textDark';
-}
-
-function LabelPill ({ color, children, ...props }) {
+const LabelPill = ({ color, children, ...props }) => {
   return (
     <Pill
       css={{
         backgroundColor: color,
         borderColor: color,
-        color: getColor(color),
+        color: getTextColor(color),
       }}
       {...props}
     >
