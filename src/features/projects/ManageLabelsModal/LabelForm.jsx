@@ -1,7 +1,13 @@
 import { Form, Field, useFormikContext } from 'formik';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from "../../../components/Button";
 import IconButton from '../../../components/IconButton.jsx';
+import { SymbolIcon } from '@radix-ui/react-icons';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipArrow, 
+  TooltipTrigger
+} from '../../../components/Tooltip.jsx';
 import {
   FormWrapper,
   FormFieldWrapper,
@@ -12,6 +18,7 @@ import {
   FormButtons,
   ColorPicker
 } from './components';
+import { getTextColor } from '../../../app/utils.js';
 
 const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
@@ -32,18 +39,30 @@ const LabelForm = ({ onCancel }) => {
           <FormFieldWrapper>
             <label htmlFor='name'>Color</label>
             <ColorPicker>
-              <IconButton
-                type="button"
-                aria-label="Get a new color"
-                size="small"
-                onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
-                css={{
-                  backgroundColor: values.color,
-                  borderColor: values.color,
-                }}
-              >
-                <FontAwesomeIcon icon={['fas', 'retweet']} />
-              </IconButton>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconButton
+                    type="button"
+                    aria-label="Get a new color"
+                    size="md"
+                    onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
+                    css={{
+                      backgroundColor: values.color,
+                      borderColor: values.color,
+                      color: getTextColor(values.color),
+                      ':hover': {
+                        borderColor:  values.color,
+                      }
+                    }}
+                  >
+                    <SymbolIcon />
+                  </IconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5} >
+                  Get a new color
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
               <Field name='color' id='color' />
             </ColorPicker>
             {!!errors.color && touched.color && (
@@ -53,7 +72,13 @@ const LabelForm = ({ onCancel }) => {
             )}
           </FormFieldWrapper>
           <FormButtons>
-            <Button size='small' type='submit'>Save</Button>
+            <Button
+              size='small'
+              type='submit'
+              disabled={!values.name}
+            >
+              Save
+            </Button>
             <Button
               size='small'
               type='button'

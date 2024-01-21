@@ -31,11 +31,11 @@ export const FormRow = styled('div', {
 
 export const FormButtons = styled(ButtonRow, {
   marginLeft: '$3',
-  marginTop: '$3'
+  marginTop: '$4'
 });
 
 export const ColorPicker = styled('div', {
   display: 'flex',
-  gap: '$1',
+  gap: '$2',
   alignItems: 'center'
 });

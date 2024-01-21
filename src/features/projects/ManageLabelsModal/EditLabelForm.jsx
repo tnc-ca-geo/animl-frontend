@@ -5,7 +5,8 @@ import * as Yup from 'yup';
 
 import { updateProjectLabel } from "../projectsSlice";
 import LabelPill from "../../../components/LabelPill";
-import Button from "../../../components/Button";
+import IconButton from '../../../components/IconButton.jsx';
+import { Pencil1Icon } from '@radix-ui/react-icons';
 import LabelForm from './LabelForm';
 import {
   LabelRow,
@@ -41,7 +42,12 @@ const EditLabelForm = ({ _id, name, color }) => {
               {values.name}
             </LabelPill>
             <LabelActions>
-              <Button onClick={onClose} type='button' size='small'>Edit</Button>
+              <IconButton
+                variant='ghost'
+                onClick={onClose}
+              >
+                <Pencil1Icon />
+              </IconButton>
             </LabelActions>
           </LabelHeader>
           {showForm && (
