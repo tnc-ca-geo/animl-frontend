@@ -144,7 +144,7 @@ const BoundingBoxLabel = forwardRef(({
           handleCategorySelectorBlur={handleCategorySelectorBlur}
           menuPlacement='bottom'
         />
-        <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block', color: getTextColor(displayLabel.color) }}>
+        <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block', color: displayLabel && getTextColor(displayLabel.color) }}>
           <Category>{displayLabel?.name || "ERROR FINDING LABEL"}</Category>
           {!object.locked && <Confidence>{conf}%</Confidence>}
         </LabelDisplay>
