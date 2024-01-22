@@ -165,6 +165,57 @@ export const filtersSlice = createSlice({
       );
     },
 
+    createProjectLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'creating', errors: null };
+      state.availFilters.labels.loadingState = ls;
+    },
+
+    createProjectLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.availFilters.labels.loadingState = ls;
+
+      state.availFilters.labels.options = [
+        ...state.availFilters.labels.options,
+        payload.label
+      ]
+    },
+
+    createProjectLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      state.availFilters.labels.loadingState = ls;
+    },
+
+    updateProjectLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };
+      state.availFilters.labels.loadingState = ls;
+    },
+
+    updateProjectLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.availFilters.labels.loadingState = ls;
+
+      state.availFilters.labels.options = state.availFilters.labels.options.map((label) => {
+        if (label._id === payload.label._id) {
+          return payload.label;
+        } else {
+          return label;
+        }
+      });
+    },
+
+    updateLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      state.availFilters.labels.loadingState = ls;
+    },
+
   },
 
   extraReducers: (builder) => {
@@ -247,6 +298,14 @@ export const {
   setActiveFilters,
   bulkSelectToggled,
   checkboxOnlyButtonClicked,
+
+  createProjectLabelStart,
+  createProjectLabelSuccess,
+  createProjectLabelFailure,
+
+  updateProjectLabelStart,
+  updateProjectLabelSuccess,
+  updateLabelFailure,
 } = filtersSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 
@@ -270,6 +329,56 @@ export const fetchLabels = () => async (dispatch, getState)=> {
   } catch (err) {
     dispatch(getLabelsFailure(err));
   }
+};
+
+export const updateProjectLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateProjectLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'updateProjectLabel',
+          input: payload
+        });
+        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label}));
+      }
+    } catch (err) {
+      console.log(`error attempting to update label: `, err);
+      dispatch(updateLabelFailure(err));
+    }
+  };
+};
+
+export const createProjectLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(createProjectLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'createProjectLabel',
+          input: payload
+        });
+        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label}));
+      }
+    } catch (err) {
+      console.log(`error attempting to create label: `, err);
+      dispatch(createProjectLabelFailure(err));
+    }
+  };
 };
 
 // Selectors

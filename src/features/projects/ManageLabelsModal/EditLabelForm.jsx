@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { updateProjectLabel } from "../projectsSlice";
+import { updateProjectLabel } from "../../filters/filtersSlice.js";
 import LabelPill from "../../../components/LabelPill";
 import IconButton from '../../../components/IconButton.jsx';
 import { Pencil1Icon } from '@radix-ui/react-icons';

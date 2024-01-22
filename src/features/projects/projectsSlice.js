@@ -54,11 +54,6 @@ const initialState = {
       errors: null,
       progress: 0
     },
-    labels: {
-      isLoading: false,
-      operation: null,
-      errors: null,
-    }
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -329,59 +324,6 @@ export const projectsSlice = createSlice({
       const index = payload;
       state.loadingStates.models.errors.splice(index, 1);
     },
-
-    createProjectLabelStart: (state) => {
-      const ls = { isLoading: true, operation: 'creating', errors: null };
-      state.loadingStates.labels = ls;
-    },
-
-    createProjectLabelSuccess: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: null
-      };
-      state.loadingStates.labels = ls;
-
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = [
-        ...proj.labels,
-        payload.label
-      ]
-    },
-
-    createProjectLabelFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
-      state.loadingStates.labels = ls;
-    },
-
-    updateProjectLabelStart: (state) => {
-      const ls = { isLoading: true, operation: 'updating', errors: null };
-      state.loadingStates.labels = ls;
-    },
-
-    updateProjectLabelSuccess: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: null
-      };
-      state.loadingStates.labels = ls;
-
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = proj.labels.map((label) => {
-        if (label._id === payload.label._id) {
-          return payload.label;
-        } else {
-          return label;
-        }
-      })
-    },
-
-    updateLabelFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
-      state.loadingStates.labels = ls;
-    },
   },
 
   extraReducers: (builder) => {
@@ -442,14 +384,6 @@ export const {
   getModelOptionsStart,
   getModelOptionsFailure,
   getModelOptionsSuccess,
-
-  createProjectLabelStart,
-  createProjectLabelSuccess,
-  createProjectLabelFailure,
-
-  updateProjectLabelStart,
-  updateProjectLabelSuccess,
-  updateLabelFailure,
 
   setModalOpen,
   setModalContent,
@@ -675,57 +609,6 @@ export const fetchModelOptions = () => {
     }
   };
 }
-
-export const updateProjectLabel = (payload) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(updateProjectLabelStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
-
-      if (token && selectedProj) {
-        const res = await call({
-          projId,
-          request: 'updateProjectLabel', 
-          input: payload
-        });
-        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label}));
-      }
-    } catch (err) {
-      console.log(`error attempting to update label: `, err);
-      dispatch(updateLabelFailure(err));
-    }
-  };
-};
-
-export const createProjectLabel = (payload) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(createProjectLabelStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
-
-      if (token && selectedProj) {
-        const res = await call({
-          projId,
-          request: 'createProjectLabel', 
-          input: payload
-        });
-        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label}));
-      }
-    } catch (err) {
-      console.log(`error attempting to create label: `, err);
-      dispatch(createProjectLabelFailure(err));
-    }
-  };
-};
-
 
 // Selectors
 export const selectProjects = state => state.projects.projects;

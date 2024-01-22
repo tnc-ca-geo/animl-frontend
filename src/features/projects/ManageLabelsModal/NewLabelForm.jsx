@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { createProjectLabel } from "../projectsSlice";
+import { createProjectLabel } from "../../filters/filtersSlice.js";
 import LabelPill from "../../../components/LabelPill";
 import Button from "../../../components/Button";
 import LabelForm from './LabelForm';
