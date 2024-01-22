@@ -30,6 +30,7 @@ const LabelFilter = () => {
   };
 
   const managedIds = useMemo(() => availLabels.options.map(({ _id}) => _id), [availLabels.options]);
+  const sortedLabels = [...availLabels.options].sort((labelA, labelB) => labelA.name > labelB.name ? 1 : -1)
 
   return (
     <Accordion
@@ -45,7 +46,7 @@ const LabelFilter = () => {
             managedIds={managedIds}
             isHeader={true}
           />
-            {availLabels.options.map(({ _id, name }) => {
+            {sortedLabels.map(({ _id, name }) => {
               const checked = activeLabels === null || activeLabels.includes(_id);
               return (
                 <CheckboxWrapper key={_id}>
