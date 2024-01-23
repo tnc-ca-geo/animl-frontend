@@ -16,7 +16,9 @@ import {
 
 export const label = Yup.object().shape({
   name: Yup.string().required('Enter a label name.'),
-  color: Yup.string().required('Select a color.'),
+  color: Yup.string()
+    .matches(/^#[0-9A-F]{6}$/, { message: "Enter a valid color code with 6 digits" })
+    .required('Select a color.'),
 });
 
 const EditLabelForm = ({ _id, name, color }) => {
