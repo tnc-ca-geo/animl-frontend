@@ -18,7 +18,7 @@ import {
   FormButtons,
   ColorPicker
 } from './components';
-import { getTextColor } from '../../../app/utils.js';
+import { getRandomColor, getTextColor } from '../../../app/utils.js';
 
 const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
@@ -45,7 +45,7 @@ const LabelForm = ({ onCancel }) => {
                     type="button"
                     aria-label="Get a new color"
                     size="md"
-                    onClick={() => setFieldValue('color', `#${Math.floor(Math.random()*16777215).toString(16)}`)}
+                    onClick={() => setFieldValue('color', `#${getRandomColor()}`)}
                     css={{
                       backgroundColor: values.color,
                       borderColor: values.color,

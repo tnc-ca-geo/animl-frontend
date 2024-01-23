@@ -131,3 +131,16 @@ export const getTextColor = (bgColor) => {
   const l = (red * 0.299 + green * 0.587 + blue * 0.114) / 255;
   return l < threshold ? '$loContrast' : '$textDark';
 };
+
+export const getRandomColor = () => {
+  const red = Math.floor(Math.random() * (255 - 0) + 0);
+  const green = Math.floor(Math.random() * (255 - 0) + 0);
+  const blue = Math.floor(Math.random() * (255 - 0) + 0);
+
+  const integer = ((Math.round(red) & 0xFF) << 16)
+		+ ((Math.round(green) & 0xFF) << 8)
+		+ (Math.round(blue) & 0xFF);
+
+	const string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+}

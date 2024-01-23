@@ -12,6 +12,7 @@ import {
   LabelHeader,
   LabelActions,
 } from './components';
+import { getRandomColor } from "../../../app/utils.js";
 
 export const label = Yup.object().shape({
   name: Yup.string().required('Enter a label name.'),
@@ -31,7 +32,7 @@ const NewLabelForm = () => {
 
   return (
       <Formik
-        initialValues={{ name: '', color: `#${Math.floor(Math.random()*16777215).toString(16)}` }}
+        initialValues={{ name: '', color: `#${getRandomColor()}` }}
         validationSchema={label}
         onSubmit={onSubmit}
       >
