@@ -17,7 +17,6 @@ import {
   selectRouterLocation,
   fetchImageContext,
   preFocusImageStart,
-  clearImages,
 } from '../images/imagesSlice.js';
 import {
   NavigationMenu,
@@ -208,7 +207,6 @@ const ProjectAndViewNav = () => {
     if (projId === selectedProj._id) return;
     const project = projects.find((p) => p._id === projId);
     const viewId = project.views.find((v) => v.name === 'All images')._id;
-    dispatch(clearImages());
     dispatch(push(`/app/${projId}/${viewId}`));
   };
 

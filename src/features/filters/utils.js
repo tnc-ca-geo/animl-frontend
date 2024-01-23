@@ -29,7 +29,7 @@ const updateAvailCamFilters = (state, camConfigs) => {
 };
 
 const updateAvailLabelFilters = (state, labels) => {
-  state.availFilters.labels.options = labels;
+  state.availFilters.labels.options =  labels;
   const noneFound = (labels.length === 0);
   state.availFilters.labels.loadingState = {
     isLoading: false,
