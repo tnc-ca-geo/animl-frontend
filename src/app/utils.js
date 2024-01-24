@@ -126,6 +126,10 @@ export const inViewportTopHalf = (domElement) => {
  * returns a text color with high contrast relative to a given background color
  */
 export const getTextColor = (bgColor) => {
+  if (!bgColor) {
+    return '$textDark';
+  }
+
   const threshold = 0.6
   const [red, green, blue] = [0, 2, 4].map((i) => parseInt(bgColor.slice(i + 1, i + 3), 16));
   const l = (red * 0.299 + green * 0.587 + blue * 0.114) / 255;
