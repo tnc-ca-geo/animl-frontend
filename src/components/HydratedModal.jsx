@@ -83,7 +83,7 @@ const HydratedModal = () => {
       title: 'Manage labels',
       size: 'md',
       content: <ManageLabelsModal/>,
-      callBackOnClose: () => dispatch(clearUsers()),
+      callBackOnClose: () => true,
     },
   };
 
