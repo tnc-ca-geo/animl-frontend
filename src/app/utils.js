@@ -142,9 +142,9 @@ export const getRandomColor = () => {
   const blue = Math.floor(Math.random() * (255 - 0) + 0);
 
   const integer = ((Math.round(red) & 0xFF) << 16)
-		+ ((Math.round(green) & 0xFF) << 8)
-		+ (Math.round(blue) & 0xFF);
+    + ((Math.round(green) & 0xFF) << 8)
+    + (Math.round(blue) & 0xFF);
 
-	const string = integer.toString(16).toUpperCase();
-	return '000000'.substring(string.length) + string;
+  const string = integer.toString(16).toUpperCase();
+  return '000000'.substring(string.length) + string;
 }
