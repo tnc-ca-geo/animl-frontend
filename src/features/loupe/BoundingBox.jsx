@@ -88,7 +88,7 @@ const DragHandle = styled('div', {
 const StyledResizableBox = styled(ResizableBox, {
   boxSizing: 'border-box',
   position: 'absolute !important;',
-  border: '2px solid #345EFF',
+  border: '2px solid #00C797',
   // zIndex: '$2',
   variants: {
     selected: {
