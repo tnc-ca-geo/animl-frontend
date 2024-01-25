@@ -19,9 +19,10 @@ const NewLabelForm = () => {
   const [ showNewLabelForm, setShowNewLabelForm ] = useState(false);
 
   const onClose = useCallback(() => setShowNewLabelForm(false), []);
-  const onSubmit = useCallback((values) => {
+  const onSubmit = useCallback((values, { resetForm }) => {
     dispatch(createProjectLabel(values));
     setShowNewLabelForm(false);
+    resetForm();
   });
 
   const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name.toLowerCase());
@@ -49,12 +50,10 @@ const NewLabelForm = () => {
           <LabelRow css={{ borderBottom: 'none' }}>
             <LabelHeader>
             { showNewLabelForm && (
-              <LabelPill color={values.color}>
-                { values.name || "New Label"}
-              </LabelPill>
+              <LabelPill color={values.color} name={values.name || 'New Label'}/>
             )}
               <LabelActions>
-                <Button size="small" onClick={() => setShowNewLabelForm(prev => !prev)}>New label</Button>
+                <Button size='small' onClick={() => setShowNewLabelForm(prev => !prev)}>New label</Button>
               </LabelActions>
             </LabelHeader>
             { showNewLabelForm && (

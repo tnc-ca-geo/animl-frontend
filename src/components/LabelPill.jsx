@@ -23,7 +23,7 @@ const Pill = styled('div', {
   }
 });
 
-const LabelPill = ({ color, children, ...props }) => {
+const LabelPill = ({ color, name, ...props }) => {
   return (
     <Pill
       css={{
@@ -33,7 +33,7 @@ const LabelPill = ({ color, children, ...props }) => {
       }}
       {...props}
     >
-      {children}
+      {name}
     </Pill>
   );
 }

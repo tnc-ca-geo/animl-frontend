@@ -352,7 +352,7 @@ export const updateProjectLabel = (payload) => {
           request: 'updateProjectLabel',
           input: payload
         });
-        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label}));
+        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
       }
     } catch (err) {
       console.log(`error attempting to update label: `, err);

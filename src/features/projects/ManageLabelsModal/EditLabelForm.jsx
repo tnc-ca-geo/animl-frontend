@@ -56,9 +56,7 @@ const EditLabelForm = ({ _id, name, color }) => {
       {({ values }) => (
         <LabelRow>
           <LabelHeader>
-            <LabelPill color={values.color}>
-              {values.name}
-            </LabelPill>
+            <LabelPill color={values.color} name={values.name} />
             <LabelActions>
               <IconButton
                 variant='ghost'

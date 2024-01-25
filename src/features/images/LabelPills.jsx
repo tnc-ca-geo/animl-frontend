@@ -95,9 +95,8 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
                     }
                     onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
                     color={l.color}
-                  >
-                    {l?.name || "ERROR FINDING LABEL"}
-                  </LabelPill>
+                    name={l?.name || "ERROR FINDING LABEL"}
+                  />
                 )
               })}
             </ObjectPill>
