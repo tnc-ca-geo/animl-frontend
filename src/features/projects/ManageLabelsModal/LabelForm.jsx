@@ -1,3 +1,4 @@
+import { styled } from "../../../theme/stitches.config";
 import { Form, Field, useFormikContext } from 'formik';
 import Button from "../../../components/Button";
 import IconButton from '../../../components/IconButton.jsx';
@@ -19,6 +20,7 @@ import {
   ColorPicker
 } from './components';
 import { getRandomColor, getTextColor } from '../../../app/utils.js';
+
 
 const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
@@ -63,7 +65,36 @@ const LabelForm = ({ onCancel }) => {
                   <TooltipArrow />
                 </TooltipContent>
               </Tooltip>
-              <Field name='color' id='color' />
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Field name='color' id='color' />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent 
+                  side="top" 
+                  sideOffset={5}
+                  css={{ 
+                    maxWidth: 296,
+                    padding: '$2',
+                    color: '$textMedium',
+                    backgroundColor: 'white'
+                  }}
+                >
+                  <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+                  {defaultColors.map((color) => (
+                    <ColorSwatch 
+                      key={color}
+                      css={{ backgroundColor: color }}
+                      type='button'
+                      onClick={() => setFieldValue('color', `${color}`)}
+                    />
+                  ))}
+                  <TooltipArrow css={{ fill: 'white' }}/>
+                </TooltipContent>
+              </Tooltip>
+          
             </ColorPicker>
             {!!errors.color && touched.color && (
               <FormError>
@@ -94,6 +125,22 @@ const LabelForm = ({ onCancel }) => {
       </Form>
     </FormWrapper>
   );
-}
+};
+
+const defaultColors = [
+  '#E54D2E', '#E5484D', '#E93D82', '#D6409F', '#AB4ABA', 
+  '#8E4EC6', '#6E56CF', '#5B5BD6', '#3E63DD', '#0090FF',
+  '#00A2C7', '#12A594', '#30A46C', '#46A758', '#A18072',
+  '#F76B15', '#FFC53D', '#FFE629', '#BDEE63', '#7CE2FE'
+];
+
+const ColorSwatch = styled('button', {
+  border: 'none',
+  color: '$backgroundLight',
+  height: '$4',
+  width: '$4',
+  margin: 2,
+  borderRadius: '$2'
+});
 
 export default LabelForm;
