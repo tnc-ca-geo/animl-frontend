@@ -216,6 +216,10 @@ export const filtersSlice = createSlice({
       state.availFilters.labels.loadingState = ls;
     },
 
+    dismissManageLabelsError: (state, { payload }) => {
+      const index = payload;
+      state.availFilters.labels.loadingState.errors.splice(index, 1);
+    },
   },
 
   extraReducers: (builder) => {
@@ -306,6 +310,7 @@ export const {
   updateProjectLabelStart,
   updateProjectLabelSuccess,
   updateLabelFailure,
+  dismissManageLabelsError
 } = filtersSlice.actions;
 
 // TODO: maybe use createAsyncThunk for these? 
@@ -406,5 +411,6 @@ export const selectFiltersReady = createSelector(
     return !dependencies.some(d => d.isLoading || d.errors);
   }
 );
+export const selectManageLabelsErrors = state => state.filters.availFilters.labels.loadingState.errors;
 
 export default filtersSlice.reducer;
