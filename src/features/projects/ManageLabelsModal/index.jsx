@@ -7,7 +7,9 @@ import EditLabelForm from "./EditLabelForm";
 
 const ManageLabelsModal = () => {
   const labels = useSelector(selectAvailLabels).options;
-  const sortedLabels = [...labels].sort((labelA, labelB) => labelA.name > labelB.name ? 1 : -1)
+  const sortedLabels = [...labels].sort((labelA, labelB) => {
+    return labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1;
+  });
   const { isLoading } = useSelector(selectLabelsLoading);
 
   return (

@@ -30,7 +30,7 @@ const LabelFilter = () => {
   };
 
   const managedIds = useMemo(() => availLabels.options.map(({ _id}) => _id), [availLabels.options]);
-  const sortedLabels = [...availLabels.options].sort((labelA, labelB) => labelA.name > labelB.name ? 1 : -1)
+  const sortedLabels = [...availLabels.options].sort((labelA, labelB) => labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1);
 
   return (
     <Accordion
