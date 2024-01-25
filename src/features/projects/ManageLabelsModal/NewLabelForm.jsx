@@ -24,7 +24,7 @@ const NewLabelForm = () => {
     setShowNewLabelForm(false);
   });
 
-  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name);
+  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name.toLowerCase());
   const schema = useMemo(() => {
     return Yup.object().shape({
       name: Yup.string()
@@ -32,7 +32,7 @@ const NewLabelForm = () => {
         .test(
           'unique',
           'A label with this name already exists.',
-          (val) => !labelsNames.includes(val)),
+          (val) => !labelsNames.includes(val?.toLowerCase())),
       color: Yup.string()
         .matches(/^#[0-9A-F]{6}$/, { message: "Enter a valid color code with 6 digits" })
         .required('Select a color.'),
