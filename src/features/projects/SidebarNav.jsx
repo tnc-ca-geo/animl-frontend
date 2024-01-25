@@ -7,7 +7,7 @@ import {
   WRITE_VIEWS_ROLES,
   WRITE_IMAGES_ROLES,
   MANAGE_USERS_ROLES,
-  MANAGE_LABELS,
+  WRITE_PROJECT_ROLES,
 } from '../auth/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -130,7 +130,7 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
       }
 
       {/* Manage label view */}
-      {(hasRole(userRoles, MANAGE_LABELS)) &&
+      {(hasRole(userRoles, WRITE_PROJECT_ROLES)) &&
         <SidebarNavItem 
           state={modalOpen && (modalContent === 'manage-labels-form') ? 'active' : ''}
           disabled={!selectedProject}
