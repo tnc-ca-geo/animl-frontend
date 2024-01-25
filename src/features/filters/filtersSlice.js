@@ -5,7 +5,6 @@ import { registerCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import {
   getProjectsStart,
   getProjectsFailure,
-  // registerCameraSuccess,
   setSelectedProjAndView,
   editDeploymentsSuccess,
   selectProjectsLoading,
@@ -49,34 +48,6 @@ export const filtersSlice = createSlice({
   name: 'filters',
   initialState,
   reducers: {
-
-    getLabelsStart: (state) => {
-      state.availFilters.labels.loadingState.isLoading = true; 
-      state.availFilters.labels.loadingState.operation = 'fetching'; 
-    },
-
-    getLabelsFailure: (state, { payload }) => {
-      let loadingState = state.availFilters.labels.loadingState;
-      loadingState.isLoading = false; 
-      loadingState.operation = null; 
-      loadingState.errors = payload;
-      state.availFilters.labels.ids = [];
-    },
-
-    getLabelsSuccess: (state, { payload }) => {
-      let loadingState = state.availFilters.labels.loadingState;
-      loadingState.isLoading = false; 
-      loadingState.operation = null; 
-      loadingState.errors = null;
-      payload.labels.categories.forEach((cat) => {
-        if (!state.availFilters.labels.ids.includes(cat)) {
-          state.availFilters.labels.ids.push(cat);
-        }
-      });
-      if (payload.labels.categories.length === 0) {
-        loadingState.noneFound = true;
-      }
-    },
 
     checkboxFilterToggled: (state, { payload }) => {
       const { filterCat, val } = payload;
@@ -290,9 +261,6 @@ export const filtersSlice = createSlice({
 });
 
 export const {
-  getLabelsStart,
-  getLabelsSuccess,
-  getLabelsFailure,
   getModelsSuccess,
   checkboxFilterToggled,
   reviewedFilterToggled,
@@ -315,26 +283,6 @@ export const {
 
 // TODO: maybe use createAsyncThunk for these? 
 // https://redux-toolkit.js.org/api/createAsyncThunk
-
-// fetchLabels thunk
-export const fetchLabels = () => async (dispatch, getState)=> {
-  try {
-    dispatch(getLabelsStart());
-    const currentUser = await Auth.currentAuthenticatedUser();
-    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    const projects = getState().projects.projects
-    const selectedProj = projects.find((proj) => proj.selected);
-    if (token) {
-      const labels = await call({
-        projId: selectedProj._id,
-        request: 'getLabels',
-      });
-      dispatch(getLabelsSuccess(labels));
-    }
-  } catch (err) {
-    dispatch(getLabelsFailure(err));
-  }
-};
 
 export const updateProjectLabel = (payload) => {
   return async (dispatch, getState) => {
