@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { createProjectLabel } from "../../filters/filtersSlice.js";
+import { createProjectLabel, selectAvailLabels } from "../../filters/filtersSlice.js";
 import LabelPill from "../../../components/LabelPill";
 import Button from "../../../components/Button";
 import LabelForm from './LabelForm';
@@ -13,14 +13,6 @@ import {
   LabelActions,
 } from './components';
 import { getRandomColor } from "../../../app/utils.js";
-
-export const label = Yup.object().shape({
-  name: Yup.string().required('Enter a label name.'),
-  color: Yup.string()
-    .matches(/^#[0-9A-F]{6}$/, { message: "Enter a valid color code with 6 digits" })
-    .required('Select a color.'),
-});
-
 
 const NewLabelForm = () => {
   const dispatch = useDispatch();
@@ -32,10 +24,25 @@ const NewLabelForm = () => {
     setShowNewLabelForm(false);
   });
 
+  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name);
+  const schema = useMemo(() => {
+    return Yup.object().shape({
+      name: Yup.string()
+        .required('Enter a label name.')
+        .test(
+          'unique',
+          'A label with this name already exists.',
+          (val) => !labelsNames.includes(val)),
+      color: Yup.string()
+        .matches(/^#[0-9A-F]{6}$/, { message: "Enter a valid color code with 6 digits" })
+        .required('Select a color.'),
+    });
+  }, []);
+
   return (
       <Formik
         initialValues={{ name: '', color: `#${getRandomColor()}` }}
-        validationSchema={label}
+        validationSchema={schema}
         onSubmit={onSubmit}
       >
         {({ values }) => (
