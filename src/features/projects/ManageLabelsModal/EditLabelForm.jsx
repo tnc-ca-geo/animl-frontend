@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -24,25 +24,33 @@ const EditLabelForm = ({ _id, name, color }) => {
     setShowForm(false);
   }, []);
 
-  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name);
-  const schema = useMemo(() => {
+  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name.toLowerCase());
+  const schema = (initialName) => {
     return Yup.object().shape({
       name: Yup.string()
         .required('Enter a label name.')
         .test(
           'unique',
           'A label with this name already exists.',
-          (val) => !labelsNames.includes(val)),
+          (val) => {
+            if (val?.toLowerCase() === initialName.toLowerCase()) { // name hasn't changed
+              return true;
+            } else if (!labelsNames.includes(val?.toLowerCase())) { // name hasn't already been used
+              return true; 
+            } else {
+              return false;
+            }
+          }),
       color: Yup.string()
         .matches(/^#[0-9A-F]{6}$/, { message: "Enter a valid color code with 6 digits" })
         .required('Select a color.'),
     });
-  }, []);
+  };
 
   return (
     <Formik
       initialValues={{ _id, name, color }}
-      validationSchema={schema}
+      validationSchema={schema(name)}
       onSubmit={onSubmit}
     >
       {({ values }) => (
