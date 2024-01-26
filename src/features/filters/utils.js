@@ -29,7 +29,15 @@ const updateAvailCamFilters = (state, camConfigs) => {
 };
 
 const updateAvailLabelFilters = (state, labels) => {
-  state.availFilters.labels.options =  labels;
+  const defaultLabelFilters = [
+    { 
+      _id: 'none',
+      name: 'none',
+      color: '#AFE790',
+      source: 'default'
+    }
+  ]
+  state.availFilters.labels.options = [...defaultLabelFilters, ...labels];
 };
 
 export {
