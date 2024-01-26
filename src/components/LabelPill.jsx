@@ -27,9 +27,9 @@ const LabelPill = ({ color, name, ...props }) => {
   return (
     <Pill
       css={{
-        backgroundColor: color,
+        backgroundColor: `${color}1A`,
         borderColor: color,
-        color: getTextColor(color),
+        color: '$textDark', // getTextColor(color),
       }}
       {...props}
     >
