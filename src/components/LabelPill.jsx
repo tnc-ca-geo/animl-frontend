@@ -23,13 +23,14 @@ const Pill = styled('div', {
   }
 });
 
-const LabelPill = ({ color, name, ...props }) => {
+const LabelPill = ({ color, name, css, ...props }) => {
   return (
     <Pill
       css={{
         backgroundColor: `${color}1A`,
         borderColor: color,
         color: '$textDark', // getTextColor(color),
+        ...css
       }}
       {...props}
     >

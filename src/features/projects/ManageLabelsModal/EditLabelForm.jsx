@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { updateProjectLabel } from "../projectsSlice.js";
 import LabelPill from "../../../components/LabelPill";
 import IconButton from '../../../components/IconButton.jsx';
-import { Pencil1Icon } from '@radix-ui/react-icons';
+import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import LabelForm from './LabelForm';
 import {
   LabelRow,
@@ -14,7 +14,7 @@ import {
   LabelActions,
 } from './components';
 
-const EditLabelForm = ({ _id, name, color, source, labels }) => {
+const EditLabelForm = ({ _id, name, color, source, labels, setLabelToDelete, setAlertOpen }) => {
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 
@@ -23,6 +23,12 @@ const EditLabelForm = ({ _id, name, color, source, labels }) => {
     dispatch(updateProjectLabel(values));
     setShowForm(false);
   }, []);
+
+  const deleteLabel = useCallback((values) => {
+    console.log('handle delete label: ', values);
+    setLabelToDelete(values);
+    setAlertOpen(true);
+  });
 
   const labelsNames = labels.map(({ name }) => name.toLowerCase());
   const schema = (initialName) => {
@@ -63,6 +69,12 @@ const EditLabelForm = ({ _id, name, color, source, labels }) => {
                 onClick={onClose}
               >
                 <Pencil1Icon />
+              </IconButton>
+              <IconButton
+                variant='ghost'
+                onClick={() => deleteLabel(values)}
+              >
+                <TrashIcon />
               </IconButton>
             </LabelActions>
           </LabelHeader>
