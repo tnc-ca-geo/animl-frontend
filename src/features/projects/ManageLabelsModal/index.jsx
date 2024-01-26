@@ -12,6 +12,7 @@ const ManageLabelsModal = () => {
   const sortedLabels = [...labels].sort((labelA, labelB) => {
     return labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1;
   });
+  console.log('sortedLabels: ', sortedLabels)
   const { isLoading } = useSelector(selectProjectLabelsLoading);
 
   const [alertOpen, setAlertOpen] = useState(false);
@@ -25,13 +26,10 @@ const ManageLabelsModal = () => {
         </SpinnerOverlay>
       }
       <LabelList>
-        {sortedLabels.map(({ _id, name, color, source }) => (
+        {sortedLabels.map((label) => (
           <EditLabelForm 
-            key={_id}
-            _id={_id}
-            name={name}
-            color={color}
-            source={source} 
+            key={label._id}
+            label={label}
             labels={sortedLabels}
             setLabelToDelete={setLabelToDelete}
             setAlertOpen={setAlertOpen}

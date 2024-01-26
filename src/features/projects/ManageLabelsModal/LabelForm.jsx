@@ -3,6 +3,7 @@ import { Form, Field, useFormikContext } from 'formik';
 import Button from "../../../components/Button";
 import IconButton from '../../../components/IconButton.jsx';
 import { SymbolIcon } from '@radix-ui/react-icons';
+import { SwitchRoot, SwitchThumb } from '../../../components/Switch.jsx'
 import { 
   Tooltip, 
   TooltipContent, 
@@ -24,6 +25,7 @@ import { getRandomColor, getTextColor } from '../../../app/utils.js';
 
 const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
+  console.log('values: ', values)
 
   return (
     <FormWrapper>
@@ -101,6 +103,17 @@ const LabelForm = ({ onCancel }) => {
                 {errors.color}
               </FormError>
             )}
+          </FormFieldWrapper>
+          <FormFieldWrapper>
+            <label htmlFor='label-enabled'>Enabled</label>
+            <SwitchRoot 
+              id="enabled"
+              checked={values.reviewerEnabled}
+              onCheckedChange={(enabled) => setFieldValue('reviewerEnabled', enabled)}
+              css={{ marginTop: '13px' }}
+            >
+              <SwitchThumb />
+            </SwitchRoot>
           </FormFieldWrapper>
           <FormButtons>
             <Button

@@ -14,7 +14,9 @@ import {
   LabelActions,
 } from './components';
 
-const EditLabelForm = ({ _id, name, color, source, labels, setLabelToDelete, setAlertOpen }) => {
+const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
+  const  { _id, name, color, source, reviewerEnabled } = label;
+  console.log('reviewerEnabled: ', reviewerEnabled)
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 
@@ -55,7 +57,7 @@ const EditLabelForm = ({ _id, name, color, source, labels, setLabelToDelete, set
 
   return (
     <Formik
-      initialValues={{ _id, name, color }}
+      initialValues={{ _id, name, color, reviewerEnabled }}
       validationSchema={schema(name)}
       onSubmit={onSubmit}
     >

@@ -45,7 +45,7 @@ const DeleteLabelsAlert = ({ open, setAlertOpen, label}) => {
                 color: red.red11,
                 border: 'none',
                 '&:hover': { color: red.red11, backgroundColor: red.red5 }
-              }} 
+              }}
               onClick={handleConfirmDelete}
             >
               Yes, delete

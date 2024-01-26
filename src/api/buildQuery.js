@@ -144,6 +144,14 @@ const automationRuleFields = `
   }
 `;
 
+const projectLabelFields = `
+  _id
+  name
+  color
+  source
+  reviewerEnabled
+`;
+
 const projectFields = `
   _id
   name
@@ -159,10 +167,7 @@ const projectFields = `
     ${cameraConfigFields}
   }
   labels {
-    _id
-    name
-    color
-    source
+    ${projectLabelFields}
   }
   availableMLModels 
 `
@@ -487,12 +492,9 @@ const queries = {
     template: `
       mutation CreateProjectLabel($input: CreateProjectLabelInput!) {
         createProjectLabel(input: $input) {
-            label {
-                _id
-                name
-                color
-                source
-            }
+          label {
+            ${projectLabelFields}
+          }
         }
       }
     `,
@@ -504,10 +506,7 @@ const queries = {
       mutation UpdateProjectLabel($input: UpdateProjectLabelInput!) {
         updateProjectLabel(input: $input) {
           label {
-              _id
-              name
-              color
-              source
+            ${projectLabelFields}
           }
         }
       }
