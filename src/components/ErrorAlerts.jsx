@@ -49,7 +49,7 @@ import {
 } from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
 import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
-import { selectManageLabelsErrors, dismissManageLabelsError } from '../features/filters/filtersSlice';
+import { selectManageLabelsErrors, dismissManageLabelsError } from '../features/projects/projectsSlice';
 
 // TODO: add updateAutomationRules errors
 

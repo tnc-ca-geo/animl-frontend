@@ -12,13 +12,12 @@ import Checkbox from '../../components/Checkbox.jsx';
 import NoneFoundAlert from '../../components/NoneFoundAlert.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
-import { selectLabelsLoading, checkboxOnlyButtonClicked } from './filtersSlice.js';
+import { checkboxOnlyButtonClicked } from './filtersSlice.js';
 
 const LabelFilter = () => {
   const availLabels = useSelector(selectAvailLabels);
   const activeFilters = useSelector(selectActiveFilters);
   const activeLabels = activeFilters.labels;
-  const labelsLoading = useSelector(selectLabelsLoading);
   const dispatch = useDispatch();
 
   const handleCheckboxChange = (e) => {
@@ -38,7 +37,7 @@ const LabelFilter = () => {
       selectedCount={activeLabels ? activeLabels.length : availLabels.options.length}
       expandedDefault={false}
     > 
-      {labelsLoading.noneFound && <NoneFoundAlert>no labels found</NoneFoundAlert>}
+      {availLabels.options.length === 0 && <NoneFoundAlert>no labels found</NoneFoundAlert>}
       {availLabels.options.length > 0 &&
         <>
           <BulkSelectCheckbox

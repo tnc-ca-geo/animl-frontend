@@ -1,16 +1,16 @@
 import { useSelector } from "react-redux";
-import { selectAvailLabels, selectLabelsLoading } from '../../filters/filtersSlice.js';
+import { selectSelectedProject, selectProjectLabelsLoading } from '../projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner';
 import { LabelList } from './components';
 import NewLabelForm from "./NewLabelForm";
 import EditLabelForm from "./EditLabelForm";
 
 const ManageLabelsModal = () => {
-  const labels = useSelector(selectAvailLabels).options;
+  const labels = useSelector(selectSelectedProject).labels;
   const sortedLabels = [...labels].sort((labelA, labelB) => {
     return labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1;
   });
-  const { isLoading } = useSelector(selectLabelsLoading);
+  const { isLoading } = useSelector(selectProjectLabelsLoading);
 
   return (
     <>
@@ -21,10 +21,17 @@ const ManageLabelsModal = () => {
       }
       <LabelList>
         {sortedLabels.map(({ _id, name, color, source }) => (
-          <EditLabelForm key={_id} _id={_id} name={name} color={color} source={source} />
+          <EditLabelForm 
+            key={_id}
+            _id={_id}
+            name={name}
+            color={color}
+            source={source} 
+            labels={sortedLabels}
+          />
         ))}
       </LabelList>
-      <NewLabelForm />
+      <NewLabelForm labels={sortedLabels} />
     </>
   )
 }

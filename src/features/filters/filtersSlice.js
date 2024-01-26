@@ -7,7 +7,10 @@ import {
   getProjectsFailure,
   setSelectedProjAndView,
   editDeploymentsSuccess,
+  createProjectLabelSuccess,
+  updateProjectLabelSuccess,
   selectProjectsLoading,
+  selectProjectLabelsLoading,
 } from '../projects/projectsSlice';
 import {
   normalizeFilters,
@@ -20,15 +23,7 @@ const initialState = {
   availFilters: {
     cameras: { ids: [] },
     deployments: { ids: [] },
-    labels: {
-      options: [],
-      loadingState: {
-        isLoading: false,
-        operation: null,
-        errors: null,
-        noneFound: false,
-      },
-    }
+    labels: { options: [] }
   },
   activeFilters: {
     cameras: null,
@@ -135,77 +130,10 @@ export const filtersSlice = createSlice({
         [filterCat]
       );
     },
-
-    createProjectLabelStart: (state) => {
-      const ls = { isLoading: true, operation: 'creating', errors: null };
-      state.availFilters.labels.loadingState = ls;
-    },
-
-    createProjectLabelSuccess: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: null
-      };
-      state.availFilters.labels.loadingState = ls;
-
-      state.availFilters.labels.options = [
-        ...state.availFilters.labels.options,
-        payload.label
-      ]
-    },
-
-    createProjectLabelFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
-      state.availFilters.labels.loadingState = ls;
-    },
-
-    updateProjectLabelStart: (state) => {
-      const ls = { isLoading: true, operation: 'updating', errors: null };
-      state.availFilters.labels.loadingState = ls;
-    },
-
-    updateProjectLabelSuccess: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: null
-      };
-      state.availFilters.labels.loadingState = ls;
-
-      state.availFilters.labels.options = state.availFilters.labels.options.map((label) => {
-        if (label._id === payload.label._id) {
-          return payload.label;
-        } else {
-          return label;
-        }
-      });
-    },
-
-    updateLabelFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
-      state.availFilters.labels.loadingState = ls;
-    },
-
-    dismissManageLabelsError: (state, { payload }) => {
-      const index = payload;
-      state.availFilters.labels.loadingState.errors.splice(index, 1);
-    },
   },
 
   extraReducers: (builder) => {
     builder
-      .addCase(getProjectsStart, (state, { payload }) => {
-        let loadingState = state.availFilters.labels.loadingState;
-        loadingState.isLoading = true; 
-        loadingState.operation = 'fetching';
-      })
-      .addCase(getProjectsFailure, (state, { payload }) => {
-        let loadingState = state.availFilters.labels.loadingState;
-        loadingState.isLoading = false; 
-        loadingState.operation = null; 
-        loadingState.errors = payload;
-      })
       .addCase(setSelectedProjAndView, (state, { payload }) => {
         const { cameraConfigs, labels } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
@@ -213,6 +141,20 @@ export const filtersSlice = createSlice({
         updateAvailLabelFilters(state, labels);
         // set all filters to new selected view? We're currently handling this 
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
+      })
+      .addCase(createProjectLabelSuccess, (state, { payload }) => {
+        const labels = [...state.availFilters.labels.options, payload.label];
+        updateAvailLabelFilters(state, labels);
+      })
+      .addCase(updateProjectLabelSuccess, (state, { payload }) => {
+        const labels = state.availFilters.labels.options.map((label) => {
+          if (label._id === payload.label._id) {
+            return payload.label;
+          } else {
+            return label;
+          }
+        });
+        updateAvailLabelFilters(state, labels);
       })
       .addCase(registerCameraSuccess, (state, { payload }) => {
         const { cameraConfigs } = payload.project;
@@ -270,69 +212,7 @@ export const {
   setActiveFilters,
   bulkSelectToggled,
   checkboxOnlyButtonClicked,
-
-  createProjectLabelStart,
-  createProjectLabelSuccess,
-  createProjectLabelFailure,
-
-  updateProjectLabelStart,
-  updateProjectLabelSuccess,
-  updateLabelFailure,
-  dismissManageLabelsError
 } = filtersSlice.actions;
-
-// TODO: maybe use createAsyncThunk for these? 
-// https://redux-toolkit.js.org/api/createAsyncThunk
-
-export const updateProjectLabel = (payload) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(updateProjectLabelStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
-
-      if (token && selectedProj) {
-        const res = await call({
-          projId,
-          request: 'updateProjectLabel',
-          input: payload
-        });
-        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
-      }
-    } catch (err) {
-      console.log(`error attempting to update label: `, err);
-      dispatch(updateLabelFailure(err));
-    }
-  };
-};
-
-export const createProjectLabel = (payload) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(createProjectLabelStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
-
-      if (token && selectedProj) {
-        const res = await call({
-          projId,
-          request: 'createProjectLabel',
-          input: payload
-        });
-        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label}));
-      }
-    } catch (err) {
-      console.log(`error attempting to create label: `, err);
-      dispatch(createProjectLabelFailure(err));
-    }
-  };
-};
 
 // Selectors
 export const selectActiveFilters = state => state.filters.activeFilters;
@@ -340,7 +220,6 @@ export const selectAvailFilters = state => state.filters.availFilters;
 export const selectAvailCameras = state => state.filters.availFilters.cameras;
 export const selectAvailDeployments = state => state.filters.availFilters.deployments;
 export const selectAvailLabels = state => state.filters.availFilters.labels;
-export const selectLabelsLoading = state => state.filters.availFilters.labels.loadingState;
 export const selectReviewed = state => state.filters.activeFilters.reviewed;
 export const selectNotReviewed = state => state.filters.activeFilters.notReviewed;
 export const selectCustomFilter = state => state.filters.activeFilters.custom;
@@ -353,12 +232,11 @@ export const selectDateCreatedFilter = state => ({
   end: state.filters.activeFilters.createdEnd,
 });
 export const selectFiltersReady = createSelector(
-  [selectProjectsLoading, selectLabelsLoading],
+  [selectProjectsLoading, selectProjectLabelsLoading],
   (projectsLoading, labelsLoading) => {
     const dependencies = [projectsLoading, labelsLoading];
     return !dependencies.some(d => d.isLoading || d.errors);
   }
 );
-export const selectManageLabelsErrors = state => state.filters.availFilters.labels.loadingState.errors;
 
 export default filtersSlice.reducer;

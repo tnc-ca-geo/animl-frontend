@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { createProjectLabel, selectAvailLabels } from "../../filters/filtersSlice.js";
+import { createProjectLabel } from "../projectsSlice.js";
 import LabelPill from "../../../components/LabelPill";
 import Button from "../../../components/Button";
 import LabelForm from './LabelForm';
@@ -14,7 +14,7 @@ import {
 } from './components';
 import { getRandomColor } from "../../../app/utils.js";
 
-const NewLabelForm = () => {
+const NewLabelForm = ({ labels }) => {
   const dispatch = useDispatch();
   const [ showNewLabelForm, setShowNewLabelForm ] = useState(false);
 
@@ -25,7 +25,7 @@ const NewLabelForm = () => {
     resetForm();
   });
 
-  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name.toLowerCase());
+  const labelsNames = labels.map(({ name }) => name.toLowerCase());
   const schema = useMemo(() => {
     return Yup.object().shape({
       name: Yup.string()

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { updateProjectLabel, selectAvailLabels } from "../../filters/filtersSlice.js";
+import { updateProjectLabel } from "../projectsSlice.js";
 import LabelPill from "../../../components/LabelPill";
 import IconButton from '../../../components/IconButton.jsx';
 import { Pencil1Icon } from '@radix-ui/react-icons';
@@ -14,7 +14,7 @@ import {
   LabelActions,
 } from './components';
 
-const EditLabelForm = ({ _id, name, color }) => {
+const EditLabelForm = ({ _id, name, color, source, labels }) => {
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 
@@ -24,7 +24,7 @@ const EditLabelForm = ({ _id, name, color }) => {
     setShowForm(false);
   }, []);
 
-  const labelsNames = useSelector(selectAvailLabels).options.map(({ name }) => name.toLowerCase());
+  const labelsNames = labels.map(({ name }) => name.toLowerCase());
   const schema = (initialName) => {
     return Yup.object().shape({
       name: Yup.string()
