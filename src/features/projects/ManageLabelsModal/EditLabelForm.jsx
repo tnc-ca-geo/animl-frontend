@@ -16,7 +16,6 @@ import {
 
 const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
   const  { _id, name, color, source, reviewerEnabled } = label;
-  console.log('reviewerEnabled: ', reviewerEnabled)
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 

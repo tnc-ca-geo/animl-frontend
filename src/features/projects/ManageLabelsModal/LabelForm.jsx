@@ -25,7 +25,6 @@ import { getRandomColor, getTextColor } from '../../../app/utils.js';
 
 const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
-  console.log('values: ', values)
 
   return (
     <FormWrapper>

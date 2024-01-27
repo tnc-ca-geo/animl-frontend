@@ -12,7 +12,6 @@ const ManageLabelsModal = () => {
   const sortedLabels = [...labels].sort((labelA, labelB) => {
     return labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1;
   });
-  console.log('sortedLabels: ', sortedLabels)
   const { isLoading } = useSelector(selectProjectLabelsLoading);
 
   const [alertOpen, setAlertOpen] = useState(false);
