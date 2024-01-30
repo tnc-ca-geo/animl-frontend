@@ -42,7 +42,7 @@ const NewLabelForm = ({ labels }) => {
 
   return (
       <Formik
-        initialValues={{ name: '', color: `#${getRandomColor()}` }}
+        initialValues={{ name: '', color: `#${getRandomColor()}`, reviewerEnabled: true }}
         validationSchema={schema}
         onSubmit={onSubmit}
       >
