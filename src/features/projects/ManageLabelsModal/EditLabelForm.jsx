@@ -15,7 +15,7 @@ import {
   LabelActions,
 } from './components';
 
-const DisabledWarning = styled('span', {
+const DisabledIndicator = styled('span', {
   color: '$textMedium',
   fontStyle: 'italic',
   fontSize: '$3'
@@ -71,7 +71,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
         <LabelRow>
           <LabelHeader>
             <LabelPill color={values.color} name={values.name} />
-            {!reviewerEnabled && <DisabledWarning>disabled</DisabledWarning>}
+            {!reviewerEnabled && <DisabledIndicator>disabled</DisabledIndicator>}
             <LabelActions>
               <IconButton
                 variant='ghost'

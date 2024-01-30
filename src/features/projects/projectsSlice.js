@@ -328,7 +328,7 @@ export const projectsSlice = createSlice({
 
     createProjectLabelStart: (state) => {
       const ls = { isLoading: true, operation: 'creating', errors: null };
-      state.loadingStates.projectLabels.loadingState = ls;
+      state.loadingStates.projectLabels = ls;
     },
 
     createProjectLabelSuccess: (state, { payload }) => {
@@ -337,7 +337,7 @@ export const projectsSlice = createSlice({
         operation: null,
         errors: null
       };
-      state.loadingStates.projectLabels.loadingState = ls;
+      state.loadingStates.projectLabels = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
       proj.labels = [
@@ -348,12 +348,12 @@ export const projectsSlice = createSlice({
 
     createProjectLabelFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
-      state.loadingStates.projectLabels.loadingState = ls;
+      state.loadingStates.projectLabels = ls;
     },
 
     updateProjectLabelStart: (state) => {
       const ls = { isLoading: true, operation: 'updating', errors: null };
-      state.loadingStates.projectLabels.loadingState = ls;
+      state.loadingStates.projectLabels = ls;
     },
 
     updateProjectLabelSuccess: (state, { payload }) => {
@@ -362,7 +362,7 @@ export const projectsSlice = createSlice({
         operation: null,
         errors: null
       };
-      state.loadingStates.projectLabels.loadingState = ls;
+      state.loadingStates.projectLabels = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
       proj.labels = proj.labels.map((label) => {
@@ -376,12 +376,12 @@ export const projectsSlice = createSlice({
 
     updateProjectLabelFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
-      state.availFilters.labels.loadingState = ls;
+      state.loadingStates.projectLabels = ls;
     },
 
     dismissManageLabelsError: (state, { payload }) => {
       const index = payload;
-      state.availFilters.labels.loadingState.errors.splice(index, 1);
+      state.loadingStates.projectLabels.errors.splice(index, 1);
     },
 
     setModalOpen: (state, { payload }) => {
