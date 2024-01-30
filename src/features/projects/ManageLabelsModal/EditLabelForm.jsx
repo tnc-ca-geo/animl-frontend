@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { styled } from '../../../theme/stitches.config';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { updateProjectLabel } from "../projectsSlice.js";
-import LabelPill from "../../../components/LabelPill";
+import { updateProjectLabel } from '../projectsSlice.js';
+import LabelPill from '../../../components/LabelPill';
 import IconButton from '../../../components/IconButton.jsx';
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import LabelForm from './LabelForm';
@@ -13,6 +14,12 @@ import {
   LabelHeader,
   LabelActions,
 } from './components';
+
+const DisabledWarning = styled('span', {
+  color: '$textMedium',
+  fontStyle: 'italic',
+  fontSize: '$3'
+});
 
 const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
   const  { _id, name, color, source, reviewerEnabled } = label;
@@ -49,7 +56,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
             }
           }),
       color: Yup.string()
-        .matches(/^#[0-9A-F]{6}$/, { message: "Enter a valid color code with 6 digits" })
+        .matches(/^#[0-9A-F]{6}$/, { message: 'Enter a valid color code with 6 digits' })
         .required('Select a color.'),
     });
   };
@@ -64,6 +71,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
         <LabelRow>
           <LabelHeader>
             <LabelPill color={values.color} name={values.name} />
+            {!reviewerEnabled && <DisabledWarning>disabled</DisabledWarning>}
             <LabelActions>
               <IconButton
                 variant='ghost'
