@@ -2,6 +2,7 @@ import { styled } from "../../../theme/stitches.config";
 import { Form, Field, useFormikContext } from 'formik';
 import Button from "../../../components/Button";
 import IconButton from '../../../components/IconButton.jsx';
+import InfoIcon from '../../../components/InfoIcon';
 import { SymbolIcon } from '@radix-ui/react-icons';
 import { SwitchRoot, SwitchThumb } from '../../../components/Switch.jsx'
 import { 
@@ -104,7 +105,10 @@ const LabelForm = ({ onCancel }) => {
             )}
           </FormFieldWrapper>
           <FormFieldWrapper>
-            <label htmlFor='label-enabled'>Enabled</label>
+            <label htmlFor='label-enabled'>
+              Enabled
+              <InfoIcon tooltipContent={<ReviewerEnabledHelp />} side='top' />
+            </label>
             <SwitchRoot 
               id="enabled"
               checked={values.reviewerEnabled}
@@ -154,5 +158,12 @@ const ColorSwatch = styled('button', {
   margin: 2,
   borderRadius: '$2'
 });
+
+const ReviewerEnabledHelp = () => (
+  <div style={{ maxWidth: '200px' }}>
+    Disabling a label will prevent users from applying it to images going 
+    forward, but it will not remove existing instances of the label on your images.
+  </div>
+);
 
 export default LabelForm;
