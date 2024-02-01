@@ -324,7 +324,6 @@ export const {
 // multipart upload thunk (for zip files > 100 MB)
 export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
   try {
-
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
 
@@ -361,17 +360,17 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
         });
       }
 
-      // iterate over presigned urls, reading and chunking file as we go,
-      // and creating upload promises for each one
+      const parts = initRes.createUpload.urls.map((url, index) => ({ url, index }));
       const uploadedParts = [];
-      const activeUploads = initRes.createUpload.urls.map((url, index) => {
+      const activeConnections = {};
 
-        const sentSize = index * chunkSize;
-        const chunk = file.slice(sentSize, sentSize + chunkSize);
-        const partNumber = index + 1;
-
-        const xhr = new XMLHttpRequest();
-        return new Promise((resolve) => {
+      const sendChunk = (url, chunk, partNumber) => {
+        const xhr = activeConnections[partNumber] = new XMLHttpRequest();
+        return new Promise((resolve, reject) => {
+          const handleError = () => {
+            delete activeConnections[partNumber]
+            reject();
+          }
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
               dispatch(multipartUploadProgress({ 
@@ -383,6 +382,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
           });
           xhr.addEventListener('loadend', () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
+              delete activeConnections[partNumber]
               const ETag = xhr.getResponseHeader('Etag');
               if (ETag) {
                 const uploadedPart = {
@@ -392,30 +392,70 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
                 uploadedParts.push(uploadedPart);
                 resolve(xhr.status);
               }
+            } else {
+              console.log('error' + partNumber);
+              handleError()
             }
           });
+          xhr.onerror = () => handleError();
+          xhr.ontimeout = () => handleError();
+          xhr.onabort = () => handleError();
           xhr.open('PUT', url, true);
           xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
           xhr.send(chunk);
+          sendNext();
         });
-      });
+      }
 
-      await Promise.all(activeUploads);
+      const complete = async (error) => {
+        if (error) {
+          dispatch(uploadFailure(err));
+        } else {
+          uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
+          const closeRes = await call({
+            request: 'closeUpload',
+            projId: selectedProj._id,
+            input: {
+              batchId: initRes.createUpload.batch,
+              multipartUploadId: initRes.createUpload.multipartUploadId,
+              parts: uploadedParts
+            }
+          });
 
-      // close multipart upload
-      uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
-      const closeRes = await call({
-        request: 'closeUpload',
-        projId: selectedProj._id,
-        input: {
-          batchId: initRes.createUpload.batch,
-          multipartUploadId: initRes.createUpload.multipartUploadId,
-          parts: uploadedParts
+          dispatch(uploadSuccess());
+          dispatch(fetchBatches());
         }
-      });
+      }
 
-      dispatch(uploadSuccess());
-      dispatch(fetchBatches());
+      const sendNext = (retry=0) => {
+        const numberOfActiveConnections = Object.keys(activeConnections).length;
+        if (!parts.length) {
+          if (numberOfActiveConnections === 0) {
+            complete();
+          }
+          return;
+        }
+
+        const { url, index } = parts.pop();
+        const chunk = file.slice(index * chunkSize, (index + 1) * chunkSize);
+        sendChunk(url, chunk, index + 1)
+          .then(() => sendNext())
+          .catch((error) => {
+            if (retry <= 6) {
+              retry++;
+              console.log("retry " + retry)
+              setTimeout(() => {
+                parts.push({ url, index })
+                sendNext(retry);
+              }, 2 ** retry * 100)
+            } else {
+              console.log(`Part#${index} failed to upload, giving up`)
+              complete(error);
+            }
+          })
+      }
+
+      sendNext();
     }
   } catch (err) {
     dispatch(uploadFailure(err));
