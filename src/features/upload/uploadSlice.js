@@ -401,7 +401,6 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
                 window.removeEventListener('offline', abort);
               }
             } else {
-              console.log('error' + partNumber);
               handleError()
             }
           });
@@ -452,7 +451,6 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
           .catch((error) => {
             if (retry <= 6) {
               retry++;
-              console.log("retry " + retry)
               setTimeout(() => {
                 parts.push({ url, index })
                 sendNext(retry);
