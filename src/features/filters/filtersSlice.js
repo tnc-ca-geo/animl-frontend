@@ -231,12 +231,5 @@ export const selectDateCreatedFilter = state => ({
   start: state.filters.activeFilters.createdStart,
   end: state.filters.activeFilters.createdEnd,
 });
-export const selectFiltersReady = createSelector(
-  [selectProjectsLoading, selectProjectLabelsLoading],
-  (projectsLoading, labelsLoading) => {
-    const dependencies = [projectsLoading, labelsLoading];
-    return !dependencies.some(d => d.isLoading || d.errors);
-  }
-);
 
 export default filtersSlice.reducer;

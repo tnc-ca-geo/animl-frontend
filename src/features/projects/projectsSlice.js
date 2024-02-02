@@ -6,6 +6,8 @@ import {
   registerCameraSuccess,
   unregisterCameraSuccess
 } from '../cameras/wirelessCamerasSlice';
+import { clearImages } from '../images/imagesSlice.js'
+
 
 const initialState = {
   projects: [],
@@ -385,11 +387,7 @@ export const projectsSlice = createSlice({
     },
 
     deleteProjectLabelSuccess: (state, { payload }) => {
-      const ls = {
-        isLoading: false,
-        operation: null,
-        errors: null
-      };
+      const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.projectLabels = ls;
 
       // const proj = state.projects.find((p) => p._id === payload.projId);
@@ -785,7 +783,8 @@ export const deleteProjectLabel = (payload) => {
         });
         console.log('res: ', res);
         dispatch(deleteProjectLabelSuccess({ projId }));
-        // dispatch(fetchProjects({ _ids: [projId] }));
+        dispatch(clearImages());
+        dispatch(fetchProjects({ _ids: [projId] }));
       }
     } catch (err) {
       console.log(`error attempting to update label: `, err);

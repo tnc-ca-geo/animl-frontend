@@ -8,10 +8,12 @@ import EditLabelForm from "./EditLabelForm";
 import DeleteLabelsAlert from "./DeleteLabelsAlert.jsx";
 
 const ManageLabelsModal = () => {
-  const labels = useSelector(selectSelectedProject).labels;
+  const selectedProj = useSelector(selectSelectedProject);
+  const labels = selectedProj?.labels || [];
   const sortedLabels = [...labels].sort((labelA, labelB) => {
     return labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1;
   });
+  
   const { isLoading } = useSelector(selectProjectLabelsLoading);
 
   const [alertOpen, setAlertOpen] = useState(false);
