@@ -347,7 +347,7 @@ export const projectsSlice = createSlice({
     },
 
     createProjectLabelFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.projectLabels = ls;
     },
 
@@ -375,7 +375,35 @@ export const projectsSlice = createSlice({
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    deleteProjectLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'deleting', errors: null };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    deleteProjectLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.loadingStates.projectLabels = ls;
+
+      // const proj = state.projects.find((p) => p._id === payload.projId);
+      // proj.labels = proj.labels.map((label) => {
+      //   if (label._id === payload.label._id) {
+      //     return payload.label;
+      //   } else {
+      //     return label;
+      //   }
+      // });
+    },
+
+    deleteProjectLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.projectLabels = ls;
     },
 
@@ -458,6 +486,9 @@ export const {
   updateProjectLabelStart,
   updateProjectLabelSuccess,
   updateProjectLabelFailure,
+  deleteProjectLabelStart,
+  deleteProjectLabelSuccess,
+  deleteProjectLabelFailure,
   dismissManageLabelsError,
 
   setModalOpen,
@@ -728,6 +759,33 @@ export const updateProjectLabel = (payload) => {
           input: payload
         });
         dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
+      }
+    } catch (err) {
+      console.log(`error attempting to update label: `, err);
+      dispatch(updateProjectLabelFailure(err));
+    }
+  };
+};
+
+export const deleteProjectLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(deleteProjectLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'deleteProjectLabel',
+          input: payload
+        });
+        console.log('res: ', res);
+        dispatch(deleteProjectLabelSuccess({ projId }));
+        // dispatch(fetchProjects({ _ids: [projId] }));
       }
     } catch (err) {
       console.log(`error attempting to update label: `, err);

@@ -33,6 +33,7 @@ const AlertDialogContent = styled(AD.AlertDialogContent, {
 
 const AlertDialogTitle = styled(AD.AlertDialogTitle, {
   margin: 0,
+  marginBottom: '$3',
   color: '$textDark', //mauve.mauve12,
   fontSize: '17px',
   fontWeight: '500',

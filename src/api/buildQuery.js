@@ -514,6 +514,17 @@ const queries = {
     variables: { input: input },
   }),
 
+  deleteProjectLabel: (input) => ({
+    template: `
+      mutation DeleteProjectLabel($input: DeleteProjectLabelInput!) {
+        deleteProjectLabel(input: $input) {
+          message
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
   createImageComment: (input) => ({
     template: `
       mutation CreateImageComment($input: CreateImageCommentInput!){
