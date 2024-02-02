@@ -404,9 +404,9 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
               handleError()
             }
           });
-          xhr.onerror = () => handleError();
-          xhr.ontimeout = () => handleError();
-          xhr.onabort = () => handleError();
+          xhr.onerror = () => handleError(abort);
+          xhr.ontimeout = () => handleError(abort);
+          xhr.onabort = () => handleError(abort);
           xhr.open('PUT', url, true);
           xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
           window.addEventListener('offline', abort);
