@@ -401,7 +401,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
                 window.removeEventListener('offline', abort);
               }
             } else {
-              handleError()
+              handleError(abort)
             }
           });
           xhr.onerror = () => handleError(abort);
