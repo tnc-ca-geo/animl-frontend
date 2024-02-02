@@ -365,11 +365,18 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       const activeConnections = {};
 
       const sendChunk = (url, chunk, partNumber) => {
-        const xhr = activeConnections[partNumber] = new XMLHttpRequest();
         return new Promise((resolve, reject) => {
-          const handleError = () => {
+          if(!window.navigator.onLine) {
+            reject(new Error("System is offline"));
+          }
+
+          const xhr = activeConnections[partNumber] = new XMLHttpRequest();
+          const abort = () => xhr.abort();
+
+          const handleError = (abort) => {
             delete activeConnections[partNumber]
             reject();
+            window.removeEventListener('offline', abort);
           }
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
@@ -391,6 +398,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
                 };
                 uploadedParts.push(uploadedPart);
                 resolve(xhr.status);
+                window.removeEventListener('offline', abort);
               }
             } else {
               console.log('error' + partNumber);
@@ -402,6 +410,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
           xhr.onabort = () => handleError();
           xhr.open('PUT', url, true);
           xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+          window.addEventListener('offline', abort);
           xhr.send(chunk);
           sendNext();
         });
