@@ -56,6 +56,9 @@ const LabelForm = ({ onCancel }) => {
                       color: getTextColor(values.color),
                       '&:hover': {
                         borderColor: values.color,
+                      },
+                      '&:active': {
+                        borderColor: '$border',
                       }
                     }}
                   >
@@ -78,7 +81,7 @@ const LabelForm = ({ onCancel }) => {
                   side="top" 
                   sideOffset={5}
                   css={{ 
-                    maxWidth: 296,
+                    maxWidth: 324,
                     padding: '$2',
                     color: '$textMedium',
                     backgroundColor: 'white'
@@ -147,7 +150,8 @@ const defaultColors = [
   '#E54D2E', '#E5484D', '#E93D82', '#D6409F', '#AB4ABA', 
   '#8E4EC6', '#6E56CF', '#5B5BD6', '#3E63DD', '#0090FF',
   '#00A2C7', '#12A594', '#30A46C', '#46A758', '#A18072',
-  '#F76B15', '#FFC53D', '#FFE629', '#BDEE63', '#7CE2FE'
+  '#F76B15', '#FFC53D', '#FFE629', '#BDEE63', '#7CE2FE', 
+  '#8D8D8D', '#F0F0F0'
 ];
 
 const ColorSwatch = styled('button', {
@@ -156,7 +160,10 @@ const ColorSwatch = styled('button', {
   height: '$4',
   width: '$4',
   margin: 2,
-  borderRadius: '$2'
+  borderRadius: '$2',
+  '&:hover': {
+    cursor: 'pointer'
+  },
 });
 
 const ReviewerEnabledHelp = () => (
