@@ -22,7 +22,6 @@ const DisabledIndicator = styled('span', {
 });
 
 const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
-  console.log('label: ', label);
   const  { _id, name, color, source, reviewerEnabled } = label;
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
@@ -95,10 +94,13 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
             </LabelActions>
           </LabelHeader>
           {showForm && (
-            <LabelForm onCancel={() => {
-              resetForm();
-              toggleOpenForm();
-            }} />
+            <LabelForm 
+              source={source} 
+              onCancel={() => {
+                resetForm();
+                toggleOpenForm();
+              }} 
+            />
           )}
         </LabelRow>
       )}
