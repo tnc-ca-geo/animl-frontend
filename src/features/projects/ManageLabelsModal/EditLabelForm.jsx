@@ -22,11 +22,12 @@ const DisabledIndicator = styled('span', {
 });
 
 const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
+  console.log('label: ', label);
   const  { _id, name, color, source, reviewerEnabled } = label;
   const dispatch = useDispatch();
   const [ showForm, setShowForm ] = useState(false);
 
-  const onClose = useCallback(() => setShowForm((prev) => !prev), []);
+  const toggleOpenForm = useCallback(() => setShowForm((prev) => !prev), []);
   const onSubmit = useCallback((values) => {
     dispatch(updateProjectLabel(values));
     setShowForm(false);
@@ -64,11 +65,12 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
 
   return (
     <Formik
+      enableReinitialize
       initialValues={{ _id, name, color, reviewerEnabled }}
       validationSchema={schema(name)}
       onSubmit={onSubmit}
     >
-      {({ values }) => (
+      {({ values, resetForm }) => (
         <LabelRow>
           <LabelHeader>
             <LabelPill color={values.color} name={values.name} />
@@ -76,7 +78,10 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
             <LabelActions>
               <IconButton
                 variant='ghost'
-                onClick={onClose}
+                onClick={() => {
+                  resetForm();
+                  toggleOpenForm();
+                }}
               >
                 <Pencil1Icon />
               </IconButton>
@@ -90,7 +95,10 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
             </LabelActions>
           </LabelHeader>
           {showForm && (
-            <LabelForm onCancel={onClose} />
+            <LabelForm onCancel={() => {
+              resetForm();
+              toggleOpenForm();
+            }} />
           )}
         </LabelRow>
       )}

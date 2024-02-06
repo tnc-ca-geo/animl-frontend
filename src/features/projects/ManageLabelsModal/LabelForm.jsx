@@ -25,7 +25,7 @@ import { getRandomColor, getTextColor } from '../../../app/utils.js';
 
 
 const LabelForm = ({ onCancel }) => {
-  const { values, errors, touched, setFieldValue, resetForm } = useFormikContext();
+  const { values, errors, touched, setFieldValue } = useFormikContext();
 
   return (
     <FormWrapper>
@@ -132,10 +132,7 @@ const LabelForm = ({ onCancel }) => {
             <Button
               size='small'
               type='button'
-              onClick={() => {
-                resetForm();
-                onCancel();
-              }}
+              onClick={onCancel}
             >
               Cancel
             </Button>
