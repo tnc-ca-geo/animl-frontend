@@ -11,7 +11,6 @@ const DeleteLabelsAlert = ({ open, setAlertOpen, label}) => {
   const dispatch = useDispatch();
 
   const handleConfirmDelete = () => {
-    console.log('deleting label: ', label);
     dispatch(deleteProjectLabel({ _id: label._id }));
     setAlertOpen(false);
   };

@@ -82,6 +82,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
               </IconButton>
               <IconButton
                 variant='ghost'
+                disabled={source === 'default'}
                 onClick={() => deleteLabel(values)}
               >
                 <TrashIcon />
