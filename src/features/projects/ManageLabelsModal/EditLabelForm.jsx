@@ -43,6 +43,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
     return Yup.object().shape({
       name: Yup.string()
         .required('Enter a label name.')
+        .matches(/^[a-zA-Z0-9_. -]*$/, 'Labels can\'t contain special characters')
         .test(
           'unique',
           'A label with this name already exists.',
