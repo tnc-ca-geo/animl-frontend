@@ -9,6 +9,7 @@ const Pill = styled('div', {
   '&:not(:last-child)': {
     marginRight: '$2',
   },
+  minHeight: '28px',
   borderRadius: '$3',
   border: '1px solid rgba(0,0,0,0)',
   transition: 'all 0.2s ease',
