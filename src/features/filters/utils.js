@@ -36,8 +36,11 @@ const updateAvailLabelFilters = (state, labels) => {
       color: '#AFE790',
       source: 'default'
     }
-  ]
-  state.availFilters.labels.options = [...defaultLabelFilters, ...labels];
+  ];
+  const defaults = defaultLabelFilters.filter((defaultLabel) => (
+    !labels.find((lbl) => lbl._id.toString() === defaultLabel._id.toString())
+  ));
+  state.availFilters.labels.options = [...defaults, ...labels];
 };
 
 export {
