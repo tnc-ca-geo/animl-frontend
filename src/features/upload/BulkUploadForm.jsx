@@ -21,6 +21,7 @@ const bulkUploadSchema = Yup.object().shape({
   zipFile: Yup.mixed()
     .required('A ZIP file is required')
     .test('is-valid-type', 'The file must be a .zip file', (value) => {
+      if (!value) return true;
       return value.name.toLowerCase().split('.').pop() === 'zip';
     })
     .test('fileSize', 'The file must be smaller than 50GB.', (value) => {

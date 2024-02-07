@@ -18,7 +18,7 @@ const NewLabelForm = ({ labels }) => {
   const dispatch = useDispatch();
   const [ showNewLabelForm, setShowNewLabelForm ] = useState(false);
 
-  const onClose = useCallback(() => setShowNewLabelForm(false), []);
+  const toggleOpenForm = useCallback(() => setShowNewLabelForm((prev) => !prev), []);
   const onSubmit = useCallback((values, { resetForm }) => {
     dispatch(createProjectLabel(values));
     setShowNewLabelForm(false);
@@ -43,22 +43,36 @@ const NewLabelForm = ({ labels }) => {
 
   return (
       <Formik
+        enableReinitialize
         initialValues={{ name: '', color: `#${getRandomColor()}`, reviewerEnabled: true }}
         validationSchema={schema}
         onSubmit={onSubmit}
       >
-        {({ values }) => (
+        {({ values, resetForm }) => (
           <LabelRow css={{ borderBottom: 'none' }}>
             <LabelHeader>
             { showNewLabelForm && (
-              <LabelPill color={values.color} name={values.name || 'New Label'}/>
+              <LabelPill color={values.color} name={values.name || 'new label'}/>
             )}
               <LabelActions>
-                <Button size='small' onClick={() => setShowNewLabelForm(prev => !prev)}>New label</Button>
+                <Button 
+                  size='small' 
+                  onClick={() => {
+                    resetForm();
+                    toggleOpenForm();
+                  }}
+                >
+                  New label
+                </Button>
               </LabelActions>
             </LabelHeader>
             { showNewLabelForm && (
-              <LabelForm onCancel={onClose} />
+              <LabelForm 
+                onCancel={() => {
+                  resetForm();
+                  toggleOpenForm();
+                }}
+              />
             )}
           </LabelRow>
         )}

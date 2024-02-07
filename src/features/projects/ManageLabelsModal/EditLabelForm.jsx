@@ -33,7 +33,6 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
   }, []);
 
   const deleteLabel = useCallback((values) => {
-    console.log('handle delete label: ', values);
     setLabelToDelete(values);
     setAlertOpen(true);
   });
