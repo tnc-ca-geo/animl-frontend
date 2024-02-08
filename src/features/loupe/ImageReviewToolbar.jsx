@@ -120,7 +120,7 @@ const ImageReviewToolbar = ({
         objIsTemp: obj.isTemp,
         userId,
         bbox: obj.bbox,
-        category: newValue.value || newValue,
+        labelId: newValue.value || newValue,
         objId: obj._id,
         imgId: image._id
       }));

@@ -171,7 +171,7 @@ const Loupe = () => {
             objIsTemp: obj.isTemp,
             userId,
             bbox: obj.bbox,
-            category: lastCategoryApplied,
+            labelId: lastCategoryApplied,
             objId: obj._id,
             imgId: image._id
           }));
