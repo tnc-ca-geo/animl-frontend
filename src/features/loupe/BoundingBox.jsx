@@ -148,8 +148,8 @@ const BoundingBox = ({
     label = object.labels[focusIndex.label];
   }
 
-  const availableLabels = useSelector(selectLabels);
-  const displayLabel = availableLabels.find(({ _id }) => _id === label.labelId);
+  const projectLabels = useSelector(selectLabels);
+  const displayLabel = projectLabels?.find(({ _id }) => _id === label.labelId);
 
   // set label color and confidence
   // TODO: maybe this belongs in label component?

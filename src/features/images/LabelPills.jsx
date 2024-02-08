@@ -44,7 +44,7 @@ const LabelContainer = styled('div', {
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
-  const availableLabels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectLabels);
 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
     // if user isn't attempting a multi-row selection, update focus
@@ -85,7 +85,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
             >
               {labels.map((label, i) => {
                 const lblIndex = object.labels.indexOf(label);
-                const l = availableLabels.find(({ _id }) => label.labelId === _id);
+                const l = projectLabels?.find(({ _id }) => label.labelId === _id);
                 return (
                   <LabelPill
                     key={label._id}
