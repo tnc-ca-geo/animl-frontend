@@ -76,10 +76,9 @@ export const objectMiddleware = store => next => action => {
         locked: true,
         labels: [{
           _id: new ObjectID().toString(),
-          category: 'empty',
+          labelId: 'empty',
           bbox: [0,0,1,1],
           validation: { validated: true, userId },  
-          type: 'manual',
           conf: 1,
           userId
         }],

@@ -811,7 +811,7 @@ export const selectMLModels = createSelector([selectSelectedProject],
   (proj) => proj ? proj.mlModels : null
 );
 export const selectLabels = createSelector([selectSelectedProject],
-  (proj) => proj ? proj.labels : null
+  (proj) => proj ? proj.labels : []
 );
 export const selectProjectsLoading = state => state.projects.loadingStates.projects;
 export const selectViewsLoading = state => state.projects.loadingStates.views;
