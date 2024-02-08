@@ -28,7 +28,7 @@ const LabelFilter = () => {
     dispatch(checkboxFilterToggled(payload));
   };
 
-  const managedIds = useMemo(() => availLabels.options.map(({ _id}) => _id), [availLabels.options]);
+  const managedIds = useMemo(() => availLabels.options.map(({ _id }) => _id), [availLabels.options]);
   const sortedLabels = [...availLabels.options].sort((labelA, labelB) => labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1);
 
   return (

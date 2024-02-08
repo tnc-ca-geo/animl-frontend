@@ -21,8 +21,8 @@ import {
 
 const initialState = {
   availFilters: {
-    cameras: { ids: [] },
-    deployments: { ids: [] },
+    cameras: { options: [] },
+    deployments: { options: [] },
     labels: { options: [] }
   },
   activeFilters: {
@@ -96,7 +96,7 @@ export const filtersSlice = createSlice({
     bulkSelectToggled: (state, { payload }) => {
       const { currState, filterCat, managedIds } = payload;
       const activeIds = state.activeFilters[filterCat];
-      const availIds = state.availFilters[filterCat].options.map(({id}) => id);
+      const availIds = state.availFilters[filterCat].options.map(({ _id }) => _id);
       let newActiveIds;
 
       if (currState === 'noneSelected') {
@@ -163,7 +163,7 @@ export const filtersSlice = createSlice({
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
         const { operation, reqPayload } = payload;
-        const availDepFilters = state.availFilters.deployments.ids;
+        const availDepFilters = state.availFilters.deployments.options.map(({ _id }) => _id);
         const activeDepFilters = state.activeFilters.deployments;
         switch (operation) {
           case 'updateDeployment': { break }
@@ -171,10 +171,10 @@ export const filtersSlice = createSlice({
             // add new dep to available deployment filters
             const newDepId = reqPayload.deployment._id;
             if (!availDepFilters) {
-              state.availFilters.deployments.ids = [newDepId];
+              state.availFilters.deployments.options = [{ _id: newDepId }];
             }
             else if (!availDepFilters.includes(newDepId)) {
-              state.availFilters.deployments.ids.push(newDepId);
+              state.availFilters.deployments.options.push({ _id: newDepId });
             }
             // and active deployment filters
             if (activeDepFilters && 
@@ -185,9 +185,11 @@ export const filtersSlice = createSlice({
           }
           case 'deleteDeployment': {
             // remove deleted dep from available and active deployment filters
-            state.availFilters.deployments.ids = availDepFilters.filter((id) => (
-              id !== reqPayload.deploymentId
+            const filteredDeps = state.availFilters.deployments.options.filter((opt) => (
+              opt._id !== reqPayload.deploymentId
             ));
+            state.availFilters.deployments.options = filteredDeps;
+            
             state.activeFilters.deployments = (activeDepFilters !== null)
               ? activeDepFilters.filter((id) => id !== reqPayload.deploymentId)
               : null;
