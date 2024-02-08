@@ -12,7 +12,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@radix-ui/react-icons';
-import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';

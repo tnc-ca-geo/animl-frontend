@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
-  selectAvailLabels,
+  selectAvailLabelFilters,
   selectActiveFilters,
   checkboxFilterToggled
 } from './filtersSlice.js';
@@ -15,7 +15,7 @@ import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import { checkboxOnlyButtonClicked } from './filtersSlice.js';
 
 const LabelFilter = () => {
-  const availLabels = useSelector(selectAvailLabels);
+  const availLabels = useSelector(selectAvailLabelFilters);
   const activeFilters = useSelector(selectActiveFilters);
   const activeLabels = activeFilters.labels;
   const dispatch = useDispatch();

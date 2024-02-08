@@ -810,6 +810,9 @@ export const selectUnsavedViewChanges = state =>
 export const selectMLModels = createSelector([selectSelectedProject],
   (proj) => proj ? proj.mlModels : null
 );
+export const selectLabels = createSelector([selectSelectedProject],
+  (proj) => proj ? proj.labels : null
+);
 export const selectProjectsLoading = state => state.projects.loadingStates.projects;
 export const selectViewsLoading = state => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = state => state.projects.loadingStates.automationRules;

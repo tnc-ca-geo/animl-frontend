@@ -219,9 +219,9 @@ export const {
 // Selectors
 export const selectActiveFilters = state => state.filters.activeFilters;
 export const selectAvailFilters = state => state.filters.availFilters;
-export const selectAvailCameras = state => state.filters.availFilters.cameras;
-export const selectAvailDeployments = state => state.filters.availFilters.deployments;
-export const selectAvailLabels = state => state.filters.availFilters.labels;
+export const selectAvailCameraFilters = state => state.filters.availFilters.cameras;
+export const selectAvailDeploymentFilters = state => state.filters.availFilters.deployments;
+export const selectAvailLabelFilters = state => state.filters.availFilters.labels;
 export const selectReviewed = state => state.filters.activeFilters.reviewed;
 export const selectNotReviewed = state => state.filters.activeFilters.notReviewed;
 export const selectCustomFilter = state => state.filters.activeFilters.custom;

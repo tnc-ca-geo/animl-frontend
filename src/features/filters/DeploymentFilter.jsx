@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { selectActiveFilters, selectAvailDeployments } from './filtersSlice';
+import { selectActiveFilters, selectAvailDeploymentFilters } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
@@ -10,7 +10,7 @@ import CameraFilterSection from './CameraFilterSection';
 const DeploymentFilter = () => {
   const selectedProject = useSelector(selectSelectedProject);
   const activeFilters = useSelector(selectActiveFilters);
-  const availDeps = useSelector(selectAvailDeployments);
+  const availDeps = useSelector(selectAvailDeploymentFilters);
   const activeDeps = activeFilters.deployments;
   const activeDepCount = activeDeps ? activeDeps.length : availDeps.options.length;
   const noneFound = selectedProject && availDeps.options.length === 0;
