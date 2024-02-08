@@ -479,8 +479,8 @@ const queries = {
 
   deleteLabels: (input) => ({
     template: `
-      mutation CreateLabels($input: CreateLabelsInput!) {
-        createLabels(input: $input) {
+      mutation DeleteLabels($input: DeleteLabelsInput!) {
+        deleteLabels(input: $input) {
           isOk
         }
       }
