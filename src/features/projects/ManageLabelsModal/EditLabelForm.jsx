@@ -56,7 +56,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
             }
           }),
       color: Yup.string()
-        .matches(/^#[0-9A-F]{6}$/, { message: 'Enter a valid color code with 6 digits' })
+        .matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Enter a valid color code with 6 digits' })
         .required('Select a color.'),
     });
   };
