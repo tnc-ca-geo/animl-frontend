@@ -24,7 +24,7 @@ import {
 import { getRandomColor, getTextColor } from '../../../app/utils.js';
 
 
-const LabelForm = ({ source, onCancel }) => {
+const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue } = useFormikContext();
 
   return (
@@ -33,7 +33,7 @@ const LabelForm = ({ source, onCancel }) => {
         <FormRow>
           <FormFieldWrapper>
             <label htmlFor='name'>Name</label>
-            <Field name='name' id='name' disabled={source === 'default'}/>
+            <Field name='name' id='name'/>
             {!!errors.name && touched.name && (
               <FormError>
                 {errors.name}

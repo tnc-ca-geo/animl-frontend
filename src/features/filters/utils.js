@@ -34,7 +34,6 @@ const updateAvailLabelFilters = (state, labels) => {
       _id: 'none',
       name: 'none',
       color: '#AFE790',
-      source: 'default'
     }
   ];
   const defaults = defaultLabelFilters.filter((defaultLabel) => (

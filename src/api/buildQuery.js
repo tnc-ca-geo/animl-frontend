@@ -148,7 +148,6 @@ const projectLabelFields = `
   _id
   name
   color
-  source
   reviewerEnabled
 `;
 

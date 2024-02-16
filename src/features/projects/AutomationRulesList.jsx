@@ -36,6 +36,10 @@ const StyledRuleDescription = styled('div', {
   }
 });
 
+const EditButtons = styled('div', {
+  minWidth: '64px',
+});
+
 const RuleDescription = ({ rule, availableModels }) => {
   const model = availableModels.find((m) => m === rule.action.mlModel);
   return (
@@ -90,7 +94,7 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
             return (
               <Rule key={rule._id}>
                 <RuleDescription rule={rule} availableModels={availableModels} />
-                <div>
+                <EditButtons>
                   <IconButton
                     variant='ghost'
                     data-rule={rule._id}
@@ -105,7 +109,7 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
                   >
                     <TrashIcon />
                   </IconButton>
-                </div>
+                </EditButtons>
               </Rule>
             )
           })}

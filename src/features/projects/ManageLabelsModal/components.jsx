@@ -7,14 +7,14 @@ export const LabelList = styled('div', {
 });
 
 export const LabelRow = styled('div', {
-  padding: '$2 0',
+  paddingTop: '$2',
   borderBottom: '1px solid $border'
 });
 
 export const LabelHeader = styled('div', {
   display: 'flex',
   marginBottom: '$2',
-  alignItems: 'baseline'
+  alignItems: 'center'
 });
 
 export const LabelActions = styled(ButtonRow, {
