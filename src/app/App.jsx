@@ -106,6 +106,25 @@ const App = () => {
   //   });
   // }, [dispatch]);
 
+  // Monitor connection loss
+  useEffect(() => {
+    const handleOffline = (e) => {
+      const now = new Date();
+      console.log(`Lost internet connection at ${now.toISOString()}`);
+    }
+    window.addEventListener('offline', handleOffline);
+    return () => { window.removeEventListener('offline', handleOffline) }
+  }, []);
+
+  useEffect(() => {
+    const handleOnline = (e) => {
+      const now = new Date();
+      console.log(`Regained internet connection at ${now.toISOString()}`);
+    }
+    window.addEventListener('online', handleOnline);
+    return () => { window.removeEventListener('online', handleOnline) }
+  }, []);
+
   useEffect(() => {
     dispatch(initTracking(GA_CONFIG));
   }, [ dispatch ]);

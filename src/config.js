@@ -17,7 +17,7 @@ export const IMAGES_URL = IMAGES_URLS['production']; // IMAGES_URLS[stage];
 export const IMAGE_QUERY_LIMITS = [10, 50, 100];
 
 export const SUPPORTED_WIRELESS_CAMS = [
-  'BuckEyeCam', 'RidgeTec', 'CUDDEBACK'
+  'BuckEyeCam', 'RidgeTec', 'CUDDEBACK', 'RECONYX'
 ];
 
 export const IN_MAINTENANCE_MODE = false;
