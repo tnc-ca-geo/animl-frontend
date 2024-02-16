@@ -35,9 +35,9 @@ const ManageUsersTable = () => {
         <Table>
           <thead>
             <tr>
-              <TableHeadCell>User email</TableHeadCell>
-              <TableHeadCell>Roles</TableHeadCell>
-              <TableHeadCell>Actions</TableHeadCell>
+              <TableHeadCell css={{ width: '60%' }}>User email</TableHeadCell>
+              <TableHeadCell css={{ width: '25%' }}>Roles</TableHeadCell>
+              <TableHeadCell css={{ width: '15%' }}> Actions</TableHeadCell>
             </tr>
           </thead>
           <tbody>

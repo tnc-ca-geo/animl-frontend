@@ -5,7 +5,7 @@ const normalizeFilters = (
 ) => {
   // if all available ids are selected for a filter category, set to null
   for (const filtCat of filterCats) {
-    const availIds = availFilts[filtCat].ids;
+    const availIds = availFilts[filtCat].options.map(({ _id }) => _id);
     const activeIds = newActiveFilts[filtCat];
     if ((availIds && activeIds) && (availIds.length === activeIds.length)) {
       newActiveFilts[filtCat] = null;
@@ -17,27 +17,30 @@ const normalizeFilters = (
 const updateAvailDepFilters = (state, camConfigs) => {
   const newDeps = camConfigs.reduce((acc, camConfig) => {
     for (const dep of camConfig.deployments) {
-      acc.push(dep._id);
+      acc.push({ _id: dep._id });
     }
     return acc;
   },[]);
-  state.availFilters.deployments.ids = newDeps;
+  state.availFilters.deployments.options = newDeps;
 }
 
 const updateAvailCamFilters = (state, camConfigs) => {
-  state.availFilters.cameras.ids = camConfigs.map((cc) => cc._id);
+  state.availFilters.cameras.options = camConfigs.map((cc) => ({ _id: cc._id }));
 };
 
 const updateAvailLabelFilters = (state, labels) => {
-  state.availFilters.labels.ids = labels.categories;
-  const noneFound = (labels.categories.length === 0);
-  state.availFilters.labels.loadingState = {
-    isLoading: false,
-    operation: null,
-    errors: null,
-    noneFound,
-  };
-}
+  const defaultLabelFilters = [
+    { 
+      _id: 'none',
+      name: 'none',
+      color: '#AFE790',
+    }
+  ];
+  const defaults = defaultLabelFilters.filter((defaultLabel) => (
+    !labels.find((lbl) => lbl._id.toString() === defaultLabel._id.toString())
+  ));
+  state.availFilters.labels.options = [...defaults, ...labels];
+};
 
 export {
   normalizeFilters,

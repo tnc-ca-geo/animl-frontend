@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import CreatableSelect from 'react-select/creatable';
-import { createFilter } from 'react-select';
 import {
   Pencil1Icon,
   GroupIcon,
@@ -14,7 +12,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@radix-ui/react-icons';
-import { selectAvailLabels } from '../filters/filtersSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
@@ -123,7 +120,7 @@ const ImageReviewToolbar = ({
         objIsTemp: obj.isTemp,
         userId,
         bbox: obj.bbox,
-        category: newValue.value || newValue,
+        labelId: newValue.value || newValue,
         objId: obj._id,
         imgId: image._id
       }));

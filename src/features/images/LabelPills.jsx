@@ -1,32 +1,10 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled, labelColors } from '../../theme/stitches.config.js';
+import { selectLabels } from '../projects/projectsSlice.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
-
-
-const LabelPill = styled('div', {
-  color: '$textDark',
-  fontSize: '$2',
-  fontWeight: '$5',
-  fontFamily: '$mono',
-  padding: '$1 $3',
-  '&:not(:last-child)': {
-    marginRight: '$2',
-  },
-  borderRadius: '$3',
-  border: '1px solid rgba(0,0,0,0)',
-  transition: 'all 0.2s ease',
-  variants: {
-    focused: {
-      true: {
-        outline: 'none',
-        boxShadow: '0 0 0 3px $blue200',
-        borderColor: '$blue500',  
-      }
-    }
-  }
-});
+import LabelPill from '../../components/LabelPill.jsx';
 
 const ObjectPill = styled('div', {
   display: 'flex',
@@ -66,6 +44,7 @@ const LabelContainer = styled('div', {
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
+  const projectLabels = useSelector(selectLabels);
 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
     // if user isn't attempting a multi-row selection, update focus
@@ -79,7 +58,6 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   return (
     <LabelContainer >
       {objects.map((object, objIndex) => {
-
         // TODO: find a cleaner way to do this. Maybe make it a hook?
         // We also need filtered objects in FullSizeImage component...
         // and reviewMiddleware so consider encapsulating 
@@ -107,6 +85,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
             >
               {labels.map((label, i) => {
                 const lblIndex = object.labels.indexOf(label);
+                const l = projectLabels?.find(({ _id }) => label.labelId === _id);
                 return (
                   <LabelPill
                     key={label._id}
@@ -115,14 +94,9 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
                       lblIndex === focusIndex.label
                     }
                     onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
-                    css={{
-                      backgroundColor: labelColors(label.category).bg, 
-                      borderColor: labelColors(label.category).border,
-                      color: labelColors(label.category).textDark,
-                    }}
-                  >
-                    {label.category}
-                  </LabelPill>
+                    color={l?.color || '#00C797'}
+                    name={l?.name || "ERROR FINDING LABEL"}
+                  />
                 )
               })}
             </ObjectPill>

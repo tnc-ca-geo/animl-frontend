@@ -10,7 +10,7 @@ import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../.
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { green, red, mauve } from '@radix-ui/colors';
+import { green, red } from '@radix-ui/colors';
 import { uploadFile, uploadMultipartFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
@@ -21,6 +21,7 @@ const bulkUploadSchema = Yup.object().shape({
   zipFile: Yup.mixed()
     .required('A ZIP file is required')
     .test('is-valid-type', 'The file must be a .zip file', (value) => {
+      if (!value) return true;
       return value.name.toLowerCase().split('.').pop() === 'zip';
     })
     .test('fileSize', 'The file must be smaller than 50GB.', (value) => {
@@ -79,9 +80,6 @@ const ClearFileButton = styled(IconButton, {
 
 const SNOverrideContent = styled('div', {
   maxWidth: '300px',
-  'a': {
-    color: mauve.mauve9,
-  }
 });
 
 const SerialNumberOverrideHelp = () => (

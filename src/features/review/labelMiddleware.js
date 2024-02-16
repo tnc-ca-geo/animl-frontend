@@ -1,6 +1,5 @@
 
 import { ObjectID } from 'bson';
-// import { selectAvailLabels, fetchLabels } from '../filters/filtersSlice';
 import { addLabelEnd, selectReviewMode } from '../loupe/loupeSlice';
 import {
   setFocus,
@@ -22,16 +21,15 @@ export const labelMiddleware = store => next => action => {
   if (labelsAdded.match(action)) {
 
     action.payload.labels.map((label) => {
-      const { newLabel, bbox, userId, category } = label;
+      const { newLabel, bbox, userId, labelId } = label;
       const { objIsTemp, imgId, objId, newObject } = label;
       // if we are redoing a previous labelsAdded action, 
       // there will already be a newLabel in the payload 
       label.newLabel = newLabel || {
         _id: new ObjectID().toString(),
-        category,
+        labelId,
         bbox,
         validation: { validated: true, userId },  
-        type: 'manual',
         conf: 1,
         userId: userId
       };
@@ -89,20 +87,6 @@ export const labelMiddleware = store => next => action => {
     // store.dispatch(setFocus({ index: newIndex, type: 'auto' }));
     // const reviewMode = selectReviewMode(store.getState());
     // if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
-
-    // TODO: no longer have a fetchLabels query handler in API 
-    // (we're fetching labels as a field level resolver for Project)
-    // so we either need to to refetch this entire project, or rewrite a 
-    // fetchLabels(projectId) handler again and insert them into the project slice
-
-    // const availLabels = selectAvailLabels(store.getState());
-    // const newCategoryAdded = !availLabels.ids.includes(
-    //   action.payload.newLabel.category
-    // );
-    // if (newCategoryAdded) console.log('NOTE: new category detected, so fetching labels')  
-    // if (newCategoryAdded) store.dispatch(fetchLabels());
-    
-    // TODO: also dispatch fetchLabels after label invalidations?
   }
 
   /* labelsRemoved */
@@ -137,7 +121,6 @@ export const labelMiddleware = store => next => action => {
     next(action);
   
     // store.dispatch(incrementFocusIndex('increment')); // increment focus?
-    // store.dispatch(fetchLabels()); // fetchLabels again? 
   }
 
   /* labelsValidated */

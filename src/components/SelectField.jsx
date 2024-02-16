@@ -61,7 +61,8 @@ const SelectField = ({
   error,
   touched,
   isSearchable,
-  isMulti
+  isMulti,
+  menuPlacement='bottom'
 }) => {
   
   const handleChange = (value) => {
@@ -87,6 +88,7 @@ const SelectField = ({
         classNamePrefix='react-select'
         isSearchable={isSearchable}
         isMulti={isMulti}
+        menuPlacement={menuPlacement}
       />
       {!!error &&
         touched && (

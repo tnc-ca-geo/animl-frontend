@@ -1,13 +1,13 @@
 import React, { forwardRef } from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { useSelector, useDispatch } from 'react-redux';
-import CreatableSelect from 'react-select/creatable';
+import Select from 'react-select';
 import { createFilter } from 'react-select';
-import { selectAvailLabels } from '../features/filters/filtersSlice.js';
+import { selectSelectedProject, selectProjectLabelsLoading } from '../features/projects/projectsSlice.js';
 import { addLabelEnd } from '../features/loupe/loupeSlice.js';
 
 
-const StyledCategorySelector = styled(CreatableSelect, {
+const StyledCategorySelector = styled(Select, {
   width: '155px',
   fontFamily: '$mono',
   fontSize: '$2',
@@ -66,9 +66,10 @@ const CategorySelector = forwardRef(({
 }, ref) => {
 
   // update selector options when new labels become available
-  const createOption = (category) => ({ value: category.toLowerCase(), label: category });
-  const availLabels = useSelector(selectAvailLabels);
-  const options = availLabels.ids.map((id) => createOption(id));
+  const labelsLoading = useSelector(selectProjectLabelsLoading);
+  const createOption = (category) => ({ value: category._id, label: category.name });
+  const enabledLabels = useSelector(selectSelectedProject).labels.filter((lbl) => lbl.reviewerEnabled );
+  const options = enabledLabels.map(createOption);
   const dispatch = useDispatch();
 
   const defaultHandleBlur = (e) => dispatch(addLabelEnd());
@@ -85,10 +86,9 @@ const CategorySelector = forwardRef(({
       classNamePrefix='react-select'
       menuPlacement={menuPlacement}
       filterOption={createFilter({ matchFrom: 'start' })}
-      isLoading={availLabels.isLoading}
-      isDisabled={availLabels.isLoading}
+      isLoading={labelsLoading.isLoading}
+      isDisabled={labelsLoading.isLoading}
       onChange={handleCategoryChange}
-      onCreateOption={handleCategoryChange}
       onBlur={handleCategorySelectorBlur || defaultHandleBlur}
       options={options}
     />

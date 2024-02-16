@@ -49,6 +49,7 @@ import {
 } from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
 import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
+import { selectManageLabelsErrors, dismissManageLabelsError } from '../features/projects/projectsSlice';
 
 // TODO: add updateAutomationRules errors
 
@@ -69,6 +70,7 @@ const ErrorAlerts = () => {
   const redriveBatchErrors = useSelector(selectRedriveBatchErrors);
   const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
+  const manageLabelsErrors = useSelector(selectManageLabelsErrors);
   
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -86,6 +88,7 @@ const ErrorAlerts = () => {
     enrichErrors(redriveBatchErrors, 'Error retrying failed images in batch', 'redriveBatch'),
     enrichErrors(manageUserErrors, 'Manage user error', 'manageUsers'),
     enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
+    enrichErrors(manageLabelsErrors, 'Error Updating Label', 'manageLabels'),
   ];
 
   const errors = enrichedErrors.reduce((acc, curr) => (
@@ -147,6 +150,7 @@ const dismissErrorActions = {
   'uploadImageErrors': (i) => dismissExportErrorsError(i),
   'redriveBatch': (i) => dismissRedriveBatchError(i),
   'manageUsers': (i) => dismissManageUsersError(i),
+  'manageLabels': (i) => dismissManageLabelsError(i),
 };
 
 function enrichErrors(errors, title, entity) {

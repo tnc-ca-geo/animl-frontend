@@ -21,10 +21,10 @@ const imageCommentFields = `
 const labelFields = `
   _id
   type
-  category
   conf
   bbox
   labeledDate
+  labelId
   validation {
     validated
     validationDate
@@ -144,6 +144,13 @@ const automationRuleFields = `
   }
 `;
 
+const projectLabelFields = `
+  _id
+  name
+  color
+  reviewerEnabled
+`;
+
 const projectFields = `
   _id
   name
@@ -159,7 +166,7 @@ const projectFields = `
     ${cameraConfigFields}
   }
   labels {
-    categories
+    ${projectLabelFields}
   }
   availableMLModels 
 `
@@ -471,9 +478,46 @@ const queries = {
 
   deleteLabels: (input) => ({
     template: `
-      mutation CreateLabels($input: CreateLabelsInput!) {
-        createLabels(input: $input) {
+      mutation DeleteLabels($input: DeleteLabelsInput!) {
+        deleteLabels(input: $input) {
           isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createProjectLabel: (input) => ({
+    template: `
+      mutation CreateProjectLabel($input: CreateProjectLabelInput!) {
+        createProjectLabel(input: $input) {
+          label {
+            ${projectLabelFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateProjectLabel: (input) => ({
+    template: `
+      mutation UpdateProjectLabel($input: UpdateProjectLabelInput!) {
+        updateProjectLabel(input: $input) {
+          label {
+            ${projectLabelFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteProjectLabel: (input) => ({
+    template: `
+      mutation DeleteProjectLabel($input: DeleteProjectLabelInput!) {
+        deleteProjectLabel(input: $input) {
+          message
         }
       }
     `,

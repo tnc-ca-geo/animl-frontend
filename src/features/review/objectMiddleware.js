@@ -41,7 +41,6 @@ export const objectMiddleware = store => next => action => {
   /* objectsLocked */
 
   else if (objectsLocked.match(action)) {
-    console.log('objectMiddleware - objectsLocked - action: ', action);
     next(action);
     const updates = action.payload.objects.map(({ imgId, objId, locked }) => ({
       imageId: imgId,
@@ -55,9 +54,6 @@ export const objectMiddleware = store => next => action => {
 
   else if (objectsManuallyUnlocked.match(action)) {
     next(action);
-    console.log('objectMiddleware - objectsManuallyUnlocked: ', action.payload)
-    // const { imgId, objIds } = action.payload;
-    // const objects = objIds.map((objId) => ({ imgId, objId, locked: false }));
     const objects = action.payload.objects.map(({ imgId, objId }) => ({
       imgId, objId, locked: false
     }));
@@ -76,10 +72,9 @@ export const objectMiddleware = store => next => action => {
         locked: true,
         labels: [{
           _id: new ObjectID().toString(),
-          category: 'empty',
+          labelId: 'empty',
           bbox: [0,0,1,1],
           validation: { validated: true, userId },  
-          type: 'manual',
           conf: 1,
           userId
         }],
