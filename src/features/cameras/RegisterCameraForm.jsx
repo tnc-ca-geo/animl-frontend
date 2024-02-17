@@ -74,6 +74,7 @@ const RegisterCameraForm = () => {
                     touched={touched.make}
                     options={makeOptions}
                     isSearchable={false}
+                    menuPlacement='top'
                   />
                 </FormFieldWrapper>
                 <FormFieldWrapper>

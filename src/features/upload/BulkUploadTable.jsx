@@ -159,9 +159,9 @@ const BulkUploadTable = ({ percentUploaded }) => {
       <Table>
         <thead>
           <tr>
-            <TableHeadCell css={{ width: '25%' }}>File name</TableHeadCell>
-            <TableHeadCell css={{ width: '60%' }}>Status</TableHeadCell>
-            <TableHeadCell css={{ width: '15%' }}>Actions</TableHeadCell>
+            <TableHeadCell css={{ width: '35%' }}>File name</TableHeadCell>
+            <TableHeadCell css={{ width: '45%' }}>Status</TableHeadCell>
+            <TableHeadCell css={{ width: '20%' }}>Actions</TableHeadCell>
           </tr>
         </thead>
         <tbody>

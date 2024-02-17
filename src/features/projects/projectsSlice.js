@@ -6,6 +6,8 @@ import {
   registerCameraSuccess,
   unregisterCameraSuccess
 } from '../cameras/wirelessCamerasSlice';
+import { clearImages } from '../images/imagesSlice.js'
+
 
 const initialState = {
   projects: [],
@@ -53,7 +55,12 @@ const initialState = {
       operation: null,
       errors: null,
       progress: 0
-    }
+    },
+    projectLabels: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -163,7 +170,7 @@ export const projectsSlice = createSlice({
 
 
     /* 
-     * Views CRUD 
+     * Views CRUD
      */
 
     editViewStart: (state) => { 
@@ -209,7 +216,7 @@ export const projectsSlice = createSlice({
     },
 
     /* 
-     * Automation Rules CRUD 
+     * Automation Rules CRUD
      */
 
     updateAutomationRulesStart: (state) => {
@@ -271,20 +278,22 @@ export const projectsSlice = createSlice({
       state.loadingStates.deployments.errors.splice(index, 1);
     },
 
-    /* fetch model source records */
+    /* 
+     * fetch model source records
+     */
 
     getModelsStart: (state) => {
-      const ls = { isLoading: true, operation: 'fetching', errors: null };  
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.deployments = ls;
     },
 
     getModelsFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };  
+      const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.deployments = ls;
     },
 
     getModelsSuccess: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: null };  
+      const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.deployments = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
@@ -295,7 +304,6 @@ export const projectsSlice = createSlice({
     },
 
     getModelOptionsStart: (state) => {
-      console.log('getModelOptionsStart')
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.modelOptions = ls;
     },
@@ -306,10 +314,100 @@ export const projectsSlice = createSlice({
     },
 
     getModelOptionsSuccess: (state, { payload }) => {
-      console.log('getModelOptionsSuccess')
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.modelOptions = ls;
       state.modelOptions = payload;
+    },
+
+    dismissModelsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.models.errors.splice(index, 1);
+    },
+
+    /* 
+     * Project Labels CRUD
+     */
+
+    createProjectLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'creating', errors: null };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    createProjectLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.loadingStates.projectLabels = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.labels = [
+        ...proj.labels,
+        payload.label
+      ];
+    },
+
+    createProjectLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    updateProjectLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    updateProjectLabelSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null
+      };
+      state.loadingStates.projectLabels = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.labels = proj.labels.map((label) => {
+        if (label._id === payload.label._id) {
+          return payload.label;
+        } else {
+          return label;
+        }
+      });
+    },
+
+    updateProjectLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    deleteProjectLabelStart: (state) => {
+      const ls = { isLoading: true, operation: 'deleting', errors: null };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    deleteProjectLabelSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.projectLabels = ls;
+
+      // const proj = state.projects.find((p) => p._id === payload.projId);
+      // proj.labels = proj.labels.map((label) => {
+      //   if (label._id === payload.label._id) {
+      //     return payload.label;
+      //   } else {
+      //     return label;
+      //   }
+      // });
+    },
+
+    deleteProjectLabelFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectLabels = ls;
+    },
+
+    dismissManageLabelsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.projectLabels.errors.splice(index, 1);
     },
 
     setModalOpen: (state, { payload }) => {
@@ -318,11 +416,6 @@ export const projectsSlice = createSlice({
 
     setModalContent: (state, { payload }) => {
       state.modalContent = payload;
-    },
-
-    dismissModelsError: (state, { payload }) => {
-      const index = payload;
-      state.loadingStates.models.errors.splice(index, 1);
     },
   },
 
@@ -380,10 +473,21 @@ export const {
   getModelsStart,
   getModelsFailure,
   getModelsSuccess,
-  dismissModelsError,
   getModelOptionsStart,
   getModelOptionsFailure,
   getModelOptionsSuccess,
+  dismissModelsError,
+
+  createProjectLabelStart,
+  createProjectLabelSuccess,
+  createProjectLabelFailure,
+  updateProjectLabelStart,
+  updateProjectLabelSuccess,
+  updateProjectLabelFailure,
+  deleteProjectLabelStart,
+  deleteProjectLabelSuccess,
+  deleteProjectLabelFailure,
+  dismissManageLabelsError,
 
   setModalOpen,
   setModalContent,
@@ -608,8 +712,86 @@ export const fetchModelOptions = () => {
       dispatch(getModelOptionsFailure(err));
     }
   };
-}
+};
 
+// Project Labels thunks
+export const createProjectLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(createProjectLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'createProjectLabel',
+          input: payload
+        });
+        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label}));
+      }
+    } catch (err) {
+      console.log(`error attempting to create label: `, err);
+      dispatch(createProjectLabelFailure(err));
+    }
+  };
+};
+
+export const updateProjectLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateProjectLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'updateProjectLabel',
+          input: payload
+        });
+        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
+      }
+    } catch (err) {
+      console.log(`error attempting to update label: `, err);
+      dispatch(updateProjectLabelFailure(err));
+    }
+  };
+};
+
+export const deleteProjectLabel = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(deleteProjectLabelStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'deleteProjectLabel',
+          input: payload
+        });
+        console.log('res: ', res);
+        dispatch(deleteProjectLabelSuccess({ projId }));
+        dispatch(clearImages());
+        dispatch(fetchProjects({ _ids: [projId] }));
+      }
+    } catch (err) {
+      console.log(`error attempting to update label: `, err);
+      dispatch(updateProjectLabelFailure(err));
+    }
+  };
+};
 
 // Selectors
 export const selectProjects = state => state.projects.projects;
@@ -628,6 +810,9 @@ export const selectUnsavedViewChanges = state =>
 export const selectMLModels = createSelector([selectSelectedProject],
   (proj) => proj ? proj.mlModels : null
 );
+export const selectLabels = createSelector([selectSelectedProject],
+  (proj) => proj ? proj.labels : []
+);
 export const selectProjectsLoading = state => state.projects.loadingStates.projects;
 export const selectViewsLoading = state => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = state => state.projects.loadingStates.automationRules;
@@ -644,6 +829,8 @@ export const selectCreateProjectsErrors = state => state.projects.loadingStates.
 export const selectCreateProjectLoading = state => state.projects.loadingStates.createProject.isLoading;
 export const selectModelOptions = state => state.projects.modelOptions;
 export const selectModelOptionsLoading = state => state.projects.loadingStates.modelOptions.isLoading;
+export const selectProjectLabelsLoading = state => state.projects.loadingStates.projectLabels;
+export const selectManageLabelsErrors = state => state.projects.loadingStates.projectLabels.errors;
 
 
 export default projectsSlice.reducer;

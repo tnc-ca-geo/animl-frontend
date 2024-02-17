@@ -46,7 +46,9 @@ const ManageCamButton = styled('button', {
   },
 });
 
-const DepButtons = styled('div', {});
+const DepButtons = styled('div', {
+  minWidth: '50px'
+});
 
 const DateDash = styled('span', {
   paddingLeft: '$2',

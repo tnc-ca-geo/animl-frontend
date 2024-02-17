@@ -171,7 +171,7 @@ const Loupe = () => {
             objIsTemp: obj.isTemp,
             userId,
             bbox: obj.bbox,
-            category: lastCategoryApplied,
+            labelId: lastCategoryApplied,
             objId: obj._id,
             imgId: image._id
           }));
@@ -190,7 +190,7 @@ const Loupe = () => {
     const labelsToValidate = [];
     image.objects.forEach((obj) => {
       obj.labels
-        .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
+        .filter((lbl) => lbl.labelId === 'empty' && !lbl.validated)
         .forEach((lbl) => {
           labelsToValidate.push({
             imgId: image._id,

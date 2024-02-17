@@ -121,3 +121,30 @@ export const inViewportTopHalf = (domElement) => {
   const elVerticalCenter = rect.top + rect.height / 2;
   return elVerticalCenter < viewportEquator;
 };
+
+/*
+ * returns a text color with high contrast relative to a given background color
+ */
+export const getTextColor = (bgColor) => {
+  if (!bgColor) {
+    return '$textDark';
+  }
+
+  const threshold = 0.6
+  const [red, green, blue] = [0, 2, 4].map((i) => parseInt(bgColor.slice(i + 1, i + 3), 16));
+  const l = (red * 0.299 + green * 0.587 + blue * 0.114) / 255;
+  return l < threshold ? '$loContrast' : '$textDark';
+};
+
+export const getRandomColor = () => {
+  const red = Math.floor(Math.random() * (255 - 0) + 0);
+  const green = Math.floor(Math.random() * (255 - 0) + 0);
+  const blue = Math.floor(Math.random() * (255 - 0) + 0);
+
+  const integer = ((Math.round(red) & 0xFF) << 16)
+    + ((Math.round(green) & 0xFF) << 8)
+    + (Math.round(blue) & 0xFF);
+
+  const string = integer.toString(16).toUpperCase();
+  return '000000'.substring(string.length) + string;
+}

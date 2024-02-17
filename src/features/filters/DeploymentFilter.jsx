@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { selectActiveFilters, selectAvailDeployments } from './filtersSlice';
+import { selectActiveFilters, selectAvailDeploymentFilters } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
 import BulkSelectCheckbox from './BulkSelectCheckbox';
@@ -10,10 +10,12 @@ import CameraFilterSection from './CameraFilterSection';
 const DeploymentFilter = () => {
   const selectedProject = useSelector(selectSelectedProject);
   const activeFilters = useSelector(selectActiveFilters);
-  const availDeps = useSelector(selectAvailDeployments);
+  const availDeps = useSelector(selectAvailDeploymentFilters);
   const activeDeps = activeFilters.deployments;
-  const activeDepCount = activeDeps ? activeDeps.length : availDeps.ids.length;
-  const noneFound = selectedProject && availDeps.ids.length === 0;
+  const activeDepCount = activeDeps ? activeDeps.length : availDeps.options.length;
+  const noneFound = selectedProject && availDeps.options.length === 0;
+  const managedIds = useMemo(() => availDeps.options.map(({ _id }) => _id), [availDeps.options]);
+
 
   return (
     <Accordion 
@@ -22,11 +24,11 @@ const DeploymentFilter = () => {
       expandedDefault={false}
     >
       {noneFound && <NoneFoundAlert>no deployments found</NoneFoundAlert>}
-      {availDeps.ids.length > 0 &&
+      {availDeps.options.length > 0 &&
         <>
           <BulkSelectCheckbox
             filterCat='deployments'
-            managedIds={availDeps.ids}
+            managedIds={managedIds}
             isHeader={true}
           />
           <div>

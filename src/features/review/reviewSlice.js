@@ -74,7 +74,7 @@ export const reviewSlice = createSlice({
         }
       }
       state.lastAction = 'labels-added';
-      state.lastCategoryApplied = payload.labels[0].category;
+      state.lastCategoryApplied = payload.labels[0].labelId;
     },
 
     labelsRemoved: (state, { payload }) => {

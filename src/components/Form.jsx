@@ -17,7 +17,7 @@ const textInput = {
     transition: 'all 0.2s ease',
     outline: 'none',
     boxShadow: '0 0 0 3px $gray3',
-    borderColor: '$textDark',
+    // borderColor: '$textDark',
     '&:hover': {
       boxShadow: '0 0 0 3px $blue200',
       borderColor: '$blue500',

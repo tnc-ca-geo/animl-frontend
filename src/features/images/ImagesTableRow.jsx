@@ -159,7 +159,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           objIsTemp: obj.isTemp,
           userId,
           bbox: obj.bbox,
-          category: newValue.value || newValue,
+          labelId: newValue.value || newValue,
           objId: obj._id,
           imgId: image._id
         }));
@@ -246,7 +246,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
       let existingEmptyLabels = [];
       image.objects.forEach((obj) => {
         obj.labels
-          .filter((lbl) => lbl.category === 'empty' && !lbl.validated)
+          .filter((lbl) => lbl.labelId === 'empty' && !lbl.validated)
           .forEach((lbl) => {
             existingEmptyLabels.push({
               imgId: image._id,
