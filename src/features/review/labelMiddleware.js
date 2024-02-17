@@ -126,7 +126,6 @@ export const labelMiddleware = store => next => action => {
   /* labelsValidated */
 
   else if (labelsValidated.match(action)) {
-    console.log('labelMiddleware - labelsValidated - action: ', action);
     next(action);
     const lbls = action.payload.labels;
 
