@@ -197,7 +197,7 @@ const queries = {
     variables: { input: input }
   }),
 
-  getViews: (input) => ({
+  getViews: () => ({
     template: `
       {
         views {
