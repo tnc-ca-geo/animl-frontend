@@ -65,6 +65,7 @@ export const uploadSlice = createSlice({
     },
 
     uploadFailure: (state, { payload }) => {
+      console.log('uploadFailure: ', payload);
       const ls = { errors: payload };
       state.loadingStates.upload = {
         ...initialState.loadingStates.upload,
@@ -417,7 +418,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
 
       const complete = async (error) => {
         if (error) {
-          dispatch(uploadFailure(err));
+          dispatch(uploadFailure(error));
         } else {
           uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
           const closeRes = await call({
@@ -449,14 +450,15 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
         sendChunk(url, chunk, index + 1)
           .then(() => sendNext())
           .catch((error) => {
-            if (retry <= 6) {
+            if (retry <= 8) {
               retry++;
               setTimeout(() => {
+                console.log(`Part #${index} failed to upload, retrying (retry ${retry})...`);
                 parts.push({ url, index })
                 sendNext(retry);
-              }, 2 ** retry * 100)
+              }, 2 ** retry * 2000)
             } else {
-              console.log(`Part#${index} failed to upload, giving up`)
+              console.log(`Part #${index} failed to upload, giving up`);
               complete(error);
             }
           })
