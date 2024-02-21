@@ -1,25 +1,19 @@
-import { useDispatch } from "react-redux";
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
-import { styled } from "@stitches/react";
+import { styled } from '@stitches/react';
 import * as Yup from 'yup';
 
 import { createUser, cancel } from './usersSlice.js';
-import {
-  FormWrapper,
-  FormSubheader,
-  FieldRow,
-  FormFieldWrapper,
-  FormError,
-  ButtonRow,
-} from '../../components/Form';
+import { FormWrapper, FormSubheader, FieldRow, FormFieldWrapper, FormError, ButtonRow } from '../../components/Form';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 import Button from '../../components/Button';
 
 const createUserSchema = Yup.object().shape({
-  username: Yup.string().email('Enter an email address').required('Enter the user\'s email address.'),
-  roles: Yup.array().min(1, 'Select at least one role').required('Select at least one role')
+  username: Yup.string().email('Enter an email address').required("Enter the user's email address."),
+  roles: Yup.array().min(1, 'Select at least one role').required('Select at least one role'),
 });
 
 const ManageUsersAddForm = () => {
@@ -34,19 +28,13 @@ const ManageUsersAddForm = () => {
       >
         {({ values, errors, touched, setFieldValue }) => (
           <Form>
-            <FormSubheader>
-              Add user
-            </FormSubheader>
+            <FormSubheader>Add user</FormSubheader>
 
             <FieldRow>
               <FormFieldWrapper>
-                <label htmlFor='username'>E-Mail</label>
-                <Field type='email' name='username' id='username' />
-                {!!errors.username && touched.username && (
-                  <FormError>
-                    {errors.username}
-                  </FormError>
-                )}
+                <label htmlFor="username">E-Mail</label>
+                <Field type="email" name="username" id="username" />
+                {!!errors.username && touched.username && <FormError>{errors.username}</FormError>}
               </FormFieldWrapper>
             </FieldRow>
             <FieldRow>
@@ -57,15 +45,15 @@ const ManageUsersAddForm = () => {
                     <CheckboxWrapper>
                       <label>
                         <Checkbox
-                          name='roles'
-                          value='manager'
+                          name="roles"
+                          value="manager"
                           checked={values.roles.includes('manager')}
                           active={values.roles.includes('manager')}
                           onChange={({ target }) => {
-                            const vals = target.checked ?
-                              [...values.roles, 'manager'] :
-                              values.roles.filter(v => v !== 'manager')
-                            setFieldValue('roles', vals)
+                            const vals = target.checked
+                              ? [...values.roles, 'manager']
+                              : values.roles.filter((v) => v !== 'manager');
+                            setFieldValue('roles', vals);
                           }}
                         />
                         <CheckboxLabel
@@ -79,15 +67,15 @@ const ManageUsersAddForm = () => {
                     <CheckboxWrapper>
                       <label>
                         <Checkbox
-                          name='roles'
-                          value='member'
+                          name="roles"
+                          value="member"
                           checked={values.roles.includes('member')}
                           active={values.roles.includes('member')}
                           onChange={({ target }) => {
                             const vals = target.checked
                               ? [...values.roles, 'member']
-                              : values.roles.filter(v => v !== 'member')
-                            setFieldValue('roles', vals)
+                              : values.roles.filter((v) => v !== 'member');
+                            setFieldValue('roles', vals);
                           }}
                         />
                         <CheckboxLabel
@@ -101,15 +89,15 @@ const ManageUsersAddForm = () => {
                     <CheckboxWrapper>
                       <label>
                         <Checkbox
-                          name='roles'
-                          value='observer'
+                          name="roles"
+                          value="observer"
                           checked={values.roles.includes('observer')}
                           active={values.roles.includes('observer')}
                           onChange={({ target }) => {
-                            const vals = target.checked ?
-                              [...values.roles, 'observer'] :
-                              values.roles.filter(v => v !== 'observer')
-                            setFieldValue('roles', vals)
+                            const vals = target.checked
+                              ? [...values.roles, 'observer']
+                              : values.roles.filter((v) => v !== 'observer');
+                            setFieldValue('roles', vals);
                           }}
                         />
                         <CheckboxLabel
@@ -121,26 +109,15 @@ const ManageUsersAddForm = () => {
                       </label>
                     </CheckboxWrapper>
                   </CheckboxRow>
-                  {!!errors.roles && touched.roles && (
-                    <FormError>
-                      {errors.roles}
-                    </FormError>
-                  )}
+                  {!!errors.roles && touched.roles && <FormError>{errors.roles}</FormError>}
                 </Fieldset>
               </FormFieldWrapper>
             </FieldRow>
             <ButtonRow>
-              <Button
-                type='button'
-                size='large'
-                onClick={() => dispatch(cancel())}
-              >
+              <Button type="button" size="large" onClick={() => dispatch(cancel())}>
                 Cancel
               </Button>
-              <Button
-                type='submit'
-                size='large'
-              >
+              <Button type="submit" size="large">
                 Add user
               </Button>
             </ButtonRow>
@@ -149,12 +126,12 @@ const ManageUsersAddForm = () => {
       </Formik>
     </FormWrapper>
   );
-}
+};
 
 const Fieldset = styled('fieldset', {
   border: 0,
   padding: 0,
-  margin: 0
+  margin: 0,
 });
 
 const Legend = styled('legend', {

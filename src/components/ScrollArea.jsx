@@ -1,6 +1,6 @@
 import React from 'react';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
-import { blackA, mauve, violet } from '@radix-ui/colors';
+import { blackA, mauve } from '@radix-ui/colors';
 import { styled } from '../theme/stitches.config';
 
 const StyledScrollAreaRoot = styled(ScrollArea.Root, {
@@ -11,14 +11,14 @@ const StyledScrollAreaRoot = styled(ScrollArea.Root, {
   overflow: 'hidden',
   // boxShadow: `0 2px 10px ${blackA.blackA7})`,
   // backgroundColor: '$loContrast',
-  '--scrollbar-size': '10px'
+  '--scrollbar-size': '10px',
 });
 
 const StyledScrollAreaViewport = styled(ScrollArea.Viewport, {
   width: '100%',
   height: '100%',
   borderRadius: 'inherit',
-  position: 'absolute'
+  position: 'absolute',
 });
 
 const StyledScrollAreaScrollbar = styled(ScrollArea.Scrollbar, {
@@ -36,13 +36,13 @@ const StyledScrollAreaScrollbar = styled(ScrollArea.Scrollbar, {
   },
 
   '&[data-orientation="vertical"]': {
-    width: 'var(--scrollbar-size)'
+    width: 'var(--scrollbar-size)',
   },
-  
+
   '&[data-orientation="horizontal"]': {
     flexDirection: 'column',
-    height: 'var(--scrollbar-size)'
-  }
+    height: 'var(--scrollbar-size)',
+  },
 });
 
 const StyledScrollAreaThumb = styled(ScrollArea.Thumb, {
@@ -85,14 +85,10 @@ const StyledScrollAreaCorner = styled(ScrollArea.Corner, {
 //   padding-top: 10px;
 // }
 
-
-
 const StyledScrollArea = ({ children }) => (
   <StyledScrollAreaRoot>
-    <StyledScrollAreaViewport>
-      {children}
-    </StyledScrollAreaViewport>
-    <StyledScrollAreaScrollbar orientation='vertical'>
+    <StyledScrollAreaViewport>{children}</StyledScrollAreaViewport>
+    <StyledScrollAreaScrollbar orientation="vertical">
       <StyledScrollAreaThumb />
     </StyledScrollAreaScrollbar>
     <StyledScrollAreaScrollbar orientation="horizontal">

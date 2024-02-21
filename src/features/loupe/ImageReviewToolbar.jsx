@@ -10,24 +10,30 @@ import {
   LockOpen1Icon,
   ReloadIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
-import { addLabelStart, addLabelEnd, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
+import {
+  addLabelStart,
+  selectIsDrawingBbox,
+  selectIsAddingLabel,
+} from './loupeSlice.js';
+import {
+  selectUserUsername,
+  selectUserCurrentRoles,
+} from '../auth/authSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
-import { violet, blackA, mauve } from '@radix-ui/colors';
+import { violet, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipArrow, 
-  TooltipTrigger
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
 } from '../../components/Tooltip.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
-
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -35,7 +41,7 @@ const Toolbar = styled('div', {
   padding: '$2',
   width: '100%',
   minWidth: 'max-content',
-  borderBottom: '1px solid $border'
+  borderBottom: '1px solid $border',
 });
 
 export const itemStyles = {
@@ -50,7 +56,11 @@ export const itemStyles = {
   lineHeight: 1,
   alignItems: 'center',
   justifyContent: 'center',
-  '&:hover': { backgroundColor: violet.violet3, color: violet.violet11, cursor: 'pointer' },
+  '&:hover': {
+    backgroundColor: violet.violet3,
+    color: violet.violet11,
+    cursor: 'pointer',
+  },
   '&:focus': { position: 'relative', boxShadow: `0 0 0 2px ${violet.violet7}` },
 };
 
@@ -65,15 +75,18 @@ const ToolbarIconButton = styled(Button, {
   backgroundColor: 'white',
   marginLeft: 2,
   '&:first-child': { marginLeft: 0 },
-  '&[data-state=on]': { backgroundColor: violet.violet5, color: violet.violet11 },
+  '&[data-state=on]': {
+    backgroundColor: violet.violet5,
+    color: violet.violet11,
+  },
   svg: {
     marginRight: '$1',
-    marginLeft: '$1'
-  }
+    marginLeft: '$1',
+  },
 });
 
 const AnnotationControls = styled('div', {
-  display: 'flex'
+  display: 'flex',
 });
 
 const IncrementControls = styled('div', {
@@ -86,7 +99,7 @@ const CancelHint = styled('div', {
   '&:hover': {
     backgroundColor: '$background',
     color: mauve.mauve11,
-    cursor: 'default'
+    cursor: 'default',
   },
 });
 
@@ -107,9 +120,11 @@ const ImageReviewToolbar = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-review-toolbar'));
+  const [catSelectorOpen, setCatSelectorOpen] = useState(
+    isAddingLabel === 'from-review-toolbar',
+  );
   useEffect(() => {
-    setCatSelectorOpen(((isAddingLabel === 'from-review-toolbar')));
+    setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
   }, [isAddingLabel]);
 
   const handleCategoryChange = (newValue) => {
@@ -122,7 +137,7 @@ const ImageReviewToolbar = ({
         bbox: obj.bbox,
         labelId: newValue.value || newValue,
         objId: obj._id,
-        imgId: image._id
+        imgId: image._id,
       }));
     dispatch(labelsAdded({ labels: newLabels }));
   };
@@ -132,17 +147,21 @@ const ImageReviewToolbar = ({
     dispatch(addLabelStart('from-review-toolbar'));
   };
 
-  const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
-  const allObjectsUnlocked = image.objects && image.objects.every((obj) => !obj.locked);
-  const hasRenderedObjects = image.objects && image.objects.some((obj) => (
-    obj.labels.some((lbl) => (
-      lbl.validation === null || lbl.validation.validated
-    ))
-  ));
-  
+  const allObjectsLocked =
+    image.objects && image.objects.every((obj) => obj.locked);
+  const allObjectsUnlocked =
+    image.objects && image.objects.every((obj) => !obj.locked);
+  const hasRenderedObjects =
+    image.objects &&
+    image.objects.some((obj) =>
+      obj.labels.some(
+        (lbl) => lbl.validation === null || lbl.validation.validated,
+      ),
+    );
+
   return (
     <Toolbar>
-      {hasRole(userRoles, WRITE_OBJECTS_ROLES) &&
+      {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
         <AnnotationControls>
           {/* Repeat last action */}
           <Tooltip>
@@ -154,7 +173,7 @@ const ImageReviewToolbar = ({
                 <ReloadIcon />
               </ToolbarIconButton>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
+            <TooltipContent side="top" sideOffset={5}>
               Repeat last action
               <TooltipArrow />
             </TooltipContent>
@@ -165,19 +184,18 @@ const ImageReviewToolbar = ({
           {/* Edit */}
           <Tooltip>
             <TooltipTrigger asChild>
-              {catSelectorOpen
-                ? (<CategorySelector
-                    handleCategoryChange={handleCategoryChange} 
-                  />)
-                : (<ToolbarIconButton
-                    onClick={handleEditAllLabelsButtonClick}
-                    disabled={allObjectsLocked}
-                  >
-                    <Pencil1Icon />
-                  </ToolbarIconButton>)
-              }
+              {catSelectorOpen ? (
+                <CategorySelector handleCategoryChange={handleCategoryChange} />
+              ) : (
+                <ToolbarIconButton
+                  onClick={handleEditAllLabelsButtonClick}
+                  disabled={allObjectsLocked}
+                >
+                  <Pencil1Icon />
+                </ToolbarIconButton>
+              )}
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
+            <TooltipContent side="top" sideOffset={5}>
               Edit all labels
               <TooltipArrow />
             </TooltipContent>
@@ -195,7 +213,7 @@ const ImageReviewToolbar = ({
                 <CheckIcon />
               </ToolbarIconButton>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
+            <TooltipContent side="top" sideOffset={5}>
               Validate all labels
               <TooltipArrow />
             </TooltipContent>
@@ -209,14 +227,14 @@ const ImageReviewToolbar = ({
                 <Cross2Icon />
               </ToolbarIconButton>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
+            <TooltipContent side="top" sideOffset={5}>
               Invalidate all labels
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
 
           <Separator />
-          
+
           {/* Mark empty */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -224,7 +242,7 @@ const ImageReviewToolbar = ({
                 <ValueNoneIcon />
               </ToolbarIconButton>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
+            <TooltipContent side="top" sideOffset={5}>
               Mark empty
               <TooltipArrow />
             </TooltipContent>
@@ -233,24 +251,27 @@ const ImageReviewToolbar = ({
           <Separator />
 
           {/* Add object */}
-          {isDrawingBbox 
-            ? <CancelHint>
-                <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
-                <span style={{ paddingBottom: '2px' }}>to cancel</span>
-              </CancelHint>
-            : <Tooltip>
-                <TooltipTrigger asChild>
-                  <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                    <GroupIcon />
-                  </ToolbarIconButton>
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={5} >
-                  Add object
-                  <TooltipArrow />
-                </TooltipContent>
-              </Tooltip>
-          }
-          
+          {isDrawingBbox ? (
+            <CancelHint>
+              <KeyboardKeyHint css={{ marginRight: '4px' }}>
+                esc
+              </KeyboardKeyHint>
+              <span style={{ paddingBottom: '2px' }}>to cancel</span>
+            </CancelHint>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                  <GroupIcon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Add object
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+          )}
+
           <Separator />
 
           {/* Unlock */}
@@ -263,13 +284,13 @@ const ImageReviewToolbar = ({
                 <LockOpen1Icon />
               </ToolbarIconButton>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5} >
+            <TooltipContent side="top" sideOffset={5}>
               Unlock all objects
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
         </AnnotationControls>
-      }
+      )}
 
       {/* Increment/Decrement */}
       <IncrementControls>
@@ -277,23 +298,24 @@ const ImageReviewToolbar = ({
           <TooltipTrigger asChild>
             <div>
               <IconButton
-                variant='ghost'
-                size='med'
+                variant="ghost"
+                size="med"
                 onClick={() => handleIncrementClick('decrement')}
               >
-                <ChevronLeftIcon/>
+                <ChevronLeftIcon />
               </IconButton>
               <IconButton
-                variant='ghost'
-                size='med'
+                variant="ghost"
+                size="med"
                 onClick={() => handleIncrementClick('increment')}
               >
-                <ChevronRightIcon/>
+                <ChevronRightIcon />
               </IconButton>
             </div>
           </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
-            Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
+          <TooltipContent side="top" sideOffset={5}>
+            Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
+            <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>

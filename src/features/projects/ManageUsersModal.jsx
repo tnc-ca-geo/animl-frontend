@@ -1,21 +1,22 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { selectMode } from './usersSlice.js';
 import ManageUsersAddForm from './ManageUsersAddForm.jsx';
 import ManageUsersEditForm from './ManageUsersEditForm.jsx';
-import ManageUsersTable from "./ManageUsersTable";
+import ManageUsersTable from './ManageUsersTable';
 
 const ManageUsersModal = () => {
   const mode = useSelector(selectMode);
 
-  switch(mode) {
+  switch (mode) {
     case 'addUser':
-      return <ManageUsersAddForm />
+      return <ManageUsersAddForm />;
     case 'editUser':
-      return <ManageUsersEditForm />
+      return <ManageUsersEditForm />;
     default:
-      return <ManageUsersTable />
+      return <ManageUsersTable />;
   }
-}
+};
 
 export default ManageUsersModal;

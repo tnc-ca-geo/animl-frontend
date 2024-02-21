@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled, labelColors } from '../../theme/stitches.config.js';
+import { styled } from '../../theme/stitches.config.js';
 import { selectLabels } from '../projects/projectsSlice.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
@@ -18,8 +18,8 @@ const ObjectPill = styled('div', {
       true: {
         outline: 'none',
         boxShadow: '0 0 0 3px $blue200',
-        borderColor: '$blue500',  
-      }
+        borderColor: '$blue500',
+      },
     },
     locked: {
       true: {
@@ -29,16 +29,16 @@ const ObjectPill = styled('div', {
       false: {
         borderColor: '$gray10',
         borderStyle: 'dashed',
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
 
 const LabelContainer = styled('div', {
   width: '100%',
   display: 'flex',
   flexWrap: 'wrap',
-  userSelect: 'none'
+  userSelect: 'none',
 });
 
 const LabelPills = ({ objects, imageIndex, focusIndex }) => {
@@ -56,57 +56,50 @@ const LabelPills = ({ objects, imageIndex, focusIndex }) => {
   };
 
   return (
-    <LabelContainer >
+    <LabelContainer>
       {objects.map((object, objIndex) => {
         // TODO: find a cleaner way to do this. Maybe make it a hook?
         // We also need filtered objects in FullSizeImage component...
-        // and reviewMiddleware so consider encapsulating 
+        // and reviewMiddleware so consider encapsulating
         let labels;
         if (object.locked) {
-          const firstValidatedLabel = object.labels.find((label) => (
-            label.validation && label.validation.validated
-          ));
+          const firstValidatedLabel = object.labels.find((label) => label.validation && label.validation.validated);
           labels = firstValidatedLabel ? [firstValidatedLabel] : [];
-        }
-        else {
-          const allNonInvalLabels = object.labels.filter((label) => (
-            label.validation === null || label.validation.validated
-          ));
+        } else {
+          const allNonInvalLabels = object.labels.filter(
+            (label) => label.validation === null || label.validation.validated,
+          );
           labels = allNonInvalLabels;
         }
 
         return (
           <div key={object._id}>
-          {labels.length > 0 &&
-            <ObjectPill
-              key={object._id}
-              focused={isImageFocused && objIndex === focusIndex.object}
-              locked={object.locked}
-            >
-              {labels.map((label, i) => {
-                const lblIndex = object.labels.indexOf(label);
-                const l = projectLabels?.find(({ _id }) => label.labelId === _id);
-                return (
-                  <LabelPill
-                    key={label._id}
-                    focused={isImageFocused &&
-                      objIndex === focusIndex.object &&
-                      lblIndex === focusIndex.label
-                    }
-                    onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
-                    color={l?.color || '#00C797'}
-                    name={l?.name || "ERROR FINDING LABEL"}
-                  />
-                )
-              })}
-            </ObjectPill>
-          }
+            {labels.length > 0 && (
+              <ObjectPill
+                key={object._id}
+                focused={isImageFocused && objIndex === focusIndex.object}
+                locked={object.locked}
+              >
+                {labels.map((label) => {
+                  const lblIndex = object.labels.indexOf(label);
+                  const l = projectLabels?.find(({ _id }) => label.labelId === _id);
+                  return (
+                    <LabelPill
+                      key={label._id}
+                      focused={isImageFocused && objIndex === focusIndex.object && lblIndex === focusIndex.label}
+                      onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
+                      color={l?.color || '#00C797'}
+                      name={l?.name || 'ERROR FINDING LABEL'}
+                    />
+                  );
+                })}
+              </ObjectPill>
+            )}
           </div>
-        )
-
-        })}
+        );
+      })}
     </LabelContainer>
-  )
+  );
 };
 
 export default LabelPills;

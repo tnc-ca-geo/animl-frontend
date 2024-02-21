@@ -3,18 +3,18 @@ import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../auth/roles.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectImagesCount, fetchImages } from '../images/imagesSlice.js';
-import { selectActiveFilters  } from './filtersSlice.js';
-import { selectModalOpen, selectSelectedProject, setModalOpen, setModalContent, fetchProjects } from '../projects/projectsSlice.js';
-import { toggleOpenLoupe } from '../loupe/loupeSlice.js'
+import { selectImagesCount } from '../images/imagesSlice.js';
+import {
+  selectModalOpen,
+  selectSelectedProject,
+  setModalOpen,
+  setModalContent,
+  fetchProjects,
+} from '../projects/projectsSlice.js';
+import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 import { InfoCircledIcon, DownloadIcon, SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipArrow, 
-  TooltipTrigger
-} from '../../components/Tooltip.jsx';
+import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
 
 const RefreshButton = styled('div', {
   height: '100%',
@@ -47,10 +47,10 @@ const ImagesCount = styled('div', {
   justifyContent: 'center',
   fontSize: '$2',
   color: '$textLight',
-  'span': {
+  span: {
     color: '$textDark',
     paddingRight: '$2',
-  }
+  },
 });
 
 const StyledFiltersPanelFooter = styled('div', {
@@ -68,7 +68,6 @@ const StyledFiltersPanelFooter = styled('div', {
 
 const FiltersPanelFooter = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
-  const filters = useSelector(selectActiveFilters);
   const imagesCount = useSelector(selectImagesCount);
   const modalOpen = useSelector(selectModalOpen);
   const selectedProj = useSelector(selectSelectedProject);
@@ -87,59 +86,47 @@ const FiltersPanelFooter = () => {
   return (
     <StyledFiltersPanelFooter>
       <ImagesCount>
-        <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images 
+        <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images
       </ImagesCount>
-      {hasRole(userRoles, READ_STATS_ROLES) &&
+      {hasRole(userRoles, READ_STATS_ROLES) && (
         <Tooltip>
           <TooltipTrigger asChild>
             <InfoButton>
-              <IconButton
-                variant='ghost'
-                size='large'
-                onClick={() => handleModalToggle('stats-modal')}
-              >
+              <IconButton variant="ghost" size="large" onClick={() => handleModalToggle('stats-modal')}>
                 <InfoCircledIcon />
               </IconButton>
             </InfoButton>
           </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
+          <TooltipContent side="top" sideOffset={5}>
             Get stats
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>
-      }
-      {hasRole(userRoles, EXPORT_DATA_ROLES) &&
+      )}
+      {hasRole(userRoles, EXPORT_DATA_ROLES) && (
         <Tooltip>
           <TooltipTrigger asChild>
             <ExportCSVButton>
-              <IconButton
-                variant='ghost'
-                size='large'
-                onClick={() => handleModalToggle('export-modal')}
-              >
+              <IconButton variant="ghost" size="large" onClick={() => handleModalToggle('export-modal')}>
                 <DownloadIcon />
               </IconButton>
             </ExportCSVButton>
           </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5} >
+          <TooltipContent side="top" sideOffset={5}>
             Export data
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>
-      }
+      )}
       <Tooltip>
         <TooltipTrigger asChild>
           <RefreshButton>
-            <IconButton
-              variant='ghost'
-              size='large'
-              onClick={handleRefreshClick}
-            >
-            <SymbolIcon />
-          </IconButton>
+            <IconButton variant="ghost" size="large" onClick={handleRefreshClick}>
+              <SymbolIcon />
+            </IconButton>
           </RefreshButton>
         </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={5} >
+        <TooltipContent side="top" sideOffset={5}>
           Refresh data
           <TooltipArrow />
         </TooltipContent>
@@ -149,4 +136,3 @@ const FiltersPanelFooter = () => {
 };
 
 export default FiltersPanelFooter;
-

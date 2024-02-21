@@ -18,14 +18,10 @@ const AdditionalDepCount = styled('div', {
         color: '$hiContrast',
       },
       false: {
-        color: '$textMedium'
-      }
-    }
-  }
-});
-
-const CameraId = styled('span', {
-  // color: '$gray6',
+        color: '$textMedium',
+      },
+    },
+  },
 });
 
 const Deployments = styled('div', {
@@ -35,12 +31,12 @@ const Deployments = styled('div', {
 
 const CameraCheckboxWrapper = styled(CheckboxWrapper, {
   // paddingBottom: '$1',
-})
+});
 
 const ExpandButton = styled('div', {
   position: 'absolute',
   right: '0',
-})
+});
 
 const DeploymentCheckboxWrapper = styled(CheckboxWrapper, {
   marginLeft: '$3',
@@ -64,41 +60,39 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const managedIds = deployments.map((dep) => dep._id);
 
   const handleCheckboxChange = (e) => {
-    dispatch(checkboxFilterToggled({
-      filterCat: e.target.dataset.filterCat,
-      val: e.target.dataset.sn,
-    }));
+    dispatch(
+      checkboxFilterToggled({
+        filterCat: e.target.dataset.filterCat,
+        val: e.target.dataset.sn,
+      }),
+    );
   };
 
   const handleExpandCameraButtonClick = (e) => {
     e.preventDefault();
     setExpanded(!expanded);
-  }
+  };
 
   return (
     <StyledCameraFilterSection>
       <CameraCheckboxWrapper>
         <label>
-          <BulkSelectCheckbox
-            filterCat='deployments'
-            managedIds={managedIds}
-            isHeader={false}
-          />
-          <CameraCheckboxLabel 
-            filterCat='deployments'
+          <BulkSelectCheckbox filterCat="deployments" managedIds={managedIds} isHeader={false} />
+          <CameraCheckboxLabel
+            filterCat="deployments"
             managedIds={managedIds}
             deployments={deployments}
             activeDeps={activeDeps}
           />
           <ExpandButton onClick={handleExpandCameraButtonClick}>
-            <IconButton size='small' variant='ghost'>
-              {expanded ? <ChevronDownIcon/> : <ChevronRightIcon />}
+            <IconButton size="small" variant="ghost">
+              {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
             </IconButton>
           </ExpandButton>
         </label>
       </CameraCheckboxWrapper>
 
-      {expanded && 
+      {expanded && (
         <Deployments>
           {deployments.map((dep) => {
             const depChecked = activeDeps === null || activeDeps.includes(dep._id);
@@ -112,18 +106,15 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
                     data-sn={dep._id}
                     onChange={handleCheckboxChange}
                   />
-                  <CheckboxLabel
-                    checked={depChecked}
-                    active={depChecked}
-                  >
+                  <CheckboxLabel checked={depChecked} active={depChecked}>
                     {truncateString(dep.name, 27)}
                   </CheckboxLabel>
                 </label>
               </DeploymentCheckboxWrapper>
-            )
+            );
           })}
         </Deployments>
-      }
+      )}
     </StyledCameraFilterSection>
   );
 };
@@ -136,11 +127,11 @@ const OnlyButton = styled('div', {
   fontWeight: '$5',
   '&:hover': {
     textDecoration: 'underline',
-  }
+  },
 });
 
 const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps }) => {
-  const [ showOnlyButton, setShowOnlyButton ] = useState(false);
+  const [showOnlyButton, setShowOnlyButton] = useState(false);
   const dispatch = useDispatch();
 
   const mostRecentDep = truncateString(deployments[deployments.length - 1].name, 27);
@@ -154,9 +145,7 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
 
   let activeDepCount = deployments.length;
   if (activeDeps !== null) {
-    activeDepCount = deployments.filter((dep) => (
-      activeDeps.includes(dep._id)
-    )).length;
+    activeDepCount = deployments.filter((dep) => activeDeps.includes(dep._id)).length;
   }
 
   const someActive = activeDepCount > 0;
@@ -174,19 +163,17 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
       onMouseEnter={() => setShowOnlyButton(true)}
       onMouseLeave={() => setShowOnlyButton(false)}
     >
-      <div>{someActive ? mostRecentActiveDep : mostRecentDep }</div>
+      <div>{someActive ? mostRecentActiveDep : mostRecentDep}</div>
       <AdditionalDepCount active={true}>
-        {(someActive && activeDepCount - 1 > 0) && `, +${activeDepCount - 1}`}
+        {someActive && activeDepCount - 1 > 0 && `, +${activeDepCount - 1}`}
       </AdditionalDepCount>
       <AdditionalDepCount active={false}>
-        {(!someActive && inactiveDepCount -1 > 0) && `, +${inactiveDepCount - 1}`}
-        {(someActive && inactiveDepCount > 0) && `, +${inactiveDepCount}`}
+        {!someActive && inactiveDepCount - 1 > 0 && `, +${inactiveDepCount - 1}`}
+        {someActive && inactiveDepCount > 0 && `, +${inactiveDepCount}`}
       </AdditionalDepCount>
-      {showOnlyButton &&
-        <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>
-      }
+      {showOnlyButton && <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>}
     </CheckboxLabel>
-  )
-}
+  );
+};
 
 export default CameraFilterSection;

@@ -1,13 +1,12 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { updateAutomationRules, selectAutomationRulesLoading, editView, selectViewsLoading } from './projectsSlice.js';
+import { updateAutomationRules, selectAutomationRulesLoading } from './projectsSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import Button from '../../components/Button.jsx';
 import { ButtonRow } from '../../components/Form.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { TrashIcon, Pencil1Icon } from '@radix-ui/react-icons';
-
 
 const Rule = styled('li', {
   display: 'flex',
@@ -33,7 +32,7 @@ const StyledRuleDescription = styled('div', {
     color: '$textMedium',
     margin: '0',
     marginTop: '$1',
-  }
+  },
 });
 
 const EditButtons = styled('div', {
@@ -46,21 +45,15 @@ const RuleDescription = ({ rule, availableModels }) => {
     <StyledRuleDescription>
       <RuleTitle>{rule.name}</RuleTitle>
       <p>
-        {rule.event.type === 'image-added' && 
-          `When an image is added, `
-        }
-        {rule.event.type === 'label-added' && 
-          `When an ${rule.event.label} is detected, `
-        }
+        {rule.event.type === 'image-added' && `When an image is added, `}
+        {rule.event.type === 'label-added' && `When an ${rule.event.label} is detected, `}
         {rule.action.type === 'run-inference'
           ? `request a prediction from ${model}.`
-          : `send an alert to ${rule.action.alertRecipients.join(', ')}.`
-        }
+          : `send an alert to ${rule.action.alertRecipients.join(', ')}.`}
       </p>
     </StyledRuleDescription>
   );
 };
-
 
 const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditRuleClick, setCurrentRule }) => {
   const automationRulesLoading = useSelector(selectAutomationRulesLoading);
@@ -68,9 +61,7 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
 
   const handleRuleDeleteClick = (e) => {
     const ruleToRemove = e.currentTarget.dataset.rule;
-    const rules = project.automationRules.filter((rule) => (
-      rule._id.toString() !== ruleToRemove
-    ));
+    const rules = project.automationRules.filter((rule) => rule._id.toString() !== ruleToRemove);
     dispatch(updateAutomationRules({ automationRules: rules }));
   };
 
@@ -83,11 +74,11 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
 
   return (
     <div>
-      {automationRulesLoading.isLoading &&
+      {automationRulesLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <div>
         <RulesList>
           {project.automationRules.map((rule) => {
@@ -95,30 +86,19 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
               <Rule key={rule._id}>
                 <RuleDescription rule={rule} availableModels={availableModels} />
                 <EditButtons>
-                  <IconButton
-                    variant='ghost'
-                    data-rule={rule._id}
-                    onClick={handleRuleEditClick}
-                  >
+                  <IconButton variant="ghost" data-rule={rule._id} onClick={handleRuleEditClick}>
                     <Pencil1Icon />
                   </IconButton>
-                  <IconButton
-                    variant='ghost'
-                    data-rule={rule._id}
-                    onClick={handleRuleDeleteClick}
-                  >
+                  <IconButton variant="ghost" data-rule={rule._id} onClick={handleRuleDeleteClick}>
                     <TrashIcon />
                   </IconButton>
                 </EditButtons>
               </Rule>
-            )
+            );
           })}
         </RulesList>
         <ButtonRow>
-          <Button
-            size='large'
-            onClick={onAddRuleClick}
-          >
+          <Button size="large" onClick={onAddRuleClick}>
             New rule
           </Button>
         </ButtonRow>
@@ -127,6 +107,4 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
   );
 };
 
-
 export default AutomationRulesList;
-

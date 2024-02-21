@@ -4,7 +4,6 @@ import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { CaretDownIcon } from '@radix-ui/react-icons';
 import { violet, indigo } from '@radix-ui/colors';
 
-
 const enterFromRight = keyframes({
   from: { transform: 'translateX(200px)', opacity: 0 },
   to: { transform: 'translateX(0)', opacity: 1 },
@@ -102,13 +101,17 @@ const StyledCaret = styled(CaretDownIcon, {
   },
 });
 
-const StyledTriggerWithCaret = React.forwardRef(
-  ({ children, ...props }, forwardedRef) => (
+const StyledTriggerWithCaret = React.forwardRef(function StyledTriggerWithCaret(
+  { children, ...props },
+  forwardedRef,
+) {
+  return (
     <StyledTrigger {...props} ref={forwardedRef}>
       {children}
       <StyledCaret aria-hidden />
     </StyledTrigger>
-));
+  );
+});
 
 const StyledLink = styled(NavigationMenuPrimitive.Link, {
   ...itemStyles,
@@ -124,8 +127,8 @@ const StyledLink = styled(NavigationMenuPrimitive.Link, {
         backgroundColor: '$gray4',
         '&:hover': { backgroundColor: '$gray5' },
       },
-    }
-  }
+    },
+  },
 });
 
 const StyledContent = styled(NavigationMenuPrimitive.Content, {
@@ -170,11 +173,15 @@ const StyledArrow = styled('div', {
   borderTopLeftRadius: 2,
 });
 
-const StyledIndicatorWithArrow = React.forwardRef((props, forwardedRef) => (
-  <StyledIndicator {...props} ref={forwardedRef}>
-    <StyledArrow />
-  </StyledIndicator>
-));
+const StyledIndicatorWithArrow = React.forwardRef(
+  function StyledIndicatorWithArrow(props, forwardedRef) {
+    return (
+      <StyledIndicator {...props} ref={forwardedRef}>
+        <StyledArrow />
+      </StyledIndicator>
+    );
+  },
+);
 
 const StyledViewport = styled(NavigationMenuPrimitive.Viewport, {
   position: 'relative',
@@ -184,7 +191,8 @@ const StyledViewport = styled(NavigationMenuPrimitive.Viewport, {
   backgroundColor: '$backgroundLight',
   borderRadius: '$2',
   overflow: 'hidden',
-  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  boxShadow:
+    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   height: 'var(--radix-navigation-menu-viewport-height)',
 
   '@media only screen and (min-width: 600px)': {

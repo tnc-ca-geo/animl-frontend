@@ -40,8 +40,8 @@ const MainenanceMessage = styled('div', {
   '&::after': {
     content: '\\1F9EC',
     paddingLeft: '$2',
-    fontSize: '30px'
-  }
+    fontSize: '30px',
+  },
 });
 
 const StyledMaintenanceAlert = styled('div', {
@@ -54,14 +54,8 @@ const StyledMaintenanceAlert = styled('div', {
 
 const MaintenanceAlert = () => (
   <StyledMaintenanceAlert>
-    <img
-      alt='Animl'
-      src={logo}
-      width='300'
-    />
-    <MainenanceMessage>
-      Animl is undergoing evolution. Check back soon!
-    </MainenanceMessage>
+    <img alt="Animl" src={logo} width="300" />
+    <MainenanceMessage>Animl is undergoing evolution. Check back soon!</MainenanceMessage>
   </StyledMaintenanceAlert>
 );
 
@@ -71,15 +65,15 @@ const App = () => {
 
   // check for maintenance mode
   const router = useSelector(selectRouterLocation);
-  const [ maintenanceMode, setMaintenanceMode ] = useState(IN_MAINTENANCE_MODE);
+  const [maintenanceMode, setMaintenanceMode] = useState(IN_MAINTENANCE_MODE);
   useEffect(() => {
-    if ('maintenance-mode' in router.query){
+    if ('maintenance-mode' in router.query) {
       setMaintenanceMode(router.query['maintenance-mode']);
     }
-  }, [ router ]);
+  }, [router]);
 
-  const { authStatus } = useAuthenticator(context => [context.authStatus]);
-  const { user } = useAuthenticator(context => [context.user]);
+  const { authStatus } = useAuthenticator((context) => [context.authStatus]);
+  const { user } = useAuthenticator((context) => [context.user]);
   useEffect(() => {
     const payload = { authStatus };
     if (user && authStatus === 'authenticated') {
@@ -108,60 +102,64 @@ const App = () => {
 
   // Monitor connection loss
   useEffect(() => {
-    const handleOffline = (e) => {
+    const handleOffline = () => {
       const now = new Date();
       console.log(`Lost internet connection at ${now.toISOString()}`);
-    }
+    };
     window.addEventListener('offline', handleOffline);
-    return () => { window.removeEventListener('offline', handleOffline) }
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   useEffect(() => {
-    const handleOnline = (e) => {
+    const handleOnline = () => {
       const now = new Date();
       console.log(`Regained internet connection at ${now.toISOString()}`);
-    }
+    };
     window.addEventListener('online', handleOnline);
-    return () => { window.removeEventListener('online', handleOnline) }
+    return () => {
+      window.removeEventListener('online', handleOnline);
+    };
   }, []);
 
   useEffect(() => {
     dispatch(initTracking(GA_CONFIG));
-  }, [ dispatch ]);
+  }, [dispatch]);
 
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const handleMouseUp = () => {
-    if (isDrawingBbox) dispatch(mouseEventDetected({ event: 'mouse-up'}));
+    if (isDrawingBbox) dispatch(mouseEventDetected({ event: 'mouse-up' }));
   };
   const handleMouseDown = () => {
-    if (isDrawingBbox) dispatch(mouseEventDetected({ event: 'mouse-down'}));
-  }
+    if (isDrawingBbox) dispatch(mouseEventDetected({ event: 'mouse-down' }));
+  };
 
   return (
     <>
-      {maintenanceMode === true
-        ? (<MaintenanceAlert/>)
-        : (
-          <Tooltip.Provider>
-            <Toast.Provider>
-              <AppContainer
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                css={isDrawingBbox && { userSelect: 'none' }}
-              >
-                <NavBar />
-                <Switch>
-                  <Route exact path="/" component={HomePage} />
-                  <Route path="/app" component={AppPage} />
-                  <Route path="/case-studies" component={CaseStudiesPage} />
-                  <Route path="/create-project" component={CreateProjectPage} />
-                  {/*<Route component={NoMatch} />*/}
-                </Switch>
-              </AppContainer>
-            </Toast.Provider>
-          </Tooltip.Provider>)
-      }
-    </>  
+      {maintenanceMode === true ? (
+        <MaintenanceAlert />
+      ) : (
+        <Tooltip.Provider>
+          <Toast.Provider>
+            <AppContainer
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              css={isDrawingBbox && { userSelect: 'none' }}
+            >
+              <NavBar />
+              <Switch>
+                <Route exact path="/" component={HomePage} />
+                <Route path="/app" component={AppPage} />
+                <Route path="/case-studies" component={CaseStudiesPage} />
+                <Route path="/create-project" component={CreateProjectPage} />
+                {/*<Route component={NoMatch} />*/}
+              </Switch>
+            </AppContainer>
+          </Toast.Provider>
+        </Tooltip.Provider>
+      )}
+    </>
   );
 };
 

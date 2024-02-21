@@ -1,37 +1,32 @@
-
 import { ObjectID } from 'bson';
-import { addLabelEnd, selectReviewMode } from '../loupe/loupeSlice';
+import { addLabelEnd } from '../loupe/loupeSlice';
 import {
-  setFocus,
   editLabel,
   objectsLocked,
   labelsAdded,
   labelsRemoved,
   labelsValidated,
-  incrementFocusIndex,
   selectWorkingImages,
   labelsValidationReverted,
 } from './reviewSlice';
 import { findObject } from '../../app/utils';
 
-export const labelMiddleware = store => next => action => {
-
+export const labelMiddleware = (store) => (next) => (action) => {
   /* labelsAdded */
 
   if (labelsAdded.match(action)) {
-
     action.payload.labels.map((label) => {
       const { newLabel, bbox, userId, labelId } = label;
-      const { objIsTemp, imgId, objId, newObject } = label;
-      // if we are redoing a previous labelsAdded action, 
-      // there will already be a newLabel in the payload 
+      const { objIsTemp, objId, newObject } = label;
+      // if we are redoing a previous labelsAdded action,
+      // there will already be a newLabel in the payload
       label.newLabel = newLabel || {
         _id: new ObjectID().toString(),
         labelId,
         bbox,
-        validation: { validated: true, userId },  
+        validation: { validated: true, userId },
         conf: 1,
-        userId: userId
+        userId: userId,
       };
 
       if (objIsTemp) {
@@ -48,34 +43,40 @@ export const labelMiddleware = store => next => action => {
 
     next(action);
 
-    const tempObjs = action.payload.labels.filter((lbl) => lbl.objIsTemp );
-    const nonTempObjs = action.payload.labels.filter((lbl) => !lbl.objIsTemp );
+    const tempObjs = action.payload.labels.filter((lbl) => lbl.objIsTemp);
+    const nonTempObjs = action.payload.labels.filter((lbl) => !lbl.objIsTemp);
 
     if (tempObjs.length) {
-      store.dispatch(editLabel('create', 'objects', {
-        objects: tempObjs.map(({ newObject, imgId }) => ({
-          object: newObject,
-          imageId: imgId
-        }))
-      }));
+      store.dispatch(
+        editLabel('create', 'objects', {
+          objects: tempObjs.map(({ newObject, imgId }) => ({
+            object: newObject,
+            imageId: imgId,
+          })),
+        }),
+      );
     }
 
     if (nonTempObjs.length) {
-      store.dispatch(editLabel('create', 'labels', {
-        labels: nonTempObjs.map(({ newLabel, imgId, objId }) => ({
-          ...newLabel,
-          imageId: imgId,
-          objectId: objId
-        }))
-      }));
+      store.dispatch(
+        editLabel('create', 'labels', {
+          labels: nonTempObjs.map(({ newLabel, imgId, objId }) => ({
+            ...newLabel,
+            imageId: imgId,
+            objectId: objId,
+          })),
+        }),
+      );
 
-      store.dispatch(objectsLocked({
-        objects: nonTempObjs.map(({ imgId, objId }) => ({
-          imgId,
-          objId,
-          locked: true
-        }))
-      }));
+      store.dispatch(
+        objectsLocked({
+          objects: nonTempObjs.map(({ imgId, objId }) => ({
+            imgId,
+            objId,
+            locked: true,
+          })),
+        }),
+      );
     }
 
     store.dispatch(addLabelEnd());
@@ -87,45 +88,47 @@ export const labelMiddleware = store => next => action => {
     // store.dispatch(setFocus({ index: newIndex, type: 'auto' }));
     // const reviewMode = selectReviewMode(store.getState());
     // if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
-  }
+  } else if (labelsRemoved.match(action)) {
 
   /* labelsRemoved */
-
-  else if (labelsRemoved.match(action)) {
-
     for (const { imgId, objId, newLabel } of action.payload.labels) {
       // remove object if there's only one label left
       const workingImages = selectWorkingImages(store.getState());
       const object = findObject(workingImages, imgId, objId);
       if (object.labels.length <= 1) {
-        store.dispatch(editLabel('delete', 'objects', {
-          objects: [{
-            imageId: imgId,
-            objectId: objId,
-          }]
-        }));
-      }
-      else {
-        store.dispatch(editLabel('delete', 'labels', {
-          labels: [{
-            imageId: imgId,
-            objectId: objId,
-            labelId: newLabel._id
-          }]
-        }));
+        store.dispatch(
+          editLabel('delete', 'objects', {
+            objects: [
+              {
+                imageId: imgId,
+                objectId: objId,
+              },
+            ],
+          }),
+        );
+      } else {
+        store.dispatch(
+          editLabel('delete', 'labels', {
+            labels: [
+              {
+                imageId: imgId,
+                objectId: objId,
+                labelId: newLabel._id,
+              },
+            ],
+          }),
+        );
         const objects = [{ imgId, objId, locked: false }];
         store.dispatch(objectsLocked({ objects }));
       }
     }
 
     next(action);
-  
+
     // store.dispatch(incrementFocusIndex('increment')); // increment focus?
-  }
+  } else if (labelsValidated.match(action)) {
 
   /* labelsValidated */
-
-  else if (labelsValidated.match(action)) {
     next(action);
     const lbls = action.payload.labels;
 
@@ -143,18 +146,14 @@ export const labelMiddleware = store => next => action => {
     const objects = [];
     lbls.forEach(({ imgId, objId, validated }) => {
       const object = findObject(workingImages, imgId, objId);
-      const allLabelsInvalidated = object.labels.every((lbl) => (
-        lbl.validation && lbl.validation.validated === false
-      ));
+      const allLabelsInvalidated = object.labels.every((lbl) => lbl.validation && lbl.validation.validated === false);
       const locked = (!validated && allLabelsInvalidated) || validated;
-      objects.push({ imgId, objId, locked })
+      objects.push({ imgId, objId, locked });
     });
     store.dispatch(objectsLocked({ objects }));
-  }
+  } else if (labelsValidationReverted.match(action)) {
 
   /* labelsValidationReverted */
-
-  else if (labelsValidationReverted.match(action)) {
     next(action);
     const lbls = action.payload.labels;
 
@@ -171,13 +170,10 @@ export const labelMiddleware = store => next => action => {
     const objectUpdates = lbls.map(({ imgId, objId, oldLocked }) => ({
       imgId,
       objId,
-      locked: oldLocked 
+      locked: oldLocked,
     }));
     store.dispatch(objectsLocked({ objects: objectUpdates }));
-  }
-
-  else {
+  } else {
     next(action);
   }
-
 };

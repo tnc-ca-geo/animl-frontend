@@ -7,15 +7,15 @@ import {
   ToastTitle,
   ToastDescription,
   ToastAction,
-  ToastViewport
+  ToastViewport,
 } from './Toast';
 import {
   selectLabelsErrors,
   dismissLabelsError,
   selectCommentsErrors,
-  dismissCommentsError
+  dismissCommentsError,
 } from '../features/review/reviewSlice';
-import { 
+import {
   selectProjectsErrors,
   dismissProjectsError,
   selectViewsErrors,
@@ -26,6 +26,8 @@ import {
   dismissModelsError,
   selectCreateProjectsErrors,
   dismissCreateProjectError,
+  selectManageLabelsErrors,
+  dismissManageLabelsError,
 } from '../features/projects/projectsSlice';
 import {
   selectWirelessCamerasErrors,
@@ -45,11 +47,13 @@ import {
   selectExportImageErrorsErrors,
   dismissExportErrorsError,
   selectRedriveBatchErrors,
-  dismissRedriveBatchError
+  dismissRedriveBatchError,
 } from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
-import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
-import { selectManageLabelsErrors, dismissManageLabelsError } from '../features/projects/projectsSlice';
+import {
+  selectManageUserErrors,
+  dismissManageUsersError,
+} from '../features/projects/usersSlice';
 
 // TODO: add updateAutomationRules errors
 
@@ -71,7 +75,7 @@ const ErrorAlerts = () => {
   const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
   const manageLabelsErrors = useSelector(selectManageLabelsErrors);
-  
+
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
     enrichErrors(commentsErrors, 'Comment Error', 'comments'),
@@ -84,16 +88,29 @@ const ErrorAlerts = () => {
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportDataErrors, 'Error Exporting Data', 'data'),
-    enrichErrors(exportImageErrorsErrors, 'Error downloading errors CSV', 'uploadImageErrors'),
-    enrichErrors(redriveBatchErrors, 'Error retrying failed images in batch', 'redriveBatch'),
+    enrichErrors(
+      exportImageErrorsErrors,
+      'Error downloading errors CSV',
+      'uploadImageErrors',
+    ),
+    enrichErrors(
+      redriveBatchErrors,
+      'Error retrying failed images in batch',
+      'redriveBatch',
+    ),
     enrichErrors(manageUserErrors, 'Manage user error', 'manageUsers'),
-    enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
+    enrichErrors(
+      createProjectErrors,
+      'Error Creating Project',
+      'createProject',
+    ),
     enrichErrors(manageLabelsErrors, 'Error Updating Label', 'manageLabels'),
   ];
 
-  const errors = enrichedErrors.reduce((acc, curr) => (
-    (curr && curr.length) ? acc.concat(curr) : acc
-  ), []);
+  const errors = enrichedErrors.reduce(
+    (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
+    [],
+  );
 
   const [open, setOpen] = useState(errors && errors.length);
   useEffect(() => {
@@ -106,51 +123,52 @@ const ErrorAlerts = () => {
 
   return (
     <>
-      {errors && errors.map((err, i) => (
-        <Toast
-          key={i}
-          open={open}
-          duration={60000}
-          onOpenChange={(e) => {
-            if (!errors) setOpen(e);
-          }}
-        >
-          <ToastTitle variant="red">{err.title}</ToastTitle>
-          <ToastDescription asChild>
-            <div>{err.usrMsg}</div>
-          </ToastDescription>
-          <ToastAction asChild altText="Dismiss">
-            <IconButton 
-              variant='ghost'
-              onClick={() => handleDismissError(err.index, err.entity)}
-            >
-              <Cross2Icon />
-            </IconButton>
-          </ToastAction>
-        </Toast>
-      ))}
+      {errors &&
+        errors.map((err, i) => (
+          <Toast
+            key={i}
+            open={open}
+            duration={60000}
+            onOpenChange={(e) => {
+              if (!errors) setOpen(e);
+            }}
+          >
+            <ToastTitle variant="red">{err.title}</ToastTitle>
+            <ToastDescription asChild>
+              <div>{err.usrMsg}</div>
+            </ToastDescription>
+            <ToastAction asChild altText="Dismiss">
+              <IconButton
+                variant="ghost"
+                onClick={() => handleDismissError(err.index, err.entity)}
+              >
+                <Cross2Icon />
+              </IconButton>
+            </ToastAction>
+          </Toast>
+        ))}
       <ToastViewport />
     </>
   );
 };
 
 const dismissErrorActions = {
-  'labels': (i) => dismissLabelsError(i),
-  'comments': (i) => dismissCommentsError(i),
-  'projects': (i) => dismissProjectsError(i),
-  'createProject': (i) => dismissCreateProjectError(i),
-  'views': (i) => dismissViewsError(i),
-  'deployments': (i) => dismissDeploymentsError(i),
-  'models': (i) => dismissModelsError(i),
-  'cameras': (i) => dismissWirelessCamerasError(i),
-  'images': (i) => dismissImagesError(i),
-  'imageContext': (i) => dismissImageContextError(i),
-  'stats': (i) => dismissStatsError(i),
-  'data': (i) => dismissExportError(i),
-  'uploadImageErrors': (i) => dismissExportErrorsError(i),
-  'redriveBatch': (i) => dismissRedriveBatchError(i),
-  'manageUsers': (i) => dismissManageUsersError(i),
-  'manageLabels': (i) => dismissManageLabelsError(i),
+  labels: (i) => dismissLabelsError(i),
+  comments: (i) => dismissCommentsError(i),
+  projects: (i) => dismissProjectsError(i),
+  createProject: (i) => dismissCreateProjectError(i),
+  views: (i) => dismissViewsError(i),
+  deployments: (i) => dismissDeploymentsError(i),
+  models: (i) => dismissModelsError(i),
+  cameras: (i) => dismissWirelessCamerasError(i),
+  images: (i) => dismissImagesError(i),
+  imageContext: (i) => dismissImageContextError(i),
+  stats: (i) => dismissStatsError(i),
+  data: (i) => dismissExportError(i),
+  uploadImageErrors: (i) => dismissExportErrorsError(i),
+  redriveBatch: (i) => dismissRedriveBatchError(i),
+  manageUsers: (i) => dismissManageUsersError(i),
+  manageLabels: (i) => dismissManageLabelsError(i),
 };
 
 function enrichErrors(errors, title, entity) {
@@ -165,6 +183,5 @@ function enrichErrors(errors, title, entity) {
     usrMsg: getErrorContent(err),
   }));
 }
-
 
 export default ErrorAlerts;

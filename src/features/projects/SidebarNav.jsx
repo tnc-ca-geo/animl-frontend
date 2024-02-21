@@ -21,7 +21,6 @@ import {
 } from './projectsSlice';
 import SidebarNavItem from './SidebarNavItem';
 
-
 const StyledSidebarNav = styled('div', {
   display: 'flex',
   flexDirection: 'column',
@@ -33,7 +32,7 @@ const StyledSidebarNav = styled('div', {
   backgroundColor: '$backgroundLight',
 });
 
-const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
+const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userHasBetaAccess = useSelector(selectUserHasBetaAccess);
   const modalOpen = useSelector(selectModalOpen);
@@ -49,97 +48,89 @@ const SidebarNav = ({ view, toggleFiltersPanel, filtersPanelOpen }) => {
 
   return (
     <StyledSidebarNav>
-
       {/* filters */}
-      <SidebarNavItem 
+      <SidebarNavItem
         state={filtersPanelOpen ? 'active' : ''}
         disabled={false}
         handleClick={toggleFiltersPanel}
         icon={<FontAwesomeIcon icon={['fas', 'filter']} />}
-        tooltipContent='Filter images'
+        tooltipContent="Filter images"
       />
 
       {/* camera admin */}
-      <SidebarNavItem 
-        state={modalOpen && (modalContent === 'camera-admin-modal') 
-          ? 'active' 
-          : ''
-        }
+      <SidebarNavItem
+        state={modalOpen && modalContent === 'camera-admin-modal' ? 'active' : ''}
         disabled={!selectedProject}
         handleClick={() => handleModalToggle('camera-admin-modal')}
         icon={<FontAwesomeIcon icon={['fas', 'camera']} />}
-        tooltipContent='Manage cameras'
+        tooltipContent="Manage cameras"
       />
 
       {/* configure automation rules */}
-      {hasRole(userRoles, WRITE_AUTOMATION_RULES_ROLES) &&
-        <SidebarNavItem 
-          state={modalOpen && (modalContent === 'automation-rules-form') 
-            ? 'active' 
-            : ''
-          }
+      {hasRole(userRoles, WRITE_AUTOMATION_RULES_ROLES) && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'automation-rules-form' ? 'active' : ''}
           disabled={!selectedProject}
           handleClick={() => handleModalToggle('automation-rules-form')}
           icon={<FontAwesomeIcon icon={['fas', 'robot']} />}
-          tooltipContent='Configure automation'
+          tooltipContent="Configure automation"
         />
-      }
+      )}
 
       {/* save view */}
-      {hasRole(userRoles, WRITE_VIEWS_ROLES) &&
-        <SidebarNavItem 
-          state={modalOpen && (modalContent === 'save-view-form') ? 'active' : ''}
+      {hasRole(userRoles, WRITE_VIEWS_ROLES) && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'save-view-form' ? 'active' : ''}
           disabled={!selectedView}
           handleClick={() => handleModalToggle('save-view-form')}
           icon={<FontAwesomeIcon icon={['fas', 'save']} />}
-          tooltipContent='Save view'
+          tooltipContent="Save view"
         />
-      }
-      
+      )}
+
       {/* delete view */}
-      {hasRole(userRoles, WRITE_VIEWS_ROLES) &&
-        <SidebarNavItem 
-          state={modalOpen && (modalContent === 'delete-view-form') ? 'active' : ''}
+      {hasRole(userRoles, WRITE_VIEWS_ROLES) && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'delete-view-form' ? 'active' : ''}
           disabled={!selectedView || !selectedView.editable}
           handleClick={() => handleModalToggle('delete-view-form')}
           icon={<FontAwesomeIcon icon={['fas', 'trash-alt']} />}
-          tooltipContent='Delete view'
+          tooltipContent="Delete view"
         />
-      }
+      )}
 
       {/* bulk upload view */}
-      {(hasRole(userRoles, WRITE_IMAGES_ROLES) && userHasBetaAccess) &&
-        <SidebarNavItem 
-          state={modalOpen && (modalContent === 'bulk-upload-form') ? 'active' : ''}
+      {hasRole(userRoles, WRITE_IMAGES_ROLES) && userHasBetaAccess && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'bulk-upload-form' ? 'active' : ''}
           disabled={!selectedProject}
           handleClick={() => handleModalToggle('bulk-upload-form')}
           icon={<FontAwesomeIcon icon={['fas', 'upload']} />}
-          tooltipContent='Bulk upload images'
+          tooltipContent="Bulk upload images"
         />
-      }
+      )}
 
       {/* bulk upload view */}
-      {(hasRole(userRoles, MANAGE_USERS_ROLES)) &&
-        <SidebarNavItem 
-          state={modalOpen && (modalContent === 'manage-users-form') ? 'active' : ''}
+      {hasRole(userRoles, MANAGE_USERS_ROLES) && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'manage-users-form' ? 'active' : ''}
           disabled={!selectedProject}
           handleClick={() => handleModalToggle('manage-users-form')}
           icon={<FontAwesomeIcon icon={['fas', 'user']} />}
-          tooltipContent='Manage users'
+          tooltipContent="Manage users"
         />
-      }
+      )}
 
       {/* Manage label view */}
-      {(hasRole(userRoles, WRITE_PROJECT_ROLES)) &&
-        <SidebarNavItem 
-          state={modalOpen && (modalContent === 'manage-labels-form') ? 'active' : ''}
+      {hasRole(userRoles, WRITE_PROJECT_ROLES) && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'manage-labels-form' ? 'active' : ''}
           disabled={!selectedProject}
           handleClick={() => handleModalToggle('manage-labels-form')}
           icon={<FontAwesomeIcon icon={['fas', 'tag']} />}
-          tooltipContent='Manage labels'
+          tooltipContent="Manage labels"
         />
-      }
-
+      )}
     </StyledSidebarNav>
   );
 };

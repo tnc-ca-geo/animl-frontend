@@ -4,13 +4,7 @@ import { ObjectID } from 'bson';
 import { styled } from '../../theme/stitches.config';
 import { absToRel } from '../../app/utils';
 import { setFocus } from '../review/reviewSlice';
-import {
-  drawBboxEnd,
-  addLabelStart,
-  clearMouseEventDetected,
-  selectMouseEventDetected
-} from './loupeSlice';
-
+import { drawBboxEnd, addLabelStart, clearMouseEventDetected, selectMouseEventDetected } from './loupeSlice';
 
 const CrossHairHorizontal = styled('div', {
   position: 'absolute',
@@ -33,7 +27,7 @@ const CrossHairVertical = styled('div', {
 const TempBoundingBox = styled('div', {
   position: 'absolute',
   boxSizing: 'border-box',
-  border: '2px solid #00C797'
+  border: '2px solid #00C797',
 });
 
 const Overlay = styled('div', {
@@ -47,21 +41,20 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
   const { width, height } = imgDims;
   const top = imgContainerDims.top + imgDims.y;
   const left = imgContainerDims.left + imgDims.x;
-  const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 });
-  const [ drawingBBox, setDrawingBBox ] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [drawingBBox, setDrawingBBox] = useState(false);
   const defaultBBox = { top: 0, left: 0, width: 0, height: 0 };
-  const [ tempBBox, setTempBBox ] = useState(defaultBBox);
+  const [tempBBox, setTempBBox] = useState(defaultBBox);
   const dispatch = useDispatch();
 
   const handlePointerMove = (e) => {
-
     let containerX = e.clientX - left;
-    containerX = (e.clientX >= (left + width)) ? width : containerX;
-    containerX = (e.clientX <= left) ? 0 : containerX;
+    containerX = e.clientX >= left + width ? width : containerX;
+    containerX = e.clientX <= left ? 0 : containerX;
 
     let containerY = e.clientY - top;
-    containerY = (e.clientY >= (top + height)) ? height : containerY;
-    containerY = (e.clientY <= top) ? 0 : containerY;
+    containerY = e.clientY >= top + height ? height : containerY;
+    containerY = e.clientY <= top ? 0 : containerY;
 
     setMousePos({ x: containerX, y: containerY });
 
@@ -69,9 +62,9 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
       // update tempBoxWidth and tempBoxHeight
       const newWidth = containerX - tempBBox.left;
       const newHeight = containerY - tempBBox.top;
-      setTempBBox({...tempBBox, ...{ width: newWidth, height: newHeight }})
-      // TODO: if width/height are negative, 
-      // use absolute values, and update the top/left accordingly 
+      setTempBBox({ ...tempBBox, ...{ width: newWidth, height: newHeight } });
+      // TODO: if width/height are negative,
+      // use absolute values, and update the top/left accordingly
       // (so you can click and drag to the south west and it will still work)
     }
   };
@@ -95,11 +88,11 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
   };
 
   const startDrawingBBox = () => {
-    let newTop = mousePos.y - 2;  // subtracting 2px for border
+    let newTop = mousePos.y - 2; // subtracting 2px for border
     let newLeft = mousePos.x - 2;
-    newTop = (newTop < 0) ? 0 : newTop; // prevent negative values
-    newLeft = (newLeft < 0) ? 0 : newLeft;
-    setTempBBox({...tempBBox, ...{ top: newTop, left: newLeft }})
+    newTop = newTop < 0 ? 0 : newTop; // prevent negative values
+    newLeft = newLeft < 0 ? 0 : newLeft;
+    setTempBBox({ ...tempBBox, ...{ top: newTop, left: newLeft } });
     setDrawingBBox(true);
   };
 
@@ -116,8 +109,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
     }
   }, [mouseEventDetectedOutsideOverlay]);
 
-
-  const handleMouseDown = (e) => {
+  const handleMouseDown = () => {
     startDrawingBBox();
   };
 
@@ -131,25 +123,19 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
   // but couldn't get it working
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") dispatch(drawBboxEnd());
-    }
+      if (e.key === 'Escape') dispatch(drawBboxEnd());
+    };
     window.addEventListener('keydown', handleKeyDown);
-    return () => { window.removeEventListener('keydown', handleKeyDown) }
-  }, [ dispatch ]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dispatch]);
 
   return (
-    <Overlay
-      onPointerMove={handlePointerMove}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-    >
-      <CrossHairHorizontal
-        style={{ transform: `translateY(${mousePos.y}px)` }}
-      />
-      <CrossHairVertical
-        style={{ transform: `translateX(${mousePos.x}px)` }}
-      />
-      {drawingBBox && 
+    <Overlay onPointerMove={handlePointerMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
+      <CrossHairHorizontal style={{ transform: `translateY(${mousePos.y}px)` }} />
+      <CrossHairVertical style={{ transform: `translateX(${mousePos.x}px)` }} />
+      {drawingBBox && (
         <TempBoundingBox
           css={{
             transform: `translate(${tempBBox.left}px, ${tempBBox.top}px)`,
@@ -157,7 +143,7 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
             height: tempBBox.height,
           }}
         />
-      }
+      )}
     </Overlay>
   );
 };

@@ -1,11 +1,12 @@
 import React, { forwardRef } from 'react';
 import { styled } from '../theme/stitches.config.js';
 import { useSelector, useDispatch } from 'react-redux';
-import Select from 'react-select';
-import { createFilter } from 'react-select';
-import { selectSelectedProject, selectProjectLabelsLoading } from '../features/projects/projectsSlice.js';
+import Select, { createFilter } from 'react-select';
+import {
+  selectSelectedProject,
+  selectProjectLabelsLoading,
+} from '../features/projects/projectsSlice.js';
 import { addLabelEnd } from '../features/loupe/loupeSlice.js';
-
 
 const StyledCategorySelector = styled(Select, {
   width: '155px',
@@ -54,25 +55,31 @@ const StyledCategorySelector = styled(Select, {
     '.react-select__option--is-focused': {
       backgroundColor: '$gray3',
     },
-  }
+  },
 });
 
-
-const CategorySelector = forwardRef(({ 
-  css,
-  handleCategoryChange,
-  handleCategorySelectorBlur,
-  menuPlacement='top'
-}, ref) => {
-
+const CategorySelector = forwardRef(function CategorySelector(
+  {
+    css,
+    handleCategoryChange,
+    handleCategorySelectorBlur,
+    menuPlacement = 'top',
+  },
+  ref,
+) {
   // update selector options when new labels become available
   const labelsLoading = useSelector(selectProjectLabelsLoading);
-  const createOption = (category) => ({ value: category._id, label: category.name });
-  const enabledLabels = useSelector(selectSelectedProject).labels.filter((lbl) => lbl.reviewerEnabled );
+  const createOption = (category) => ({
+    value: category._id,
+    label: category.name,
+  });
+  const enabledLabels = useSelector(selectSelectedProject).labels.filter(
+    (lbl) => lbl.reviewerEnabled,
+  );
   const options = enabledLabels.map(createOption);
   const dispatch = useDispatch();
 
-  const defaultHandleBlur = (e) => dispatch(addLabelEnd());
+  const defaultHandleBlur = () => dispatch(addLabelEnd());
 
   return (
     <StyledCategorySelector
@@ -82,8 +89,8 @@ const CategorySelector = forwardRef(({
       isClearable
       isSearchable
       openMenuOnClick
-      className='react-select'
-      classNamePrefix='react-select'
+      className="react-select"
+      classNamePrefix="react-select"
       menuPlacement={menuPlacement}
       filterOption={createFilter({ matchFrom: 'start' })}
       isLoading={labelsLoading.isLoading}

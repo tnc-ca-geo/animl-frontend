@@ -1,16 +1,7 @@
-import React, {
-  useMemo,
-  useEffect,
-  useRef,
-  useCallback,
-} from 'react';
+import React, { useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DateTime } from 'luxon';
-import { CheckIcon,
-  Cross2Icon,
-  TriangleUpIcon,
-  TriangleDownIcon,
-} from '@radix-ui/react-icons'
+import { CheckIcon, Cross2Icon, TriangleUpIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import useScrollbarSize from 'react-scrollbar-size';
 import { useEffectAfterMount } from '../../app/utils';
 import { styled } from '../../theme/stitches.config.js';
@@ -20,17 +11,8 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ImagesTableRow from './ImagesTableRow.jsx';
-import {
-  sortChanged,
-  selectImagesLoading,
-  selectPaginatedField,
-  selectSortAscending,
-} from './imagesSlice';
-import {
-  selectFocusIndex,
-  selectFocusChangeType,
-  selectSelectedImageIndices
-} from '../review/reviewSlice';
+import { sortChanged, selectImagesLoading, selectPaginatedField, selectSortAscending } from './imagesSlice';
+import { selectFocusIndex, selectFocusChangeType, selectSelectedImageIndices } from '../review/reviewSlice';
 import { selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
@@ -38,17 +20,15 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
 import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
 import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
-import StyledScrollArea from '../../components/ScrollArea.jsx';
-
 
 // TODO: make table horizontally scrollable on smaller screens
-  // '.tableWrap': {
-  //   display: 'block',
-  //   margin: '$3',
-  //   maxWidth: '100%',
-  //   overflowX: 'scroll',
-  //   overflowY: 'hidden',
-  // },
+// '.tableWrap': {
+//   display: 'block',
+//   margin: '$3',
+//   maxWidth: '100%',
+//   overflowX: 'scroll',
+//   overflowY: 'hidden',
+// },
 
 const TableContainer = styled('div', {
   display: 'flex',
@@ -81,10 +61,10 @@ const TableRow = styled('div', {
     selected: {
       true: {
         // 'zIndex': '2',
-        // 'boxShadow': '0px 4px 14px 0px #0000003b',      
-      }
-    }
-  }
+        // 'boxShadow': '0px 4px 14px 0px #0000003b',
+      },
+    },
+  },
 });
 
 const TableCell = styled('div', {
@@ -123,11 +103,11 @@ const TableHeader = styled('div', {
   paddingBottom: '$1',
   backgroundColor: '$backgroundDark',
   fontSize: '$2',
-  'svg': {
+  svg: {
     marginLeft: '$2',
-    'path': {
+    path: {
       fill: '$gray6',
-    }
+    },
   },
   variants: {
     issorted: {
@@ -145,9 +125,9 @@ const TableHeader = styled('div', {
         '&:hover': {
           color: '$textDark',
           'svg path': { fill: '$textDark' },
-        }
-      }
-    }
+        },
+      },
+    },
   },
 });
 
@@ -164,8 +144,8 @@ const NoneFoundAlert = styled('div', {
   '&::after': {
     content: '\\1F400',
     paddingLeft: '$2',
-    fontSize: '30px'
-  }
+    fontSize: '30px',
+  },
 });
 
 const StyledReviewIcon = styled('div', {
@@ -185,31 +165,31 @@ const StyledReviewIcon = styled('div', {
       false: {
         color: '$warningText',
         backgroundColor: '$warningBg',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const ReviewedIcon = ({ reviewed }) => (
-  <StyledReviewIcon reviewed={reviewed}>
-    {reviewed ? <CheckIcon/> : <Cross2Icon/>}
-  </StyledReviewIcon>
+  <StyledReviewIcon reviewed={reviewed}>{reviewed ? <CheckIcon /> : <Cross2Icon />}</StyledReviewIcon>
 );
-
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const projectsLoading = useSelector(selectProjectsLoading);
   const imagesLoading = useSelector(selectImagesLoading);
-  const isLoupeOpen = useSelector(selectLoupeOpen)
+  const isLoupeOpen = useSelector(selectLoupeOpen);
   const focusIndex = useSelector(selectFocusIndex);
   const scrollBarSize = useScrollbarSize();
   const infiniteLoaderRef = useRef(null);
   const listRef = useRef(null);
   const imagesCount = hasNext ? workingImages.length + 1 : workingImages.length;
-  const isImageLoaded = useCallback((index) => {
-    return !hasNext || index < workingImages.length;
-  }, [hasNext, workingImages]);
+  const isImageLoaded = useCallback(
+    (index) => {
+      return !hasNext || index < workingImages.length;
+    },
+    [hasNext, workingImages],
+  );
   const selectedImageIndices = useSelector(selectSelectedImageIndices);
   const headerHeight = 27;
 
@@ -243,7 +223,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     useFlexLayout,
     useSortBy,
   );
-  
+
   // manage auto-scrolling
   const focusChangeType = useSelector(selectFocusChangeType);
   useEffect(() => {
@@ -256,7 +236,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   // manage clearing list cache when sort changes
   useEffectAfterMount(() => {
-    // Each time the sortBy changes we call resetloadMoreItemsCache 
+    // Each time the sortBy changes we call resetloadMoreItemsCache
     // to clear the infinite list's cache. This effect will run on mount too;
     // there's no need to reset in that case.
     dispatch(sortChanged(sortBy));
@@ -272,24 +252,22 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     if (!breakpoint) return;
     if (isLoupeOpen) {
       setHiddenColumns(columnsToHide['loupeOpen']);
-    }
-    else if (breakpoint === 'xl') {
-      toggleHideAllColumns(false)
-    }
-    else {
-      setHiddenColumns(columnsToHide[breakpoint])
+    } else if (breakpoint === 'xl') {
+      toggleHideAllColumns(false);
+    } else {
+      setHiddenColumns(columnsToHide[breakpoint]);
     }
   }, [breakpoint, isLoupeOpen, columnsToHide, setHiddenColumns, toggleHideAllColumns]);
 
   const RenderRow = useCallback(
     ({ index, style }) => {
-      if (!isImageLoaded(index)) return (<TableRow />);
+      if (!isImageLoaded(index)) return <TableRow />;
 
       const row = rows[index];
       prepareRow(row);
 
       return (
-        <ImagesTableRow 
+        <ImagesTableRow
           row={row}
           index={index}
           focusIndex={focusIndex}
@@ -298,7 +276,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         />
       );
     },
-    [prepareRow, rows, isImageLoaded, focusIndex]
+    [prepareRow, rows, isImageLoaded, focusIndex],
   );
 
   const InfiniteList = useCallback(
@@ -312,76 +290,58 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           loadMoreItems={loadNextPage}
         >
           {({ onItemsRendered, ref }) => (
-              <List
-                height={height - headerHeight}
-                itemCount={imagesCount}
-                itemSize={91}
-                onItemsRendered={onItemsRendered}
-                style={{ overflowX: 'clip' }}
-                ref={list => {
-                  // https://github.com/bvaughn/react-window/issues/324
-                  ref(list);
-                  listRef.current = list;
-                }}
-                width={width}
-              >
-                { RenderRow }
-              </List>
+            <List
+              height={height - headerHeight}
+              itemCount={imagesCount}
+              itemSize={91}
+              onItemsRendered={onItemsRendered}
+              style={{ overflowX: 'clip' }}
+              ref={(list) => {
+                // https://github.com/bvaughn/react-window/issues/324
+                ref(list);
+                listRef.current = list;
+              }}
+              width={width}
+            >
+              {RenderRow}
+            </List>
           )}
         </InfiniteLoader>
       </div>
     ),
-    [ RenderRow, getTableBodyProps, workingImages, isImageLoaded, imagesCount,
-      loadNextPage ]
+    [RenderRow, getTableBodyProps, workingImages, isImageLoaded, imagesCount, loadNextPage],
   );
 
   return (
-    <TableContainer ref={ref} >
-      {(projectsLoading.isLoading || imagesLoading.isLoading) &&
+    <TableContainer ref={ref}>
+      {(projectsLoading.isLoading || imagesLoading.isLoading) && (
         <SpinnerOverlay>
-          <SimpleSpinner/>
+          <SimpleSpinner />
         </SpinnerOverlay>
-      }
-      {imagesLoading.noneFound && 
-        <NoneFoundAlert>
-          Rats! We couldn't find any matching images
-        </NoneFoundAlert>
-      }
-      {workingImages.length > 0 &&
+      )}
+      {imagesLoading.noneFound && <NoneFoundAlert>Rats! We couldn&apos;t find any matching images</NoneFoundAlert>}
+      {workingImages.length > 0 && (
         <Table {...getTableProps()}>
-          <div
-            style={{ height: headerHeight, width: `calc(100% - ${scrollBarSize.width}px)` }}
-          >
-            {headerGroups.map(headerGroup => (
-              <TableRow
-                {...headerGroup.getHeaderGroupProps()}
-              >
-                {headerGroup.headers.map(column => (
-                  <HeaderCell 
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
-                    <TableHeader
-                      issorted={column.isSorted.toString()}
-                      cansort={column.canSort.toString()}
-                    >
+          <div style={{ height: headerHeight, width: `calc(100% - ${scrollBarSize.width}px)` }}>
+            {headerGroups.map((headerGroup) => (
+              <TableRow {...headerGroup.getHeaderGroupProps()} key={headerGroup.getHeaderGroupProps().key}>
+                {headerGroup.headers.map((column) => (
+                  <HeaderCell {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
+                    <TableHeader issorted={column.isSorted.toString()} cansort={column.canSort.toString()}>
                       {column.render('Header')}
-                      {column.canSort && 
-                        (column.isSortedDesc ? <TriangleDownIcon/> : <TriangleUpIcon/>)
-                      }
+                      {column.canSort && (column.isSortedDesc ? <TriangleDownIcon /> : <TriangleUpIcon />)}
                     </TableHeader>
                   </HeaderCell>
                 ))}
               </TableRow>
             ))}
           </div>
-          <AutoSizer>
-            { InfiniteList }
-          </AutoSizer>
+          <AutoSizer>{InfiniteList}</AutoSizer>
         </Table>
-      }
+      )}
       <DeleteImagesAlert />
     </TableContainer>
-  );  
+  );
 };
 
 function makeRows(workingImages, focusIndex, selectedImageIndices) {
@@ -391,31 +351,28 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
     const thumbnail = <Image selected={isImageFocused} src={img.thumbUrl} />;
 
     // label pills
-    const labelPills = <LabelPills
-      objects={workingImages[imageIndex].objects}
-      imageIndex={imageIndex}
-      focusIndex={focusIndex}
-    />;
+    const labelPills = (
+      <LabelPills objects={workingImages[imageIndex].objects} imageIndex={imageIndex} focusIndex={focusIndex} />
+    );
 
     // date created
-    const dtOriginal = DateTime
-      .fromISO(img.dateTimeOriginal)
-      .toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+    const dtOriginal = DateTime.fromISO(img.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
 
     // date added
-    const dtAdded = DateTime
-      .fromISO(img.dateAdded)
-      .toLocaleString(DateTime.DATE_SHORT);
+    const dtAdded = DateTime.fromISO(img.dateAdded).toLocaleString(DateTime.DATE_SHORT);
 
     // reviewed columns
     const hasObjs = img.objects.length > 0;
     const hasUnlockedObjs = img.objects.some((obj) => obj.locked === false);
-    const hasAllInvalidatedLabels = !img.objects.some((obj) => (
-      obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated)
-    ));
-    const reviewed = (hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels) 
-      ? <ReviewedIcon reviewed={true} /> 
-      : <ReviewedIcon reviewed={false} />;
+    const hasAllInvalidatedLabels = !img.objects.some((obj) =>
+      obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated),
+    );
+    const reviewed =
+      hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels ? (
+        <ReviewedIcon reviewed={true} />
+      ) : (
+        <ReviewedIcon reviewed={false} />
+      );
 
     return {
       thumbnail,
@@ -424,8 +381,8 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
       dtAdded,
       reviewed,
       ...img,
-    }
-  })
-};
+    };
+  });
+}
 
 export default ImagesTable;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { selectActiveFilters, bulkSelectToggled } from './filtersSlice.js';
 import Checkbox from '../../components/Checkbox.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
@@ -9,7 +9,7 @@ const StyledBulkSelectCheckbox = styled('div', {
   backgroundColor: '$loContrast',
   fontWeight: '$5',
   fontFamily: '$sourceSansPro',
-  'label': {
+  label: {
     display: 'flex',
   },
   variants: {
@@ -17,63 +17,59 @@ const StyledBulkSelectCheckbox = styled('div', {
       true: {
         textTransform: 'uppercase',
         borderBottom: '1px solid $border',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const BulkSelectCheckbox = ({ filterCat, managedIds, isHeader }) => {
   const activeFilters = useSelector(selectActiveFilters);
-  const [ checkboxState, setCheckboxState ] = useState('someSelected');
+  const [checkboxState, setCheckboxState] = useState('someSelected');
   const dispatch = useDispatch();
 
   const stateMap = {
     noneSelected: {
-      checked: false, 
+      checked: false,
       active: false,
       indeterminate: false,
-      label: 'select all'
+      label: 'select all',
     },
     allSelected: {
-      checked: true, 
+      checked: true,
       active: true,
       indeterminate: false,
-      label: 'unselect all'
+      label: 'unselect all',
     },
     someSelected: {
-      checked: false, 
+      checked: false,
       active: true,
       indeterminate: true,
-      label: 'clear selection'
-    }
+      label: 'clear selection',
+    },
   };
 
   useEffect(() => {
-    const allSelected = (idsToCheck, activeIds) => (
-      (activeIds && idsToCheck.every((id) => activeIds.includes(id))) ||
-      activeIds === null
-    );
-    const noneSelected = (idsToCheck, activeIds) => (
-      activeIds && idsToCheck.every((id) => !activeIds.includes(id))
-    );
+    const allSelected = (idsToCheck, activeIds) =>
+      (activeIds && idsToCheck.every((id) => activeIds.includes(id))) || activeIds === null;
+    const noneSelected = (idsToCheck, activeIds) => activeIds && idsToCheck.every((id) => !activeIds.includes(id));
 
     if (allSelected(managedIds, activeFilters[filterCat])) {
       setCheckboxState('allSelected');
-    }
-    else if (noneSelected(managedIds, activeFilters[filterCat])) {
+    } else if (noneSelected(managedIds, activeFilters[filterCat])) {
       setCheckboxState('noneSelected');
-    }
-    else {
+    } else {
       setCheckboxState('someSelected');
     }
-  }, [ activeFilters, filterCat, managedIds ]);
+  }, [activeFilters, filterCat, managedIds]);
 
-  const handleCheckboxChange = (e) => {
-    dispatch(bulkSelectToggled({
-      currState: checkboxState,
-      managedIds,
-      filterCat,
-    }));
+  const handleCheckboxChange = () => {
+    dispatch(
+      bulkSelectToggled({
+        currState: checkboxState,
+        managedIds,
+        filterCat,
+      }),
+    );
   };
 
   return (
@@ -85,19 +81,18 @@ const BulkSelectCheckbox = ({ filterCat, managedIds, isHeader }) => {
           indeterminate={stateMap[checkboxState].indeterminate}
           onChange={handleCheckboxChange}
         />
-        {isHeader &&
+        {isHeader && (
           <CheckboxLabel
             checked={stateMap[checkboxState].checked}
             active={stateMap[checkboxState].active}
-            css={{fontFamily: '$sourceSansPro'}}
+            css={{ fontFamily: '$sourceSansPro' }}
           >
             {stateMap[checkboxState].label}
           </CheckboxLabel>
-        }
+        )}
       </label>
     </StyledBulkSelectCheckbox>
   );
 };
 
 export default BulkSelectCheckbox;
-

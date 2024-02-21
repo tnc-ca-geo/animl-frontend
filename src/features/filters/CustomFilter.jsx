@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 // import parser from 'mongodb-query-parser'; // TODO: this is causing build issues in Vite. Look for alternative
@@ -19,7 +19,7 @@ const StyledFieldRow = styled(FieldRow, {
 });
 
 const StyledButtonRow = styled(ButtonRow, {
-  paddingBottom: '$0'
+  paddingBottom: '$0',
 });
 
 const CustomFilter = () => {
@@ -35,15 +35,11 @@ const CustomFilter = () => {
   // };
 
   const customFilterSchema = Yup.object().shape({
-    filter: Yup.mixed().test(
-      'is-valid-query',
-      'Must be a valid MongoDB query',
-      value => {
-        // const filter = parser.isFilterValid(value);
-        const filter = value;
-        return filter ? true : false;
-      }, 
-    ),
+    filter: Yup.mixed().test('is-valid-query', 'Must be a valid MongoDB query', (value) => {
+      // const filter = parser.isFilterValid(value);
+      const filter = value;
+      return filter ? true : false;
+    }),
   });
 
   const handleRemoveButtonClick = () => dispatch(customFilterChanged(null));
@@ -54,10 +50,7 @@ const CustomFilter = () => {
   };
 
   return (
-    <Accordion
-      label='Custom'
-      expandedDefault={false}
-    >
+    <Accordion label="Custom" expandedDefault={false}>
       <div>
         <StyledFormWrapper>
           <Formik
@@ -66,26 +59,22 @@ const CustomFilter = () => {
             validationSchema={customFilterSchema}
             onSubmit={(values) => handleCustomFilterSubmit(values)}
           >
-            {({ errors, touched }) => (
+            {() => (
               <Form>
                 <StyledFieldRow>
                   <Field
-                    name='filter'
-                    id='filter'
-                    component='textarea'
+                    name="filter"
+                    id="filter"
+                    component="textarea"
                     placeholder="{ 'objects.labels': { $size: 0 } }"
                   />
-                  <ErrorMessage component={FormError} name='filter' />
+                  <ErrorMessage component={FormError} name="filter" />
                 </StyledFieldRow>
                 <StyledButtonRow>
-                  <Button
-                    type='button'
-                    size='small'
-                    onClick={handleRemoveButtonClick}
-                  >
+                  <Button type="button" size="small" onClick={handleRemoveButtonClick}>
                     Remove
                   </Button>
-                  <Button type='submit' size='small'>
+                  <Button type="submit" size="small">
                     Apply
                   </Button>
                 </StyledButtonRow>
@@ -99,4 +88,3 @@ const CustomFilter = () => {
 };
 
 export default CustomFilter;
-

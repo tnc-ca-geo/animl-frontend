@@ -1,14 +1,14 @@
 import React from 'react';
 import * as AD from '@radix-ui/react-alert-dialog';
-import {blackA, mauve, red, violet } from '@radix-ui/colors';
-import { styled, keyframes } from '@stitches/react';
+import { blackA } from '@radix-ui/colors';
+import { styled } from '@stitches/react';
 
 const AlertDialogOverlay = styled(AD.AlertDialogOverlay, {
   backgroundColor: blackA.blackA9,
   position: 'fixed',
   zIndex: 1000,
   inset: 0,
-  animation: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)'
+  animation: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
 });
 
 const AlertDialogContent = styled(AD.AlertDialogContent, {
@@ -28,7 +28,7 @@ const AlertDialogContent = styled(AD.AlertDialogContent, {
 
   '&:focus': {
     outline: 'none',
-  }
+  },
 });
 
 const AlertDialogTitle = styled(AD.AlertDialogTitle, {
@@ -88,10 +88,11 @@ const AlertDialogDescription = styled(AD.AlertDialogDescription, {
 // .Button.mauve:focus {
 //   box-shadow: 0 0 0 2px var(--mauve-7);
 // }
-const overlayShow = keyframes({
-  '0%': { opacity: 0 },
-  '100%': { opacity: 1 },
-});
+
+// const overlayShow = keyframes({
+//   '0%': { opacity: 0 },
+//   '100%': { opacity: 1 },
+// });
 
 // @keyframes overlayShow {
 //   from {
@@ -102,10 +103,10 @@ const overlayShow = keyframes({
 //   }
 // }
 
-const contentShow = keyframes({
-  '0%': { opacity: 0 , transform: 'translate(-50%, -48%) scale(0.96)' },
-  '100%': { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-});
+// const contentShow = keyframes({
+//   '0%': { opacity: 0 , transform: 'translate(-50%, -48%) scale(0.96)' },
+//   '100%': { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+// });
 
 // @keyframes contentShow {
 //   from {
@@ -136,8 +137,7 @@ export const AlertDialog = () => (
       <AlertDialogContent className="AlertDialogContent">
         <AlertDialogTitle className="AlertDialogTitle">Are you absolutely sure?</AlertDialogTitle>
         <AlertDialogDescription className="AlertDialogDescription">
-          This action cannot be undone. This will permanently delete your account and remove your
-          data from our servers.
+          This action cannot be undone. This will permanently delete your account and remove your data from our servers.
         </AlertDialogDescription>
         <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
           <AD.Cancel asChild>

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
@@ -11,27 +11,27 @@ const initialState = {
       isLoading: false,
       operation: null,
       errors: null,
-    }
-  }
-}
+    },
+  },
+};
 
 export const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
     fetchUsersStart: (state) => {
-      const ls = { isLoading: true, operation: 'fetching', errors: null };  
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.users = ls;
     },
 
     fetchUsersSuccess: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: null };  
+      const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.users = ls;
       state.users = payload.users;
     },
 
     fetchUsersError: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };  
+      const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
 
@@ -53,7 +53,7 @@ export const usersSlice = createSlice({
         if (user.username === payload.username) {
           return {
             ...user,
-            ...payload
+            ...payload,
           };
         } else {
           return user;
@@ -85,8 +85,8 @@ export const usersSlice = createSlice({
         ...state.users,
         {
           ...payload,
-          email: payload.username
-        }
+          email: payload.username,
+        },
       ];
     },
 
@@ -111,7 +111,7 @@ export const usersSlice = createSlice({
       const index = payload;
       state.loadingStates.users.errors.splice(index, 1);
     },
-  }
+  },
 });
 
 export const {
@@ -128,20 +128,20 @@ export const {
   addUserError,
   cancel,
   clearUsers,
-  dismissManageUsersError
+  dismissManageUsersError,
 } = usersSlice.actions;
 
 export const fetchUsers = () => {
   return async (dispatch, getState) => {
     try {
       dispatch(fetchUsersStart());
-  
+
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const projId = selectedProj._id;
-  
+
       if (token && selectedProj) {
         const res = await call({
           projId,
@@ -152,33 +152,33 @@ export const fetchUsers = () => {
     } catch (err) {
       dispatch(fetchUsersError(err));
     }
-  }
-}
+  };
+};
 
 export const updateUser = (values) => {
   return async (dispatch, getState) => {
     try {
       dispatch(updateUserStart());
-  
+
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       const projId = selectedProj._id;
-  
+
       if (token && selectedProj) {
-        const res = await call({
+        await call({
           projId,
           request: 'updateUser',
-          input: values
+          input: values,
         });
         dispatch(updateUserSuccess(values));
       }
     } catch (err) {
       dispatch(updateUserError(err));
     }
-  }
-}
+  };
+};
 
 export const createUser = (values) => {
   return async (dispatch, getState) => {
@@ -192,23 +192,23 @@ export const createUser = (values) => {
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
-        const res = await call({
+        await call({
           projId,
           request: 'createUser',
-          input: values
+          input: values,
         });
         dispatch(addUserSuccess(values));
       }
     } catch (err) {
       dispatch(addUserError(err));
     }
-  }
-}
+  };
+};
 
-export const selectUsers = state => state.users.users;
-export const selectMode = state => state.users.mode;
-export const selectSelectedUser = state => state.users.selectedUser;
-export const selectUsersLoading = state => state.users.loadingStates.users.isLoading;
-export const selectManageUserErrors = state => state.users.loadingStates.users.errors;
+export const selectUsers = (state) => state.users.users;
+export const selectMode = (state) => state.users.mode;
+export const selectSelectedUser = (state) => state.users.selectedUser;
+export const selectUsersLoading = (state) => state.users.loadingStates.users.isLoading;
+export const selectManageUserErrors = (state) => state.users.loadingStates.users.errors;
 
 export default usersSlice.reducer;

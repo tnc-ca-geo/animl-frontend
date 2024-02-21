@@ -21,6 +21,9 @@ module.exports = {
         },
       },
     },
+    parserOptions: { 
+      ecmaVersion: 2020
+    },
     env: {
       browser: true,
       node: true,
@@ -28,5 +31,6 @@ module.exports = {
     },
     rules: {
       // Add your own rules here to override ones from the extended configs.
+      'react/prop-types': 0,
     },
   };

@@ -1,5 +1,5 @@
+import React from 'react';
 import { styled } from '../theme/stitches.config.js';
-import { getTextColor } from '../app/utils.js';
 
 const Pill = styled('div', {
   fontSize: '$2',
@@ -18,10 +18,10 @@ const Pill = styled('div', {
       true: {
         outline: 'none',
         boxShadow: '0 0 0 3px $blue200',
-        borderColor: '$blue500',  
-      }
-    }
-  }
+        borderColor: '$blue500',
+      },
+    },
+  },
 });
 
 const LabelPill = ({ color, name, css, ...props }) => {
@@ -31,13 +31,13 @@ const LabelPill = ({ color, name, css, ...props }) => {
         backgroundColor: `${color}1A`,
         borderColor: color,
         color: '$textDark', // getTextColor(color),
-        ...css
+        ...css,
       }}
       {...props}
     >
       {name}
     </Pill>
   );
-}
+};
 
 export default LabelPill;

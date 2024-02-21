@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -6,13 +6,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuArrow
+  DropdownMenuArrow,
 } from '../../components/Dropdown.jsx';
 import IconButton from '../../components/IconButton.jsx';
-import { DotsHorizontalIcon} from '@radix-ui/react-icons';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertOpen } from '../images/imagesSlice';
-import { editComment } from '../review/reviewSlice';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -22,7 +21,7 @@ const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
 
 const LoupeDropdown = ({ image }) => {
   const dispatch = useDispatch();
-  
+
   const handleDeleteImageItemClick = () => {
     dispatch(setDeleteImagesAlertOpen(true));
   };
@@ -30,21 +29,19 @@ const LoupeDropdown = ({ image }) => {
   return (
     <DropdownMenu>
       <StyledDropdownMenuTrigger asChild>
-        <IconButton variant='ghost'>
+        <IconButton variant="ghost">
           <DotsHorizontalIcon />
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
-        <DropdownMenuItem onClick={handleDeleteImageItemClick}>
-          Delete Image
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDeleteImageItemClick}>Delete Image</DropdownMenuItem>
         <DropdownMenuArrow offset={12} />
       </DropdownMenuContent>
 
       {/* Alerts */}
       <DeleteImagesAlert imgIds={[image._id]} />
     </DropdownMenu>
-  )
+  );
 };
 
 export default LoupeDropdown;

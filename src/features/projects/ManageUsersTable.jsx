@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@stitches/react';
 import { Pencil1Icon } from '@radix-ui/react-icons';
@@ -20,8 +20,8 @@ const ManageUsersTable = () => {
   }, []);
 
   const userSorted = useMemo(
-    () => [...users].sort((u1, u2) => u1.email.toLowerCase() > u2.email.toLowerCase() ? 1 : -1),
-    [users]
+    () => [...users].sort((u1, u2) => (u1.email.toLowerCase() > u2.email.toLowerCase() ? 1 : -1)),
+    [users],
   );
 
   return (
@@ -48,15 +48,11 @@ const ManageUsersTable = () => {
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <IconButton
-                        variant='ghost'
-                        size='large'
-                        onClick={() => dispatch(editUser(email))}
-                      >
+                      <IconButton variant="ghost" size="large" onClick={() => dispatch(editUser(email))}>
                         <Pencil1Icon />
                       </IconButton>
                     </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
+                    <TooltipContent side="top" sideOffset={5}>
                       Edit user roles
                       <TooltipArrow />
                     </TooltipContent>
@@ -68,22 +64,22 @@ const ManageUsersTable = () => {
         </Table>
       </TableContainer>
       <ButtonRow>
-        <Button type='button' size='large' onClick={() => dispatch(addUser())}>
+        <Button type="button" size="large" onClick={() => dispatch(addUser())}>
           Add user
         </Button>
       </ButtonRow>
     </Content>
   );
-}
+};
 
 const Content = styled('div', {
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
 });
 
 const TableContainer = styled('div', {
   overflowY: 'scroll',
-  maxHeight: '500px'
+  maxHeight: '500px',
 });
 
 const Table = styled('table', {
@@ -117,7 +113,7 @@ const TableCell = styled('td', {
   color: '$textDark',
   fontSize: '$3',
   fontWeight: '400',
-  padding: '5px 15px'
+  padding: '5px 15px',
 });
 
 export default ManageUsersTable;

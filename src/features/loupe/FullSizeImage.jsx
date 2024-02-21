@@ -1,60 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
-import { selectIsDrawingBbox} from './loupeSlice';
-import { hasRole, WRITE_OBJECTS_ROLES, DELETE_IMAGES } from '../auth/roles';
-import { selectWorkingImages, labelsValidated, markedEmpty } from '../review/reviewSlice';
-import { deleteImages } from '../images/imagesSlice';
+import { selectIsDrawingBbox } from './loupeSlice';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
 import { contain } from 'intrinsic-scale';
-
-const EditObjectButton = styled('button', {
-  display: 'flex',
-  alignItems: 'center',
-  border: 'none',
-  borderRadius: '$0',
-  fontFamily: 'roboto',
-  backgroundColor: '$loContrast',
-  color: '$hiContrast',
-  height: '$6',
-  fontWeight: '$3',
-  fontSize: '$2',
-  paddingLeft: '$4',
-  paddingRight: '$4',
-  textTransform: 'uppercase',
-  transition: 'all 40ms linear',
-  zIndex: '$3',
-  '&:hover': {
-    color: '$hiContrast',
-    backgroundColor: '$gray4',
-    cursor: 'pointer',
-  },
-
-  svg: {
-    marginRight: '$2'
-  },
-});
-
-const ShareImage = styled('div', {
-  position: 'absolute',
-  display: 'flex',
-  height: '40px',
-  bottom: '-40',
-  left: '0',
-  zIndex: '$3',
-});
-
-const EditObjectButtons = styled('div', {
-  position: 'absolute',
-  bottom: '-40',
-  right: '0',
-  display: 'flex',
-  zIndex: '$3',
-});
 
 const FullImage = styled(Image, {
   width: '100%',
@@ -70,21 +22,19 @@ const ImageContainer = styled('div', {
 });
 
 const ImageFrame = styled('div', {
-  position: 'absolute'
+  position: 'absolute',
 });
 
-const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButtonClick, handleMarkEmptyButtonClick }) => {
-  const userRoles = useSelector(selectUserCurrentRoles);
+const FullSizeImage = ({ workingImages, image, focusIndex }) => {
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
-  const dispatch = useDispatch();
 
   // track image loading state
-  const [ imgLoaded, setImgLoaded ] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   useEffect(() => {
     setImgLoaded(false);
-  }, [ image._id ]);
+  }, [image._id]);
   const handleImgLoaded = () => setImgLoaded(true);
-  
+
   // track actual, rendered image dimensions. This is necessary because we're
   // using the `object-fit: contain` css property on the <img/> tag itself
   // to handle both horizontal and vertical auto-resizing, and use-resize-observer
@@ -92,7 +42,7 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
   // https://github.com/ZeeCoder/use-resize-observer/issues/106
   const imgEl = useRef(null);
   const imgContainerDims = useResizeObserver(imgEl);
-  const [ imgDims, setImgDims ] = useState({ width: 0, height: 0, x: 0, y: 0 });
+  const [imgDims, setImgDims] = useState({ width: 0, height: 0, x: 0, y: 0 });
   useEffect(() => {
     if (imgLoaded) {
       const src = { width: imgEl.current.naturalWidth, height: imgEl.current.naturalHeight };
@@ -100,16 +50,14 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
       let containedImgDims = contain(dest.width, dest.height, src.width, src.height);
       setImgDims(containedImgDims);
     }
-  }, [ imgLoaded, imgContainerDims.width, imgContainerDims.height ]);
+  }, [imgLoaded, imgContainerDims.width, imgContainerDims.height]);
 
   // build array of objects to render
   const currImgObjects = workingImages[focusIndex.image].objects;
-  const [ tempObject, setTempObject ] = useState(null);
-  let objectsToRender = currImgObjects.filter((obj) => (
-    obj.labels.some((lbl) => (
-      lbl.validation === null || lbl.validation.validated
-    ))
-  ));
+  const [tempObject, setTempObject] = useState(null);
+  let objectsToRender = currImgObjects.filter((obj) =>
+    obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
+  );
   if (tempObject) objectsToRender.push(tempObject);
 
   // if obejctsToRender contains any empties, order them first
@@ -125,47 +73,42 @@ const FullSizeImage = ({ workingImages, image, focusIndex, handleAddObjectButton
     objectsToRender.unshift(object);
   });
 
-  const handleDeleteButtonClick = () => dispatch(deleteImages([image._id]));
-
   return (
-    <ImageContainer className='image-container'>
-      {imgLoaded &&
+    <ImageContainer className="image-container">
+      {imgLoaded && (
         <ImageFrame
-          className='image-frame'
+          className="image-frame"
           css={{
             left: imgDims.x,
             top: imgDims.y,
             width: imgDims.width,
-            height: imgDims.height
+            height: imgDims.height,
           }}
         >
-          {objectsToRender && objectsToRender.map((obj) => {
-            return (
-              <BoundingBox
-                key={obj._id}
-                imgId={image._id}
-                imgDims={imgDims}
-                object={obj}
-                objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
-                focusIndex={focusIndex}
-                setTempObject={setTempObject}
-              />
-            );
-          })}
-          {isDrawingBbox &&
-            <DrawBboxOverlay
-              imgContainerDims={imgContainerDims}
-              imgDims={imgDims}
-              setTempObject={setTempObject}
-            />
-          }
+          {objectsToRender &&
+            objectsToRender.map((obj) => {
+              return (
+                <BoundingBox
+                  key={obj._id}
+                  imgId={image._id}
+                  imgDims={imgDims}
+                  object={obj}
+                  objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
+                  focusIndex={focusIndex}
+                  setTempObject={setTempObject}
+                />
+              );
+            })}
+          {isDrawingBbox && (
+            <DrawBboxOverlay imgContainerDims={imgContainerDims} imgDims={imgDims} setTempObject={setTempObject} />
+          )}
           {/*{!imgLoaded &&
             <SpinnerOverlay css={{ background: 'none'}}>
               <CircleSpinner />
             </SpinnerOverlay>
           }*/}
         </ImageFrame>
-      }
+      )}
       <FullImage ref={imgEl} src={image.url} onLoad={() => handleImgLoaded()} />
     </ImageContainer>
   );

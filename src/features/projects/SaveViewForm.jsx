@@ -4,24 +4,11 @@ import { styled } from '../../theme/stitches.config.js';
 import { PlusIcon, Pencil2Icon } from '@radix-ui/react-icons';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import {
-  selectViewsLoading,
-  selectSelectedView,
-  selectUnsavedViewChanges,
-  editView,
-} from './projectsSlice.js';
+import { selectViewsLoading, selectSelectedView, selectUnsavedViewChanges, editView } from './projectsSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import Button from '../../components/Button.jsx';
-import {
-  FormWrapper,
-  FieldRow,
-  ButtonRow,
-  FormFieldWrapper,
-  FormError,
-  HelperText,
-} from '../../components/Form.jsx';
+import { FormWrapper, FieldRow, ButtonRow, FormFieldWrapper, FormError, HelperText } from '../../components/Form.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-
 
 const SaveModeTab = styled(Button, {
   color: '$textDark',
@@ -41,9 +28,9 @@ const SaveModeTab = styled(Button, {
           backgroundColor: '$blue200',
           cursor: 'default',
         },
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const ViewName = styled('span', {
@@ -51,15 +38,9 @@ const ViewName = styled('span', {
 });
 
 const newViewSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('A name is required'),
-  description: Yup.string()
-    .min(2, 'Too Short!')
-    .max(500, 'Too Long!'),
+  name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('A name is required'),
+  description: Yup.string().min(2, 'Too Short!').max(500, 'Too Long!'),
 });
-
 
 const SaveViewForm = ({ handleClose }) => {
   const [saveMode, setSaveMode] = useState();
@@ -79,27 +60,28 @@ const SaveViewForm = ({ handleClose }) => {
   const handleSaveViewSubmit = (operation, selectedView, formVals) => {
     if (operation === 'create') {
       dispatch(editView(operation, formVals));
-    }
-    else if (operation === 'update') {
-      dispatch(editView(operation, {
-        viewId: selectedView._id,
-        diffs: { filters: formVals.filters }
-      }));    
+    } else if (operation === 'update') {
+      dispatch(
+        editView(operation, {
+          viewId: selectedView._id,
+          diffs: { filters: formVals.filters },
+        }),
+      );
     }
     setQueuedForClose(true);
   };
 
   return (
     <div>
-      {viewsLoading.isLoading &&
+      {viewsLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <div>
         <FieldRow css={{ justifyContent: 'center' }}>
           <SaveModeTab
-            size='large'
+            size="large"
             disabled={!selectedView.editable || !unsavedViewChanges}
             active={saveMode === 'update' ? true : false}
             onClick={() => setSaveMode('update')}
@@ -108,7 +90,7 @@ const SaveViewForm = ({ handleClose }) => {
             Update current view
           </SaveModeTab>
           <SaveModeTab
-            size='large'
+            size="large"
             active={saveMode === 'create' ? 'true' : 'false'}
             onClick={() => setSaveMode('create')}
           >
@@ -116,7 +98,7 @@ const SaveViewForm = ({ handleClose }) => {
             Create new view
           </SaveModeTab>
         </FieldRow>
-        {(saveMode === 'update') &&
+        {saveMode === 'update' && (
           <FormWrapper>
             <Formik
               initialValues={{ filters: activeFilters }}
@@ -127,12 +109,12 @@ const SaveViewForm = ({ handleClose }) => {
               {() => (
                 <Form>
                   <HelperText>
-                    Are you sure you'd like to overwrite the filters for 
-                    the <ViewName>{selectedView.name}</ViewName> view?
+                    Are you sure you&apos;d like to overwrite the filters for the{' '}
+                    <ViewName>{selectedView.name}</ViewName> view?
                   </HelperText>
-                  <Field name='filters' type='hidden'/>
+                  <Field name="filters" type="hidden" />
                   <ButtonRow>
-                    <Button size='large' type='submit'>
+                    <Button size="large" type="submit">
                       Update view
                     </Button>
                   </ButtonRow>
@@ -140,8 +122,8 @@ const SaveViewForm = ({ handleClose }) => {
               )}
             </Formik>
           </FormWrapper>
-        }
-        {(saveMode === 'create') &&
+        )}
+        {saveMode === 'create' && (
           <FormWrapper>
             <Formik
               initialValues={{
@@ -153,45 +135,36 @@ const SaveViewForm = ({ handleClose }) => {
               validationSchema={newViewSchema}
               onSubmit={(values) => {
                 handleSaveViewSubmit(saveMode, selectedView, values);
-              }}              
+              }}
             >
               {({ isValid, dirty }) => (
                 <Form>
-
                   {/* name */}
                   <FieldRow>
                     <FormFieldWrapper>
-                      <label htmlFor='name'>Name</label>
-                      <Field name='name' id='name'/>
-                      <ErrorMessage component={FormError} name='name' />
+                      <label htmlFor="name">Name</label>
+                      <Field name="name" id="name" />
+                      <ErrorMessage component={FormError} name="name" />
                     </FormFieldWrapper>
                   </FieldRow>
 
                   {/* description */}
                   <FieldRow>
                     <FormFieldWrapper>
-                      <label htmlFor='description'>Description</label>
-                      <Field
-                        name='description'
-                        id='description'
-                        component='textarea'
-                      />
-                      <ErrorMessage component={FormError} name='description'/>
+                      <label htmlFor="description">Description</label>
+                      <Field name="description" id="description" component="textarea" />
+                      <ErrorMessage component={FormError} name="description" />
                     </FormFieldWrapper>
                   </FieldRow>
 
                   {/* filters */}
-                  <Field name='filters' type='hidden'/>
+                  <Field name="filters" type="hidden" />
 
                   {/* editable */}
-                  <Field name='editable' type='hidden'/>
+                  <Field name="editable" type="hidden" />
 
                   <ButtonRow>
-                    <Button 
-                      type='submit'
-                      size='large'
-                      disabled={!isValid || !dirty}
-                    >
+                    <Button type="submit" size="large" disabled={!isValid || !dirty}>
                       Save view
                     </Button>
                   </ButtonRow>
@@ -199,12 +172,10 @@ const SaveViewForm = ({ handleClose }) => {
               )}
             </Formik>
           </FormWrapper>
-        }
+        )}
       </div>
     </div>
   );
 };
 
-
 export default SaveViewForm;
-

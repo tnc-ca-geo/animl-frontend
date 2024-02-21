@@ -11,7 +11,6 @@ const IMAGES_URLS = {
 };
 
 const stage = import.meta.env.VITE_STAGE || process.env.NODE_ENV;
-console.log('stage: ', stage);
 
 export const API_URL = API_URLS[stage];
 export const IMAGES_URL = IMAGES_URLS[stage];
