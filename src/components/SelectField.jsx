@@ -76,7 +76,7 @@ const SelectField = ({
       {label && <label htmlFor={name}>{label}</label>}
       <Select
         styles={customStyles}
-        id={name}
+        inputId={name}
         options={options}
         multi={true}
         onChange={handleChange}
