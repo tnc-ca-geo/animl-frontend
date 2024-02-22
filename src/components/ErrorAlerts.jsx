@@ -39,6 +39,8 @@ import {
   dismissExportErrorsError,
   selectRedriveBatchErrors,
   dismissRedriveBatchError,
+  selectUploadErrors,
+  dismissUploadError,
 } from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
 import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
@@ -63,6 +65,7 @@ const ErrorAlerts = () => {
   const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
   const manageLabelsErrors = useSelector(selectManageLabelsErrors);
+  const uploadErrors = useSelector(selectUploadErrors);
 
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -76,11 +79,12 @@ const ErrorAlerts = () => {
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportDataErrors, 'Error Exporting Data', 'data'),
-    enrichErrors(exportImageErrorsErrors, 'Error downloading errors CSV', 'uploadImageErrors'),
-    enrichErrors(redriveBatchErrors, 'Error retrying failed images in batch', 'redriveBatch'),
-    enrichErrors(manageUserErrors, 'Manage user error', 'manageUsers'),
+    enrichErrors(exportImageErrorsErrors, 'Error Downloading Errors CSV', 'uploadImageErrors'),
+    enrichErrors(redriveBatchErrors, 'Error Retrying Failed Images in Batch', 'redriveBatch'),
+    enrichErrors(manageUserErrors, 'Manage User Error', 'manageUsers'),
     enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
     enrichErrors(manageLabelsErrors, 'Error Updating Label', 'manageLabels'),
+    enrichErrors(uploadErrors, 'Error Uploading Images', 'upload'),
   ];
 
   const errors = enrichedErrors.reduce((acc, curr) => (curr && curr.length ? acc.concat(curr) : acc), []);
@@ -139,6 +143,7 @@ const dismissErrorActions = {
   redriveBatch: (i) => dismissRedriveBatchError(i),
   manageUsers: (i) => dismissManageUsersError(i),
   manageLabels: (i) => dismissManageLabelsError(i),
+  upload: (i) => dismissUploadError(i),
 };
 
 function enrichErrors(errors, title, entity) {

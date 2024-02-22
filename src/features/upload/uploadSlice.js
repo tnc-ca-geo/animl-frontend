@@ -65,8 +65,6 @@ export const uploadSlice = createSlice({
     },
 
     uploadFailure: (state, { payload }) => {
-      console.log('uploadFailure: ', payload);
-
       const ls = { errors: payload };
       state.loadingStates.upload = {
         ...initialState.loadingStates.upload,
@@ -104,6 +102,11 @@ export const uploadSlice = createSlice({
         ...state.loadingStates.upload,
         ...ls,
       };
+    },
+
+    dismissUploadError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.upload.errors.splice(index, 1);
     },
 
     // fetch batch
@@ -302,6 +305,7 @@ export const {
   uploadFailure,
   uploadProgress,
   multipartUploadProgress,
+  dismissUploadError,
   fetchBatchesStart,
   fetchBatchesSuccess,
   fetchBatchesFailure,
@@ -558,7 +562,8 @@ export const fetchBatches =
         dispatch(fetchBatchesSuccess({ batches }));
       }
     } catch (err) {
-      dispatch(fetchBatchesFailure(err));
+      const errs = normalizeErrors(err, 'GET_BATCHES_ERROR');
+      dispatch(fetchBatchesFailure(errs));
     }
   };
 
@@ -674,5 +679,6 @@ export const selectExportImageErrorsErrors = (state) => state.uploads.loadingSta
 export const selectStopBatchLoading = (state) => state.uploads.loadingStates.stopBatch;
 export const selectRedriveBatchLoading = (state) => state.uploads.loadingStates.redriveBatch;
 export const selectRedriveBatchErrors = (state) => state.uploads.loadingStates.redriveBatch.errors;
+export const selectUploadErrors = (state) => state.uploads.loadingStates.upload.errors;
 
 export default uploadSlice.reducer;
