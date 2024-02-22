@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
-import {
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastAction,
-  ToastViewport,
-} from './Toast';
+import { Toast, ToastTitle, ToastDescription, ToastAction, ToastViewport } from './Toast';
 import {
   selectLabelsErrors,
   dismissLabelsError,
@@ -29,10 +23,7 @@ import {
   selectManageLabelsErrors,
   dismissManageLabelsError,
 } from '../features/projects/projectsSlice';
-import {
-  selectWirelessCamerasErrors,
-  dismissWirelessCamerasError,
-} from '../features/cameras/wirelessCamerasSlice';
+import { selectWirelessCamerasErrors, dismissWirelessCamerasError } from '../features/cameras/wirelessCamerasSlice';
 import {
   selectImagesErrors,
   dismissImagesError,
@@ -50,10 +41,7 @@ import {
   dismissRedriveBatchError,
 } from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
-import {
-  selectManageUserErrors,
-  dismissManageUsersError,
-} from '../features/projects/usersSlice';
+import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
 
 // TODO: add updateAutomationRules errors
 
@@ -88,29 +76,14 @@ const ErrorAlerts = () => {
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
     enrichErrors(exportDataErrors, 'Error Exporting Data', 'data'),
-    enrichErrors(
-      exportImageErrorsErrors,
-      'Error downloading errors CSV',
-      'uploadImageErrors',
-    ),
-    enrichErrors(
-      redriveBatchErrors,
-      'Error retrying failed images in batch',
-      'redriveBatch',
-    ),
+    enrichErrors(exportImageErrorsErrors, 'Error downloading errors CSV', 'uploadImageErrors'),
+    enrichErrors(redriveBatchErrors, 'Error retrying failed images in batch', 'redriveBatch'),
     enrichErrors(manageUserErrors, 'Manage user error', 'manageUsers'),
-    enrichErrors(
-      createProjectErrors,
-      'Error Creating Project',
-      'createProject',
-    ),
+    enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
     enrichErrors(manageLabelsErrors, 'Error Updating Label', 'manageLabels'),
   ];
 
-  const errors = enrichedErrors.reduce(
-    (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
-    [],
-  );
+  const errors = enrichedErrors.reduce((acc, curr) => (curr && curr.length ? acc.concat(curr) : acc), []);
 
   const [open, setOpen] = useState(errors && errors.length);
   useEffect(() => {
@@ -138,10 +111,7 @@ const ErrorAlerts = () => {
               <div>{err.usrMsg}</div>
             </ToastDescription>
             <ToastAction asChild altText="Dismiss">
-              <IconButton
-                variant="ghost"
-                onClick={() => handleDismissError(err.index, err.entity)}
-              >
+              <IconButton variant="ghost" onClick={() => handleDismissError(err.index, err.entity)}>
                 <Cross2Icon />
               </IconButton>
             </ToastAction>

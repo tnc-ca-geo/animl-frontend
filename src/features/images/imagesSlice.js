@@ -339,10 +339,6 @@ export const fetchImageContext = (imgId) => {
           input: { imageId: imgId },
         });
 
-        if (!res.image) {
-          throw new Error(`Failed to find image with Id: ${imgId}`);
-        }
-
         // Fetch all images from the image's deployment w/ a createdStart date
         // 5 mins before dateTimeOriginal of image-to-focus
 
@@ -365,13 +361,7 @@ export const fetchImageContext = (imgId) => {
         dispatch(getImageContextSuccess());
       }
     } catch (err) {
-      // if we don't find the image and we catch the error thrown above,
-      // re-format to match error objects like those returned from the API
-      let error = err;
-      if (err.message && err.message.includes('Failed to find')) {
-        error = [{ message: err.message, extensions: { code: 'NOT_FOUND' } }];
-      }
-      dispatch(getImageContextFailure(error));
+      dispatch(getImageContextFailure(err));
       dispatch(preFocusImageEnd());
       dispatch(push({ search: '' })); // remove URL query string
     }

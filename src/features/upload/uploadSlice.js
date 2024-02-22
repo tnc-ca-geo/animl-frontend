@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { setSelectedProjAndView } from '../projects/projectsSlice';
+import { normalizeErrors } from '../../app/utils';
 
 const initialState = {
   batchStates: [],
@@ -65,6 +66,7 @@ export const uploadSlice = createSlice({
 
     uploadFailure: (state, { payload }) => {
       console.log('uploadFailure: ', payload);
+
       const ls = { errors: payload };
       state.loadingStates.upload = {
         ...initialState.loadingStates.upload,
@@ -363,10 +365,11 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       const uploadedParts = [];
       const activeConnections = {};
 
+      // create XHR request and handle progress, errors, etc.
       const sendChunk = (url, chunk, partNumber) => {
         return new Promise((resolve, reject) => {
           if (!window.navigator.onLine) {
-            reject(new Error('System is offline'));
+            reject(new Error('No internet connection'));
           }
 
           const xhr = (activeConnections[partNumber] = new XMLHttpRequest());
@@ -377,17 +380,13 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
             reject();
             window.removeEventListener('offline', abort);
           };
+
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
-              dispatch(
-                multipartUploadProgress({
-                  partNumber,
-                  loaded: event.loaded,
-                  fileSize: file.size,
-                }),
-              );
+              dispatch(multipartUploadProgress({ partNumber, loaded: event.loaded, fileSize: file.size }));
             }
           });
+
           xhr.addEventListener('loadend', () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
               delete activeConnections[partNumber];
@@ -405,6 +404,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
               handleError(abort);
             }
           });
+
           xhr.onerror = () => handleError(abort);
           xhr.ontimeout = () => handleError(abort);
           xhr.onabort = () => handleError(abort);
@@ -416,9 +416,11 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
         });
       };
 
+      // complete the upload
       const complete = async (error) => {
         if (error) {
-          dispatch(uploadFailure(error));
+          let errs = normalizeErrors(error, 'UPLOAD_FAILED');
+          dispatch(uploadFailure(errs));
         } else {
           uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
           await call({
@@ -436,6 +438,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
         }
       };
 
+      // pop off a part, initiate upload, and handle retries
       const sendNext = (retry = 0) => {
         const numberOfActiveConnections = Object.keys(activeConnections).length;
         if (!parts.length) {
@@ -450,7 +453,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
         sendChunk(url, chunk, index + 1)
           .then(() => sendNext())
           .catch((error) => {
-            if (retry <= 8) {
+            if (retry <= 2) {
               retry++;
               setTimeout(
                 () => {
@@ -470,7 +473,8 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       sendNext();
     }
   } catch (err) {
-    dispatch(uploadFailure(err));
+    let errs = normalizeErrors(err, 'UPLOAD_FAILED');
+    dispatch(uploadFailure(errs));
   }
 };
 
@@ -527,7 +531,8 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       dispatch(fetchBatches());
     }
   } catch (err) {
-    dispatch(uploadFailure(err));
+    let errs = normalizeErrors(err, 'UPLOAD_FAILED');
+    dispatch(uploadFailure(errs));
   }
 };
 

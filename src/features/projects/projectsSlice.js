@@ -4,6 +4,7 @@ import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
 import { registerCameraSuccess, unregisterCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import { clearImages } from '../images/imagesSlice.js';
+import { normalizeErrors } from '../../app/utils.js';
 
 const initialState = {
   projects: [],
@@ -366,6 +367,7 @@ export const projectsSlice = createSlice({
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
+      console.log('updateProjectLabelFailure resolver - payload: ', payload);
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.projectLabels = ls;
     },
@@ -494,7 +496,8 @@ export const fetchProjects = (payload) => async (dispatch) => {
     }
   } catch (err) {
     console.log('err: ', err);
-    dispatch(getProjectsFailure(err));
+    const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
+    dispatch(getProjectsFailure(errs));
   }
 };
 
@@ -736,8 +739,8 @@ export const updateProjectLabel = (payload) => {
         dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
       }
     } catch (err) {
-      console.log(`error attempting to update label: `, err);
-      dispatch(updateProjectLabelFailure(err));
+      const errs = normalizeErrors(err, 'UPDATE_PROJECT_LABEL_ERROR');
+      dispatch(updateProjectLabelFailure(errs));
     }
   };
 };
