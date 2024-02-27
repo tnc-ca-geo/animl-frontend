@@ -78,7 +78,8 @@
     "serve": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "deploy-dev": "npm run build:staging && sls client deploy --no-confirm --stage dev",
-    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod"
+    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -92,6 +93,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.1",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "husky": "^9.0.11",
     "serverless-finch": "^4.0.3",
     "vite": "^4.3.9",
     "vite-plugin-svgr": "^3.2.0",
