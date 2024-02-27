@@ -73,6 +73,7 @@ const pageInfoFields = `
 const batchFields = `
   _id
   projectId
+  created
   uploadComplete
   ingestionComplete
   processingStart
@@ -169,10 +170,9 @@ const projectFields = `
     ${projectLabelFields}
   }
   availableMLModels 
-`
+`;
 
 const queries = {
-
   getProjects: (input) => ({
     template: `
       query GetProjects($input: QueryProjectsInput) {
@@ -181,7 +181,7 @@ const queries = {
         }
       }
     `,
-    variables: { input: input }
+    variables: { input: input },
   }),
 
   createProject: (input) => ({
@@ -194,7 +194,7 @@ const queries = {
         }
       }
     `,
-    variables: { input: input }
+    variables: { input: input },
   }),
 
   getViews: () => ({
@@ -217,9 +217,9 @@ const queries = {
         }
       `,
       variables: {
-        input: { imageId }
-      }
-    }
+        input: { imageId },
+      },
+    };
   },
 
   deleteImages: (input) => {
@@ -232,9 +232,9 @@ const queries = {
         }
       `,
       variables: {
-        input
-      }
-    }
+        input,
+      },
+    };
   },
 
   getImages: ({ filters, pageInfo, page }) => ({
@@ -258,7 +258,7 @@ const queries = {
         sortAscending: pageInfo.sortAscending,
         limit: pageInfo.limit,
         filters,
-      }
+      },
     },
   }),
 
@@ -283,7 +283,7 @@ const queries = {
   }),
 
   getModels: (input) => ({
-      template: `
+    template: `
         query GetMLModels($input: QueryMLModelsInput) {
           mlModels(input: $input) {
             _id
@@ -297,7 +297,7 @@ const queries = {
           }
         }
       `,
-      variables: { input: input }
+    variables: { input: input },
   }),
 
   getStats: ({ filters }) => ({
@@ -319,7 +319,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { filters }
+      input: { filters },
     },
   }),
 
@@ -333,7 +333,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { format, filters }
+      input: { format, filters },
     },
   }),
 
@@ -346,7 +346,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { filters }
+      input: { filters },
     },
   }),
 
@@ -365,7 +365,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { documentId }
+      input: { documentId },
     },
   }),
 
@@ -646,7 +646,7 @@ const queries = {
         }
       }
     `,
-    variables: { input }
+    variables: { input },
   }),
 
   closeUpload: (input) => ({
@@ -657,7 +657,7 @@ const queries = {
         }
       }
     `,
-    variables: { input }
+    variables: { input },
   }),
 
   updateBatch: (input) => ({
@@ -670,7 +670,7 @@ const queries = {
         }
       }
     `,
-    variables: { input }
+    variables: { input },
   }),
 
   getBatches: ({ filter, pageInfo, page }) => ({
@@ -689,19 +689,21 @@ const queries = {
         }
       }
     `,
-    variables: { input: {
-      ...(page === 'next' && { next: pageInfo.next }),
-      ...(page === 'previous' && { previous: pageInfo.previous }),
-      filter: filter,
-      paginatedField: 'uploadComplete',
-      // TODO: sortAscending should be false to show in order of newest -> oldest, 
-      // but for newly created batches, batch.processingStart is not yet set and
-      // gets put at the bottom of the returned array b/c of that. Figure out how
-      // to return the batches in reverse chronological order but surface newly
-      // created batches at the top
-      sortAscending: false,
-      limit: 5,
-    } }
+    variables: {
+      input: {
+        ...(page === 'next' && { next: pageInfo.next }),
+        ...(page === 'previous' && { previous: pageInfo.previous }),
+        filter: filter,
+        paginatedField: 'uploadComplete',
+        // TODO: sortAscending should be false to show in order of newest -> oldest,
+        // but for newly created batches, batch.processingStart is not yet set and
+        // gets put at the bottom of the returned array b/c of that. Figure out how
+        // to return the batches in reverse chronological order but surface newly
+        // created batches at the top
+        sortAscending: false,
+        limit: 5,
+      },
+    },
   }),
 
   getBatch: ({ id }) => ({
@@ -712,7 +714,7 @@ const queries = {
         }
       }
     `,
-    variables: { id }
+    variables: { id },
   }),
 
   stopBatch: ({ id }) => ({
@@ -723,7 +725,7 @@ const queries = {
         }
       }
     `,
-    variables: { input: { batch: id } }
+    variables: { input: { batch: id } },
   }),
 
   redriveBatch: ({ id }) => ({
@@ -734,7 +736,7 @@ const queries = {
         }
       }
     `,
-    variables: { input: { batch: id } }
+    variables: { input: { batch: id } },
   }),
 
   getUsers: () => ({
@@ -753,7 +755,7 @@ const queries = {
         }
       }
     `,
-    variables: { input: {}}
+    variables: { input: {} },
   }),
 
   updateUser: (input) => ({
@@ -764,7 +766,7 @@ const queries = {
         }
       }
     `,
-    variables: { input }
+    variables: { input },
   }),
 
   createUser: (input) => ({
@@ -775,7 +777,7 @@ const queries = {
         }
       }
     `,
-    variables: { input }
+    variables: { input },
   }),
 };
 

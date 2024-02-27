@@ -291,6 +291,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
 
 const getStatus = (percentUploaded, batch) => {
   const {
+    created,
     uploadComplete,
     ingestionComplete,
     processingStart,
@@ -300,6 +301,11 @@ const getStatus = (percentUploaded, batch) => {
     dead,
     errors,
   } = batch;
+
+  const batchCreated = DateTime.fromISO(created);
+  const now = DateTime.now();
+  const durationSinceBatchCreated = now.diff(batchCreated);
+
   return {
     'uploading-file': percentUploaded > 0 && percentUploaded < 100 && !uploadComplete,
     'validating-file': !uploadComplete && !processingStart,
@@ -311,6 +317,8 @@ const getStatus = (percentUploaded, batch) => {
     'stack-destroyed': processingEnd ? true : false, // not sure we need this either
     'has-batch-errors': errors?.length > 0,
     'has-failed-images': dead > 0,
+    'failed-to-upload':
+      !percentUploaded && !uploadComplete && !processingStart && durationSinceBatchCreated.as('minutes') > 480, // if we haven't started processing images in 8 hours
   };
 };
 
@@ -351,6 +359,10 @@ const getStatusMessage = (status, batch) => {
     loading = false;
     const dateString = DateTime.fromISO(stoppingInitiated).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing was cancelled at ${dateString}`;
+  }
+  if (status['failed-to-upload']) {
+    loading = false;
+    statusMsg = `Your file to failed to upload. Please try again.`;
   }
   return <StatusMessage loading={loading}>{statusMsg}</StatusMessage>;
 };
