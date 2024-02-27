@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectSelectedView } from './projectsSlice.js';
 import { selectFocusIndex } from '../review/reviewSlice.js';
 import { toggleOpenLoupe, selectLoupeOpen } from '../loupe/loupeSlice.js';
 import SidebarNav from './SidebarNav.jsx';
@@ -18,7 +17,6 @@ const ViewExplorerWrapper = styled('div', {
 });
 
 const ViewExplorer = () => {
-  const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
 
   const loupeOpen = useSelector(selectLoupeOpen);
@@ -29,21 +27,15 @@ const ViewExplorer = () => {
     }
   }, [focusIndex.image, dispatch]);
 
-  const [ filtersPanelOpen, setFiltersPanelOpen ] = useState(true);
+  const [filtersPanelOpen, setFiltersPanelOpen] = useState(true);
   const toggleFiltersPanel = () => {
     setFiltersPanelOpen(!filtersPanelOpen);
   };
 
   return (
     <ViewExplorerWrapper>
-      <SidebarNav
-        view={selectedView} 
-        toggleFiltersPanel={toggleFiltersPanel}
-        filtersPanelOpen={filtersPanelOpen}
-      />
-      {filtersPanelOpen && 
-        <FiltersPanel toggleFiltersPanel={toggleFiltersPanel}/>
-      }
+      <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
+      {filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
       <ImagesPanel />
       {loupeOpen && <Loupe />}
       <HydratedModal />
@@ -51,6 +43,5 @@ const ViewExplorer = () => {
     </ViewExplorerWrapper>
   );
 };
-
 
 export default ViewExplorer;

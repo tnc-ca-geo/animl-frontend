@@ -6,16 +6,12 @@ import 'react-dates/lib/css/_datepicker.css';
 import { inViewportTopHalf } from '../app/utils';
 
 // NOTE: Date Picker style overrides are in theme/globalStyles.js
-// Had to override them there b/c the actual Date Picker element gets 
-// appended to the body (and thus you can't dump style overrides in a 
+// Had to override them there b/c the actual Date Picker element gets
+// appended to the body (and thus you can't dump style overrides in a
 // wrapper element
 
 const DatePickerWithFormik = ({
-  startDateId,
-  endDateId,
   form: { setFieldValue, setFieldTouched, setFieldError, values },
-  field,
-  ...props
 }) => {
   const [focusedInput, setFocusedInput] = useState(null);
 
@@ -41,12 +37,12 @@ const DatePickerWithFormik = ({
             date = moment(date).startOf('day');
             setFieldValue('startDate', date.toISOString());
           } else {
-            setFieldError('startDate', 'Enter date as MM/DD/YYYY')
+            setFieldError('startDate', 'Enter date as MM/DD/YYYY');
           }
         }}
         focused={focusedInput}
         onFocusChange={onFocusChange}
-        id='startDate'
+        id="startDate"
         small={true}
         hideKeyboardShortcutsPanel={true}
         enableOutsideDays={true}

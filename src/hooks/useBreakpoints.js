@@ -1,5 +1,5 @@
 import useResizeObserver from 'use-resize-observer';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 const useBreakpoints = (breakpoints) => {
   const [breakpoint, setBreakpoint] = useState(undefined);
@@ -13,8 +13,8 @@ const useBreakpoints = (breakpoints) => {
           }
         }
       },
-      [breakpoints]
-    )
+      [breakpoints],
+    ),
   });
 
   return { ref, breakpoint };

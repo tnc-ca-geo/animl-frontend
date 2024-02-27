@@ -1,3 +1,4 @@
+import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { Box } from './Box';
 
@@ -6,9 +7,9 @@ const Header = styled('div', {
   fontWeight: '$5',
   fontFamily: '$roboto',
   color: '$textDark',
-  textAlign: 'center', 
+  textAlign: 'center',
   paddingTop: '$8',
-  paddingBottom: '$8'
+  paddingBottom: '$8',
 });
 
 export const NotFound = () => {
@@ -16,5 +17,5 @@ export const NotFound = () => {
     <Box>
       <Header>Page not found</Header>
     </Box>
-  )
-}
+  );
+};

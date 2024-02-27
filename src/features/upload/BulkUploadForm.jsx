@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, HelperText, FormError, FileUploadInput } from '../../components/Form';
+import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, FormError, FileUploadInput } from '../../components/Form';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
@@ -11,11 +11,10 @@ import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { green, red } from '@radix-ui/colors';
-import { uploadFile, uploadMultipartFile, selectUploadsLoading, uploadProgress } from './uploadSlice';
+import { uploadFile, uploadMultipartFile, selectUploadsLoading } from './uploadSlice';
 import { styled } from '@stitches/react';
 import InfoIcon from '../../components/InfoIcon';
 import BulkUploadTable from './BulkUploadTable.jsx';
-
 
 const bulkUploadSchema = Yup.object().shape({
   zipFile: Yup.mixed()
@@ -28,8 +27,10 @@ const bulkUploadSchema = Yup.object().shape({
       if (!value) return true;
       return value && value.size <= Math.pow(1024, 3) * 50;
     }),
-  overrideSerial: Yup.string()
-    .matches(/^[a-zA-Z0-9_.-]*$/, 'Serial Numbers can\'t contain spaces or special characters')
+  overrideSerial: Yup.string().matches(
+    /^[a-zA-Z0-9_.-]*$/,
+    "Serial Numbers can't contain spaces or special characters",
+  ),
 });
 
 const FileUpload = styled('div', {
@@ -40,7 +41,7 @@ const ProgressBar = styled('div', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  marginBottom: '$4'
+  marginBottom: '$4',
 });
 
 const ProgressTicker = styled('div', {
@@ -48,7 +49,7 @@ const ProgressTicker = styled('div', {
   fontSize: '$3',
   marginLeft: '$2',
   textAlign: 'right',
-  width: 120
+  width: 120,
 });
 
 const ProgressRoot = styled(Progress.Root, {
@@ -68,7 +69,7 @@ const ProgressIndicator = styled(Progress.Indicator, {
   backgroundColor: green.green9, //sky.sky4, //'$blue600',
   width: '100%',
   height: '100%',
-  transition: 'transform 660ms cubic-bezier(0.65, 0, 0.35, 1)'
+  transition: 'transform 660ms cubic-bezier(0.65, 0, 0.35, 1)',
 });
 
 const ClearFileButton = styled(IconButton, {
@@ -84,39 +85,50 @@ const SNOverrideContent = styled('div', {
 
 const SerialNumberOverrideHelp = () => (
   <SNOverrideContent>
-    Using this feature will override the camera serial numbers of all images in your Zip file and 
-    cannot be undone. Be sure to understand the implications and read the <a href="https://docs.animl.camera/fundamentals/uploading-images#overriding-serial-numbers" target='_blank' rel='noopener noreferrer'>documentation</a> before use.
+    Using this feature will override the camera serial numbers of all images in your Zip file and cannot be undone. Be
+    sure to understand the implications and read the{' '}
+    <a
+      href="https://docs.animl.camera/fundamentals/uploading-images#overriding-serial-numbers"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      documentation
+    </a>{' '}
+    before use.
   </SNOverrideContent>
 );
 
-
-const BulkUploadForm = ({ handleClose }) => {
+const BulkUploadForm = () => {
   const selectedProject = useSelector(selectSelectedProject);
-  const { isLoading, progress }  = useSelector(selectUploadsLoading);
+  const { isLoading, progress } = useSelector(selectUploadsLoading);
   const percentUploaded = Math.round(progress * 100);
-  const [ alertOpen, setAlertOpen ] = useState(false);
-  const [ warnings, setWarnings ] = useState([])
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [warnings, setWarnings] = useState([]);
   const dispatch = useDispatch();
-  const hasImageAddedAutoRule = selectedProject.automationRules.some((rule) => (
-    rule.event.type === 'image-added' && rule.action.type === 'run-inference'
-  ));
+  const hasImageAddedAutoRule = selectedProject.automationRules.some(
+    (rule) => rule.event.type === 'image-added' && rule.action.type === 'run-inference',
+  );
 
   const upload = (values) => {
-    const fileSize = values.zipFile.size; 
-    if ((fileSize / (1024 * 1024)) > 100) {
+    const fileSize = values.zipFile.size;
+    if (fileSize / (1024 * 1024) > 100) {
       // file is over 100 MB limit; initiate multi-part upload
       console.log('file is over 100 MB');
-      dispatch(uploadMultipartFile({
-        file: values.zipFile, 
-        overrideSerial: values.overrideSerial
-      }));
+      dispatch(
+        uploadMultipartFile({
+          file: values.zipFile,
+          overrideSerial: values.overrideSerial,
+        }),
+      );
     } else {
       // else initiate single-part upload
       console.log('file is under 100 MB');
-      dispatch(uploadFile({ 
-        file: values.zipFile,
-        overrideSerial: values.overrideSerial
-      }));
+      dispatch(
+        uploadFile({
+          file: values.zipFile,
+          overrideSerial: values.overrideSerial,
+        }),
+      );
     }
   };
 
@@ -127,8 +139,7 @@ const BulkUploadForm = ({ handleClose }) => {
     if (warns.length) {
       setWarnings(warns);
       setAlertOpen(true);
-    }
-    else {
+    } else {
       upload(values);
     }
   };
@@ -145,7 +156,6 @@ const BulkUploadForm = ({ handleClose }) => {
     }
   }, [percentUploaded, reset, dispatch]);
 
-
   return (
     <div>
       <FormWrapper>
@@ -159,42 +169,42 @@ const BulkUploadForm = ({ handleClose }) => {
             <Form>
               <FieldRow css={{ paddingBottom: 0 }}>
                 <FormFieldWrapper>
-                  <label htmlFor='overrideSerial'>Upload a ZIP file containing images</label>
+                  <label htmlFor="overrideSerial">Upload a ZIP file containing images</label>
                   <FileUpload>
                     <FileUploadInput
                       ref={fileInputRef}
-                      type='file'
-                      id='zipFile'
-                      name='zipFile'
-                      accept='.zip'
+                      type="file"
+                      id="zipFile"
+                      name="zipFile"
+                      accept=".zip"
                       onChange={(e) => setFieldValue('zipFile', e.target.files[0])}
                     />
-                    <ClearFileButton
-                      variant='ghost'
-                      disabled={!values.zipFile || isLoading}
-                      onClick={reset}
-                    >
+                    <ClearFileButton variant="ghost" disabled={!values.zipFile || isLoading} onClick={reset}>
                       <Cross2Icon />
                     </ClearFileButton>
                   </FileUpload>
-                  <ErrorMessage component={FormError} name='zipFile'/>
+                  <ErrorMessage component={FormError} name="zipFile" />
                 </FormFieldWrapper>
-                
+
                 <FormFieldWrapper>
-                  <label htmlFor='overrideSerial'>
+                  <label htmlFor="overrideSerial">
                     Serial number override
-                    <InfoIcon tooltipContent={<SerialNumberOverrideHelp />}/>
+                    <InfoIcon tooltipContent={<SerialNumberOverrideHelp />} />
                   </label>
 
-                  <Field name='overrideSerial' id='overrideSerial' placeholder='Optional. Read the docs and use with caution!'/>
-                  <ErrorMessage component={FormError} name='overrideSerial'/>
+                  <Field
+                    name="overrideSerial"
+                    id="overrideSerial"
+                    placeholder="Optional. Read the docs and use with caution!"
+                  />
+                  <ErrorMessage component={FormError} name="overrideSerial" />
                 </FormFieldWrapper>
 
-                <ButtonRow css={{ 'padding': 0, 'margin': '0 0 $3 $3', 'alignItems': 'start' }}>
-                  <Button 
-                    css={{ 'height': '55px', 'marginTop': '28px' }}
-                    type='submit' 
-                    size='large' 
+                <ButtonRow css={{ padding: 0, margin: '0 0 $3 $3', alignItems: 'start' }}>
+                  <Button
+                    css={{ height: '55px', marginTop: '28px' }}
+                    type="submit"
+                    size="large"
                     disabled={isLoading || !values.zipFile}
                   >
                     Upload
@@ -204,13 +214,10 @@ const BulkUploadForm = ({ handleClose }) => {
 
               <ProgressBar css={{ opacity: isLoading ? 1 : 0 }}>
                 <ProgressRoot>
-                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }}/>
+                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }} />
                 </ProgressRoot>
-                <ProgressTicker>
-                  {percentUploaded}% Uploaded
-                </ProgressTicker>
+                <ProgressTicker>{percentUploaded}% Uploaded</ProgressTicker>
               </ProgressBar>
-
             </Form>
           )}
         </Formik>
@@ -224,7 +231,7 @@ const BulkUploadForm = ({ handleClose }) => {
         warnings={warnings}
       />
     </div>
-  )
+  );
 };
 
 // TODO: break out into new file
@@ -236,7 +243,7 @@ const Warning = styled('div', {
   color: '$textMedium',
   p: {
     marginTop: '$2',
-  }
+  },
 });
 
 const WarningTitle = styled('div', {
@@ -246,27 +253,37 @@ const WarningTitle = styled('div', {
   fontWeight: '500',
   marginTop: '$2',
   svg: {
-    marginRight: '$2'
-  }
+    marginRight: '$2',
+  },
 });
 
 const alertContent = {
-  'override-serial-set': <p>You've included a camera Serial Number Override in your
-      upload. Setting the Serial Number Override will override the serial 
-      number for all images in this ZIP file, so proceed with caution. For more
-      information on the implications of using this feature, please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
+  'override-serial-set': (
+    <p>
+      You&apos;ve included a camera Serial Number Override in your upload. Setting the Serial Number Override will
+      override the serial number for all images in this ZIP file, so proceed with caution. For more information on the
+      implications of using this feature, please refer to the{' '}
+      <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+        Animl Documentation
+      </a>
+      .
     </p>
-  ,
-  'no-automation-rule': <p>There are currently no machine learning automation rules 
-      configured to trigger when new images are added to this Project, so if you proceed, images in  
-      this ZIP will be saved, but the upload will not produce in any machine learning predictions. To learn more 
-      about how to configure machine learning pipelines using Automation Rules, 
-      please refer to the <a href="https://docs.animl.camera" target='_blank' rel='noopener noreferrer'>Animl Documentation</a>.
+  ),
+  'no-automation-rule': (
+    <p>
+      There are currently no machine learning automation rules configured to trigger when new images are added to this
+      Project, so if you proceed, images in this ZIP will be saved, but the upload will not produce in any machine
+      learning predictions. To learn more about how to configure machine learning pipelines using Automation Rules,
+      please refer to the{' '}
+      <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+        Animl Documentation
+      </a>
+      .
     </p>
+  ),
 };
 
 const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
-
   const handleConfirmUpload = () => {
     upload(formValues);
     setAlertOpen(false);
@@ -280,25 +297,31 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
       }}
     >
       <AlertPortal>
-        <AlertOverlay/>
+        <AlertOverlay />
         <AlertContent>
-          <AlertTitle>Are you sure you'd like to proceed with this upload?</AlertTitle>
-          {warnings && warnings.map((warn) => (
-            <Warning key={warn} >
-              <WarningTitle><ExclamationTriangleIcon/>Warning</WarningTitle>
-              {alertContent[warn]}
-            </Warning>
-          ))}
+          <AlertTitle>Are you sure you&apos;d like to proceed with this upload?</AlertTitle>
+          {warnings &&
+            warnings.map((warn) => (
+              <Warning key={warn}>
+                <WarningTitle>
+                  <ExclamationTriangleIcon />
+                  Warning
+                </WarningTitle>
+                {alertContent[warn]}
+              </Warning>
+            ))}
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
-            <Button size='small' css={{ border: 'none' }} onClick={() => setAlertOpen(false)}>Cancel</Button>
+            <Button size="small" css={{ border: 'none' }} onClick={() => setAlertOpen(false)}>
+              Cancel
+            </Button>
             <Button
-              size='small'
+              size="small"
               css={{
                 backgroundColor: red.red4,
                 color: red.red11,
                 border: 'none',
-                '&:hover': { color: red.red11, backgroundColor: red.red5 }
-              }} 
+                '&:hover': { color: red.red11, backgroundColor: red.red5 },
+              }}
               onClick={handleConfirmUpload}
             >
               Yes, begin upload
@@ -307,7 +330,7 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
         </AlertContent>
       </AlertPortal>
     </Alert>
-  )
+  );
 };
 
 export default BulkUploadForm;

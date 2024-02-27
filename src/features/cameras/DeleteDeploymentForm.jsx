@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { Formik, Form, Field, } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import {
-  editDeployments,
-  selectDeploymentsLoading
-} from '../projects/projectsSlice.js';
+import { editDeployments, selectDeploymentsLoading } from '../projects/projectsSlice.js';
 import Button from '../../components/Button.jsx';
-import {
-  FormWrapper,
-  ButtonRow,
-  HelperText,
-} from '../../components/Form.jsx';
-import {
-  SimpleSpinner,
-  SpinnerOverlay
-} from '../../components/Spinner.jsx';
-
+import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 const DepName = styled('span', {
   fontWeight: '$5',
@@ -28,9 +17,8 @@ const deleteDeploymentSchema = Yup.object().shape({
   deploymentId: Yup.string().required('A deployment ID is required'),
 });
 
-
 const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
-  const [queuedForClose, setQueuedForClose ] = useState(false);
+  const [queuedForClose, setQueuedForClose] = useState(false);
   const depsLoading = useSelector(selectDeploymentsLoading);
   const dispatch = useDispatch();
 
@@ -43,37 +31,34 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
     dispatch(editDeployments('deleteDeployment', formVals));
     setQueuedForClose(true);
   };
-  
+
   return (
     <div>
-      {depsLoading.isLoading &&
+      {depsLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <FormWrapper>
         <Formik
           initialValues={{ cameraId: cameraId, deploymentId: deployment._id }}
           validationSchema={deleteDeploymentSchema}
-          onSubmit={(values) => { handleDeleteDeploymentSubmit(values) }}
+          onSubmit={(values) => {
+            handleDeleteDeploymentSubmit(values);
+          }}
         >
           {() => (
             <Form>
               <HelperText>
-                Are you sure you'd like to delete 
-                the <DepName>{deployment.name}</DepName> deployment?
+                Are you sure you&apos;d like to delete the <DepName>{deployment.name}</DepName> deployment?
               </HelperText>
-              <Field name='cameraId' type='hidden' />
-              <Field name='deploymentId' type='hidden' />
+              <Field name="cameraId" type="hidden" />
+              <Field name="deploymentId" type="hidden" />
               <ButtonRow>
-                <Button
-                  type='button'
-                  size='large'
-                  onClick={handleClose}
-                >
+                <Button type="button" size="large" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button type='submit' size='large'>
+                <Button type="submit" size="large">
                   Delete deployment
                 </Button>
               </ButtonRow>
@@ -85,6 +70,4 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
   );
 };
 
-
 export default DeleteDeploymentForm;
-

@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import { styled } from '../theme/stitches.config';
 import Select from 'react-select';
 import { FormError } from './Form';
 
@@ -24,16 +23,16 @@ const customStyles = {
         boxShadow: '0 0 0 3px var(--colors-blue200)',
         borderColor: 'var(--colors-blue500)',
       },
-    })
+    }),
   }),
-  valueContainer: (provided, state) => ({
+  valueContainer: (provided) => ({
     ...provided,
     padding: '0px 16px',
     fontSize: 'var(--fontSizes-3)',
     fontFamily: 'var(--fonts-sourceSansPro)',
     color: 'var(--colors-gray7)',
   }),
-  menu: (provided, state) => ({
+  menu: (provided) => ({
     ...provided,
     color: 'var(--colors-hiContrast)',
     fontSize: 'var(--fontSizes-3)',
@@ -47,8 +46,8 @@ const customStyles = {
     }),
     ...(state.isFocused && {
       backgroundColor: 'var(--colors-gray3)',
-    })
-  })
+    }),
+  }),
 };
 
 const SelectField = ({
@@ -62,9 +61,8 @@ const SelectField = ({
   touched,
   isSearchable,
   isMulti,
-  menuPlacement='bottom'
+  menuPlacement = 'bottom',
 }) => {
-  
   const handleChange = (value) => {
     onChange(name, value);
   };
@@ -78,24 +76,19 @@ const SelectField = ({
       {label && <label htmlFor={name}>{label}</label>}
       <Select
         styles={customStyles}
-        id={name}
+        inputId={name}
         options={options}
         multi={true}
         onChange={handleChange}
         onBlur={handleBlur}
         value={_.isEmpty(value) ? null : value}
-        className='react-select'
-        classNamePrefix='react-select'
+        className="react-select"
+        classNamePrefix="react-select"
         isSearchable={isSearchable}
         isMulti={isMulti}
         menuPlacement={menuPlacement}
       />
-      {!!error &&
-        touched && (
-          <FormError>
-            {error}
-          </FormError>
-      )}
+      {!!error && touched && <FormError>{error}</FormError>}
     </div>
   );
 };

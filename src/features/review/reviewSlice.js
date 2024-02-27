@@ -8,7 +8,7 @@ import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/im
 const initialState = {
   workingImages: [],
   focusIndex: {
-    image: null, 
+    image: null,
     object: null,
     label: null,
   },
@@ -17,14 +17,14 @@ const initialState = {
   loadingStates: {
     labels: {
       isLoading: false,
-      operation: null, /* 'fetching', 'updating', 'deleting' */
+      operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
     },
     comments: {
       isLoading: false,
-      operation: null, /* 'fetching', 'updating', 'deleting' */
+      operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
-    }
+    },
   },
   lastAction: null,
   lastCategoryApplied: null,
@@ -34,7 +34,6 @@ export const reviewSlice = createSlice({
   name: 'review',
   initialState,
   reducers: {
-
     setFocus: (state, { payload }) => {
       state.focusIndex = { ...state.focusIndex, ...payload.index };
       state.focusChangeType = payload.type;
@@ -67,8 +66,7 @@ export const reviewSlice = createSlice({
         const image = findImage(state.workingImages, imgId);
         if (objIsTemp && newObject) {
           image.objects.unshift(newObject);
-        }
-        else {
+        } else {
           const object = image.objects.find((obj) => obj._id === objId);
           object.labels.unshift(newLabel);
         }
@@ -82,12 +80,10 @@ export const reviewSlice = createSlice({
         const { imgId, objId, newLabel } = label;
         const image = findImage(state.workingImages, imgId);
         const object = image.objects.find((obj) => obj._id === objId);
-        const labelIndex = object.labels.findIndex((lbl) => (
-          lbl._id === newLabel._id
-        ));
+        const labelIndex = object.labels.findIndex((lbl) => lbl._id === newLabel._id);
         object.labels.splice(labelIndex, 1);
-  
-        // remove object if there aren't any labels left 
+
+        // remove object if there aren't any labels left
         if (!object.labels.length) {
           const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
           image.objects.splice(objectIndex, 1);
@@ -103,7 +99,8 @@ export const reviewSlice = createSlice({
       state.lastAction = payload.labels[0].validated ? 'labels-validated' : 'labels-invalidated';
     },
 
-    labelsValidationReverted: (state, { payload }) => { // for undoing a validation
+    labelsValidationReverted: (state, { payload }) => {
+      // for undoing a validation
       payload.labels.forEach(({ imgId, objId, lblId, oldValidation, oldLocked }) => {
         const object = findObject(state.workingImages, imgId, objId);
         object.locked = oldLocked;
@@ -129,7 +126,7 @@ export const reviewSlice = createSlice({
       state.lastAction = 'marked-empty';
     },
 
-    editLabelStart: (state) => { 
+    editLabelStart: (state) => {
       state.loadingStates.labels.isLoading = true;
       state.loadingStates.labels.operation = 'updating';
     },
@@ -140,14 +137,14 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors = payload;
     },
 
-    editLabelSuccess: (state, { payload }) => {
+    editLabelSuccess: (state) => {
       // NOTE: currently not doing anything with returned image
       state.loadingStates.labels.isLoading = false;
       state.loadingStates.labels.operation = null;
       state.loadingStates.labels.errors = null;
     },
 
-    editCommentStart: (state, { payload }) => { 
+    editCommentStart: (state, { payload }) => {
       state.loadingStates.comments.isLoading = true;
       state.loadingStates.comments.operation = payload;
     },
@@ -165,7 +162,7 @@ export const reviewSlice = createSlice({
       const image = findImage(state.workingImages, payload.imageId);
       image.comments = payload.comments;
     },
-    
+
     dismissLabelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.labels.errors.splice(index, 1);
@@ -174,7 +171,7 @@ export const reviewSlice = createSlice({
     dismissCommentsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.comments.errors.splice(index, 1);
-    }
+    },
   },
 
   extraReducers: (builder) => {
@@ -195,12 +192,9 @@ export const reviewSlice = createSlice({
         }
       })
       .addCase(deleteImagesSuccess, (state, { payload }) => {
-        state.workingImages = state.workingImages.filter(
-          ({ _id }) => !payload.includes(_id)
-        );
-      })
+        state.workingImages = state.workingImages.filter(({ _id }) => !payload.includes(_id));
+      });
   },
-
 });
 
 export const {
@@ -221,18 +215,19 @@ export const {
   editCommentFailure,
   editCommentSuccess,
   dismissLabelsError,
-  dismissCommentsError
+  dismissCommentsError,
 } = reviewSlice.actions;
 
 // editLabel thunk
 export const editLabel = (operation, entity, payload) => {
   return async (dispatch, getState) => {
     try {
-
-      if ((payload.updates && !payload.updates.length) || 
-          (payload.objects && !payload.objects.length) ||
-          (payload.labels && !payload.labels.length)) {
-          return;
+      if (
+        (payload.updates && !payload.updates.length) ||
+        (payload.objects && !payload.objects.length) ||
+        (payload.labels && !payload.labels.length)
+      ) {
+        return;
       }
 
       if (!operation || !entity || !payload) {
@@ -249,16 +244,13 @@ export const editLabel = (operation, entity, payload) => {
 
       if (token && selectedProj) {
         const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
-        const res = await call({
-          projId: selectedProj._id, 
+        await call({
+          projId: selectedProj._id,
           request: req,
-          input: payload 
+          input: payload,
         });
-        const mutation = Object.keys(res)[0];
-        const image = res[mutation].image;
-        dispatch(editLabelSuccess(image));
+        dispatch(editLabelSuccess());
       }
-
     } catch (err) {
       console.log(`error attempting to ${operation} ${entity}: `, err);
       dispatch(editLabelFailure(err));
@@ -267,10 +259,9 @@ export const editLabel = (operation, entity, payload) => {
 };
 
 // editComment thunk
-export const editComment = (operation, payload, projId) => {
+export const editComment = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
-
       console.log('editComment - operation: ', operation);
       console.log('editComment - payload: ', payload);
 
@@ -290,9 +281,9 @@ export const editComment = (operation, payload, projId) => {
         console.log('req: ', req);
 
         const res = await call({
-          projId: selectedProj._id, 
+          projId: selectedProj._id,
           request: req,
-          input: payload 
+          input: payload,
         });
         console.log('editComment - res: ', res);
         const mutation = Object.keys(res)[0];
@@ -312,14 +303,14 @@ export const incrementImage = createAction('review/incrementImage');
 export const objectsManuallyUnlocked = createAction('review/objectsManuallyUnlocked');
 export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 
-export const selectWorkingImages = state => state.review.workingImages;
-export const selectFocusIndex = state => state.review.focusIndex;
-export const selectSelectedImageIndices = state => state.review.selectedImageIndices;
-export const selectFocusChangeType = state => state.review.focusChangeType;
-export const selectLabelsErrors = state => state.review.loadingStates.labels.errors;
-export const selectCommentsErrors = state => state.review.loadingStates.comments.errors;
-export const selectLastAction = state => state.review.lastAction;
-export const selectLastCategoryApplied = state => state.review.lastCategoryApplied;
+export const selectWorkingImages = (state) => state.review.workingImages;
+export const selectFocusIndex = (state) => state.review.focusIndex;
+export const selectSelectedImageIndices = (state) => state.review.selectedImageIndices;
+export const selectFocusChangeType = (state) => state.review.focusChangeType;
+export const selectLabelsErrors = (state) => state.review.loadingStates.labels.errors;
+export const selectCommentsErrors = (state) => state.review.loadingStates.comments.errors;
+export const selectLastAction = (state) => state.review.lastAction;
+export const selectLastCategoryApplied = (state) => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(
   [selectWorkingImages, selectSelectedImageIndices],
   (workingImages, selectedImageIndices) => {
@@ -328,7 +319,7 @@ export const selectSelectedImages = createSelector(
       selectedImages = selectedImageIndices.map((i) => workingImages[i]);
     }
     return selectedImages;
-  }
+  },
 );
 
 export default reviewSlice.reducer;

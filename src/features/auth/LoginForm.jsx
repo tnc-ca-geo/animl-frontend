@@ -3,6 +3,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import { indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
+// eslint-disable-next-line import/no-unresolved
 import '@aws-amplify/ui-react/styles.css';
 import { useSelector } from 'react-redux';
 import { selectUserUsername } from './authSlice.js';
@@ -30,10 +31,10 @@ const Subheader = styled('div', {
   paddingTop: '$3',
   maxWidth: 700,
   margin: '0 auto',
-  'a': {
+  a: {
     textDecoration: 'none',
-    color: '$textDark'
-  }
+    color: '$textDark',
+  },
 });
 
 const StyledAuthenticator = styled(Authenticator, {
@@ -50,7 +51,7 @@ const StyledAuthenticator = styled(Authenticator, {
     fontWeight: '$2',
     '&:hover': {
       backgroundColor: '$blue600',
-    }
+    },
   },
 
   '.amplify-button--small': {
@@ -58,7 +59,7 @@ const StyledAuthenticator = styled(Authenticator, {
     '&:hover': {
       backgroundColor: indigo.indigo4,
       color: '$blue500',
-    }
+    },
   },
 
   '.amplify-button.amplify-field__show-password': {
@@ -85,20 +86,21 @@ const StyledAuthenticator = styled(Authenticator, {
       boxShadow: '0 0 0 3px $blue200',
       borderColor: '$blue500',
       color: '$blue500',
-    }
+    },
   },
 
   '&[data-amplify-authenticator] [data-amplify-authenticator-resetpassword]': {
     '.amplify-heading': {
       display: 'none',
-    }
+    },
   },
 
-  '&[data-amplify-authenticator] [data-amplify-authenticator-confirmresetpassword]': {
-    '.amplify-heading': {
-      display: 'none',
-    }
-  },
+  '&[data-amplify-authenticator] [data-amplify-authenticator-confirmresetpassword]':
+    {
+      '.amplify-heading': {
+        display: 'none',
+      },
+    },
 
   '.amplify-input': {
     display: 'inherit',
@@ -126,12 +128,11 @@ const StyledAuthenticator = styled(Authenticator, {
   '.amplify-alert--error': {
     backgroundColor: '$errorBg',
     color: '$errorText',
-    'button': {
+    button: {
       backgroundColor: '$errorBg',
       color: '$errorText',
-    }
+    },
   },
-
 });
 
 const StyledButton = styled(Button, {
@@ -142,35 +143,35 @@ const StyledButton = styled(Button, {
   backgroundColor: '$gray1',
   padding: '$3 $4',
   '&:hover': {
-    backgroundColor: '$gray4'
+    backgroundColor: '$gray4',
   },
   '&:active': {
-    backgroundColor: '$gray5'
+    backgroundColor: '$gray5',
   },
 });
 
 const LoginForm = () => {
-  const { route, toSignIn } = useAuthenticator(context => [context.route]);
+  const { route, toSignIn } = useAuthenticator((context) => [context.route]);
   const userName = useSelector(selectUserUsername);
 
   const helperText = {
-    'confirmResetPassword': 'Reset your password',
-    'resetPassword': 'Enter your email address to receive a password reset code',
-    'signIn': 'Please enter your email and password to continue',
+    confirmResetPassword: 'Reset your password',
+    resetPassword: 'Enter your email address to receive a password reset code',
+    signIn: 'Please enter your email and password to continue',
   };
 
   return (
     <LoginScreen>
-      <Header css={{ '@bp3': { fontSize: '64px' }}}>Welcome back</Header>
+      <Header css={{ '@bp3': { fontSize: '64px' } }}>Welcome back</Header>
       <Subheader>{helperText[route] || userName || ''}</Subheader>
       <StyledAuthenticator
         loginMechanisms={['email']}
         hideDefault={true}
         hideSignUp={true}
       />
-      {route === 'confirmResetPassword' && 
+      {route === 'confirmResetPassword' && (
         <StyledButton onClick={toSignIn}>Return to Sign In</StyledButton>
-      }
+      )}
     </LoginScreen>
   );
 };

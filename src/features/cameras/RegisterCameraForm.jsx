@@ -3,24 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { 
-  registerCamera,
-  selectWirelessCamerasLoading,
-} from './wirelessCamerasSlice';
+import { registerCamera, selectWirelessCamerasLoading } from './wirelessCamerasSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
-import {
-  FormWrapper,
-  FormSubheader,
-  FieldRow,
-  FormFieldWrapper,
-  ButtonRow,
-} from '../../components/Form';
+import { FormWrapper, FormSubheader, FieldRow, FormFieldWrapper, ButtonRow } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { SUPPORTED_WIRELESS_CAMS  } from '../../config.js';
+import { SUPPORTED_WIRELESS_CAMS } from '../../config.js';
 
-
-// TODO: improve validation? Make sure cameraId is not already actively 
+// TODO: improve validation? Make sure cameraId is not already actively
 // registered to current project
 const registerCameraSchema = Yup.object().shape({
   cameraId: Yup.string().required('A camera ID is required'),
@@ -30,7 +20,6 @@ const registerCameraSchema = Yup.object().shape({
   }),
 });
 
-
 const RegisterCameraForm = () => {
   const camerasLoading = useSelector(selectWirelessCamerasLoading);
   const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({ value: m, label: m }));
@@ -39,34 +28,31 @@ const RegisterCameraForm = () => {
   const handleRegisterCameraSubmit = (formVals) => {
     dispatch(registerCamera({ cameraId: formVals.cameraId, make: formVals.make.value }));
   };
-  
+
   return (
     <div>
-      {camerasLoading.isLoading &&
+      {camerasLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <FormWrapper>
         <Formik
           initialValues={{
             cameraId: '',
-            make: makeOptions[0]
+            make: makeOptions[0],
           }}
           validationSchema={registerCameraSchema}
           onSubmit={(values) => handleRegisterCameraSubmit(values)}
         >
-          {({ values, errors, touched, isValid, dirty, setFieldValue, 
-            setFieldTouched }) => (
+          {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>
-              <FormSubheader>
-                Register a wireless camera
-              </FormSubheader>
+              <FormSubheader>Register a wireless camera</FormSubheader>
               <FieldRow>
                 <FormFieldWrapper>
                   <SelectField
-                    name='make'
-                    label='Camera Make'
+                    name="make"
+                    label="Camera Make"
                     value={values.make}
                     onChange={setFieldValue}
                     onBlur={setFieldTouched}
@@ -74,25 +60,19 @@ const RegisterCameraForm = () => {
                     touched={touched.make}
                     options={makeOptions}
                     isSearchable={false}
-                    menuPlacement='top'
+                    menuPlacement="top"
                   />
                 </FormFieldWrapper>
                 <FormFieldWrapper>
-                  <label htmlFor='name'>{
-                    values.make.value === 'RidgeTec' 
-                      ? 'IMEI Number' 
-                      : 'Camera Serial Number'
-                  }</label>
-                  <Field name='cameraId' id='cameraId'/>
+                  <label htmlFor="cameraId">
+                    {values.make.value === 'RidgeTec' ? 'IMEI Number' : 'Camera Serial Number'}
+                  </label>
+                  <Field name="cameraId" id="cameraId" />
                   {/*<ErrorMessage component={FormError} name='cameraId' />*/}
                 </FormFieldWrapper>
               </FieldRow>
               <ButtonRow>
-                <Button
-                  type='submit'
-                  size='large'
-                  disabled={!isValid || !dirty}
-                >
+                <Button type="submit" size="large" disabled={!isValid || !dirty}>
                   Register Camera
                 </Button>
               </ButtonRow>
@@ -101,9 +81,7 @@ const RegisterCameraForm = () => {
         </Formik>
       </FormWrapper>
     </div>
-
   );
 };
 
 export default RegisterCameraForm;
-

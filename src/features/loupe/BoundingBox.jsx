@@ -13,14 +13,9 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuItemIconLeft
+  ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
-import { 
-  bboxUpdated,
-  labelsValidated, 
-  setFocus,
-  objectsManuallyUnlocked
-} from '../review/reviewSlice';
+import { bboxUpdated, labelsValidated, setFocus, objectsManuallyUnlocked } from '../review/reviewSlice';
 import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
@@ -42,20 +37,20 @@ const ResizeHandle = styled('div', {
       se: {
         bottom: '0',
         right: '0',
-        cursor: 'se-resize'
+        cursor: 'se-resize',
       },
       nw: {
         top: '0',
         left: '0',
         cursor: 'nw-resize',
-      }, 
+      },
       ne: {
         top: '0',
         right: '0',
         cursor: 'ne-resize',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const DragHandle = styled('div', {
@@ -71,7 +66,7 @@ const DragHandle = styled('div', {
         },
         '&:user-select': {
           cursor: 'default',
-        }
+        },
       },
       false: {
         '&:hover': {
@@ -82,7 +77,7 @@ const DragHandle = styled('div', {
         },
       },
     },
-  }
+  },
 });
 
 const StyledResizableBox = styled(ResizableBox, {
@@ -97,8 +92,8 @@ const StyledResizableBox = styled(ResizableBox, {
         // opacity: '1',
         // outline: 'none',
         // boxShadow: '0 0 0 3px $blue200',
-        // borderColor: '$blue500',  
-      },  
+        // borderColor: '$blue500',
+      },
       false: {
         // opacity: '0.85',
       },
@@ -108,20 +103,13 @@ const StyledResizableBox = styled(ResizableBox, {
         borderStyle: 'solid',
       },
       false: {
-        borderStyle: 'dashed'
-      }
-    }
-  }
+        borderStyle: 'dashed',
+      },
+    },
+  },
 });
 
-const BoundingBox = ({ 
-  imgId,
-  imgDims,
-  object,
-  objectIndex,
-  focusIndex,
-  setTempObject
-}) => {
+const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempObject }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const username = useSelector(selectUserUsername);
   const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
@@ -137,9 +125,7 @@ const BoundingBox = ({
   let label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
   if (object.locked) {
     // unless object is locked, in which case show first validated label
-    label = object.labels.find((lbl) => (
-      lbl.validation && lbl.validation.validated
-    ));
+    label = object.labels.find((lbl) => lbl.validation && lbl.validation.validated);
   } else if (object.isTemp) {
     // or object is being added
     label = { category: '', conf: 0, index: 0 };
@@ -158,19 +144,19 @@ const BoundingBox = ({
 
   // set index
   let labelIndex = object.labels.indexOf(label);
-  labelIndex = (labelIndex !== -1) ? labelIndex : null;
+  labelIndex = labelIndex !== -1 ? labelIndex : null;
   const index = {
     image: focusIndex.image,
     object: objectIndex,
-    label: labelIndex 
+    label: labelIndex,
   };
 
   // track bounding box dimensions
-  const [ bbox, setBbox ] = useState(object.bbox);
+  const [bbox, setBbox] = useState(object.bbox);
   let { left, top, width, height } = relToAbs(bbox, imgDims.width, imgDims.height);
   useEffect(() => {
     setBbox(object.bbox);
-  }, [ object.bbox ]);
+  }, [object.bbox]);
 
   const onDrag = (event, { deltaX, deltaY }) => {
     const rect = { left: left + deltaX, top: top + deltaY, width, height };
@@ -178,19 +164,19 @@ const BoundingBox = ({
     setBbox(newBbox);
   };
 
-  const [ lastBbox, setLastBbox ] = useState(object.bbox);
-  const onDragStart = (event, data) => {
+  const [lastBbox, setLastBbox] = useState(object.bbox);
+  const onDragStart = () => {
     setLastBbox(bbox);
   };
-  
+
   const onDragEnd = () => {
-    if (!_.isEqual(lastBbox, bbox)){ 
+    if (!_.isEqual(lastBbox, bbox)) {
       dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
     }
   };
 
-  const [ constraintX, setConstraintX ] = useState(Infinity);
-  const [ constraintY, setConstraintY ] = useState(Infinity);
+  const [constraintX, setConstraintX] = useState(Infinity);
+  const [constraintY, setConstraintY] = useState(Infinity);
   const onResize = (event, { size, handle }) => {
     // drags from left or top handles require repositioning the box.
     // bottom & right can be left alone
@@ -203,15 +189,15 @@ const BoundingBox = ({
         const deltaWidth = size.width - width;
         left -= deltaWidth;
       }
-    };
+    }
 
     // Prevent box from going out of bounds
-    const right = imgDims.width - size.width - left;  
+    const right = imgDims.width - size.width - left;
     const bottom = imgDims.height - size.height - top;
-    if ((handle.indexOf('e') > -1) && (right <= 0)) setConstraintX(width);
-    if ((handle.indexOf('w') > -1) && (left <= 0)) setConstraintX(width);
-    if ((handle.indexOf('n') > -1) && (top <= 0)) setConstraintY(height);
-    if ((handle.indexOf('s') > -1) && (bottom <= 0)) setConstraintY(height);
+    if (handle.indexOf('e') > -1 && right <= 0) setConstraintX(width);
+    if (handle.indexOf('w') > -1 && left <= 0) setConstraintX(width);
+    if (handle.indexOf('n') > -1 && top <= 0) setConstraintY(height);
+    if (handle.indexOf('s') > -1 && bottom <= 0) setConstraintY(height);
 
     const rect = { left, top, width: size.width, height: size.height };
     const newBbox = absToRel(rect, imgDims);
@@ -225,7 +211,7 @@ const BoundingBox = ({
   };
 
   // manage label validation button state
-  const [ showLabelButtons, setShowLabelButtons ] = useState(false);
+  const [showLabelButtons, setShowLabelButtons] = useState(false);
   const handleBBoxHover = () => setShowLabelButtons(true);
   const handleBBoxMouseLeave = () => setShowLabelButtons(false);
 
@@ -233,15 +219,19 @@ const BoundingBox = ({
 
   const handleValidationMenuItemClick = (e, validated) => {
     e.stopPropagation();
-    dispatch(labelsValidated({
-      labels: [{
-        userId: username,
-        imgId,
-        objId: object._id,
-        lblId: label._id,
-        validated,
-      }]
-    }));
+    dispatch(
+      labelsValidated({
+        labels: [
+          {
+            userId: username,
+            imgId,
+            objId: object._id,
+            lblId: label._id,
+            validated,
+          },
+        ],
+      }),
+    );
   };
 
   const handleEditLabelMenuItemClick = (e) => {
@@ -250,12 +240,12 @@ const BoundingBox = ({
     // focus to shift to the react-select category selector component.
     // see https://github.com/radix-ui/primitives/issues/1446
     focusRef.current = catSelectorRef.current;
-    console.log('focusRef.current: ', focusRef.current)
-    const newIndex = { image: focusIndex.image, object: objectIndex, label: null }
-    dispatch(setFocus({ index: newIndex, type: 'manual'}));
+    console.log('focusRef.current: ', focusRef.current);
+    const newIndex = { image: focusIndex.image, object: objectIndex, label: null };
+    dispatch(setFocus({ index: newIndex, type: 'manual' }));
     dispatch(addLabelStart('from-object'));
   };
-  
+
   const handleUnlockMenuItemClick = (e) => {
     e.stopPropagation();
     dispatch(objectsManuallyUnlocked({ objects: [{ imgId, objId: object._id }] }));
@@ -265,8 +255,8 @@ const BoundingBox = ({
     <ContextMenu>
       <ContextMenuTrigger disabled={!isAuthorized}>
         <Draggable
-          bounds='.image-frame'
-          handle='.drag-handle'
+          bounds=".image-frame"
+          handle=".drag-handle"
           position={{ x: left, y: top }}
           onStart={onDragStart}
           onDrag={onDrag}
@@ -280,9 +270,14 @@ const BoundingBox = ({
             maxConstraints={[constraintX, constraintY]}
             resizeHandles={isAuthorized && !object.locked ? ['sw', 'se', 'nw', 'ne'] : []}
             handle={(location) => (
-              <ResizeHandle location={location} ref={(el) => {
-                if (location === 'se') { handleRef.current = el }
-              }}/>
+              <ResizeHandle
+                location={location}
+                ref={(el) => {
+                  if (location === 'se') {
+                    handleRef.current = el;
+                  }
+                }}
+              />
             )}
             onResize={onResize}
             onResizeStop={onResizeStop}
@@ -297,7 +292,7 @@ const BoundingBox = ({
               background: displayLabel?.color + '0D',
             }}
           >
-            {label &&
+            {label && (
               <BoundingBoxLabel
                 imgId={imgId}
                 index={index}
@@ -309,17 +304,14 @@ const BoundingBox = ({
                 selected={objectFocused}
                 showLabelButtons={showLabelButtons}
                 setTempObject={setTempObject}
-                verticalPos={(top > 30) ? 'top' : 'bottom'}
-                horizontalPos={((imgDims.width - left - width) < 75) ? 'right' : 'left'}
+                verticalPos={top > 30 ? 'top' : 'bottom'}
+                horizontalPos={imgDims.width - left - width < 75 ? 'right' : 'left'}
                 ref={catSelectorRef}
                 isAuthorized={isAuthorized}
                 username={username}
               />
-            }
-            <DragHandle
-              className='drag-handle'
-              disabled={!isAuthorized || object.locked}
-            />
+            )}
+            <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
           </StyledResizableBox>
         </Draggable>
       </ContextMenuTrigger>
@@ -334,7 +326,7 @@ const BoundingBox = ({
           }
         }}
         sideOffset={5}
-        align='end'
+        align="end"
       >
         <ContextMenuItem
           onClick={(e) => handleValidationMenuItemClick(e, true)}
@@ -369,7 +361,7 @@ const BoundingBox = ({
           Invalidate
         </ContextMenuItem>
         <ContextMenuItem
-          className='edit-label-menu-item'
+          className="edit-label-menu-item"
           onSelect={handleEditLabelMenuItemClick}
           disabled={object.locked}
         >
@@ -378,11 +370,8 @@ const BoundingBox = ({
           </ContextMenuItemIconLeft>
           Edit label
         </ContextMenuItem>
-        <ContextMenuSeparator/>
-        <ContextMenuItem
-          onSelect={handleUnlockMenuItemClick}
-          disabled={!object.locked}
-        >
+        <ContextMenuSeparator />
+        <ContextMenuItem onSelect={handleUnlockMenuItemClick} disabled={!object.locked}>
           <ContextMenuItemIconLeft>
             <LockOpen1Icon />
           </ContextMenuItemIconLeft>
@@ -390,7 +379,7 @@ const BoundingBox = ({
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
-  )
+  );
 };
 
 export default BoundingBox;

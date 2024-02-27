@@ -7,7 +7,7 @@ import PanelHeader from './PanelHeader';
 const ModalBody = styled('div', {
   padding: '$3',
   maxHeight: 'calc(85vh - $7)',
-  overflowY: 'scroll'
+  overflowY: 'scroll',
 });
 
 const overlayShow = keyframes({
@@ -15,10 +15,10 @@ const overlayShow = keyframes({
   '100%': { opacity: 1 },
 });
 
-const contentShow = keyframes({
-  '0%': { opacity: 0, transform: 'translate(-50%, -48%) scale(.96)' },
-  '100%': { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-});
+// const contentShow = keyframes({
+//   '0%': { opacity: 0, transform: 'translate(-50%, -48%) scale(.96)' },
+//   '100%': { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+// });
 
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
   zIndex: '$4',
@@ -34,7 +34,8 @@ const StyledContent = styled(DialogPrimitive.Content, {
   zIndex: '$5',
   backgroundColor: '$backgroundLight',
   borderRadius: '$2',
-  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  boxShadow:
+    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   position: 'fixed',
   top: '50%',
   left: '50%',
@@ -56,14 +57,14 @@ const StyledContent = styled(DialogPrimitive.Content, {
         width: '95vw',
         // height: '95vh',
       },
-    }
-  }
+    },
+  },
 });
 
 function Content({ children, ...props }) {
   return (
     <DialogPrimitive.Portal>
-      <StyledOverlay  />
+      <StyledOverlay />
       <StyledContent {...props}>{children}</StyledContent>
     </DialogPrimitive.Portal>
   );
@@ -92,19 +93,15 @@ export const DialogDescription = StyledDescription;
 export const DialogClose = DialogPrimitive.Close;
 
 export const Modal = ({ open, handleModalToggle, size, title, children }) => (
-  <Dialog
-    open={open}
-    onOpenChange={() => handleModalToggle()}
-  >
+  <Dialog open={open} onOpenChange={() => handleModalToggle()}>
     <DialogContent size={size}>
       <PanelHeader title={title} handlePanelClose={handleModalToggle} />
       <ModalBody>
-        {React.Children.map(
-          children,
-          (child) => React.cloneElement(child, {
+        {React.Children.map(children, (child) =>
+          React.cloneElement(child, {
             open: open,
-            handleClose: handleModalToggle
-          })
+            handleClose: handleModalToggle,
+          }),
         )}
       </ModalBody>
     </DialogContent>

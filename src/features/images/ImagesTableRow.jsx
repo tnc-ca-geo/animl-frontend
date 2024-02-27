@@ -12,7 +12,7 @@ import {
   labelsValidated,
   markedEmpty,
   objectsManuallyUnlocked,
-  selectSelectedImages
+  selectSelectedImages,
 } from '../review/reviewSlice.js';
 import {
   ContextMenu,
@@ -20,17 +20,10 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuItemIconLeft,
-  ContextMenuSeparator
+  ContextMenuSeparator,
 } from '../../components/ContextMenu.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
-import { 
-  CheckIcon,
-  Cross2Icon,
-  LockOpen1Icon,
-  Pencil1Icon,
-  ValueNoneIcon,
-  TrashIcon
-} from '@radix-ui/react-icons'
+import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon, ValueNoneIcon, TrashIcon } from '@radix-ui/react-icons';
 
 // TODO: redundant component (exists in ImagesTable)
 const TableRow = styled('div', {
@@ -49,10 +42,10 @@ const TableRow = styled('div', {
     selected: {
       true: {
         // 'zIndex': '2',
-        // 'boxShadow': '0px 4px 14px 0px #0000003b',      
-      }
-    }
-  }
+        // 'boxShadow': '0px 4px 14px 0px #0000003b',
+      },
+    },
+  },
 });
 
 // TODO: redundant component (exists in ImagesTable)
@@ -92,17 +85,16 @@ const DataCell = styled(TableCell, {
         //   borderLeft: '4px solid $blue500',
         //   paddingLeft: '12px',
         // },
-      }
+      },
     },
     scrollable: {
       true: {
         overflowY: 'scroll',
         alignItems: 'start',
-      }
-    }
-  }
+      },
+    },
+  },
 });
-
 
 const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices }) => {
   const selected = selectedImageIndices.includes(index);
@@ -112,29 +104,33 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   const selectedImages = useSelector(selectSelectedImages);
   const dispatch = useDispatch();
 
-  const handleRowClick = useCallback((e, rowIdx) => {
-    if (e.shiftKey) {
-      // allow for selection of multiple consecutive images
-      // with shift + click
-      const start = Math.min(focusIndex.image, rowIdx);
-      const end = Math.max(focusIndex.image, rowIdx);
-      let selection = [];
-      for (let i = start; i <= end; i++) { selection.push(i); }
-      dispatch(setSelectedImageIndices(selection));
-    } else if (e.metaKey || e.ctrlKey) {
-      // allow for selection of multiple non-consecutive images
-      // with command + click on Macs and ctrl + click in Windows
-      let selection = [...selectedImageIndices];
-      selection.push(Number(rowIdx));
-      dispatch(setSelectedImageIndices(selection));
-    }
-    else {
-      // normal click
-      const newIndex = { image: Number(rowIdx), object: null, label: null }
-      dispatch(setFocus({ index: newIndex, type: 'manual' }));
-      dispatch(toggleOpenLoupe(true));
-    }
-  }, [dispatch, focusIndex, selectedImageIndices]);
+  const handleRowClick = useCallback(
+    (e, rowIdx) => {
+      if (e.shiftKey) {
+        // allow for selection of multiple consecutive images
+        // with shift + click
+        const start = Math.min(focusIndex.image, rowIdx);
+        const end = Math.max(focusIndex.image, rowIdx);
+        let selection = [];
+        for (let i = start; i <= end; i++) {
+          selection.push(i);
+        }
+        dispatch(setSelectedImageIndices(selection));
+      } else if (e.metaKey || e.ctrlKey) {
+        // allow for selection of multiple non-consecutive images
+        // with command + click on Macs and ctrl + click in Windows
+        let selection = [...selectedImageIndices];
+        selection.push(Number(rowIdx));
+        dispatch(setSelectedImageIndices(selection));
+      } else {
+        // normal click
+        const newIndex = { image: Number(rowIdx), object: null, label: null };
+        dispatch(setFocus({ index: newIndex, type: 'manual' }));
+        dispatch(toggleOpenLoupe(true));
+      }
+    },
+    [dispatch, focusIndex, selectedImageIndices],
+  );
 
   // TODO: look for opportunities to abstract some of this. Lots of overlap
   // with ImageReviewToolbar and BoundingBox context-menu logic
@@ -144,9 +140,9 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState((isAddingLabel === 'from-image-table'));
+  const [catSelectorOpen, setCatSelectorOpen] = useState(isAddingLabel === 'from-image-table');
   useEffect(() => {
-    setCatSelectorOpen(((isAddingLabel === 'from-image-table')));
+    setCatSelectorOpen(isAddingLabel === 'from-image-table');
   }, [isAddingLabel]);
 
   const handleCategoryChange = (newValue) => {
@@ -161,9 +157,9 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           bbox: obj.bbox,
           labelId: newValue.value || newValue,
           objId: obj._id,
-          imgId: image._id
+          imgId: image._id,
         }));
-        labelsToAdd = labelsToAdd.concat(newLabels);
+      labelsToAdd = labelsToAdd.concat(newLabels);
     }
     dispatch(labelsAdded({ labels: labelsToAdd }));
   };
@@ -172,19 +168,13 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   // NOTE: if this evaluation seems to cause performance issues
   // we can always not disable the buttons and perform these checks
   // in the handleMenuItemClick functions
-  const allObjectsLocked = selectedImages.every((img) => (
-    img.objects && img.objects.every((obj) => obj.locked)
-  ));
-  const allObjectsUnlocked = selectedImages.every((img) => (
-    img.objects && img.objects.every((obj) => !obj.locked)
-  ));
-  const hasRenderedObjects = selectedImages.some((img) => (
-    img.objects && img.objects.some((obj) => (
-      obj.labels.some((lbl) => (
-        lbl.validation === null || lbl.validation.validated
-      ))
-    ))
-  ));
+  const allObjectsLocked = selectedImages.every((img) => img.objects && img.objects.every((obj) => obj.locked));
+  const allObjectsUnlocked = selectedImages.every((img) => img.objects && img.objects.every((obj) => !obj.locked));
+  const hasRenderedObjects = selectedImages.some(
+    (img) =>
+      img.objects &&
+      img.objects.some((obj) => obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated)),
+  );
 
   // validate all labels
   const handleValidationMenuItemClick = (e, validated) => {
@@ -195,9 +185,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
       const unlockedObjects = image.objects.filter((obj) => !obj.locked);
       for (const object of unlockedObjects) {
         // find first non-invalidated label in array
-        const label = object.labels.find((lbl) => (
-          lbl.validation === null || lbl.validation.validated
-        ));
+        const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
         labelsToValidate.push({
           imgId: image._id,
           objId: object._id,
@@ -225,13 +213,9 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
     let objects = [];
     for (const image of selectedImages) {
       const objectsToUnlock = image.objects
-        .filter((obj) => (
-          obj.locked && obj.labels.some((lbl) => (
-            lbl.validation === null || lbl.validation.validated
-          ))
-        ))
+        .filter((obj) => obj.locked && obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated))
         .map((obj) => ({ imgId: image._id, objId: obj._id }));
-      
+
       objects = objects.concat(objectsToUnlock);
     }
     dispatch(objectsManuallyUnlocked({ objects }));
@@ -242,7 +226,6 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
     let imagesToMarkEmpty = [];
     let labelsToValidate = [];
     for (const image of selectedImages) {
-
       let existingEmptyLabels = [];
       image.objects.forEach((obj) => {
         obj.labels
@@ -253,20 +236,20 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
               objId: obj._id,
               lblId: lbl._id,
               userId,
-              validated: true
+              validated: true,
             });
-        });
+          });
       });
 
       if (existingEmptyLabels.length > 0) {
-        labelsToValidate = labelsToValidate.concat(existingEmptyLabels);;
+        labelsToValidate = labelsToValidate.concat(existingEmptyLabels);
       } else {
         imagesToMarkEmpty.push({ imgId: image._id });
       }
     }
 
     if (labelsToValidate.length > 0) {
-      dispatch(labelsValidated({ labels: labelsToValidate }))
+      dispatch(labelsValidated({ labels: labelsToValidate }));
     }
     if (imagesToMarkEmpty.length > 0) {
       dispatch(markedEmpty({ images: imagesToMarkEmpty, userId }));
@@ -278,21 +261,17 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   };
 
   return (
-    <ContextMenu modal={false}> {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
+    <ContextMenu modal={false}>
+      {' '}
+      {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
       <ContextMenuTrigger disabled={!selected || !isAuthorized}>
-        <TableRow
-          {...row.getRowProps({ style })}
-          onClick={(e) => handleRowClick(e, row.id)}
-          selected={selected}
-        >
-          {row.cells.map(cell => (
+        <TableRow {...row.getRowProps({ style })} onClick={(e) => handleRowClick(e, row.id)} selected={selected}>
+          {row.cells.map((cell) => (
             <DataCell
               {...cell.getCellProps()}
+              key={cell.getCellProps().key}
               selected={selected}
-              scrollable={
-                cell.column.Header === 'Labels' && 
-                cell.value.props.objects.length > 3
-              }
+              scrollable={cell.column.Header === 'Labels' && cell.value.props.objects.length > 3}
             >
               {cell.render('Cell')}
             </DataCell>
@@ -300,10 +279,10 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
         </TableRow>
       </ContextMenuTrigger>
       <ContextMenuContent
-        onCloseAutoFocus={() => dispatch(addLabelEnd()) }
+        onCloseAutoFocus={() => dispatch(addLabelEnd())}
         css={{ overflow: 'visible' }}
         sideOffset={5}
-        align='end'
+        align="end"
       >
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, true)}
@@ -339,45 +318,34 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           Invalidate
         </ContextMenuItem>
 
-        {catSelectorOpen
-          ? (<CategorySelector 
-              css={{ width: '100%' }}
-              handleCategoryChange={handleCategoryChange}
-            />)
-          : (<ContextMenuItem onSelect={handleEditAllLabelsButtonClick}>
-              <ContextMenuItemIconLeft>
-                <Pencil1Icon />
-              </ContextMenuItemIconLeft>
-              Edit all labels
-            </ContextMenuItem>)
-        }
+        {catSelectorOpen ? (
+          <CategorySelector css={{ width: '100%' }} handleCategoryChange={handleCategoryChange} />
+        ) : (
+          <ContextMenuItem onSelect={handleEditAllLabelsButtonClick}>
+            <ContextMenuItemIconLeft>
+              <Pencil1Icon />
+            </ContextMenuItemIconLeft>
+            Edit all labels
+          </ContextMenuItem>
+        )}
 
-        <ContextMenuItem
-          onSelect={handleMarkEmptyMenuItemClick}
-          disabled={isAddingLabel}
-        >
+        <ContextMenuItem onSelect={handleMarkEmptyMenuItemClick} disabled={isAddingLabel}>
           <ContextMenuItemIconLeft>
             <ValueNoneIcon />
           </ContextMenuItemIconLeft>
           Mark empty
         </ContextMenuItem>
 
-        <ContextMenuSeparator /> 
+        <ContextMenuSeparator />
 
-        <ContextMenuItem
-          onSelect={handleUnlockMenuItemClick}
-          disabled={isAddingLabel}
-        >
+        <ContextMenuItem onSelect={handleUnlockMenuItemClick} disabled={isAddingLabel}>
           <ContextMenuItemIconLeft>
             <LockOpen1Icon />
           </ContextMenuItemIconLeft>
           Unlock
         </ContextMenuItem>
-        
-        <ContextMenuItem
-          onSelect={handleDeleteImagesMenuItemClick}
-          disabled={isAddingLabel}
-        >
+
+        <ContextMenuItem onSelect={handleDeleteImagesMenuItemClick} disabled={isAddingLabel}>
           <ContextMenuItemIconLeft>
             <TrashIcon />
           </ContextMenuItemIconLeft>

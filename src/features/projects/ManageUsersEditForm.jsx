@@ -1,14 +1,10 @@
-import { useSelector, useDispatch } from "react-redux";
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { styled } from "@stitches/react";
+import { styled } from '@stitches/react';
 
 import { selectUsers, selectSelectedUser, updateUser, cancel } from './usersSlice.js';
-import {
-  FormWrapper,
-  FormSubheader,
-  FieldRow,
-  ButtonRow,
-} from '../../components/Form';
+import { FormWrapper, FormSubheader, FieldRow, ButtonRow } from '../../components/Form';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
@@ -23,15 +19,10 @@ const ManageUsersEditForm = () => {
 
   return (
     <FormWrapper>
-      <Formik
-        initialValues={{ username, roles }}
-        onSubmit={(values) => dispatch(updateUser(values))}
-      >
+      <Formik initialValues={{ username, roles }} onSubmit={(values) => dispatch(updateUser(values))}>
         {({ values, setFieldValue }) => (
           <Form>
-            <FormSubheader>
-              Edit user: {username}
-            </FormSubheader>
+            <FormSubheader>Edit user: {username}</FormSubheader>
             <FieldRow>
               <Fieldset>
                 <Legend>Project roles</Legend>
@@ -39,21 +30,18 @@ const ManageUsersEditForm = () => {
                   <CheckboxWrapper>
                     <label>
                       <Checkbox
-                        name='roles'
-                        value='manager'
+                        name="roles"
+                        value="manager"
                         checked={values.roles.includes('manager')}
                         active={values.roles.includes('manager')}
                         onChange={({ target }) => {
-                          const vals = target.checked ?
-                            [...values.roles, 'manager'] :
-                            values.roles.filter(v => v !== 'manager')
-                          setFieldValue('roles', vals)
+                          const vals = target.checked
+                            ? [...values.roles, 'manager']
+                            : values.roles.filter((v) => v !== 'manager');
+                          setFieldValue('roles', vals);
                         }}
                       />
-                      <CheckboxLabel
-                        checked={values.roles.includes('member')}
-                        active={values.roles.includes('member')}
-                      >
+                      <CheckboxLabel checked={values.roles.includes('member')} active={values.roles.includes('member')}>
                         Manager
                       </CheckboxLabel>
                     </label>
@@ -61,21 +49,18 @@ const ManageUsersEditForm = () => {
                   <CheckboxWrapper>
                     <label>
                       <Checkbox
-                        name='roles'
-                        value='member'
+                        name="roles"
+                        value="member"
                         checked={values.roles.includes('member')}
                         active={values.roles.includes('member')}
                         onChange={({ target }) => {
                           const vals = target.checked
                             ? [...values.roles, 'member']
-                            : values.roles.filter(v => v !== 'member')
-                          setFieldValue('roles', vals)
+                            : values.roles.filter((v) => v !== 'member');
+                          setFieldValue('roles', vals);
                         }}
                       />
-                      <CheckboxLabel
-                        checked={values.roles.includes('member')}
-                        active={values.roles.includes('member')}
-                      >
+                      <CheckboxLabel checked={values.roles.includes('member')} active={values.roles.includes('member')}>
                         Member
                       </CheckboxLabel>
                     </label>
@@ -83,15 +68,15 @@ const ManageUsersEditForm = () => {
                   <CheckboxWrapper>
                     <label>
                       <Checkbox
-                        name='roles'
-                        value='observer'
+                        name="roles"
+                        value="observer"
                         checked={values.roles.includes('observer')}
                         active={values.roles.includes('observer')}
                         onChange={({ target }) => {
-                          const vals = target.checked ?
-                            [...values.roles, 'observer'] :
-                            values.roles.filter(v => v !== 'observer')
-                          setFieldValue('roles', vals)
+                          const vals = target.checked
+                            ? [...values.roles, 'observer']
+                            : values.roles.filter((v) => v !== 'observer');
+                          setFieldValue('roles', vals);
                         }}
                       />
                       <CheckboxLabel
@@ -106,17 +91,10 @@ const ManageUsersEditForm = () => {
               </Fieldset>
             </FieldRow>
             <ButtonRow>
-              <Button
-                type='button'
-                size='large'
-                onClick={() => dispatch(cancel())}
-              >
+              <Button type="button" size="large" onClick={() => dispatch(cancel())}>
                 Cancel
               </Button>
-              <Button
-                type='submit'
-                size='large'
-              >
+              <Button type="submit" size="large">
                 Update user
               </Button>
             </ButtonRow>
@@ -124,13 +102,13 @@ const ManageUsersEditForm = () => {
         )}
       </Formik>
     </FormWrapper>
-  )
-}
+  );
+};
 
 const Fieldset = styled('fieldset', {
   border: 0,
   padding: 0,
-  margin: 0
+  margin: 0,
 });
 
 const Legend = styled('legend', {

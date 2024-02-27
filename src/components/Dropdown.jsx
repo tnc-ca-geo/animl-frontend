@@ -1,12 +1,5 @@
-import React from 'react';
 import { styled, keyframes } from '@stitches/react';
-import { violet, mauve, blackA, indigo } from '@radix-ui/colors';
-import {
-  HamburgerMenuIcon,
-  DotFilledIcon,
-  CheckIcon,
-  ChevronRightIcon,
-} from '@radix-ui/react-icons';
+import { violet, mauve, indigo } from '@radix-ui/colors';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 
 const slideUpAndFade = keyframes({
@@ -89,8 +82,12 @@ const itemStyles = {
 };
 
 const StyledItem = styled(DropdownMenuPrimitive.Item, { ...itemStyles });
-const StyledCheckboxItem = styled(DropdownMenuPrimitive.CheckboxItem, { ...itemStyles });
-const StyledRadioItem = styled(DropdownMenuPrimitive.RadioItem, { ...itemStyles });
+const StyledCheckboxItem = styled(DropdownMenuPrimitive.CheckboxItem, {
+  ...itemStyles,
+});
+const StyledRadioItem = styled(DropdownMenuPrimitive.RadioItem, {
+  ...itemStyles,
+});
 const StyledTriggerItem = styled(DropdownMenuPrimitive.TriggerItem, {
   '&[data-state="open"]': {
     backgroundColor: indigo.indigo4,
@@ -138,69 +135,3 @@ export const DropdownMenuTriggerItem = StyledTriggerItem;
 export const DropdownMenuLabel = StyledLabel;
 export const DropdownMenuSeparator = StyledSeparator;
 export const DropdownMenuArrow = StyledArrow;
-
-// Your app...
-const Box = styled('div', {});
-
-const RightSlot = styled('div', {
-  marginLeft: 'auto',
-  paddingLeft: 20,
-  color: mauve.mauve11,
-  ':focus > &': { color: 'white' },
-  '[data-disabled] &': { color: mauve.mauve8 },
-});
-
-const IconButton = styled('button', {
-  all: 'unset',
-  fontFamily: 'inherit',
-  borderRadius: '100%',
-  height: 35,
-  width: 35,
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: violet.violet11,
-  backgroundColor: 'white',
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
-  '&:hover': { backgroundColor: violet.violet3 },
-  '&:focus': { boxShadow: `0 0 0 2px black` },
-});
-
-export const DropdownMenuDemo = () => {
-  const [bookmarksChecked, setBookmarksChecked] = React.useState(true);
-  const [urlsChecked, setUrlsChecked] = React.useState(false);
-  const [person, setPerson] = React.useState('pedro');
-
-  return (
-    <Box>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <IconButton aria-label="Customise options">
-            <HamburgerMenuIcon />
-          </IconButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent sideOffset={5}>
-          <DropdownMenuLabel>Projects</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={person} onValueChange={setPerson}>
-            <DropdownMenuRadioItem value="pedro">
-              <DropdownMenuItemIndicator>
-                <DotFilledIcon />
-              </DropdownMenuItemIndicator>
-              Pedro Duarte
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="colm">
-              <DropdownMenuItemIndicator>
-                <DotFilledIcon />
-              </DropdownMenuItemIndicator>
-              Colm Tuite
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-          <DropdownMenuArrow offset={12} />
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </Box>
-  );
-};
-
-export default DropdownMenuDemo;
-

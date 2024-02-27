@@ -23,7 +23,7 @@ const StyledBoundingBoxLabel = styled('div', {
       },
       bottom: {
         top: '-2px',
-      }
+      },
     },
     horizontalPos: {
       left: {
@@ -37,7 +37,7 @@ const StyledBoundingBoxLabel = styled('div', {
       true: {
         top: '-32px',
         padding: '0',
-      }
+      },
     },
     selected: {
       true: {
@@ -46,9 +46,9 @@ const StyledBoundingBoxLabel = styled('div', {
       },
       false: {
         // opacity: '1',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const Category = styled('span', {
@@ -65,31 +65,34 @@ const LabelDisplay = styled('div', {
   padding: '$1 $2',
 });
 
-const BoundingBoxLabel = forwardRef(({
-  imgId,
-  index,
-  object,
-  label,
-  labelColor,
-  displayLabel,
-  conf,
-  selected,
-  showLabelButtons,
-  setTempObject,
-  verticalPos,
-  horizontalPos,
-  isAuthorized,
-  username,
-}, ref) => {
+const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
+  {
+    imgId,
+    index,
+    object,
+    label,
+    labelColor,
+    displayLabel,
+    conf,
+    selected,
+    showLabelButtons,
+    setTempObject,
+    verticalPos,
+    horizontalPos,
+    isAuthorized,
+    username,
+  },
+  ref,
+) {
   const textColor = labelColor.isLowContrast ? labelColor.textDark : labelColor.textLight;
   const dispatch = useDispatch();
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const open = ((isAddingLabel === 'from-object') && selected);
-  const [ catSelectorOpen, setCatSelectorOpen ] = useState(open);
+  const open = isAddingLabel === 'from-object' && selected;
+  const [catSelectorOpen, setCatSelectorOpen] = useState(open);
   useEffect(() => {
-    setCatSelectorOpen(((isAddingLabel === 'from-object') && selected));
+    setCatSelectorOpen(isAddingLabel === 'from-object' && selected);
   }, [isAddingLabel, selected]);
 
   // manually focus catSelector if it's open
@@ -108,19 +111,23 @@ const BoundingBoxLabel = forwardRef(({
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
     setTempObject(null);
-    dispatch(labelsAdded({
-      labels: [{
-        objIsTemp: object.isTemp,
-        userId: username,
-        bbox: object.bbox,
-        labelId: newValue.value,
-        objId: object._id,
-        imgId
-      }]
-    }));
+    dispatch(
+      labelsAdded({
+        labels: [
+          {
+            objIsTemp: object.isTemp,
+            userId: username,
+            bbox: object.bbox,
+            labelId: newValue.value,
+            objId: object._id,
+            imgId,
+          },
+        ],
+      }),
+    );
   };
 
-  const handleCategorySelectorBlur = (e) => {
+  const handleCategorySelectorBlur = () => {
     if (object.isTemp) setTempObject(null);
     dispatch(addLabelEnd());
   };
@@ -133,7 +140,7 @@ const BoundingBoxLabel = forwardRef(({
       selected={selected}
       css={{
         backgroundColor: displayLabel?.color,
-        color: textColor, // labelColor.bg  
+        color: textColor, // labelColor.bg
       }}
     >
       <div onClick={handleLabelClick}>
@@ -142,25 +149,24 @@ const BoundingBoxLabel = forwardRef(({
           ref={ref}
           handleCategoryChange={handleCategoryChange}
           handleCategorySelectorBlur={handleCategorySelectorBlur}
-          menuPlacement='bottom'
+          menuPlacement="bottom"
         />
         <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block', color: getTextColor(displayLabel?.color) }}>
-          <Category>{displayLabel?.name || "ERROR FINDING LABEL"}</Category>
+          <Category>{displayLabel?.name || 'ERROR FINDING LABEL'}</Category>
           {!object.locked && <Confidence>{conf}%</Confidence>}
         </LabelDisplay>
       </div>
-      {(showLabelButtons && !catSelectorOpen && isAuthorized) &&
-        <ValidationButtons 
+      {showLabelButtons && !catSelectorOpen && isAuthorized && (
+        <ValidationButtons
           imgId={imgId}
           object={object}
           label={label}
           labelColor={displayLabel?.color}
           username={username}
         />
-      }
+      )}
     </StyledBoundingBoxLabel>
   );
 });
 
 export default BoundingBoxLabel;
-

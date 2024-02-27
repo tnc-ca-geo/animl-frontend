@@ -1,16 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBatches, stopBatch, exportErrors, getErrorsExportStatus, filterBatches, selectStopBatchLoading, selectRedriveBatchLoading, redriveBatch, selectBatchStatesLoading } from './uploadSlice';
-import { selectBatchStates, selectBatchPageInfo, selectErrorsExport, selectErrorsExportLoading, selectBatchFilter } from './uploadSlice';
+import {
+  fetchBatches,
+  stopBatch,
+  exportErrors,
+  getErrorsExportStatus,
+  filterBatches,
+  selectStopBatchLoading,
+  selectRedriveBatchLoading,
+  redriveBatch,
+  selectBatchStatesLoading,
+  selectBatchStates,
+  selectBatchPageInfo,
+  selectErrorsExport,
+  selectErrorsExportLoading,
+  selectBatchFilter,
+} from './uploadSlice';
 import { styled, keyframes } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { DateTime } from 'luxon';
-import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
-import { ChevronLeftIcon, ChevronRightIcon, Cross2Icon, ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Cross2Icon,
+  ExclamationTriangleIcon,
+  ReloadIcon,
+} from '@radix-ui/react-icons';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-
 
 const Table = styled('table', {
   borderSpacing: '0',
@@ -54,16 +72,12 @@ const Pagination = styled('div', {
   textAlign: 'right',
   marginBottom: '30px',
   '& > button': {
-    marginLeft: '10px'
-  }
-});
-
-const BulkUploadActionButton = styled(Button, {
-  marginRight: '$2'
+    marginLeft: '10px',
+  },
 });
 
 const ellipsis = keyframes({
-  '100%': { width: '1em;' }
+  '100%': { width: '1em;' },
 });
 
 const StatusMessage = styled('span', {
@@ -76,18 +90,16 @@ const StatusMessage = styled('span', {
           verticalAlign: 'bottom',
           animation: `${ellipsis} steps(4,end) 1.2s infinite`,
           content: '\u2026',
-          width: '0px'
-        }
-      }
-    }
-  }
+          width: '0px',
+        },
+      },
+    },
+  },
 });
-
 
 const Error = styled('span', {
-  color: 'red'
+  color: 'red',
 });
-
 
 const BulkUploadTable = ({ percentUploaded }) => {
   const { hasNext, hasPrevious } = useSelector(selectBatchPageInfo);
@@ -108,30 +120,26 @@ const BulkUploadTable = ({ percentUploaded }) => {
   }, [dispatch]);
 
   const sortedBatches = [];
-  for (const batch of batchStates) {    
+  for (const batch of batchStates) {
     if (!batch.uploadComplete) {
-      sortedBatches.unshift(batch)
+      sortedBatches.unshift(batch);
     } else {
-      sortedBatches.push(batch)
+      sortedBatches.push(batch);
     }
   }
 
   // TODO: a lot of this export logic is shared by the ExportModal,
   // so we should consider abstracting either into a component or hook
-  const errorsExportReady = !errorsExportLoading.isLoading && 
-    !errorsExportLoading.errors && 
-    errorsExport && 
-    errorsExport.url;
+  const errorsExportReady =
+    !errorsExportLoading.isLoading && !errorsExportLoading.errors && errorsExport && errorsExport.url;
 
-  const errorsExportPending = errorsExportLoading.isLoading && 
-    errorsExport && 
-    errorsExport.documentId;
+  const errorsExportPending = errorsExportLoading.isLoading && errorsExport && errorsExport.documentId;
 
   const handleExportButtonClick = (e, _id) => {
     const { isLoading, errors, noneFound } = errorsExportLoading;
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
-      dispatch(exportErrors({filters: { batch: _id }}));
+      dispatch(exportErrors({ filters: { batch: _id } }));
     }
   };
 
@@ -150,11 +158,11 @@ const BulkUploadTable = ({ percentUploaded }) => {
 
   return (
     <div style={{ position: 'relative' }}>
-      {batchStatesLoading.isLoading &&
+      {batchStatesLoading.isLoading && (
         <SpinnerOverlay>
-          <SimpleSpinner/>
+          <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <CurrentCompletedToggle />
       <Table>
         <thead>
@@ -166,43 +174,47 @@ const BulkUploadTable = ({ percentUploaded }) => {
         </thead>
         <tbody>
           {sortedBatches.map((batch) => {
-            const { _id, originalFile, processingEnd, total, remaining } = batch;
+            const { _id, originalFile } = batch;
             const status = getStatus(percentUploaded, batch);
             const statusMsg = getStatusMessage(status, batch);
             const isRedrivingImages = redriveBatchLoading.batch === _id && redriveBatchLoading.isLoading;
             const isFetchingErrors = errorsExportLoading.batch === _id && errorsExportLoading.isLoading;
-            const isStoppingBatch = (stopBatchLoading.batch === _id && stopBatchLoading.isLoading) || 
-                                    (status['stop-initiated'] && !status['stack-destroyed']);
-            const isStopable = !status['uploading-file'] && 
-                               !status['processing-complete'] && 
-                               !status['stop-initiated'] &&
-                               !status['stack-destroyed'];
-  
+            const isStoppingBatch =
+              (stopBatchLoading.batch === _id && stopBatchLoading.isLoading) ||
+              (status['stop-initiated'] && !status['stack-destroyed']);
+            const isStopable =
+              !status['uploading-file'] &&
+              !status['processing-complete'] &&
+              !status['stop-initiated'] &&
+              !status['stack-destroyed'];
+
             return (
               <TableRow key={_id}>
                 <TableCell>{originalFile}</TableCell>
                 <TableCell>
                   <div>
                     {statusMsg}
-                    {status['has-batch-errors'] && 
-                      <Error>{errors.length} error{errors?.length > 1 ? 's' : ''}.</Error>
-                    }
+                    {status['has-batch-errors'] && (
+                      <Error>
+                        {batch.errors.length} error{batch.errors?.length > 1 ? 's' : ''}.
+                      </Error>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <IconButton
-                        variant='ghost'
+                        variant="ghost"
                         state={isStoppingBatch && 'loading'}
-                        size='large'
+                        size="large"
                         disabled={!isStopable}
                         onClick={() => dispatch(stopBatch(_id))}
                       >
                         <Cross2Icon />
                       </IconButton>
                     </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
+                    <TooltipContent side="top" sideOffset={5}>
                       Cancel image processing
                       <TooltipArrow />
                     </TooltipContent>
@@ -210,17 +222,17 @@ const BulkUploadTable = ({ percentUploaded }) => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <IconButton
-                        variant='ghost'
+                        variant="ghost"
                         state={isFetchingErrors && 'loading'}
-                        size='large'
+                        size="large"
                         css={{ color: '$errorText' }}
-                        disabled={!status['processing-complete'] || (!batch.imageErrors || batch.imageErrors === 0)}
+                        disabled={!status['processing-complete'] || !batch.imageErrors || batch.imageErrors === 0}
                         onClick={(e) => handleExportButtonClick(e, _id)}
                       >
                         <ExclamationTriangleIcon />
                       </IconButton>
                     </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
+                    <TooltipContent side="top" sideOffset={5}>
                       Download errors CSV
                       <TooltipArrow />
                     </TooltipContent>
@@ -228,9 +240,9 @@ const BulkUploadTable = ({ percentUploaded }) => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <IconButton
-                        variant='ghost'
+                        variant="ghost"
                         state={isRedrivingImages && 'loading'}
-                        size='large'
+                        size="large"
                         css={{ color: '$errorText' }}
                         disabled={!(status['processing-complete'] && status['has-failed-images'])}
                         onClick={() => dispatch(redriveBatch(_id))}
@@ -238,57 +250,75 @@ const BulkUploadTable = ({ percentUploaded }) => {
                         <ReloadIcon />
                       </IconButton>
                     </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5} >
+                    <TooltipContent side="top" sideOffset={5}>
                       Reprocess failed images
                       <TooltipArrow />
                     </TooltipContent>
                   </Tooltip>
                 </TableCell>
               </TableRow>
-            )}
-          )}
+            );
+          })}
         </tbody>
       </Table>
       <Pagination>
         <IconButton
-          variant='ghost'
-          size='large'
+          variant="ghost"
+          size="large"
           disabled={!hasPrevious}
           onClick={() => dispatch(fetchBatches('previous'))}
         >
-          <ChevronLeftIcon/>
+          <ChevronLeftIcon />
         </IconButton>
-        <IconButton
-          variant='ghost'
-          size='large'
-          disabled={!hasNext}
-          onClick={() => dispatch(fetchBatches('next'))}
-        >
-          <ChevronRightIcon/>
+        <IconButton variant="ghost" size="large" disabled={!hasNext} onClick={() => dispatch(fetchBatches('next'))}>
+          <ChevronRightIcon />
         </IconButton>
       </Pagination>
-      {errorsExportReady && 
-        <p><em>Your errors CSV is ready for download. If the download 
-        did not start automatically, click <a href={errorsExport.url} target="downloadTab">this link</a> to 
-        initiate it.</em></p>
-      }
+      {errorsExportReady && (
+        <p>
+          <em>
+            Your errors CSV is ready for download. If the download did not start automatically, click{' '}
+            <a href={errorsExport.url} target="downloadTab">
+              this link
+            </a>{' '}
+            to initiate it.
+          </em>
+        </p>
+      )}
     </div>
-  )
+  );
 };
 
 const getStatus = (percentUploaded, batch) => {
-  const { uploadComplete, ingestionComplete, processingStart, processingEnd, stoppingInitiated, remaining, dead, errors } = batch;
+  const {
+    created,
+    uploadComplete,
+    ingestionComplete,
+    processingStart,
+    processingEnd,
+    stoppingInitiated,
+    remaining,
+    dead,
+    errors,
+  } = batch;
+
+  const batchCreated = DateTime.fromISO(created);
+  const now = DateTime.now();
+  const durationSinceBatchCreated = now.diff(batchCreated);
+
   return {
     'uploading-file': percentUploaded > 0 && percentUploaded < 100 && !uploadComplete,
     'validating-file': !uploadComplete && !processingStart,
     'deploying-stack': uploadComplete && !processingStart, // not sure we need this
     'saving-images': processingStart && !ingestionComplete,
-    'processing-images': processingStart && ingestionComplete ? true : false,	// this overlaps w/ saving images (batch will be in both states for a bit)
-    'processing-complete': processingStart && ingestionComplete && (remaining === 0),
+    'processing-images': processingStart && ingestionComplete ? true : false, // this overlaps w/ saving images (batch will be in both states for a bit)
+    'processing-complete': processingStart && ingestionComplete && remaining === 0,
     'stop-initiated': stoppingInitiated ? true : false,
     'stack-destroyed': processingEnd ? true : false, // not sure we need this either
     'has-batch-errors': errors?.length > 0,
     'has-failed-images': dead > 0,
+    'failed-to-upload':
+      !percentUploaded && !uploadComplete && !processingStart && durationSinceBatchCreated.as('minutes') > 480, // if we haven't started processing images in 8 hours
   };
 };
 
@@ -320,7 +350,7 @@ const getStatusMessage = (status, batch) => {
     loading = false;
     statusMsg = `${total - dead} images were processed successfully, but ${dead} failed`;
   }
-  if (status['stack-destroyed']) { 
+  if (status['stack-destroyed']) {
     loading = false;
     const dateString = DateTime.fromISO(processingStart).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing of ${total} images finished at ${dateString}`;
@@ -329,6 +359,10 @@ const getStatusMessage = (status, batch) => {
     loading = false;
     const dateString = DateTime.fromISO(stoppingInitiated).toLocaleString(DateTime.DATETIME_SHORT);
     statusMsg = `Processing was cancelled at ${dateString}`;
+  }
+  if (status['failed-to-upload']) {
+    loading = false;
+    statusMsg = `Your file to failed to upload. Please try again.`;
   }
   return <StatusMessage loading={loading}>{statusMsg}</StatusMessage>;
 };
@@ -339,24 +373,24 @@ const CurrentCompletedToggle = () => {
 
   return (
     <ToggleGroupRoot
-      type='single'
+      type="single"
       value={batchFilter}
-      aria-label='Filter current or completed uploads'
+      aria-label="Filter current or completed uploads"
       onValueChange={(value) => {
         if (value) {
           dispatch(filterBatches(value));
-          dispatch(fetchBatches())
+          dispatch(fetchBatches());
         }
       }}
     >
-      <ToggleGroupItem value='CURRENT' aria-label='Current uploads'>
+      <ToggleGroupItem value="CURRENT" aria-label="Current uploads">
         Current uploads
       </ToggleGroupItem>
-      <ToggleGroupItem value='COMPLETED' aria-label='Completed uploads'>
+      <ToggleGroupItem value="COMPLETED" aria-label="Completed uploads">
         Completed uploads
       </ToggleGroupItem>
     </ToggleGroupRoot>
-  )
+  );
 };
 
 const ToggleGroupRoot = styled(ToggleGroup.Root, {
@@ -377,13 +411,12 @@ const ToggleGroupItem = styled(ToggleGroup.Item, {
   borderBottom: '2px solid',
   borderColor: '$gray2',
   '&:first-child': { marginLeft: 0 },
-  '&:hover': { backgroundColor: '$gray4', borderColor: '$gray4'},
-  '&[data-state=on]': { 
+  '&:hover': { backgroundColor: '$gray4', borderColor: '$gray4' },
+  '&[data-state=on]': {
     color: '$hiContrast',
     borderBottom: '2px solid',
     borderColor: '$hiContrast',
-  }
+  },
 });
-
 
 export default BulkUploadTable;

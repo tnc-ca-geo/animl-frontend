@@ -1,25 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
-import { ResizeObserver } from '@juggle/resize-observer'
+import { ResizeObserver } from '@juggle/resize-observer';
 
 /*
  * Hook for skiping the useEffect run on a component's initial render
- * From: https://stackoverflow.com/questions/53179075/with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render 
+ * From: https://stackoverflow.com/questions/53179075/with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render
  */
 export function useEffectAfterMount(fn, inputs) {
   const didMountRef = useRef(false);
   useEffect(() => {
     if (didMountRef.current) {
       return fn();
-    }
-    else {
+    } else {
       didMountRef.current = true;
     }
   }, inputs);
-};
+}
 
 /*
  * Hook for watching resize events
- */ 
+ */
 export const useResizeObserver = (ref) => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -28,7 +27,7 @@ export const useResizeObserver = (ref) => {
 
   useEffect(() => {
     const element = ref.current;
-    const resizeObserver = new ResizeObserver(entries => {
+    const resizeObserver = new ResizeObserver((entries) => {
       if (!Array.isArray(entries)) return;
       if (!entries.length) return;
       const entry = entries[0];
@@ -38,15 +37,15 @@ export const useResizeObserver = (ref) => {
       if (height !== entry.contentRect.height) {
         setHeight(entry.contentRect.height);
       }
-    })
+    });
     resizeObserver.observe(element);
     return () => resizeObserver.disconnect(element);
   }, [ref, height, width]);
 
-  // NOTE: Resize Observer entry's contentRect top/x left/y don't behave the  
+  // NOTE: Resize Observer entry's contentRect top/x left/y don't behave the
   // same as getBoundingClientRect() (they're always 0),
   // so use getBoundingClientRect() instead
-  useEffect(() => {  
+  useEffect(() => {
     const element = ref.current;
     const container = element.getBoundingClientRect();
     if (top !== container.top) setTop(container.top);
@@ -56,17 +55,14 @@ export const useResizeObserver = (ref) => {
   return { width, height, top, left };
 };
 
-
 /*
  * find an image objects from array of images
- */ 
-export const findImage = (images, imgId) => (
-  images.find((img) => img._id === imgId)
-);
+ */
+export const findImage = (images, imgId) => images.find((img) => img._id === imgId);
 
 /*
  * find specific object from array of images
- */ 
+ */
 export const findObject = (images, imgId, objId) => {
   const image = findImage(images, imgId);
   return image.objects.find((obj) => obj._id === objId);
@@ -74,7 +70,7 @@ export const findObject = (images, imgId, objId) => {
 
 /*
  * find specific object from array of images
- */ 
+ */
 export const findLabel = (images, imgId, objId, lblId) => {
   const object = findObject(images, imgId, objId);
   return object.labels.find((lbl) => lbl._id === lblId);
@@ -82,10 +78,8 @@ export const findLabel = (images, imgId, objId, lblId) => {
 
 /*
  * truncate string and add ellipsis
- */ 
-export const truncateString = (str, n) => (
-  (str.length > n) ? `${str.substring(0, n)}...` : str
-);
+ */
+export const truncateString = (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str);
 
 /*
  * convert bbox in absolute vals ([left, top, width, height])
@@ -130,7 +124,7 @@ export const getTextColor = (bgColor) => {
     return '$textDark';
   }
 
-  const threshold = 0.6
+  const threshold = 0.6;
   const [red, green, blue] = [0, 2, 4].map((i) => parseInt(bgColor.slice(i + 1, i + 3), 16));
   const l = (red * 0.299 + green * 0.587 + blue * 0.114) / 255;
   return l < threshold ? '$loContrast' : '$textDark';
@@ -141,10 +135,22 @@ export const getRandomColor = () => {
   const green = Math.floor(Math.random() * (255 - 0) + 0);
   const blue = Math.floor(Math.random() * (255 - 0) + 0);
 
-  const integer = ((Math.round(red) & 0xFF) << 16)
-    + ((Math.round(green) & 0xFF) << 8)
-    + (Math.round(blue) & 0xFF);
+  const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
 
   const string = integer.toString(16).toUpperCase();
   return '000000'.substring(string.length) + string;
-}
+};
+
+/*
+ * normalize non-graphql errors
+ */
+export const normalizeErrors = (error, code) => {
+  let errs = error;
+  if (!Array.isArray(error)) {
+    // if the error is thrown on the client side rather than returned by the API
+    // (e.g., we lost internet connection and exhausted upload retries)
+    // we need to re-format the error to match GraphQL errors array and error objects
+    errs = [{ message: error.message, extensions: { code } }];
+  }
+  return errs;
+};

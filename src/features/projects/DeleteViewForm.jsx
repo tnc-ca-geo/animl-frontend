@@ -3,15 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import {
-  selectViewsLoading,
-  selectSelectedView,
-  editView
-} from './projectsSlice.js';
+import { selectViewsLoading, selectSelectedView, editView } from './projectsSlice.js';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-
 
 const ViewName = styled('span', {
   fontWeight: '$5',
@@ -22,7 +17,7 @@ const deleteViewSchema = Yup.object().shape({
 });
 
 const DeleteViewForm = ({ handleClose }) => {
-  const [queuedForClose, setQueuedForClose ] = useState(false);
+  const [queuedForClose, setQueuedForClose] = useState(false);
   const viewsLoading = useSelector(selectViewsLoading);
   const selectedView = useSelector(selectSelectedView);
   const dispatch = useDispatch();
@@ -30,21 +25,20 @@ const DeleteViewForm = ({ handleClose }) => {
   // TODO: extract into hook?
   useEffect(() => {
     if (queuedForClose && !viewsLoading.isLoading) handleClose();
-  }, [queuedForClose, viewsLoading.isLoading, handleClose])
+  }, [queuedForClose, viewsLoading.isLoading, handleClose]);
 
   const handleDeleteViewSubmit = (values) => {
     dispatch(editView('delete', values));
     setQueuedForClose(true);
   };
-  
 
   return (
     <div>
-      {viewsLoading.isLoading &&
+      {viewsLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <FormWrapper>
         <Formik
           initialValues={{ viewId: selectedView._id }}
@@ -54,15 +48,11 @@ const DeleteViewForm = ({ handleClose }) => {
           {() => (
             <Form>
               <HelperText>
-                Are you sure you'd like to delete 
-                the <ViewName>{selectedView.name}</ViewName> view?
+                Are you sure you&apos;d like to delete the <ViewName>{selectedView.name}</ViewName> view?
               </HelperText>
-              <Field
-                name='viewId'
-                type='hidden'
-              />
+              <Field name="viewId" type="hidden" />
               <ButtonRow>
-                <Button type='submit' size='large'>
+                <Button type="submit" size="large">
                   Delete view
                 </Button>
               </ButtonRow>
@@ -74,6 +64,4 @@ const DeleteViewForm = ({ handleClose }) => {
   );
 };
 
-
 export default DeleteViewForm;
-

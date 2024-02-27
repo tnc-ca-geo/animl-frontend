@@ -13,12 +13,7 @@ import {
   selectUnsavedViewChanges,
   setSelectedProjAndView,
 } from './projectsSlice.js';
-import { 
-  selectRouterLocation,
-  fetchImageContext,
-  preFocusImageStart,
-  clearImages,
-} from '../images/imagesSlice.js';
+import { selectRouterLocation, fetchImageContext, preFocusImageStart, clearImages } from '../images/imagesSlice.js';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -30,7 +25,6 @@ import {
   NavigationMenuIndicator,
 } from '../../components/NavigationMenu.jsx';
 
-
 const NoneFoundAlert = styled('div', {
   fontSize: '$4',
   fontWeight: '$3',
@@ -38,8 +32,8 @@ const NoneFoundAlert = styled('div', {
   '&::after': {
     content: '\\1F400',
     paddingLeft: '$2',
-    fontSize: '20px'
-  }
+    fontSize: '20px',
+  },
 });
 
 const ContentList = styled('ul', {
@@ -80,9 +74,9 @@ const LinkTitle = styled('div', {
     selected: {
       true: {
         color: '$blue500',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const LinkText = styled('p', {
@@ -92,8 +86,11 @@ const LinkText = styled('p', {
   fontWeight: 'initial',
 });
 
-const ContentListItem = React.forwardRef(
-  ({ children, title, selected, ...props }, forwardedRef) => (
+const ContentListItem = React.forwardRef(function ContentListItem(
+  { children, title, selected, ...props },
+  forwardedRef,
+) {
+  return (
     <ListItem>
       <NavigationMenuLink
         {...props}
@@ -104,23 +101,21 @@ const ContentListItem = React.forwardRef(
           borderRadius: '$2',
         }}
       >
-        <LinkTitle selected={selected}>
-          {title}
-        </LinkTitle>
+        <LinkTitle selected={selected}>{title}</LinkTitle>
         <LinkText>{children}</LinkText>
       </NavigationMenuLink>
     </ListItem>
-  )
-);
+  );
+});
 
 const NavigationMenuTriggerViews = styled(NavigationMenuTrigger, {
   variants: {
     edited: {
       true: {
         color: '$textLight',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const MenuTitle = styled('div', {
@@ -139,7 +134,6 @@ const ViewportPosition = styled('div', {
   left: 0,
   perspective: '2000px',
 });
-
 
 const ProjectAndViewNav = () => {
   const projectsLoading = useSelector(selectProjectsLoading);
@@ -167,7 +161,7 @@ const ProjectAndViewNav = () => {
       const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
-  
+
       if (projectsReady && !idsInPath && !unsavedViewChanges) {
         // TODO: check that there are projects & views in state that match the Ids
         const projId = projIdInPath || projects[0]._id;
@@ -180,20 +174,22 @@ const ProjectAndViewNav = () => {
   }, [projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
 
   // react to changes in URL & dispatch selected project and view to state
-  useEffect(() => {      
+  useEffect(() => {
     if (appActive) {
       const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
-  
+
       if (projectsReady && idsInPath) {
         // TODO: check that there are projects & views in state that match the Ids
-        dispatch(setSelectedProjAndView({
-          projId: projIdInPath,
-          viewId: viewIdInPath
-        }));
-  
-        // if 'img' detected in query params, 
+        dispatch(
+          setSelectedProjAndView({
+            projId: projIdInPath,
+            viewId: viewIdInPath,
+          }),
+        );
+
+        // if 'img' detected in query params,
         // kick off pre-focused-image initialization sequence
         const query = routerLocation.query;
         if ('img' in query && validateImgId(query.img)) {
@@ -219,24 +215,15 @@ const ProjectAndViewNav = () => {
 
   return (
     <NavigationMenu>
-      <SimpleSpinner size='sm' display={projectsLoading.isLoading}/>
-      {projectsLoading.noneFound && 
-        <NoneFoundAlert>
-          Rats! You don't have access to any projects yet!
-        </NoneFoundAlert>
-      }
-      {selectedView &&
+      <SimpleSpinner size="sm" display={projectsLoading.isLoading} />
+      {projectsLoading.noneFound && (
+        <NoneFoundAlert>Rats! You don&apos;t have access to any projects yet!</NoneFoundAlert>
+      )}
+      {selectedView && (
         <NavigationMenuList>
-
           <NavigationMenuItem>
-            <NavigationMenuTrigger
-              onPointerMove={(e) => e.preventDefault()}
-            >
-              {selectedProj.name}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent
-              onPointerMove={(e) => e.preventDefault()}
-            >
+            <NavigationMenuTrigger onPointerMove={(e) => e.preventDefault()}>{selectedProj.name}</NavigationMenuTrigger>
+            <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Projects</MenuTitle>
               <ContentList layout="one">
                 {projects.map((proj) => (
@@ -252,17 +239,12 @@ const ProjectAndViewNav = () => {
               </ContentList>
             </NavigationMenuContent>
           </NavigationMenuItem>
-  
+
           <NavigationMenuItem>
-            <NavigationMenuTriggerViews
-              onPointerMove={(e) => e.preventDefault()}
-              edited={unsavedViewChanges}
-            >
+            <NavigationMenuTriggerViews onPointerMove={(e) => e.preventDefault()} edited={unsavedViewChanges}>
               {selectedView.name}
             </NavigationMenuTriggerViews>
-            <NavigationMenuContent
-              onPointerMove={(e) => e.preventDefault()}
-            >
+            <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Views</MenuTitle>
               <ContentList layout="two">
                 {views.map((view) => (
@@ -278,10 +260,10 @@ const ProjectAndViewNav = () => {
               </ContentList>
             </NavigationMenuContent>
           </NavigationMenuItem>
-  
+
           <NavigationMenuIndicator />
         </NavigationMenuList>
-      }
+      )}
 
       <ViewportPosition>
         <NavigationMenuViewport />
@@ -294,12 +276,11 @@ function validateImgId(imgId) {
   const hash = imgId.includes(':') ? imgId.split(':')[1] : imgId;
   const regexExp = /^[a-f0-9]{32}$/gi;
   return regexExp.test(hash);
-};
+}
 
 function getIdsFromPath(routerLocation) {
   let paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
   return { projIdInPath: paths[1], viewIdInPath: paths[2] };
-};
+}
 
 export default ProjectAndViewNav;
-
