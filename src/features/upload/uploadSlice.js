@@ -457,7 +457,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
         sendChunk(url, chunk, index + 1)
           .then(() => sendNext())
           .catch((error) => {
-            if (retry <= 2) {
+            if (retry <= 8) {
               retry++;
               setTimeout(
                 () => {
