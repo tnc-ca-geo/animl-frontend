@@ -756,12 +756,11 @@ export const deleteProjectLabel = (payload) => {
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
-        const res = await call({
+        await call({
           projId,
           request: 'deleteProjectLabel',
           input: payload,
         });
-        console.log('res: ', res);
         dispatch(deleteProjectLabelSuccess({ projId }));
         dispatch(clearImages());
         dispatch(fetchProjects({ _ids: [projId] }));

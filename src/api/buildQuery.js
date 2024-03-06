@@ -227,7 +227,7 @@ const queries = {
       template: `
         mutation DeleteImages($input: DeleteImagesInput!) {
           deleteImages(input: $input) {
-            message
+            isOk
           }
         }
       `,
@@ -517,7 +517,7 @@ const queries = {
     template: `
       mutation DeleteProjectLabel($input: DeleteProjectLabelInput!) {
         deleteProjectLabel(input: $input) {
-          message
+          isOk
         }
       }
     `,
@@ -653,7 +653,7 @@ const queries = {
     template: `
       mutation CloseUpload($input: CloseUploadInput!) {
         closeUpload(input: $input) {
-          message
+          isOk
         }
       }
     `,
@@ -721,7 +721,7 @@ const queries = {
     template: `
       mutation StopBatch($input: StopBatchInput!) {
         stopBatch(input: $input) {
-          message
+          isOk
         }
       }
     `,
@@ -732,7 +732,7 @@ const queries = {
     template: `
       mutation RedriveBatch($input: RedriveBatchInput!){
         redriveBatch(input: $input) {
-          message
+          isOk
         }
       }
     `,
@@ -762,7 +762,7 @@ const queries = {
     template: `
       mutation UpdateUser($input: UpdateUserInput!){
         updateUser(input: $input) {
-            message
+          isOk
         }
       }
     `,
@@ -773,7 +773,7 @@ const queries = {
     template: `
       mutation createUser($input: CreateUserInput!){
         createUser(input: $input) {
-            message
+          isOk
         }
       }
     `,
