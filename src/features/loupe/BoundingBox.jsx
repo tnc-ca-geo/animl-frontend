@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled, labelColors } from '../../theme/stitches.config';
+import { styled } from '../../theme/stitches.config';
 import _ from 'lodash';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
@@ -136,11 +136,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
 
   const projectLabels = useSelector(selectLabels);
   const displayLabel = projectLabels?.find(({ _id }) => _id === label.labelId);
-
-  // set label color and confidence
-  // TODO: maybe this belongs in label component?
   const conf = Number.parseFloat(label.conf * 100).toFixed(1);
-  const labelColor = labelColors(label.category);
 
   // set index
   let labelIndex = object.labels.indexOf(label);
@@ -298,7 +294,6 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
                 index={index}
                 object={object}
                 label={label}
-                labelColor={labelColor}
                 displayLabel={displayLabel}
                 conf={conf}
                 selected={objectFocused}

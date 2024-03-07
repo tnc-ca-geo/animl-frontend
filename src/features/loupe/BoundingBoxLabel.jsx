@@ -71,7 +71,6 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
     index,
     object,
     label,
-    labelColor,
     displayLabel,
     conf,
     selected,
@@ -84,7 +83,6 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
   },
   ref,
 ) {
-  const textColor = labelColor.isLowContrast ? labelColor.textDark : labelColor.textLight;
   const dispatch = useDispatch();
 
   // manage category selector state (open/closed)
@@ -138,10 +136,7 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
       horizontalPos={horizontalPos}
       catSelectorOpen={catSelectorOpen}
       selected={selected}
-      css={{
-        backgroundColor: displayLabel?.color,
-        color: textColor, // labelColor.bg
-      }}
+      css={{ backgroundColor: displayLabel?.color }}
     >
       <div onClick={handleLabelClick}>
         <CategorySelector
