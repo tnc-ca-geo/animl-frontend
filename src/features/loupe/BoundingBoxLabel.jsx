@@ -147,11 +147,11 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
           menuPlacement="bottom"
         />
         <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block', color: getTextColor(displayLabel?.color) }}>
-          <Category>{displayLabel?.name || 'ERROR FINDING LABEL'}</Category>
-          {!object.locked && <Confidence>{conf}%</Confidence>}
+          <Category>{displayLabel?.name}</Category>
+          {!object.locked && displayLabel._id !== 'fallback_label' && <Confidence>{conf}%</Confidence>}
         </LabelDisplay>
       </div>
-      {showLabelButtons && !catSelectorOpen && isAuthorized && (
+      {showLabelButtons && !catSelectorOpen && isAuthorized && displayLabel._id !== 'fallback_label' && (
         <ValidationButtons
           imgId={imgId}
           object={object}

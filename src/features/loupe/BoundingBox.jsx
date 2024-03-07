@@ -134,8 +134,9 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
     label = object.labels[focusIndex.label];
   }
 
+  const fallbackLabel = { _id: 'fallback_label', name: 'ERROR FINDING LABEL', color: '#E54D2E' };
   const projectLabels = useSelector(selectLabels);
-  const displayLabel = projectLabels?.find(({ _id }) => _id === label.labelId);
+  const displayLabel = projectLabels?.find(({ _id }) => _id === label.labelId) || fallbackLabel;
   const conf = Number.parseFloat(label.conf * 100).toFixed(1);
 
   // set index
