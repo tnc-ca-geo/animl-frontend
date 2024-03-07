@@ -25,9 +25,7 @@ const PulseCircle = styled('div', {
   // },
 });
 
-export const PulseSpinner = () => (
-  <PulseCircle className='spinner' />
-);
+export const PulseSpinner = () => <PulseCircle className="spinner" />;
 
 const circleAnimation = keyframes({
   '0%, 80%, 100%': {
@@ -35,8 +33,8 @@ const circleAnimation = keyframes({
   },
   '40%': {
     transform: 'scale(1)',
-  } 
-})
+  },
+});
 
 const Circle = styled('div', {
   width: '$6',
@@ -50,7 +48,7 @@ const CircleDot = styled('div', {
   position: 'absolute',
   left: '0',
   top: '0',
-  
+
   '&::before': {
     content: "''",
     display: 'block',
@@ -58,7 +56,7 @@ const CircleDot = styled('div', {
     height: '15%',
     backgroundColor: '$hiContrast',
     borderRadius: '100%',
-    animation:  `${circleAnimation} 1.2s infinite ease-in-out both`,
+    animation: `${circleAnimation} 1.2s infinite ease-in-out both`,
   },
 
   '&:nth-child(1)': { transform: 'rotate(30deg)' },
@@ -86,7 +84,7 @@ const CircleDot = styled('div', {
 });
 
 export const CircleSpinner = () => (
-  <Circle className='spinner'>
+  <Circle className="spinner">
     <CircleDot />
     <CircleDot />
     <CircleDot />
@@ -102,32 +100,38 @@ export const CircleSpinner = () => (
   </Circle>
 );
 
-
 const spin = keyframes({
-  '100%': { transform: 'rotate(360deg)' }
+  '100%': { transform: 'rotate(360deg)' },
 });
 
 const StyledSVG = styled('svg', {
   color: '$blue500',
   opacity: 0,
   verticalAlign: 'middle',
-  animation:  `${spin} 1.2s infinite linear both`,
+  animation: `${spin} 1.2s infinite linear both`,
   variants: {
     size: {
       sm: { width: '20px' },
       md: { width: '30px' },
-      lg: { width: '40px' }
+      lg: { width: '40px' },
     },
     display: {
       true: {
-        opacity: 0.4
-      }
-    }
-  }
+        opacity: 0.4,
+      },
+    },
+  },
 });
 
-export const SimpleSpinner = ({ size='sm', display=true }) => (
-  <StyledSVG size={size} display={display} className="spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet">
+export const SimpleSpinner = ({ size = 'sm', display = true }) => (
+  <StyledSVG
+    size={size}
+    display={display}
+    className="spinner"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    preserveAspectRatio="xMidYMid meet"
+  >
     <g fill="none" fillRule="evenodd" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="12" r="11" opacity="0.3"></circle>
       <path d="M12 1c2.8 0 5.6 1.1 7.8 3.2 4.3 4.3 4.3 11.3 0 15.6s-11.3 4.3-15.6 0"></path>
@@ -146,7 +150,7 @@ export const SpinnerOverlay = styled('div', {
 
   '.spinner': {
     position: 'absolute',
-    top: 'calc(50% - 36px)',
-    left: 'calc(50% - 36px)',
-  }
+    top: 'calc(50% - 12px)',
+    left: 'calc(50% - 12px)',
+  },
 });

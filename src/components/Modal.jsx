@@ -6,8 +6,10 @@ import PanelHeader from './PanelHeader';
 
 const ModalBody = styled('div', {
   padding: '$3',
+  minHeight: '$7',
   maxHeight: 'calc(85vh - $7)',
   overflowY: 'scroll',
+  position: 'relative',
 });
 
 const overlayShow = keyframes({
@@ -34,8 +36,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   zIndex: '$5',
   backgroundColor: '$backgroundLight',
   borderRadius: '$2',
-  boxShadow:
-    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   position: 'fixed',
   top: '50%',
   left: '50%',
