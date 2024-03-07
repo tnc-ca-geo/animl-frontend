@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { actions as undoActions } from 'redux-undo-redo'
+import { actions as undoActions } from 'redux-undo-redo';
 import {
   setActiveFilters,
   bulkSelectToggled,
@@ -9,6 +9,7 @@ import {
   notReviewedFilterToggled,
   selectActiveFilters,
   customFilterChanged,
+  checkboxOnlyButtonClicked,
 } from '../filters/filtersSlice';
 import {
   selectProjects,
@@ -17,13 +18,11 @@ import {
   selectSelectedView,
   setUnsavedViewChanges,
   editDeploymentsSuccess,
-  deleteViewSuccess
-} from './projectsSlice'
-
+  deleteViewSuccess,
+} from './projectsSlice';
 
 // enrich newly selected project and view payload
-export const enrichProjAndViewPayload = store => next => action => {
-
+export const enrichProjAndViewPayload = (store) => (next) => (action) => {
   if (setSelectedProjAndView.match(action)) {
     let { projId, viewId } = action.payload;
 
@@ -50,30 +49,27 @@ export const enrichProjAndViewPayload = store => next => action => {
     const currSelectedProj = projects.find((p) => p.selected);
     if (currSelectedProj) {
       const currSelectedView = currSelectedProj.views.find((v) => v.selected);
-      action.payload.newProjSelected = currSelectedProj._id !== projId; 
-      action.payload.newViewSelected = currSelectedView._id !== viewId; 
-    }
-    else {
+      action.payload.newProjSelected = currSelectedProj._id !== projId;
+      action.payload.newViewSelected = currSelectedView._id !== viewId;
+    } else {
       // we're setting selected project for the first time
-      action.payload.newProjSelected = true; 
-      action.payload.newViewSelected = true; 
+      action.payload.newProjSelected = true;
+      action.payload.newViewSelected = true;
     }
-    
+
+    next(action);
+  } else {
     next(action);
   }
-
-  else {
-    next(action);
-  }
-
 };
 
 // track whether active filters match selected view filters
-export const diffFilters = store => next => action => {
+export const diffFilters = (store) => (next) => (action) => {
   if (
     setActiveFilters.match(action) ||
     bulkSelectToggled.match(action) ||
     checkboxFilterToggled.match(action) ||
+    checkboxOnlyButtonClicked.match(action) ||
     dateFilterChanged.match(action) ||
     reviewedFilterToggled.match(action) ||
     notReviewedFilterToggled.match(action) ||
@@ -83,7 +79,6 @@ export const diffFilters = store => next => action => {
     saveViewSuccess.match(action) ||
     deleteViewSuccess.match(action)
   ) {
-
     next(action);
     const activeFilters = selectActiveFilters(store.getState());
     const selectedView = selectSelectedView(store.getState());
@@ -91,28 +86,22 @@ export const diffFilters = store => next => action => {
       const match = _.isEqual(activeFilters, selectedView.filters);
       store.dispatch(setUnsavedViewChanges(!match));
     }
-
-  }
-  
-  else {
-    next(action)
+  } else {
+    next(action);
   }
 };
 
 // clear undo/redo history and apply selected view's filters to active filters
-// TODO: should we also do this when user clicks 'refresh button'? 
+// TODO: should we also do this when user clicks 'refresh button'?
 // e.g. if any action reversions depend on focus index we should.
-export const setActiveFiltersToSelectedView = store => next => action => {
-
+export const setActiveFiltersToSelectedView = (store) => (next) => (action) => {
   if (setSelectedProjAndView.match(action)) {
     store.dispatch(undoActions.clear());
 
     next(action);
     const newFilters = action.payload.view.filters;
     store.dispatch(setActiveFilters(newFilters));
-  }
-
-  else {
+  } else {
     next(action);
   }
 };
