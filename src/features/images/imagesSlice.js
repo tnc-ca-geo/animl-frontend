@@ -68,7 +68,6 @@ export const imagesSlice = createSlice({
     },
 
     getImagesStart: (state) => {
-      state.pageInfo.count = null;
       let ls = state.loadingStates.images;
       ls.isLoading = true;
       ls.operation = 'fetching';
@@ -98,6 +97,7 @@ export const imagesSlice = createSlice({
     },
 
     getImagesCountStart: (state) => {
+      state.pageInfo.count = null;
       let ls = state.loadingStates.imagesCount;
       ls.isLoading = true;
       ls.noneFound = false;
@@ -332,8 +332,6 @@ export const fetchImages = (filters, page = 'current') => {
       const pageInfo = getState().images.pageInfo;
 
       if (token && selectedProj) {
-        dispatch(fetchImagesCount(filters));
-
         let res = await call({
           projId: selectedProj._id,
           request: 'getImages',

@@ -9,6 +9,7 @@ import {
   selectPaginatedField,
   selectSortAscending,
   selectImageContextLoading,
+  fetchImagesCount,
 } from './imagesSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import ImagesTable from './ImagesTable.jsx';
@@ -45,28 +46,21 @@ const ImagesPanel = () => {
   useEffect(() => {
     if (selectedProjectId && activeFilters && !imgContextLoading.isLoading) {
       dispatch(fetchImages(activeFilters));
+      dispatch(fetchImagesCount(activeFilters));
     }
-  }, [selectedProjectId, activeFilters, imgContextLoading, paginatedField, 
-    sortAscending, dispatch]);
+  }, [selectedProjectId, activeFilters, imgContextLoading, paginatedField, sortAscending, dispatch]);
 
   const loadNextPage = () => {
-    // Pass an empty promise that immediately resolves to InfiniteLoader 
+    // Pass an empty promise that immediately resolves to InfiniteLoader
     // in case it asks us to load more than once
-    return imagesLoading.isLoading
-      ? Promise.resolve()
-      : dispatch(fetchImages(activeFilters, 'next'));
+    return imagesLoading.isLoading ? Promise.resolve() : dispatch(fetchImages(activeFilters, 'next'));
   };
-  
+
   return (
     <StyledImagesPanel>
-      <ImagesTable
-        workingImages={workingImages}
-        hasNext={hasNext}
-        loadNextPage={loadNextPage}
-      />
+      <ImagesTable workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
     </StyledImagesPanel>
   );
 };
 
 export default ImagesPanel;
-
