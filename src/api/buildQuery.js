@@ -67,7 +67,6 @@ const pageInfoFields = `
   hasPrevious
   next
   hasNext
-  count
 `;
 
 const batchFields = `

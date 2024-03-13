@@ -78,12 +78,12 @@ export const imagesSlice = createSlice({
     },
 
     getImagesSuccess: (state, { payload }) => {
-      const noneFound = payload.images.pageInfo.count === 0;
+      // const noneFound = payload.images.pageInfo.count === 0; // TODO: find different way to do this
       state.loadingStates.images = {
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound,
+        // noneFound,
       };
 
       Object.keys(payload.images.pageInfo).forEach((key) => {
