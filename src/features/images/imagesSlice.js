@@ -68,6 +68,7 @@ export const imagesSlice = createSlice({
     },
 
     getImagesStart: (state) => {
+      state.pageInfo.count = null;
       let ls = state.loadingStates.images;
       ls.isLoading = true;
       ls.operation = 'fetching';

@@ -106,7 +106,7 @@ const FiltersPanelFooter = () => {
       <ImagesCount>
         {imagesCountLoading.isLoading && <CountingImages>counting images</CountingImages>}
         {imagesCountLoading.errors && <span>error counting images</span>}
-        {imagesCount && (
+        {imagesCount !== null && (
           <div>
             <span style={{ paddingRight: '8px' }}>{imagesCount}</span>matching images
           </div>
