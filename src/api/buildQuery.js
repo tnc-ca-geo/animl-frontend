@@ -261,6 +261,21 @@ const queries = {
     },
   }),
 
+  getImagesCount: ({ filters }) => ({
+    template: `
+      query GetImagesCount($input: QueryImagesCountInput!) {
+        imagesCount(input: $input) {
+          count
+        }
+      }
+    `,
+    variables: {
+      input: {
+        filters,
+      },
+    },
+  }),
+
   getWirelessCameras: () => ({
     template: `
       {

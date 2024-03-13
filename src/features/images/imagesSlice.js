@@ -17,6 +17,11 @@ const initialState = {
       errors: null,
       noneFound: false,
     },
+    imagesCount: {
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    },
     imageContext: {
       isLoading: false,
       errors: null,
@@ -78,12 +83,10 @@ export const imagesSlice = createSlice({
     },
 
     getImagesSuccess: (state, { payload }) => {
-      // const noneFound = payload.images.pageInfo.count === 0; // TODO: find different way to do this
       state.loadingStates.images = {
         isLoading: false,
         operation: null,
         errors: null,
-        // noneFound,
       };
 
       Object.keys(payload.images.pageInfo).forEach((key) => {
@@ -93,30 +96,51 @@ export const imagesSlice = createSlice({
       });
     },
 
+    getImagesCountStart: (state) => {
+      let ls = state.loadingStates.imagesCount;
+      ls.isLoading = true;
+      ls.noneFound = false;
+    },
+
+    getImagesCountFailure: (state, { payload }) => {
+      console.log('getImagesCountFailure: ', payload);
+      let ls = state.loadingStates.imagesCount;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = payload;
+    },
+
+    getImagesCountSuccess: (state, { payload }) => {
+      console.log('getImagesCountSuccess - payload: ', payload);
+      const noneFound = payload.imagesCount.count === 0;
+      state.loadingStates.images = {
+        isLoading: false,
+        errors: null,
+        noneFound,
+      };
+      state.pageInfo.count = payload.imagesCount.count;
+    },
+
     dismissImagesError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.images.errors.splice(index, 1);
     },
 
     preFocusImageStart: (state, { payload }) => {
-      console.log('prefocus image start');
       state.preFocusImage = payload;
     },
 
     preFocusImageEnd: (state) => {
-      console.log('prefocus image end');
       state.preFocusImage = null;
     },
 
     getImageContextStart: (state) => {
-      console.log('get image context start');
       let ls = state.loadingStates.imageContext;
       ls.isLoading = true;
       // ls.operation = 'fetching';
     },
 
     getImageContextSuccess: (state) => {
-      console.log('get image context success');
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
       // ls.operation = null;
@@ -124,7 +148,6 @@ export const imagesSlice = createSlice({
     },
 
     getImageContextFailure: (state, { payload }) => {
-      console.log('getImageContextFailure: ', payload);
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
       // ls.operation = null;
@@ -267,6 +290,9 @@ export const {
   getImagesStart,
   getImagesSuccess,
   getImagesFailure,
+  getImagesCountStart,
+  getImagesCountSuccess,
+  getImagesCountFailure,
   dismissImagesError,
   preFocusImageStart,
   preFocusImageEnd,
@@ -305,6 +331,8 @@ export const fetchImages = (filters, page = 'current') => {
       const pageInfo = getState().images.pageInfo;
 
       if (token && selectedProj) {
+        dispatch(fetchImagesCount(filters));
+
         let res = await call({
           projId: selectedProj._id,
           request: 'getImages',
@@ -317,6 +345,35 @@ export const fetchImages = (filters, page = 'current') => {
       }
     } catch (err) {
       dispatch(getImagesFailure(err));
+    }
+  };
+};
+
+// fetchImagesCount thunk
+// NOTE: fetching count separately as a temp fix for
+// https://github.com/tnc-ca-geo/animl-api/issues/160
+export const fetchImagesCount = (filters) => {
+  return async (dispatch, getState) => {
+    console.log('fetchImagesCount - filters: ', filters);
+    try {
+      dispatch(getImagesCountStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        let res = await call({
+          projId: selectedProj._id,
+          request: 'getImagesCount',
+          input: { filters },
+        });
+
+        dispatch(getImagesCountSuccess(res));
+      }
+    } catch (err) {
+      console.log('fetchImagesCount failed: ', err);
+      dispatch(getImagesCountFailure(err));
     }
   };
 };
