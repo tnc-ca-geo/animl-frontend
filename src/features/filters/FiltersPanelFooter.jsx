@@ -1,9 +1,9 @@
 import React from 'react';
-import { styled } from '../../theme/stitches.config.js';
+import { styled, keyframes } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../auth/roles.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectImagesCount } from '../images/imagesSlice.js';
+import { selectImagesCount, selectImagesCountLoading } from '../images/imagesSlice.js';
 import {
   selectModalOpen,
   selectSelectedProject,
@@ -49,7 +49,6 @@ const ImagesCount = styled('div', {
   color: '$textLight',
   span: {
     color: '$textDark',
-    paddingRight: '$2',
   },
 });
 
@@ -66,9 +65,28 @@ const StyledFiltersPanelFooter = styled('div', {
   color: '$textDark',
 });
 
+const ellipsis = keyframes({
+  '100%': { width: '1em;' },
+});
+
+const CountingImages = styled('span', {
+  minWidth: '116px',
+  '&:after': {
+    overflow: 'hidden',
+    display: 'inline-block',
+    verticalAlign: 'bottom',
+    animation: `${ellipsis} steps(6,end) 1.2s infinite`,
+    content: '\u2026',
+    width: '0px',
+  },
+});
+
 const FiltersPanelFooter = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
-  const imagesCount = useSelector(selectImagesCount);
+  let imagesCount = useSelector(selectImagesCount);
+  imagesCount = imagesCount && imagesCount.toLocaleString('en-US');
+  console.log('imagesCount: ', imagesCount);
+  const imagesCountLoading = useSelector(selectImagesCountLoading);
   const modalOpen = useSelector(selectModalOpen);
   const selectedProj = useSelector(selectSelectedProject);
   const dispatch = useDispatch();
@@ -86,7 +104,13 @@ const FiltersPanelFooter = () => {
   return (
     <StyledFiltersPanelFooter>
       <ImagesCount>
-        <span>{imagesCount && imagesCount.toLocaleString('en-US')}</span> matching images
+        {imagesCountLoading.isLoading && <CountingImages>counting images</CountingImages>}
+        {imagesCountLoading.errors && <span>error counting images</span>}
+        {imagesCount && (
+          <div>
+            <span style={{ paddingRight: '8px' }}>{imagesCount}</span>matching images
+          </div>
+        )}
       </ImagesCount>
       {hasRole(userRoles, READ_STATS_ROLES) && (
         <Tooltip>

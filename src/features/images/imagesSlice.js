@@ -113,7 +113,7 @@ export const imagesSlice = createSlice({
     getImagesCountSuccess: (state, { payload }) => {
       console.log('getImagesCountSuccess - payload: ', payload);
       const noneFound = payload.imagesCount.count === 0;
-      state.loadingStates.images = {
+      state.loadingStates.imagesCount = {
         isLoading: false,
         errors: null,
         noneFound,
@@ -373,7 +373,11 @@ export const fetchImagesCount = (filters) => {
       }
     } catch (err) {
       console.log('fetchImagesCount failed: ', err);
-      dispatch(getImagesCountFailure(err));
+      if (err.message.includes('Network request failed')) {
+        dispatch(getImagesCountFailure(err.message));
+      } else {
+        dispatch(getImagesCountFailure(err));
+      }
     }
   };
 };
@@ -541,6 +545,7 @@ export const selectSortAscending = (state) => state.images.pageInfo.sortAscendin
 export const selectHasPrevious = (state) => state.images.pageInfo.hasPrevious;
 export const selectHasNext = (state) => state.images.pageInfo.hasNext;
 export const selectImagesCount = (state) => state.images.pageInfo.count;
+export const selectImagesCountLoading = (state) => state.images.loadingStates.imagesCount;
 export const selectImagesLoading = (state) => state.images.loadingStates.images;
 export const selectImagesErrors = (state) => state.images.loadingStates.images.errors;
 export const selectVisibleRows = (state) => state.images.visibleRows;
