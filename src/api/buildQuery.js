@@ -67,7 +67,6 @@ const pageInfoFields = `
   hasPrevious
   next
   hasNext
-  count
 `;
 
 const batchFields = `
@@ -257,6 +256,21 @@ const queries = {
         paginatedField: pageInfo.paginatedField,
         sortAscending: pageInfo.sortAscending,
         limit: pageInfo.limit,
+        filters,
+      },
+    },
+  }),
+
+  getImagesCount: ({ filters }) => ({
+    template: `
+      query GetImagesCount($input: QueryImagesCountInput!) {
+        imagesCount(input: $input) {
+          count
+        }
+      }
+    `,
+    variables: {
+      input: {
         filters,
       },
     },

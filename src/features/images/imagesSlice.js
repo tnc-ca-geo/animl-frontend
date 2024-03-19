@@ -9,13 +9,16 @@ import { IMAGE_QUERY_LIMITS } from '../../config';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice';
 
 const initialState = {
-  // images: [], // we aren't using this... consider removing?
   loadingStates: {
     images: {
       isLoading: false,
       operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
       noneFound: false,
+    },
+    imagesCount: {
+      isLoading: false,
+      errors: null,
     },
     imageContext: {
       isLoading: false,
@@ -78,12 +81,10 @@ export const imagesSlice = createSlice({
     },
 
     getImagesSuccess: (state, { payload }) => {
-      const noneFound = payload.images.pageInfo.count === 0;
       state.loadingStates.images = {
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound,
       };
 
       Object.keys(payload.images.pageInfo).forEach((key) => {
@@ -93,30 +94,48 @@ export const imagesSlice = createSlice({
       });
     },
 
+    getImagesCountStart: (state) => {
+      state.pageInfo.count = null;
+      let ls = state.loadingStates.imagesCount;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    getImagesCountFailure: (state, { payload }) => {
+      let ls = state.loadingStates.imagesCount;
+      ls.isLoading = false;
+      ls.errors = payload;
+    },
+
+    getImagesCountSuccess: (state, { payload }) => {
+      state.loadingStates.images.noneFound = payload.imagesCount.count === 0;
+      state.loadingStates.imagesCount = {
+        isLoading: false,
+        errors: null,
+      };
+      state.pageInfo.count = payload.imagesCount.count;
+    },
+
     dismissImagesError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.images.errors.splice(index, 1);
     },
 
     preFocusImageStart: (state, { payload }) => {
-      console.log('prefocus image start');
       state.preFocusImage = payload;
     },
 
     preFocusImageEnd: (state) => {
-      console.log('prefocus image end');
       state.preFocusImage = null;
     },
 
     getImageContextStart: (state) => {
-      console.log('get image context start');
       let ls = state.loadingStates.imageContext;
       ls.isLoading = true;
       // ls.operation = 'fetching';
     },
 
     getImageContextSuccess: (state) => {
-      console.log('get image context success');
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
       // ls.operation = null;
@@ -124,7 +143,6 @@ export const imagesSlice = createSlice({
     },
 
     getImageContextFailure: (state, { payload }) => {
-      console.log('getImageContextFailure: ', payload);
       let ls = state.loadingStates.imageContext;
       ls.isLoading = false;
       // ls.operation = null;
@@ -267,6 +285,9 @@ export const {
   getImagesStart,
   getImagesSuccess,
   getImagesFailure,
+  getImagesCountStart,
+  getImagesCountSuccess,
+  getImagesCountFailure,
   dismissImagesError,
   preFocusImageStart,
   preFocusImageEnd,
@@ -317,6 +338,37 @@ export const fetchImages = (filters, page = 'current') => {
       }
     } catch (err) {
       dispatch(getImagesFailure(err));
+    }
+  };
+};
+
+// fetchImagesCount thunk
+// NOTE: fetching count separately as a temp fix for
+// https://github.com/tnc-ca-geo/animl-api/issues/160
+export const fetchImagesCount = (filters) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(getImagesCountStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        let res = await call({
+          projId: selectedProj._id,
+          request: 'getImagesCount',
+          input: { filters },
+        });
+
+        dispatch(getImagesCountSuccess(res));
+      }
+    } catch (err) {
+      if (err.message.includes('Network request failed')) {
+        dispatch(getImagesCountFailure(err.message));
+      } else {
+        dispatch(getImagesCountFailure(err));
+      }
     }
   };
 };
@@ -384,7 +436,7 @@ export const fetchStats = (filters) => {
           request: 'getStats',
           input: { filters },
         });
-        console.log('iamgesSlice - fetchStats() - res: ', res);
+        console.log('imagesSlice - fetchStats() - res: ', res);
         dispatch(getStatsSuccess(res));
       }
     } catch (err) {
@@ -484,6 +536,7 @@ export const selectSortAscending = (state) => state.images.pageInfo.sortAscendin
 export const selectHasPrevious = (state) => state.images.pageInfo.hasPrevious;
 export const selectHasNext = (state) => state.images.pageInfo.hasNext;
 export const selectImagesCount = (state) => state.images.pageInfo.count;
+export const selectImagesCountLoading = (state) => state.images.loadingStates.imagesCount;
 export const selectImagesLoading = (state) => state.images.loadingStates.images;
 export const selectImagesErrors = (state) => state.images.loadingStates.images.errors;
 export const selectVisibleRows = (state) => state.images.visibleRows;
