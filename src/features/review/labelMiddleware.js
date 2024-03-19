@@ -89,8 +89,7 @@ export const labelMiddleware = (store) => (next) => (action) => {
     // const reviewMode = selectReviewMode(store.getState());
     // if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
   } else if (labelsRemoved.match(action)) {
-
-  /* labelsRemoved */
+    /* labelsRemoved */
     for (const { imgId, objId, newLabel } of action.payload.labels) {
       // remove object if there's only one label left
       const workingImages = selectWorkingImages(store.getState());
@@ -127,8 +126,7 @@ export const labelMiddleware = (store) => (next) => (action) => {
 
     // store.dispatch(incrementFocusIndex('increment')); // increment focus?
   } else if (labelsValidated.match(action)) {
-
-  /* labelsValidated */
+    /* labelsValidated */
     next(action);
     const lbls = action.payload.labels;
 
@@ -152,8 +150,7 @@ export const labelMiddleware = (store) => (next) => (action) => {
     });
     store.dispatch(objectsLocked({ objects }));
   } else if (labelsValidationReverted.match(action)) {
-
-  /* labelsValidationReverted */
+    /* labelsValidationReverted */
     next(action);
     const lbls = action.payload.labels;
 

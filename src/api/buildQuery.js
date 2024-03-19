@@ -317,18 +317,15 @@ const queries = {
   getTask: ({ taskId }) => ({
     template: `
       query GetTask($input: QueryTaskInput!) {
-        stats(input: $input) {
-          imageCount
-          reviewedCount {
-            reviewed
-            notReviewed
-          }
-          reviewerList {
-            userId
-            reviewedCount
-          }
-          labelList
-          multiReviewerCount
+        task(input: $input) {
+          _id
+          user
+          projectId
+          type
+          status
+          created
+          updated
+          output
         }
       }
     `,

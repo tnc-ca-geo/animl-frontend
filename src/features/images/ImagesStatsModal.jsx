@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-import { selectStatsLoading, selectImagesStats, fetchStats } from './imagesSlice';
+import { selectStatsLoading, selectImagesStats } from './imagesSlice';
+import { fetchStats, fetchTask } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
@@ -52,6 +53,13 @@ const ImagesStatsModal = ({ open }) => {
       dispatch(fetchStats(filters));
     }
   }, [open, stats, imagesStatsLoading, filters, dispatch]);
+
+  // const getStatsPending = imagesStatsLoading.isLoading && stats && stats.taskId;
+  // useEffect(() => {
+  //   if (getStatsPending) {
+  //     dispatch(fetchTask(stats.taskId));
+  //   }
+  // }, [getStatsPending, stats, dispatch]);
 
   return (
     <div>

@@ -180,10 +180,6 @@ export const imagesSlice = createSlice({
       ls.noneFound = false;
     },
 
-    statsUpdate: (state, { payload }) => {
-      state.imagesStats = payload;
-    },
-
     getStatsSuccess: (state, { payload }) => {
       console.log('getStatsSuccss: ', payload);
       state.imagesStats = payload;
@@ -302,7 +298,6 @@ export const {
   visibleRowsChanged,
   dismissImageContextError,
   getStatsStart,
-  statsUpdate,
   getStatsSuccess,
   getStatsFailure,
   clearStats,
@@ -442,7 +437,7 @@ export const fetchStats = (filters) => {
           input: { filters },
         });
         console.log('imagesSlice - fetchStats() - res: ', res);
-        dispatch(statsUpdate({ taskId: res.stats._id }));
+        dispatch(getStatsSuccess(res));
       }
     } catch (err) {
       dispatch(getStatsFailure(err));
