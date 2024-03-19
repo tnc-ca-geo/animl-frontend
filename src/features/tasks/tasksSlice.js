@@ -25,6 +25,18 @@ export const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    taskSuccess: (state, { payload }) => {
+      console.log('taskSuccess - payload: ', payload);
+    },
+
+    taskFailure: (state, { payload }) => {
+      console.log('taskFailure - payload: ', payload);
+    },
+
+    getTaskFailure: (state, { payload }) => {
+      console.log('getTaskFailure - payload: ', payload);
+    },
+
     getStatsStart: (state) => {
       let ls = state.loadingStates.stats;
       ls.taskId = null;
@@ -39,10 +51,10 @@ export const tasksSlice = createSlice({
 
     getStatsSuccess: (state, { payload }) => {
       console.log('getStatsSuccss: ', payload);
-      state.imagesStats = payload;
+      state.imagesStats = payload.task.output;
       let ls = state.loadingStates.stats;
       ls.isLoading = false;
-      ls.noneFound = payload.stats.imageCount === 0;
+      ls.noneFound = payload.task.output.imageCount === 0;
       ls.errors = null;
     },
 
@@ -57,6 +69,7 @@ export const tasksSlice = createSlice({
     clearStats: (state) => {
       state.imagesStats = null;
       state.loadingStates.stats = {
+        taskId: null,
         isLoading: false,
         errors: null,
         noneFound: false,
@@ -117,6 +130,9 @@ export const tasksSlice = createSlice({
 });
 
 export const {
+  taskSuccess,
+  taskFailure,
+  getTaskFailure,
   getStatsStart,
   statsUpdate,
   getStatsSuccess,
@@ -135,7 +151,7 @@ export const {
 export const fetchTask = (taskId) => {
   return async (dispatch, getState) => {
     try {
-      // dispatch(getStatsStart());
+      console.log('fetchTask - taskId: ', taskId);
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -148,10 +164,61 @@ export const fetchTask = (taskId) => {
           input: { taskId },
         });
         console.log('tasksSlice - fetchTask() - res: ', res);
-        // dispatch(statsUpdate({ taskId: res.stats._id }));
+
+        // example response
+        // {
+        //   "task": {
+        //       "_id": "65f9ecc27537cbf0ba581abd",
+        //       "user": "ff111060-1a8b-493d-a9dc-3e2e985cea34",
+        //       "projectId": "sci_biosecurity",
+        //       "type": "GetStats",
+        //       "status": "COMPLETE",
+        //       "created": "1710877890915",
+        //       "updated": "1710877891640",
+        //       "output": {
+        //           "imageCount": 2159,
+        //           "reviewedCount": {
+        //               "reviewed": 3,
+        //               "notReviewed": 2156
+        //           },
+        //           "reviewerList": [
+        //               {
+        //                   "userId": "ingalls@developmentseed.org",
+        //                   "reviewedCount": 2
+        //               },
+        //               {
+        //                   "userId": "nathaniel.rindlaub@tnc.org",
+        //                   "reviewedCount": 1
+        //               },
+        //               {
+        //                   "userId": "henry.jue@tnc.org",
+        //                   "reviewedCount": 1
+        //               }
+        //           ],
+        //           "labelList": {
+        //               "animal": 2,
+        //               "rodent": 1
+        //           },
+        //           "multiReviewerCount": 1
+        //       }
+        //   }
+        // }
+
+        // possible statuses: 'SUBMITTED', 'RUNNING', 'FAIL', 'COMPLETE'
+        if (res.task.status === 'COMPLETE') {
+          if (res.task.type === 'GetStats') {
+            dispatch(getStatsSuccess(res));
+          }
+        } else if (res.task.status === 'FAIL' && res.error) {
+          // TODO: test this & make sure res.error gets populated and caught correctly
+          dispatch(taskFailure(res.error));
+        } else if (res.task.status === 'SUBMITTED' || res.task.status === 'RUNNING') {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          dispatch(fetchTask(taskId));
+        }
       }
     } catch (err) {
-      // dispatch(getStatsFailure(err));
+      dispatch(getTaskFailure(err));
     }
   };
 };
@@ -236,15 +303,12 @@ export const fetchStats = (filters) => {
 //   };
 // };
 
-export const selectImagesStats = (state) => state.images.imagesStats;
-export const selectStatsLoading = (state) => state.images.loadingStates.stats;
-export const selectStatsErrors = (state) => state.images.loadingStates.stats.errors;
-export const selectExport = (state) => state.images.export;
-export const selectExportLoading = (state) => state.images.loadingStates.export;
-export const selectExportDataErrors = (state) => state.images.loadingStates.export.errors;
-export const selectDeleteImagesAlertOpen = (state) => state.images.deleteImagesAlertOpen;
-
-// TODO: find a different place for this?
-export const selectRouterLocation = (state) => state.router.location;
+export const selectImagesStats = (state) => state.tasks.imagesStats;
+export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
+export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
+export const selectExport = (state) => state.tasks.export;
+export const selectExportLoading = (state) => state.tasks.loadingStates.export;
+export const selectExportDataErrors = (state) => state.tasks.loadingStates.export.errors;
+export const selectDeleteImagesAlertOpen = (state) => state.tasks.deleteImagesAlertOpen;
 
 export default tasksSlice.reducer;
