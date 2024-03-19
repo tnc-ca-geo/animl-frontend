@@ -314,9 +314,9 @@ const queries = {
     variables: { input: input },
   }),
 
-  getStats: ({ filters }) => ({
+  getTask: ({ taskId }) => ({
     template: `
-      query GetStats($input: QueryStatsInput!) {
+      query GetTask($input: QueryTaskInput!) {
         stats(input: $input) {
           imageCount
           reviewedCount {
@@ -329,6 +329,19 @@ const queries = {
           }
           labelList
           multiReviewerCount
+        }
+      }
+    `,
+    variables: {
+      input: { taskId },
+    },
+  }),
+
+  getStats: ({ filters }) => ({
+    template: `
+      query GetStats($input: QueryStatsInput!) {
+        stats(input: $input) {
+          _id
         }
       }
     `,
