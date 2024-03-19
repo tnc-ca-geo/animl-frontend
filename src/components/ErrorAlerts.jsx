@@ -29,11 +29,10 @@ import {
   dismissImagesError,
   selectImageContextErrors,
   dismissImageContextError,
-  selectStatsErrors,
-  dismissStatsError,
   selectExportDataErrors,
   dismissExportError,
 } from '../features/images/imagesSlice';
+import { selectStatsErrors, dismissStatsError } from '../features/tasks/tasksSlice';
 import {
   selectExportImageErrorsErrors,
   dismissExportErrorsError,

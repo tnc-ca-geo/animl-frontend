@@ -11,14 +11,10 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
-import { clearExport, clearStats } from '../features/images/imagesSlice';
-import { clearErrorsExport } from '../features/upload/uploadSlice.js'
-import {
-  selectModalOpen,
-  selectModalContent,
-  setModalOpen,
-  setModalContent
-} from '../features/projects/projectsSlice';
+import { clearExport } from '../features/images/imagesSlice';
+import { clearStats } from '../features/tasks/tasksSlice.js';
+import { clearErrorsExport } from '../features/upload/uploadSlice.js';
+import { selectModalOpen, selectModalContent, setModalOpen, setModalContent } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 
 // Modal populated with content
@@ -31,20 +27,20 @@ const HydratedModal = () => {
     'stats-modal': {
       title: 'Stats',
       size: 'md',
-      content: <ImagesStatsModal/>,
+      content: <ImagesStatsModal />,
       callBackOnClose: () => dispatch(clearStats()),
     },
     'export-modal': {
       title: 'Export data',
       size: 'md',
-      content: <ExportModal/>,
+      content: <ExportModal />,
       callBackOnClose: () => dispatch(clearExport()),
     },
     'camera-admin-modal': {
       title: 'Manage Cameras',
       size: 'md',
-      content: <CameraAdminModal/>,
-      callBackOnClose: () => { 
+      content: <CameraAdminModal />,
+      callBackOnClose: () => {
         console.log('callBackOnClose() - reverting moment global timezone to local timezone');
         moment.tz.setDefault();
       },
@@ -52,37 +48,37 @@ const HydratedModal = () => {
     'automation-rules-form': {
       title: 'Configure Automation Rules',
       size: 'md',
-      content: <AutomationRulesForm/>,
+      content: <AutomationRulesForm />,
       callBackOnClose: () => true,
     },
     'save-view-form': {
       title: 'Save View',
       size: 'sm',
-      content: <SaveViewForm/>,
+      content: <SaveViewForm />,
       callBackOnClose: () => true,
     },
     'delete-view-form': {
       title: 'Delete View',
       size: 'sm',
-      content: <DeleteViewForm/>,
+      content: <DeleteViewForm />,
       callBackOnClose: () => true,
     },
     'bulk-upload-form': {
       title: 'Bulk upload',
       size: 'lg',
-      content: <BulkUploadForm/>,
+      content: <BulkUploadForm />,
       callBackOnClose: () => dispatch(clearErrorsExport()),
     },
     'manage-users-form': {
       title: 'Manage users',
       size: 'md',
-      content: <ManageUsersModal/>,
+      content: <ManageUsersModal />,
       callBackOnClose: () => dispatch(clearUsers()),
     },
     'manage-labels-form': {
       title: 'Manage labels',
       size: 'md',
-      content: <ManageLabelsModal/>,
+      content: <ManageLabelsModal />,
       callBackOnClose: () => true,
     },
   };
@@ -98,7 +94,7 @@ const HydratedModal = () => {
   };
 
   return (
-    <Modal 
+    <Modal
       open={modalOpen}
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}

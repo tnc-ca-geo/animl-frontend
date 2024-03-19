@@ -24,18 +24,12 @@ const initialState = {
       isLoading: false,
       errors: null,
     },
-    stats: {
-      isLoading: false,
-      errors: null,
-      noneFound: false,
-    },
     export: {
       isLoading: false,
       errors: null,
       noneFound: false,
     },
   },
-  imagesStats: null,
   export: null,
   preFocusImage: null,
   visibleRows: [],
@@ -174,43 +168,6 @@ export const imagesSlice = createSlice({
       state.loadingStates.imageContext.errors.splice(index, 1);
     },
 
-    getStatsStart: (state) => {
-      let ls = state.loadingStates.stats;
-      ls.isLoading = true;
-      ls.noneFound = false;
-    },
-
-    getStatsSuccess: (state, { payload }) => {
-      console.log('getStatsSuccss: ', payload);
-      state.imagesStats = payload;
-      let ls = state.loadingStates.stats;
-      ls.isLoading = false;
-      ls.noneFound = payload.stats.imageCount === 0;
-      ls.errors = null;
-    },
-
-    getStatsFailure: (state, { payload }) => {
-      console.log('getStatsFailure: ', payload);
-      let ls = state.loadingStates.stats;
-      ls.isLoading = false;
-      ls.noneFound = false;
-      ls.errors = payload;
-    },
-
-    clearStats: (state) => {
-      state.imagesStats = null;
-      state.loadingStates.stats = {
-        isLoading: false,
-        errors: null,
-        noneFound: false,
-      };
-    },
-
-    dismissStatsError: (state, { payload }) => {
-      const index = payload;
-      state.loadingStates.stats.errors.splice(index, 1);
-    },
-
     exportStart: (state) => {
       state.export = null;
       state.loadingStates.export = {
@@ -297,11 +254,6 @@ export const {
   sortChanged,
   visibleRowsChanged,
   dismissImageContextError,
-  getStatsStart,
-  getStatsSuccess,
-  getStatsFailure,
-  clearStats,
-  dismissStatsError,
   exportStart,
   exportSuccess,
   exportUpdate,
@@ -420,31 +372,6 @@ export const fetchImageContext = (imgId) => {
   };
 };
 
-// fetchStats thunk
-export const fetchStats = (filters) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(getStatsStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-
-      if (token && selectedProj) {
-        const res = await call({
-          projId: selectedProj._id,
-          request: 'getStats',
-          input: { filters },
-        });
-        console.log('imagesSlice - fetchStats() - res: ', res);
-        dispatch(getStatsSuccess(res));
-      }
-    } catch (err) {
-      dispatch(getStatsFailure(err));
-    }
-  };
-};
-
 // export thunk
 export const exportData = ({ format, filters }) => {
   return async (dispatch, getState) => {
@@ -543,9 +470,6 @@ export const selectVisibleRows = (state) => state.images.visibleRows;
 export const selectPreFocusImage = (state) => state.images.preFocusImage;
 export const selectImageContextLoading = (state) => state.images.loadingStates.imageContext;
 export const selectImageContextErrors = (state) => state.images.loadingStates.imageContext.errors;
-export const selectImagesStats = (state) => state.images.imagesStats;
-export const selectStatsLoading = (state) => state.images.loadingStates.stats;
-export const selectStatsErrors = (state) => state.images.loadingStates.stats.errors;
 export const selectExport = (state) => state.images.export;
 export const selectExportLoading = (state) => state.images.loadingStates.export;
 export const selectExportDataErrors = (state) => state.images.loadingStates.export.errors;

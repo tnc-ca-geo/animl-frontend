@@ -11,6 +11,7 @@ import projectReducer from '../features/projects/projectsSlice';
 import usersReducer from '../features/projects/usersSlice';
 import trackingReducer from '../features/tracking/trackingSlice';
 import uploadReducer from '../features/upload/uploadSlice';
+import tasksReducer from '../features/tasks/tasksSlice';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -26,6 +27,7 @@ const createRootReducer = (history) =>
     undoHistory: undoHistoryReducer,
     tracking: trackingReducer,
     uploads: uploadReducer,
+    tasks: tasksReducer,
   });
 
 export default createRootReducer;
