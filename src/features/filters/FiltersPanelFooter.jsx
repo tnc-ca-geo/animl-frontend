@@ -85,7 +85,6 @@ const FiltersPanelFooter = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
   let imagesCount = useSelector(selectImagesCount);
   imagesCount = imagesCount && imagesCount.toLocaleString('en-US');
-  console.log('imagesCount: ', imagesCount);
   const imagesCountLoading = useSelector(selectImagesCountLoading);
   const modalOpen = useSelector(selectModalOpen);
   const selectedProj = useSelector(selectSelectedProject);

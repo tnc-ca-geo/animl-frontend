@@ -9,7 +9,6 @@ import { IMAGE_QUERY_LIMITS } from '../../config';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice';
 
 const initialState = {
-  // images: [], // we aren't using this... consider removing?
   loadingStates: {
     images: {
       isLoading: false,
@@ -20,7 +19,6 @@ const initialState = {
     imagesCount: {
       isLoading: false,
       errors: null,
-      noneFound: false,
     },
     imageContext: {
       isLoading: false,
@@ -100,24 +98,20 @@ export const imagesSlice = createSlice({
       state.pageInfo.count = null;
       let ls = state.loadingStates.imagesCount;
       ls.isLoading = true;
-      ls.noneFound = false;
+      ls.errors = null;
     },
 
     getImagesCountFailure: (state, { payload }) => {
-      console.log('getImagesCountFailure: ', payload);
       let ls = state.loadingStates.imagesCount;
       ls.isLoading = false;
-      ls.noneFound = false;
       ls.errors = payload;
     },
 
     getImagesCountSuccess: (state, { payload }) => {
-      console.log('getImagesCountSuccess - payload: ', payload);
-      const noneFound = payload.imagesCount.count === 0;
+      state.loadingStates.images.noneFound = payload.imagesCount.count === 0;
       state.loadingStates.imagesCount = {
         isLoading: false,
         errors: null,
-        noneFound,
       };
       state.pageInfo.count = payload.imagesCount.count;
     },
@@ -353,7 +347,6 @@ export const fetchImages = (filters, page = 'current') => {
 // https://github.com/tnc-ca-geo/animl-api/issues/160
 export const fetchImagesCount = (filters) => {
   return async (dispatch, getState) => {
-    console.log('fetchImagesCount - filters: ', filters);
     try {
       dispatch(getImagesCountStart());
       const currentUser = await Auth.currentAuthenticatedUser();
@@ -371,7 +364,6 @@ export const fetchImagesCount = (filters) => {
         dispatch(getImagesCountSuccess(res));
       }
     } catch (err) {
-      console.log('fetchImagesCount failed: ', err);
       if (err.message.includes('Network request failed')) {
         dispatch(getImagesCountFailure(err.message));
       } else {
@@ -444,7 +436,7 @@ export const fetchStats = (filters) => {
           request: 'getStats',
           input: { filters },
         });
-        console.log('iamgesSlice - fetchStats() - res: ', res);
+        console.log('imagesSlice - fetchStats() - res: ', res);
         dispatch(getStatsSuccess(res));
       }
     } catch (err) {
