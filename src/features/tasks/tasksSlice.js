@@ -36,9 +36,8 @@ export const tasksSlice = createSlice({
     getTaskFailure: (state, { payload }) => {
       console.log('getTaskFailure - payload: ', payload);
 
-      // TODO: this is temporary and currently specific to stats and exports.
-      // We need to abstract this reducer logic quite a bit and rethink
-      // the shape of the state
+      // TODO: this is temporary and currently specific to stats, annotation exports, and image error exports.
+      // We need to abstract this reducer logic quite a bit and rethink the shape of the state
 
       let ls = state.loadingStates.stats;
       ls.isLoading = false;
@@ -75,12 +74,7 @@ export const tasksSlice = createSlice({
 
     clearStats: (state) => {
       state.imagesStats = null;
-      state.loadingStates.stats = {
-        taskId: null,
-        isLoading: false,
-        errors: null,
-        noneFound: false,
-      };
+      state.loadingStates.stats = initialState.loadingStates.stats;
     },
 
     dismissStatsError: (state, { payload }) => {
@@ -106,7 +100,7 @@ export const tasksSlice = createSlice({
       state.export = payload.task.output;
       let ls = state.loadingStates.export;
       ls.isLoading = false;
-      // ls.noneFound = payload.task.output.imageCount === 0; // TODO: need to update this
+      ls.noneFound = payload.task.output.count === 0;
       ls.errors = null;
     },
 
@@ -119,12 +113,7 @@ export const tasksSlice = createSlice({
 
     clearExport: (state) => {
       state.export = null;
-      state.loadingStates.export = {
-        taskId: null,
-        isLoading: false,
-        errors: null,
-        noneFound: false,
-      };
+      state.loadingStates.export = initialState.loadingStates.export;
     },
 
     dismissExportError: (state, { payload }) => {
@@ -214,7 +203,6 @@ export const fetchTask = (taskId) => {
           request: 'getTask',
           input: { taskId },
         });
-        console.log('tasksSlice - fetchTask() - res: ', res);
 
         if (res.task.status === 'SUBMITTED' || res.task.status === 'RUNNING') {
           await new Promise((resolve) => setTimeout(resolve, 2000));
