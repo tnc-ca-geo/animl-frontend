@@ -38,12 +38,6 @@ const initialState = {
       operation: null,
       errors: null,
     },
-    errorsExport: {
-      batch: null,
-      isLoading: false,
-      errors: null,
-      noneFound: false,
-    },
   },
 };
 
@@ -235,55 +229,6 @@ export const uploadSlice = createSlice({
       state.loadingStates.redriveBatch.errors.splice(index, 1);
     },
 
-    // export image errors
-
-    exportErrorsStart: (state, { payload }) => {
-      state.errorsExport = null;
-      state.loadingStates.errorsExport = {
-        batch: payload.batch,
-        isLoading: true,
-        errors: null,
-        noneFound: false,
-      };
-    },
-
-    exportErrorsSuccess: (state, { payload }) => {
-      state.errorsExport = {
-        ...state.errorsExport,
-        ...payload,
-      };
-      let ls = state.loadingStates.errorsExport;
-      ls.isLoading = false;
-      ls.noneFound = payload.count === 0;
-      ls.errors = null;
-    },
-
-    exportErrorsUpdate: (state, { payload }) => {
-      state.errorsExport = payload;
-    },
-
-    exportErrorsFailure: (state, { payload }) => {
-      state.errorsExport = null;
-      let ls = state.loadingStates.errorsExport;
-      ls.isLoading = false;
-      ls.noneFound = false;
-      ls.errors = payload;
-    },
-
-    clearErrorsExport: (state) => {
-      state.errorsExport = null;
-      state.loadingStates.errorsExport = {
-        isLoading: false,
-        errors: null,
-        noneFound: false,
-      };
-    },
-
-    dismissExportErrorsError: (state, { payload }) => {
-      const index = payload;
-      state.loadingStates.errorsExport.errors.splice(index, 1);
-    },
-
     filterBatches: (state, { payload }) => {
       state.filter = payload;
     },
@@ -317,12 +262,6 @@ export const {
   redriveBatchSuccess,
   redriveBatchFailure,
   dismissRedriveBatchError,
-  exportErrorsStart,
-  exportErrorsSuccess,
-  exportErrorsUpdate,
-  exportErrorsFailure,
-  clearErrorsExport,
-  dismissExportErrorsError,
   filterBatches,
 } = uploadSlice.actions;
 
@@ -387,7 +326,9 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
 
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
-              dispatch(multipartUploadProgress({ partNumber, loaded: event.loaded, fileSize: file.size }));
+              dispatch(
+                multipartUploadProgress({ partNumber, loaded: event.loaded, fileSize: file.size }),
+              );
             }
           });
 
@@ -613,69 +554,11 @@ export const redriveBatch = (id) => async (dispatch, getState) => {
   }
 };
 
-// export errors thunk
-export const exportErrors = ({ filters }) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(exportErrorsStart({ batch: filters.batch }));
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-
-      if (token && selectedProj) {
-        const res = await call({
-          projId: selectedProj._id,
-          request: 'exportErrors',
-          input: { filters },
-        });
-        dispatch(exportErrorsUpdate({ documentId: res.exportErrors.documentId }));
-      }
-    } catch (err) {
-      dispatch(exportErrorsFailure(err));
-    }
-  };
-};
-
-// getErrorsExportStatus thunk
-export const getErrorsExportStatus = (documentId) => {
-  return async (dispatch, getState) => {
-    try {
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-
-      if (token && selectedProj) {
-        const { exportStatus } = await call({
-          projId: selectedProj._id,
-          request: 'getExportStatus',
-          input: { documentId },
-        });
-
-        if (exportStatus.status === 'Success') {
-          dispatch(exportErrorsSuccess(exportStatus));
-        } else if (exportStatus.status === 'Error' && exportStatus.error) {
-          dispatch(exportErrorsFailure(exportStatus.error));
-        } else {
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          dispatch(getErrorsExportStatus(documentId));
-        }
-      }
-    } catch (err) {
-      dispatch(exportErrorsFailure(err));
-    }
-  };
-};
-
 export const selectBatchStates = (state) => state.uploads.batchStates;
 export const selectBatchFilter = (state) => state.uploads.filter;
 export const selectBatchPageInfo = (state) => state.uploads.pageInfo;
 export const selectUploadsLoading = (state) => state.uploads.loadingStates.upload;
 export const selectBatchStatesLoading = (state) => state.uploads.loadingStates.batchStates;
-export const selectErrorsExport = (state) => state.uploads.errorsExport;
-export const selectErrorsExportLoading = (state) => state.uploads.loadingStates.errorsExport;
-export const selectExportImageErrorsErrors = (state) => state.uploads.loadingStates.errorsExport.errors;
 export const selectStopBatchLoading = (state) => state.uploads.loadingStates.stopBatch;
 export const selectRedriveBatchLoading = (state) => state.uploads.loadingStates.redriveBatch;
 export const selectRedriveBatchErrors = (state) => state.uploads.loadingStates.redriveBatch.errors;

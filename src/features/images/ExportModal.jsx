@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-import { selectExport, selectExportLoading, exportData, getExportStatus } from './imagesSlice';
+import { selectExport, selectExportLoading, exportData, fetchTask } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
@@ -17,8 +17,9 @@ const NotReviewedWarning = ({ reviewedCount }) => {
   const total = reviewedCount.notReviewed + reviewedCount.reviewed;
   return (
     <StyledWarning>
-      {reviewedCount.notReviewed.toLocaleString('en-US')} of the {total.toLocaleString('en-US')} images that matched the
-      current filters still need review and were not included in the export file.
+      {reviewedCount.notReviewed.toLocaleString('en-US')} of the {total.toLocaleString('en-US')}{' '}
+      images that matched the current filters still need review and were not included in the export
+      file.
     </StyledWarning>
   );
 };
@@ -29,9 +30,8 @@ const ExportModal = () => {
   const exportLoading = useSelector(selectExportLoading);
   const dispatch = useDispatch();
 
-  const exportReady = !exportLoading.isLoading && !exportLoading.errors && dataExport && dataExport.url;
-
-  const exportPending = exportLoading.isLoading && dataExport && dataExport.documentId;
+  const exportReady =
+    !exportLoading.isLoading && !exportLoading.errors && dataExport && dataExport.url;
 
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
@@ -40,11 +40,12 @@ const ExportModal = () => {
     }
   }, [exportReady, dataExport, dispatch]);
 
+  const exportPending = exportLoading.isLoading && exportLoading.taskId;
   useEffect(() => {
     if (exportPending) {
-      dispatch(getExportStatus(dataExport.documentId));
+      dispatch(fetchTask(exportLoading.taskId));
     }
-  }, [exportPending, dataExport, dispatch]);
+  }, [exportPending, exportLoading, dispatch]);
 
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;
@@ -63,7 +64,9 @@ const ExportModal = () => {
         </SpinnerOverlay>
       )}
       {exportLoading.noneFound && (
-        <NoneFoundAlert>We couldn&apos;t find any images that matched this set of filters.</NoneFoundAlert>
+        <NoneFoundAlert>
+          We couldn&apos;t find any images that matched this set of filters.
+        </NoneFoundAlert>
       )}
       <HelperText>
         <p>
@@ -79,13 +82,17 @@ const ExportModal = () => {
         </p>
         {!exportReady && (
           <p>
-            <em>Note: if you are exporting 10&apos;s of thousands of image records, this may take a few minutes.</em>
+            <em>
+              Note: if you are exporting 10&apos;s of thousands of image records, this may take a
+              few minutes.
+            </em>
           </p>
         )}
         {exportReady && (
           <p>
             <em>
-              Success! Your export is ready for download. If the download did not start automatically, click{' '}
+              Success! Your export is ready for download. If the download did not start
+              automatically, click{' '}
               <a href={dataExport.url} target="downloadTab">
                 this link
               </a>{' '}
@@ -94,9 +101,11 @@ const ExportModal = () => {
           </p>
         )}
       </HelperText>
-      {exportReady && dataExport.meta.reviewedCount && dataExport.meta.reviewedCount.notReviewed > 0 && (
-        <NotReviewedWarning reviewedCount={dataExport.meta.reviewedCount} />
-      )}
+      {exportReady &&
+        dataExport.meta.reviewedCount &&
+        dataExport.meta.reviewedCount.notReviewed > 0 && (
+          <NotReviewedWarning reviewedCount={dataExport.meta.reviewedCount} />
+        )}
       <ButtonRow>
         <Button
           type="submit"
