@@ -23,16 +23,22 @@ import {
   selectManageLabelsErrors,
   dismissManageLabelsError,
 } from '../features/projects/projectsSlice';
-import { selectWirelessCamerasErrors, dismissWirelessCamerasError } from '../features/cameras/wirelessCamerasSlice';
+import {
+  selectWirelessCamerasErrors,
+  dismissWirelessCamerasError,
+} from '../features/cameras/wirelessCamerasSlice';
 import {
   selectImagesErrors,
   dismissImagesError,
   selectImageContextErrors,
   dismissImageContextError,
+} from '../features/images/imagesSlice';
+import {
+  selectStatsErrors,
+  dismissStatsError,
   selectExportDataErrors,
   dismissExportError,
-} from '../features/images/imagesSlice';
-import { selectStatsErrors, dismissStatsError } from '../features/tasks/tasksSlice';
+} from '../features/tasks/tasksSlice';
 import {
   selectExportImageErrorsErrors,
   dismissExportErrorsError,
@@ -86,7 +92,10 @@ const ErrorAlerts = () => {
     enrichErrors(uploadErrors, 'Error Uploading Images', 'upload'),
   ];
 
-  const errors = enrichedErrors.reduce((acc, curr) => (curr && curr.length ? acc.concat(curr) : acc), []);
+  const errors = enrichedErrors.reduce(
+    (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
+    [],
+  );
 
   const [open, setOpen] = useState(errors && errors.length);
   useEffect(() => {

@@ -11,10 +11,14 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
-import { clearExport } from '../features/images/imagesSlice';
-import { clearStats } from '../features/tasks/tasksSlice.js';
+import { clearStats, clearExport } from '../features/tasks/tasksSlice.js';
 import { clearErrorsExport } from '../features/upload/uploadSlice.js';
-import { selectModalOpen, selectModalContent, setModalOpen, setModalContent } from '../features/projects/projectsSlice';
+import {
+  selectModalOpen,
+  selectModalContent,
+  setModalOpen,
+  setModalContent,
+} from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 
 // Modal populated with content
