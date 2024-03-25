@@ -11,8 +11,7 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
-import { clearStats, clearExport } from '../features/tasks/tasksSlice.js';
-import { clearErrorsExport } from '../features/upload/uploadSlice.js';
+import { clearStats, clearExport, clearErrorsExport } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
   selectModalContent,

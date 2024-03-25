@@ -38,10 +38,10 @@ import {
   dismissStatsError,
   selectExportDataErrors,
   dismissExportError,
+  selectExportImageErrorsErrors,
+  dismissErrorsExportError,
 } from '../features/tasks/tasksSlice';
 import {
-  selectExportImageErrorsErrors,
-  dismissExportErrorsError,
   selectRedriveBatchErrors,
   dismissRedriveBatchError,
   selectUploadErrors,
@@ -147,7 +147,7 @@ const dismissErrorActions = {
   imageContext: (i) => dismissImageContextError(i),
   stats: (i) => dismissStatsError(i),
   data: (i) => dismissExportError(i),
-  uploadImageErrors: (i) => dismissExportErrorsError(i),
+  uploadImageErrors: (i) => dismissErrorsExportError(i),
   redriveBatch: (i) => dismissRedriveBatchError(i),
   manageUsers: (i) => dismissManageUsersError(i),
   manageLabels: (i) => dismissManageLabelsError(i),

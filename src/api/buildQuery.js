@@ -365,7 +365,7 @@ const queries = {
     template: `
       query ExportErrors($input: ExportErrorsInput!) {
         exportErrors(input: $input) {
-            documentId
+          _id
         }
       }
     `,

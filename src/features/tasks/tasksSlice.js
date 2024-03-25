@@ -16,9 +16,17 @@ const initialState = {
       errors: null,
       noneFound: false,
     },
+    errorsExport: {
+      taskId: null,
+      batch: null,
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    },
   },
   imagesStats: null,
   export: null,
+  errorsExport: null,
 };
 
 export const tasksSlice = createSlice({
@@ -80,6 +88,8 @@ export const tasksSlice = createSlice({
       state.loadingStates.stats.errors.splice(index, 1);
     },
 
+    // export annotations
+
     exportStart: (state) => {
       let ls = state.loadingStates.export;
       ls.taskId = null;
@@ -121,6 +131,49 @@ export const tasksSlice = createSlice({
       const index = payload;
       state.loadingStates.export.errors.splice(index, 1);
     },
+
+    // export image errors
+
+    exportErrorsStart: (state, { payload }) => {
+      let ls = state.loadingStates.errorsExport;
+      ls.taskId = null;
+      ls.batch = payload.batch;
+      ls.isLoading = true;
+      ls.errors = null;
+      ls.noneFound = false;
+    },
+
+    exportErrorsUpdate: (state, { payload }) => {
+      state.loadingStates.errorsExport.taskId = payload.taskId;
+    },
+
+    exportErrorsSuccess: (state, { payload }) => {
+      state.errorsExport = {
+        ...state.errorsExport,
+        ...payload.task.output,
+      };
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = false;
+      ls.noneFound = payload.task.output.count === 0;
+      ls.errors = null;
+    },
+
+    exportErrorsFailure: (state, { payload }) => {
+      let ls = state.loadingStates.errorsExport;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = [payload.task.output.error];
+    },
+
+    clearErrorsExport: (state) => {
+      state.errorsExport = null;
+      state.loadingStates.errorsExport = initialState.loadingStates.errorsExport;
+    },
+
+    dismissErrorsExportError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.errorsExport.errors.splice(index, 1);
+    },
   },
 });
 
@@ -138,6 +191,12 @@ export const {
   exportFailure,
   clearExport,
   dismissExportError,
+  exportErrorsStart,
+  exportErrorsSuccess,
+  exportErrorsUpdate,
+  exportErrorsFailure,
+  clearErrorsExport,
+  dismissErrorsExportError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -171,10 +230,10 @@ export const fetchTask = (taskId) => {
               COMPLETE: (res) => dispatch(exportSuccess(res)),
               FAIL: (res) => dispatch(exportFailure(res)),
             },
-            // ImageErrorsExport: {
-            //   COMPLETE: (res) => dispatch(exportImageErrorsSuccess(res)),
-            //   FAIL: (res) => dispatch(exportImageErrorsFailure(res)),
-            // }
+            ImageErrorsExport: {
+              COMPLETE: (res) => dispatch(exportErrorsSuccess(res)),
+              FAIL: (res) => dispatch(exportErrorsFailure(res)),
+            },
           };
           dispatchMap[res.task.type][res.task.status](res);
         }
@@ -236,11 +295,39 @@ export const exportData = ({ format, filters }) => {
   };
 };
 
+// export image errors thunk
+export const exportErrors = ({ filters }) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(exportErrorsStart({ batch: filters.batch }));
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'exportErrors',
+          input: { filters },
+        });
+        dispatch(exportErrorsUpdate({ taskId: res.exportErrors._id }));
+      }
+    } catch (err) {
+      dispatch(exportErrorsFailure(err));
+    }
+  };
+};
+
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
 export const selectExport = (state) => state.tasks.export;
 export const selectExportLoading = (state) => state.tasks.loadingStates.export;
 export const selectExportDataErrors = (state) => state.tasks.loadingStates.export.errors;
+export const selectErrorsExport = (state) => state.tasks.errorsExport;
+export const selectErrorsExportLoading = (state) => state.tasks.loadingStates.errorsExport;
+export const selectExportImageErrorsErrors = (state) =>
+  state.tasks.loadingStates.errorsExport.errors;
 
 export default tasksSlice.reducer;
