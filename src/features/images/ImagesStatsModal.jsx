@@ -82,8 +82,16 @@ const StatsDisclaimer = () => (
         be considered &quot;not reviewed&quot; (e.g., if a user invalidated all labels on all
         objects, but did&apos;t mark it empty), the sum of all reviewers &quot;reviewedCounts&quot;
         very likely will not equal the &quot;reviewedCount&quot; &quot;reviewed&quot; quantity
+        each reviewer&apos;s &quot;reviewedCount&quot; is the total number of <em>images</em> they
+        have edited in some way (validated/invalidated a label, added objects, etc.). Because
+        multiple users can edit the same image, and because images that have been edited can still
+        be considered &quot;not reviewed&quot; (e.g., if a user invalidated all labels on all
+        objects, but did&apos;t mark it empty), the sum of all reviewers &quot;reviewedCounts&quot;
+        very likely will not equal the &quot;reviewedCount&quot; &quot;reviewed&quot; quantity
       </li>
       <li>
+        the quantities in the &quot;labelList&quot; are for locked objects with <em>validated</em>{' '}
+        labels only, so they do not include ML predicted labels that need review
         the quantities in the &quot;labelList&quot; are for locked objects with <em>validated</em>{' '}
         labels only, so they do not include ML predicted labels that need review
       </li>

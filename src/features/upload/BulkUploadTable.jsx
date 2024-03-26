@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchBatches,
   stopBatch,
-  exportErrors,
-  getErrorsExportStatus,
   filterBatches,
   selectStopBatchLoading,
   selectRedriveBatchLoading,
@@ -12,10 +10,14 @@ import {
   selectBatchStatesLoading,
   selectBatchStates,
   selectBatchPageInfo,
-  selectErrorsExport,
-  selectErrorsExportLoading,
   selectBatchFilter,
 } from './uploadSlice';
+import {
+  exportErrors,
+  fetchTask,
+  selectErrorsExport,
+  selectErrorsExportLoading,
+} from '../tasks/tasksSlice.js';
 import { styled, keyframes } from '@stitches/react';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { DateTime } from 'luxon';
@@ -27,7 +29,12 @@ import {
   ExclamationTriangleIcon,
   ReloadIcon,
 } from '@radix-ui/react-icons';
-import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
 const Table = styled('table', {
@@ -131,9 +138,10 @@ const BulkUploadTable = ({ percentUploaded }) => {
   // TODO: a lot of this export logic is shared by the ExportModal,
   // so we should consider abstracting either into a component or hook
   const errorsExportReady =
-    !errorsExportLoading.isLoading && !errorsExportLoading.errors && errorsExport && errorsExport.url;
-
-  const errorsExportPending = errorsExportLoading.isLoading && errorsExport && errorsExport.documentId;
+    !errorsExportLoading.isLoading &&
+    !errorsExportLoading.errors &&
+    errorsExport &&
+    errorsExport.url;
 
   const handleExportButtonClick = (e, _id) => {
     const { isLoading, errors, noneFound } = errorsExportLoading;
@@ -144,10 +152,11 @@ const BulkUploadTable = ({ percentUploaded }) => {
   };
 
   useEffect(() => {
+    const errorsExportPending = errorsExportLoading.isLoading && errorsExportLoading.taskId;
     if (errorsExportPending) {
-      dispatch(getErrorsExportStatus(errorsExport.documentId));
+      dispatch(fetchTask(errorsExportLoading.taskId));
     }
-  }, [errorsExportPending, errorsExport, dispatch]);
+  }, [errorsExportLoading, dispatch]);
 
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
@@ -177,8 +186,10 @@ const BulkUploadTable = ({ percentUploaded }) => {
             const { _id, originalFile } = batch;
             const status = getStatus(percentUploaded, batch);
             const statusMsg = getStatusMessage(status, batch);
-            const isRedrivingImages = redriveBatchLoading.batch === _id && redriveBatchLoading.isLoading;
-            const isFetchingErrors = errorsExportLoading.batch === _id && errorsExportLoading.isLoading;
+            const isRedrivingImages =
+              redriveBatchLoading.batch === _id && redriveBatchLoading.isLoading;
+            const isFetchingErrors =
+              errorsExportLoading.batch === _id && errorsExportLoading.isLoading;
             const isStoppingBatch =
               (stopBatchLoading.batch === _id && stopBatchLoading.isLoading) ||
               (status['stop-initiated'] && !status['stack-destroyed']);
@@ -226,7 +237,11 @@ const BulkUploadTable = ({ percentUploaded }) => {
                         state={isFetchingErrors && 'loading'}
                         size="large"
                         css={{ color: '$errorText' }}
-                        disabled={!status['processing-complete'] || !batch.imageErrors || batch.imageErrors === 0}
+                        disabled={
+                          !status['processing-complete'] ||
+                          !batch.imageErrors ||
+                          batch.imageErrors === 0
+                        }
                         onClick={(e) => handleExportButtonClick(e, _id)}
                       >
                         <ExclamationTriangleIcon />
@@ -270,14 +285,20 @@ const BulkUploadTable = ({ percentUploaded }) => {
         >
           <ChevronLeftIcon />
         </IconButton>
-        <IconButton variant="ghost" size="large" disabled={!hasNext} onClick={() => dispatch(fetchBatches('next'))}>
+        <IconButton
+          variant="ghost"
+          size="large"
+          disabled={!hasNext}
+          onClick={() => dispatch(fetchBatches('next'))}
+        >
           <ChevronRightIcon />
         </IconButton>
       </Pagination>
       {errorsExportReady && (
         <p>
           <em>
-            Your errors CSV is ready for download. If the download did not start automatically, click{' '}
+            Your errors CSV is ready for download. If the download did not start automatically,
+            click{' '}
             <a href={errorsExport.url} target="downloadTab">
               this link
             </a>{' '}
@@ -318,7 +339,10 @@ const getStatus = (percentUploaded, batch) => {
     'has-batch-errors': errors?.length > 0,
     'has-failed-images': dead > 0,
     'failed-to-upload':
-      !percentUploaded && !uploadComplete && !processingStart && durationSinceBatchCreated.as('minutes') > 480, // if we haven't started processing images in 8 hours
+      !percentUploaded &&
+      !uploadComplete &&
+      !processingStart &&
+      durationSinceBatchCreated.as('minutes') > 480, // if we haven't started processing images in 8 hours
   };
 };
 

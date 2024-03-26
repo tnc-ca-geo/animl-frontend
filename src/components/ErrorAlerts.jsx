@@ -23,19 +23,25 @@ import {
   selectManageLabelsErrors,
   dismissManageLabelsError,
 } from '../features/projects/projectsSlice';
-import { selectWirelessCamerasErrors, dismissWirelessCamerasError } from '../features/cameras/wirelessCamerasSlice';
+import {
+  selectWirelessCamerasErrors,
+  dismissWirelessCamerasError,
+} from '../features/cameras/wirelessCamerasSlice';
 import {
   selectImagesErrors,
   dismissImagesError,
   selectImageContextErrors,
   dismissImageContextError,
+} from '../features/images/imagesSlice';
+import {
+  selectStatsErrors,
+  dismissStatsError,
   selectExportDataErrors,
   dismissExportError,
-} from '../features/images/imagesSlice';
-import { selectStatsErrors, dismissStatsError } from '../features/tasks/tasksSlice';
-import {
   selectExportImageErrorsErrors,
-  dismissExportErrorsError,
+  dismissErrorsExportError,
+} from '../features/tasks/tasksSlice';
+import {
   selectRedriveBatchErrors,
   dismissRedriveBatchError,
   selectUploadErrors,
@@ -86,7 +92,10 @@ const ErrorAlerts = () => {
     enrichErrors(uploadErrors, 'Error Uploading Images', 'upload'),
   ];
 
-  const errors = enrichedErrors.reduce((acc, curr) => (curr && curr.length ? acc.concat(curr) : acc), []);
+  const errors = enrichedErrors.reduce(
+    (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
+    [],
+  );
 
   const [open, setOpen] = useState(errors && errors.length);
   useEffect(() => {
@@ -138,7 +147,7 @@ const dismissErrorActions = {
   imageContext: (i) => dismissImageContextError(i),
   stats: (i) => dismissStatsError(i),
   data: (i) => dismissExportError(i),
-  uploadImageErrors: (i) => dismissExportErrorsError(i),
+  uploadImageErrors: (i) => dismissErrorsExportError(i),
   redriveBatch: (i) => dismissRedriveBatchError(i),
   manageUsers: (i) => dismissManageUsersError(i),
   manageLabels: (i) => dismissManageLabelsError(i),

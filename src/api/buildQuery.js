@@ -352,7 +352,7 @@ const queries = {
     template: `
       query Export($input: ExportInput!) {
         export(input: $input) {
-          documentId
+          _id
         }
       }
     `,
@@ -365,7 +365,7 @@ const queries = {
     template: `
       query ExportErrors($input: ExportErrorsInput!) {
         exportErrors(input: $input) {
-            documentId
+          _id
         }
       }
     `,
