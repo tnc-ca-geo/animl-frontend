@@ -5,7 +5,7 @@ import IconButton from './IconButton.jsx';
 import { indigo } from '@radix-ui/colors';
 
 
-const SelectedCount = styled('span', {
+export const SelectedCount = styled('span', {
   background: indigo.indigo4,
   fontSize: '$2',
   fontWeight: '$5',
@@ -14,7 +14,7 @@ const SelectedCount = styled('span', {
   borderRadius: '$2',
 });
 
-const Label = styled('span', {
+export const Label = styled('span', {
   marginRight: '$4',
 });
 
@@ -31,7 +31,7 @@ const ExpandButton = styled('div', {
   paddingRight: '$2',
 })
 
-const AccordionHeader = styled('div', {
+export const AccordionHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
   fontWeight: '$3',
@@ -46,6 +46,19 @@ const AccordionHeader = styled('div', {
   '&:hover': {
     cursor: 'pointer',
   },
+});
+export const AccordionHeaderNoHover = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  fontWeight: '$3',
+  fontFamily: '$sourceSansPro',
+  height: '$7',
+  borderBottom: '1px solid $border',
+  color: '$textDark',
+  backgroundColor: '$backgroundLight',
+  padding: '$0 $2 $0 $2',
+  position: 'relative',
+  
 });
 
 const Accordion = (props) => {
