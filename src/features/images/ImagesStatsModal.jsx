@@ -40,7 +40,7 @@ const StatsItemNoList = ({label, count}) => {
 };
 
 let mappings = {};
-mappings = {imageCount: "Image Count:", reviewedCount: "Reviewed Images:",
+mappings = {imageCount: "Image Count:", reviewedCount: "Reviewed Count:",
   reviewerList: "Reviewer List:", notReviewed: "Not Reviewed:", labelList: "Label List:",
   multiReviewerCount: "Multi Reviewer Count:", userId: "User:", reviewed: "Reviewed:"};
 function mapLabel(s) {
@@ -63,7 +63,7 @@ const StatsItem = ({stat}) => {
     </>
   );
 };
-//will actually be a function that returns either a label or list if 
+
 const StyledStatsDisclaimer = styled('div', {
   paddingTop: 10,
   fontSize: '$3',
@@ -76,23 +76,23 @@ const StatsDisclaimer = () => (
     NOTE: this is a WIP. Be mindful of the following:
     <ul>
       <li>
-        each reviewer&apos;s &quot;reviewedCount&quot; is the total number of <em>images</em> they
+        each reviewer&apos;s &quot;Reviewed Count&quot; is the total number of <em>images</em> they
         have edited in some way (validated/invalidated a label, added objects, etc.). Because
         multiple users can edit the same image, and because images that have been edited can still
         be considered &quot;not reviewed&quot; (e.g., if a user invalidated all labels on all
-        objects, but did&apos;t mark it empty), the sum of all reviewers &quot;reviewedCounts&quot;
-        very likely will not equal the &quot;reviewedCount&quot; &quot;reviewed&quot; quantity
-        each reviewer&apos;s &quot;reviewedCount&quot; is the total number of <em>images</em> they
+        objects, but did&apos;t mark it empty), the sum of all reviewers &quot;Reviewed Counts&quot;
+        very likely will not equal the &quot;Reviewed Count&quot; &quot;reviewed&quot; quantity
+        each reviewer&apos;s &quot;Reviewed Count&quot; is the total number of <em>images</em> they
         have edited in some way (validated/invalidated a label, added objects, etc.). Because
         multiple users can edit the same image, and because images that have been edited can still
         be considered &quot;not reviewed&quot; (e.g., if a user invalidated all labels on all
-        objects, but did&apos;t mark it empty), the sum of all reviewers &quot;reviewedCounts&quot;
-        very likely will not equal the &quot;reviewedCount&quot; &quot;reviewed&quot; quantity
+        objects, but did&apos;t mark it empty), the sum of all reviewers &quot;Reviewed Counts&quot;
+        very likely will not equal the &quot;Reviewed Count&quot; &quot;reviewed&quot; quantity
       </li>
       <li>
-        the quantities in the &quot;labelList&quot; are for locked objects with <em>validated</em>{' '}
+        the quantities in the &quot;Label List&quot; are for locked objects with <em>validated</em>{' '}
         labels only, so they do not include ML predicted labels that need review
-        the quantities in the &quot;labelList&quot; are for locked objects with <em>validated</em>{' '}
+        the quantities in the &quot;Label List&quot; are for locked objects with <em>validated</em>{' '}
         labels only, so they do not include ML predicted labels that need review
       </li>
     </ul>
