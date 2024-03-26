@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-import { fetchStats, fetchTask, selectStatsLoading, selectImagesStats } from '../tasks/tasksSlice.js';
+import {
+  fetchStats,
+  fetchTask,
+  selectStatsLoading,
+  selectImagesStats,
+} from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
@@ -71,16 +76,16 @@ const StatsDisclaimer = () => (
     NOTE: this is a WIP. Be mindful of the following:
     <ul>
       <li>
-        each reviewer&apos;s &quot;reviewedCount&quot; is the total number of <em>images</em> they have edited in some
-        way (validated/invalidated a label, added objects, etc.). Because multiple users can edit the same image, and
-        because images that have been edited can still be considered &quot;not reviewed&quot; (e.g., if a user
-        invalidated all labels on all objects, but did&apos;t mark it empty), the sum of all reviewers
-        &quot;reviewedCounts&quot; very likely will not equal the &quot;reviewedCount&quot; &quot;reviewed&quot;
-        quantity
+        each reviewer&apos;s &quot;reviewedCount&quot; is the total number of <em>images</em> they
+        have edited in some way (validated/invalidated a label, added objects, etc.). Because
+        multiple users can edit the same image, and because images that have been edited can still
+        be considered &quot;not reviewed&quot; (e.g., if a user invalidated all labels on all
+        objects, but did&apos;t mark it empty), the sum of all reviewers &quot;reviewedCounts&quot;
+        very likely will not equal the &quot;reviewedCount&quot; &quot;reviewed&quot; quantity
       </li>
       <li>
-        the quantities in the &quot;labelList&quot; are for locked objects with <em>validated</em> labels only, so they
-        do not include ML predicted labels that need review
+        the quantities in the &quot;labelList&quot; are for locked objects with <em>validated</em>{' '}
+        labels only, so they do not include ML predicted labels that need review
       </li>
     </ul>
   </StyledStatsDisclaimer>
@@ -104,12 +109,12 @@ const ImagesStatsModal = ({ open }) => {
     }
   }, [open, stats, imagesStatsLoading, filters, dispatch]);
 
-  const getStatsPending = imagesStatsLoading.isLoading && imagesStatsLoading.taskId;
   useEffect(() => {
+    const getStatsPending = imagesStatsLoading.isLoading && imagesStatsLoading.taskId;
     if (getStatsPending) {
       dispatch(fetchTask(imagesStatsLoading.taskId));
     }
-  }, [getStatsPending, stats, dispatch]);
+  }, [imagesStatsLoading, dispatch]);
   
   
   const Stats = [];
@@ -158,7 +163,9 @@ const ImagesStatsModal = ({ open }) => {
         </SpinnerOverlay>
       )}
       {imagesStatsLoading.noneFound && (
-        <NoneFoundAlert>We couldn&apos;t find any images that matched this set of filters.</NoneFoundAlert>
+        <NoneFoundAlert>
+          We couldn&apos;t find any images that matched this set of filters.
+        </NoneFoundAlert>
       )}
       {stats && Stats && (Stats.length > 0) && (
         <>
