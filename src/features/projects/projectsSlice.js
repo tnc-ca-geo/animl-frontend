@@ -397,7 +397,7 @@ export const projectsSlice = createSlice({
           }
         }
 
-        // TODO AUTH: When we delete a deployment, we should also purge it from
+        // TODO: When we delete a deployment, we should also purge it from
         // all views that include it in their filters!
         // that will require updating on the backend too
       });

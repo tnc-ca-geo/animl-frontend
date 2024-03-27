@@ -42,8 +42,7 @@ export const tasksSlice = createSlice({
   reducers: {
     getTaskFailure: (state, { payload }) => {
       console.log('getTaskFailure - payload: ', payload);
-
-      // TODO: this is temporary and currently specific to stats, annotation exports, and image error exports.
+      // TODO: this is temporary and currently only updates loadingState for stats
       // We need to abstract this reducer logic quite a bit and rethink the shape of the state
 
       let ls = state.loadingStates.stats;
@@ -272,8 +271,9 @@ export const fetchTask = (taskId) => {
             },
             CreateDeployment: {
               COMPLETE: (res) => {
+                console.log('CreateDeployment COMPLETE res: ', res);
                 const operation = 'createDeployment';
-                const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
+                const cameraConfig = enrichCameraConfigs([res.task.output])[0];
                 const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
                 dispatch(
                   editDeploymentsSuccess({
@@ -289,7 +289,7 @@ export const fetchTask = (taskId) => {
             UpdateDeployment: {
               COMPLETE: (res) => {
                 const operation = 'updateDeployment';
-                const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
+                const cameraConfig = enrichCameraConfigs([res.task.output])[0];
                 const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
                 dispatch(
                   editDeploymentsSuccess({
@@ -305,7 +305,7 @@ export const fetchTask = (taskId) => {
             DeleteDeployment: {
               COMPLETE: (res) => {
                 const operation = 'deleteDeployment';
-                const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
+                const cameraConfig = enrichCameraConfigs([res.task.output])[0];
                 const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
                 dispatch(
                   editDeploymentsSuccess({
@@ -426,7 +426,7 @@ export const editDeployments = (operation, payload) => {
           input: payload,
         });
         console.log('editDeployments - res: ', res);
-        dispatch(editDeploymentsUpdate({ taskId: res.deployments._id }));
+        dispatch(editDeploymentsUpdate({ taskId: res[operation]._id }));
       }
     } catch (err) {
       console.log(`error attempting to ${operation}: `, err);
