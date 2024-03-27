@@ -197,6 +197,10 @@ export const tasksSlice = createSlice({
       ls.errors = payload;
     },
 
+    clearDeployments: (state) => {
+      state.loadingStates.deployments = initialState.loadingStates.deployments;
+    },
+
     dismissDeploymentsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.deployments.errors.splice(index, 1);
@@ -232,6 +236,7 @@ export const {
   editDeploymentsUpdate,
   editDeploymentsFailure,
   editDeploymentsSuccess,
+  clearDeployments,
   dismissDeploymentsError,
 } = tasksSlice.actions;
 
