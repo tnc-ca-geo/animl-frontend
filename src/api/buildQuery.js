@@ -591,9 +591,7 @@ const queries = {
     template: `
       mutation CreateDeployment($input: CreateDeploymentInput!) {
         createDeployment(input: $input) {
-          cameraConfig {
-            ${cameraConfigFields}
-          }
+          _id
         }
       }
     `,
@@ -604,9 +602,7 @@ const queries = {
     template: `
       mutation UpdateDeployment($input: UpdateDeploymentInput!) {
         updateDeployment(input: $input) {
-          cameraConfig {
-            ${cameraConfigFields}
-          }
+          _id
         }
       }
     `,
@@ -617,9 +613,7 @@ const queries = {
     template: `
       mutation DeleteDeployment($input: DeleteDeploymentInput!) {
         deleteDeployment(input: $input) {
-          cameraConfig {
-            ${cameraConfigFields}
-          }
+          _id
         }
       }
     `,
