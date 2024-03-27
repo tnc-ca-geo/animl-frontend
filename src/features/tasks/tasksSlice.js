@@ -207,6 +207,7 @@ export const tasksSlice = createSlice({
 
 export const {
   getTaskFailure,
+
   getStatsStart,
   statsUpdate,
   getStatsSuccess,
@@ -215,20 +216,21 @@ export const {
   dismissStatsError,
 
   exportStart,
-  exportSuccess,
   exportUpdate,
+  exportSuccess,
   exportFailure,
   clearExport,
   dismissExportError,
 
   exportErrorsStart,
-  exportErrorsSuccess,
   exportErrorsUpdate,
+  exportErrorsSuccess,
   exportErrorsFailure,
   clearErrorsExport,
   dismissErrorsExportError,
 
   editDeploymentsStart,
+  editDeploymentsUpdate,
   editDeploymentsFailure,
   editDeploymentsSuccess,
   dismissDeploymentsError,
@@ -444,6 +446,6 @@ export const selectErrorsExportLoading = (state) => state.tasks.loadingStates.er
 export const selectExportImageErrorsErrors = (state) =>
   state.tasks.loadingStates.errorsExport.errors;
 export const selectDeploymentsLoading = (state) => state.tasks.loadingStates.deployments;
-export const selectDeploymentsErrors = (state) => state.projects.loadingStates.deployments.errors;
+export const selectDeploymentsErrors = (state) => state.tasks.loadingStates.deployments.errors;
 
 export default tasksSlice.reducer;

@@ -2,11 +2,16 @@ import { createSlice } from '@reduxjs/toolkit';
 import { registerCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import {
   setSelectedProjAndView,
-  editDeploymentsSuccess,
   createProjectLabelSuccess,
   updateProjectLabelSuccess,
 } from '../projects/projectsSlice';
-import { normalizeFilters, updateAvailCamFilters, updateAvailDepFilters, updateAvailLabelFilters } from './utils';
+import { editDeploymentsSuccess } from '../tasks/tasksSlice';
+import {
+  normalizeFilters,
+  updateAvailCamFilters,
+  updateAvailDepFilters,
+  updateAvailLabelFilters,
+} from './utils';
 
 const initialState = {
   availFilters: {
@@ -48,7 +53,9 @@ export const filtersSlice = createSlice({
           ? activeIds.filter((id) => id !== payload.val)
           : activeIds.concat([payload.val]);
 
-        state.activeFilters = normalizeFilters(state.activeFilters, state.availFilters, [filterCat]);
+        state.activeFilters = normalizeFilters(state.activeFilters, state.availFilters, [
+          filterCat,
+        ]);
       }
     },
 
@@ -165,7 +172,9 @@ export const filtersSlice = createSlice({
             state.availFilters.deployments.options = filteredDeps;
 
             state.activeFilters.deployments =
-              activeDepFilters !== null ? activeDepFilters.filter((id) => id !== reqPayload.deploymentId) : null;
+              activeDepFilters !== null
+                ? activeDepFilters.filter((id) => id !== reqPayload.deploymentId)
+                : null;
             break;
           }
           default: {
