@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
+import { enrichCameraConfigs } from './utils';
 
 const initialState = {
   loadingStates: {
@@ -22,6 +23,12 @@ const initialState = {
       isLoading: false,
       errors: null,
       noneFound: false,
+    },
+    deployments: {
+      taskId: null,
+      isLoading: false,
+      errors: null,
+      reqPayload: null, // we need to store the original request payload for deployments
     },
   },
   imagesStats: null,
@@ -163,6 +170,38 @@ export const tasksSlice = createSlice({
       const index = payload;
       state.loadingStates.errorsExport.errors.splice(index, 1);
     },
+
+    // edit deployments
+
+    editDeploymentsStart: (state, { payload }) => {
+      let ls = state.loadingStates.deployments;
+      ls.taskId = null;
+      ls.reqPayload = payload;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    editDeploymentsUpdate: (state, { payload }) => {
+      state.loadingStates.deployments.taskId = payload.taskId;
+    },
+
+    editDeploymentsSuccess: (state, { payload }) => {
+      console.log('editDeploymentsSuccess - payload: ', payload);
+      let ls = state.loadingStates.deployments;
+      ls.isLoading = false;
+      ls.errors = null;
+    },
+
+    editDeploymentsFailure: (state, { payload }) => {
+      let ls = state.loadingStates.deployments;
+      ls.isLoading = false;
+      ls.errors = payload;
+    },
+
+    dismissDeploymentsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.deployments.errors.splice(index, 1);
+    },
   },
 });
 
@@ -174,18 +213,25 @@ export const {
   getStatsFailure,
   clearStats,
   dismissStatsError,
+
   exportStart,
   exportSuccess,
   exportUpdate,
   exportFailure,
   clearExport,
   dismissExportError,
+
   exportErrorsStart,
   exportErrorsSuccess,
   exportErrorsUpdate,
   exportErrorsFailure,
   clearErrorsExport,
   dismissErrorsExportError,
+
+  editDeploymentsStart,
+  editDeploymentsFailure,
+  editDeploymentsSuccess,
+  dismissDeploymentsError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -221,6 +267,54 @@ export const fetchTask = (taskId) => {
             ImageErrorsExport: {
               COMPLETE: (res) => dispatch(exportErrorsSuccess(res)),
               FAIL: (res) => dispatch(exportErrorsFailure(res)),
+            },
+            CreateDeployment: {
+              COMPLETE: (res) => {
+                const operation = 'createDeployment';
+                const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
+                const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
+                dispatch(
+                  editDeploymentsSuccess({
+                    projId: selectedProj._id,
+                    cameraConfig,
+                    operation,
+                    reqPayload: deploymentsLoadingState.reqPayload,
+                  }),
+                );
+              },
+              FAIL: (res) => dispatch(editDeploymentsFailure(res)),
+            },
+            UpdateDeployment: {
+              COMPLETE: (res) => {
+                const operation = 'updateDeployment';
+                const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
+                const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
+                dispatch(
+                  editDeploymentsSuccess({
+                    projId: selectedProj._id,
+                    cameraConfig,
+                    operation,
+                    reqPayload: deploymentsLoadingState.reqPayload,
+                  }),
+                );
+              },
+              FAIL: (res) => dispatch(editDeploymentsFailure(res)),
+            },
+            DeleteDeployment: {
+              COMPLETE: (res) => {
+                const operation = 'deleteDeployment';
+                const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
+                const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
+                dispatch(
+                  editDeploymentsSuccess({
+                    projId: selectedProj._id,
+                    cameraConfig,
+                    operation,
+                    reqPayload: deploymentsLoadingState.reqPayload,
+                  }),
+                );
+              },
+              FAIL: (res) => dispatch(editDeploymentsFailure(res)),
             },
           };
           dispatchMap[res.task.type][res.task.status](res);
@@ -307,6 +401,38 @@ export const exportErrors = ({ filters }) => {
   };
 };
 
+// editDeployments thunk
+export const editDeployments = (operation, payload) => {
+  return async (dispatch, getState) => {
+    try {
+      if (!operation || !payload) {
+        const err = `An operation (create, update, or delete) is required`;
+        throw new Error(err);
+      }
+
+      dispatch(editDeploymentsStart(payload));
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: operation,
+          input: payload,
+        });
+        console.log('editDeployments - res: ', res);
+        dispatch(editDeploymentsUpdate({ taskId: res.deployments._id }));
+      }
+    } catch (err) {
+      console.log(`error attempting to ${operation}: `, err);
+      dispatch(editDeploymentsFailure(err));
+    }
+  };
+};
+
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
@@ -317,5 +443,7 @@ export const selectErrorsExport = (state) => state.tasks.errorsExport;
 export const selectErrorsExportLoading = (state) => state.tasks.loadingStates.errorsExport;
 export const selectExportImageErrorsErrors = (state) =>
   state.tasks.loadingStates.errorsExport.errors;
+export const selectDeploymentsLoading = (state) => state.tasks.loadingStates.deployments;
+export const selectDeploymentsErrors = (state) => state.projects.loadingStates.deployments.errors;
 
 export default tasksSlice.reducer;

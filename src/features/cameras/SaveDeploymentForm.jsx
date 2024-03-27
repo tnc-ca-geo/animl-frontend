@@ -7,7 +7,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { ObjectID } from 'bson';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { editDeployments, selectDeploymentsLoading } from '../projects/projectsSlice.js';
+import { editDeployments, selectDeploymentsLoading } from '../tasks/tasksSlice.js';
 import Button from '../../components/Button.jsx';
 import SelectField from '../../components/SelectField.jsx';
 import {
@@ -20,37 +20,29 @@ import {
 import DatePickerWithFormik from '../../components/DatePicker.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
-
 const FormHeader = styled('div', {
   fontWeight: '$3',
-  textAlign: 'center'
+  textAlign: 'center',
 });
 
 const newDeploymentSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('A name is required'),
-  description: Yup.string()
-    .min(2, 'Too Short!')
-    .max(500, 'Too Long!'),
-  longitude: Yup.number().test(
-    'is-decimal',
-    'Coordinates must be in decimal degrees',
-    value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
+  name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('A name is required'),
+  description: Yup.string().min(2, 'Too Short!').max(500, 'Too Long!'),
+  longitude: Yup.number().test('is-decimal', 'Coordinates must be in decimal degrees', (value) =>
+    (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
   ),
-  latitude: Yup.number().test(
-    'is-decimal',
-    'Coordinates must be in decimal degrees',
-    value => (value + '').match(/^-?[0-9]\d*(\.\d+)?$/), 
+  latitude: Yup.number().test('is-decimal', 'Coordinates must be in decimal degrees', (value) =>
+    (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
   ),
-  startDate: Yup.date().transform((value, originalValue, context) => {
-    if (context.isType(value)) return value;
-    // the default coercion failed so let's try it with Moment.js instead
-    value = moment(originalValue);
-    // if it's valid return the date object, otherwise return an `InvalidDate`
-    return value.isValid() ? value.toDate() : new Date('');
-  }).required(),
+  startDate: Yup.date()
+    .transform((value, originalValue, context) => {
+      if (context.isType(value)) return value;
+      // the default coercion failed so let's try it with Moment.js instead
+      value = moment(originalValue);
+      // if it's valid return the date object, otherwise return an `InvalidDate`
+      return value.isValid() ? value.toDate() : new Date('');
+    })
+    .required(),
 });
 
 const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
@@ -65,7 +57,9 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
   // handle closing
   useEffect(() => {
     if (queuedForClose && !depsLoading.isLoading) {
-      console.log('closing save deployment form, so resetting moment global timezone to local time!');
+      console.log(
+        'closing save deployment form, so resetting moment global timezone to local time!',
+      );
       updateGloablTimezone();
       handleClose();
     }
@@ -76,48 +70,50 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
     console.log('handleSaveDeploymentSubmit() - values: ', formVals);
     formVals.longitude = parseFloat(formVals.longitude);
     formVals.latitude = parseFloat(formVals.latitude);
-    
+
     if (operation === 'createDeployment') {
-      dispatch(editDeployments(operation, {
-        cameraId,
-        deployment: {
-          _id: new ObjectID().toString(),
-          name: formVals.name,
-          description: formVals.description,
-          location: buildLocation(formVals.latitude, formVals.longitude),
-          timezone: formVals.timezone.value,
-          // startDate: startDateToString(formVals.startDate),
-          startDate: formVals.startDate,
-          editable: formVals.editable,
-        }
-      }));
-    }
-    else if (operation === 'updateDeployment') {
-      dispatch(editDeployments(operation, {
-        cameraId,
-        deploymentId: deployment._id,
-        diffs: diff(formVals, deployment),
-      }));
+      dispatch(
+        editDeployments(operation, {
+          cameraId,
+          deployment: {
+            _id: new ObjectID().toString(),
+            name: formVals.name,
+            description: formVals.description,
+            location: buildLocation(formVals.latitude, formVals.longitude),
+            timezone: formVals.timezone.value,
+            // startDate: startDateToString(formVals.startDate),
+            startDate: formVals.startDate,
+            editable: formVals.editable,
+          },
+        }),
+      );
+    } else if (operation === 'updateDeployment') {
+      dispatch(
+        editDeployments(operation, {
+          cameraId,
+          deploymentId: deployment._id,
+          diffs: diff(formVals, deployment),
+        }),
+      );
     }
     setQueuedForClose(true);
   };
 
   return (
     <div>
-      {depsLoading.isLoading &&
+      {depsLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      }
+      )}
       <FormHeader>
-        {(operation === 'createDeployment')
-          ? <span>
-              Add deployment to camera {cameraId}
-            </span>
-          : <span>
-              Updated deployment {deployment.name} on camera {cameraId}
-            </span>
-        }
+        {operation === 'createDeployment' ? (
+          <span>Add deployment to camera {cameraId}</span>
+        ) : (
+          <span>
+            Updated deployment {deployment.name} on camera {cameraId}
+          </span>
+        )}
       </FormHeader>
       <FormWrapper>
         <Formik
@@ -125,43 +121,37 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
           validationSchema={newDeploymentSchema}
           onSubmit={(values) => handleSaveDeploymentSubmit(operation, values)}
         >
-          {({ values, errors, touched, isValid, dirty, 
-            setFieldValue, setFieldTouched }) => (
+          {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>
-
               {/* name */}
               <FieldRow>
                 <FormFieldWrapper>
-                  <label htmlFor='name'>Name</label>
-                  <Field name='name' id='name' />
-                  <ErrorMessage component={FormError} name='name'/>
+                  <label htmlFor="name">Name</label>
+                  <Field name="name" id="name" />
+                  <ErrorMessage component={FormError} name="name" />
                 </FormFieldWrapper>
               </FieldRow>
 
               {/* description */}
               <FieldRow>
                 <FormFieldWrapper>
-                  <label htmlFor='description'>Description</label>
-                  <Field
-                    name='description'
-                    id='description'
-                    component='textarea'
-                  />
-                  <ErrorMessage component={FormError} name='description'/>
+                  <label htmlFor="description">Description</label>
+                  <Field name="description" id="description" component="textarea" />
+                  <ErrorMessage component={FormError} name="description" />
                 </FormFieldWrapper>
               </FieldRow>
 
               {/* lat/lon */}
               <FieldRow>
                 <FormFieldWrapper>
-                  <label htmlFor='latitude'>Latitude</label>
-                  <Field name='latitude' id='latitude'/>
-                  <ErrorMessage component={FormError} name='latitude'/>
+                  <label htmlFor="latitude">Latitude</label>
+                  <Field name="latitude" id="latitude" />
+                  <ErrorMessage component={FormError} name="latitude" />
                 </FormFieldWrapper>
                 <FormFieldWrapper>
-                  <label htmlFor='longitude'>Longitude</label>
-                  <Field name='longitude' id='longitude'/>
-                  <ErrorMessage component={FormError} name='longitude'/>
+                  <label htmlFor="longitude">Longitude</label>
+                  <Field name="longitude" id="longitude" />
+                  <ErrorMessage component={FormError} name="longitude" />
                 </FormFieldWrapper>
               </FieldRow>
 
@@ -169,8 +159,8 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
               <FieldRow>
                 <FormFieldWrapper>
                   <SelectField
-                    name='timezone'
-                    label='Timezone'
+                    name="timezone"
+                    label="Timezone"
                     value={values.timezone}
                     onChange={(name, value) => {
                       const previousTZ = values.timezone.value;
@@ -186,9 +176,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                       setFieldValue('startDate', newStartDate.toISOString());
                     }}
                     onBlur={setFieldTouched}
-                    error={_.has(errors, 'timezone.value') &&
-                      errors.timezone.value
-                    }
+                    error={_.has(errors, 'timezone.value') && errors.timezone.value}
                     touched={touched.timezone}
                     options={tzOptions}
                     isSearchable={true}
@@ -199,29 +187,32 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
               {/* start date */}
               <FieldRow>
                 <FormFieldWrapper>
-                  <label htmlFor='startDate'>Start Date</label>
+                  <label htmlFor="startDate">Start Date</label>
                   <Field
                     component={DatePickerWithFormik}
                     timezone={values.timezone.value}
                     className="form-control"
                   />
-                  <ErrorMessage component={FormError} name='startDate'/>
+                  <ErrorMessage component={FormError} name="startDate" />
                 </FormFieldWrapper>
               </FieldRow>
 
-              <Field name='editable' type='hidden' />
+              <Field name="editable" type="hidden" />
               <ButtonRow>
                 <Button
-                  type='button'
-                  size='large'
+                  type="button"
+                  size="large"
                   onClick={() => {
-                    console.log('closing save deployment form, so resetting moment global timezone to local time!');
+                    console.log(
+                      'closing save deployment form, so resetting moment global timezone to local time!',
+                    );
                     updateGloablTimezone();
                     handleClose();
-                  }}>
+                  }}
+                >
                   Cancel
                 </Button>
-                <Button type='submit' size='large' disabled={!isValid || !dirty}>
+                <Button type="submit" size="large" disabled={!isValid || !dirty}>
                   Save
                 </Button>
               </ButtonRow>
@@ -233,9 +224,8 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
   );
 };
 
-
 function buildInitialValues(operation, deployment, project) {
-  console.log('buildingInitialVals...')
+  console.log('buildingInitialVals...');
   let vals = {};
   if (operation === 'createDeployment') {
     vals = {
@@ -247,9 +237,11 @@ function buildInitialValues(operation, deployment, project) {
       startDate: null,
       editable: true,
     };
-  }
-  else if (operation === 'updateDeployment') {
-    console.log('buildingInitialVals - op is updateDeployment. dep startDate: ', deployment.startDate);
+  } else if (operation === 'updateDeployment') {
+    console.log(
+      'buildingInitialVals - op is updateDeployment. dep startDate: ',
+      deployment.startDate,
+    );
     vals = {
       name: deployment.name,
       description: deployment.description,
@@ -262,12 +254,12 @@ function buildInitialValues(operation, deployment, project) {
   }
   console.log('buildingInitialVals - vals: ', vals);
   return vals;
-};
+}
 
 const updateGloablTimezone = (tz) => {
   if (tz) {
     console.log('updating moment timezone globally: ', tz);
-    moment.tz.setDefault(tz.value)
+    moment.tz.setDefault(tz.value);
   } else {
     console.log('reverting moment global timezone to local timezone');
     moment.tz.setDefault();
@@ -278,11 +270,11 @@ function buildLocation(lat, lon) {
   return {
     _id: new ObjectID().toString(),
     geometry: {
-      type: 'Point', 
-      coordinates: [lon, lat]
-    }
-  }
-};
+      type: 'Point',
+      coordinates: [lon, lat],
+    },
+  };
+}
 
 function diff(formVals, deployment) {
   const depLat = deployment.location.geometry.coordinates[1];
@@ -301,12 +293,10 @@ function diff(formVals, deployment) {
   if (formVals.startDate !== deployment.startDate) {
     diffs.startDate = formVals.startDate;
   }
-  if ((formVals.latitude !== depLat) || (formVals.longitude !== depLong)) {
+  if (formVals.latitude !== depLat || formVals.longitude !== depLong) {
     diffs.location = buildLocation(formVals.latitude, formVals.longitude);
   }
   return diffs;
-};
-
+}
 
 export default SaveDeploymentForm;
-

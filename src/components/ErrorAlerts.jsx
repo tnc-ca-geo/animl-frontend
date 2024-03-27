@@ -14,8 +14,6 @@ import {
   dismissProjectsError,
   selectViewsErrors,
   dismissViewsError,
-  selectDeploymentsErrors,
-  dismissDeploymentsError,
   selectModelsErrors,
   dismissModelsError,
   selectCreateProjectsErrors,
@@ -40,6 +38,8 @@ import {
   dismissExportError,
   selectExportImageErrorsErrors,
   dismissErrorsExportError,
+  selectDeploymentsErrors,
+  dismissDeploymentsError,
 } from '../features/tasks/tasksSlice';
 import {
   selectRedriveBatchErrors,
