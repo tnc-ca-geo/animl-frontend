@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { editDeployments, selectDeploymentsLoading } from '../tasks/tasksSlice.js';
+import { editDeployments, fetchTask, selectDeploymentsLoading } from '../tasks/tasksSlice.js';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
@@ -31,6 +31,14 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
     dispatch(editDeployments('deleteDeployment', formVals));
     setQueuedForClose(true);
   };
+
+  // handle polling for task completion
+  useEffect(() => {
+    const getDepsPending = depsLoading.isLoading && depsLoading.taskId;
+    if (getDepsPending) {
+      dispatch(fetchTask(depsLoading.taskId));
+    }
+  }, [depsLoading, dispatch]);
 
   return (
     <div>

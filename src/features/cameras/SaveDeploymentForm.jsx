@@ -7,7 +7,7 @@ import { styled } from '../../theme/stitches.config.js';
 import { ObjectID } from 'bson';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { editDeployments, selectDeploymentsLoading } from '../tasks/tasksSlice.js';
+import { editDeployments, fetchTask, selectDeploymentsLoading } from '../tasks/tasksSlice.js';
 import Button from '../../components/Button.jsx';
 import SelectField from '../../components/SelectField.jsx';
 import {
@@ -98,6 +98,14 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
     }
     setQueuedForClose(true);
   };
+
+  // handle polling for task completion
+  useEffect(() => {
+    const getDepsPending = depsLoading.isLoading && depsLoading.taskId;
+    if (getDepsPending) {
+      dispatch(fetchTask(depsLoading.taskId));
+    }
+  }, [depsLoading, dispatch]);
 
   return (
     <div>
