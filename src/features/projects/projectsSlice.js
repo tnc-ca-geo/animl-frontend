@@ -236,17 +236,17 @@ export const projectsSlice = createSlice({
 
     getModelsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
-      state.loadingStates.deployments = ls; // TODO: why are we updating deployments here? looks like a mistake
+      state.loadingStates.models = ls;
     },
 
     getModelsFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
-      state.loadingStates.deployments = ls;
+      state.loadingStates.models = ls;
     },
 
     getModelsSuccess: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: null };
-      state.loadingStates.deployments = ls;
+      state.loadingStates.models = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
       payload.mlModels.forEach((model) => {
