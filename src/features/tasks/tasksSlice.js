@@ -274,42 +274,9 @@ export const fetchTask = (taskId) => {
               COMPLETE: (res) => dispatch(exportErrorsSuccess(res)),
               FAIL: (res) => dispatch(exportErrorsFailure(res)),
             },
-            CreateDeployment: {
+            EditDeployments: {
               COMPLETE: (res) => {
-                console.log('CreateDeployment COMPLETE res: ', res);
-                const operation = 'createDeployment';
-                const cameraConfig = enrichCameraConfigs([res.task.output])[0];
-                const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
-                dispatch(
-                  editDeploymentsSuccess({
-                    projId: selectedProj._id,
-                    cameraConfig,
-                    operation,
-                    reqPayload: deploymentsLoadingState.reqPayload,
-                  }),
-                );
-              },
-              FAIL: (res) => dispatch(editDeploymentsFailure(res)),
-            },
-            UpdateDeployment: {
-              COMPLETE: (res) => {
-                const operation = 'updateDeployment';
-                const cameraConfig = enrichCameraConfigs([res.task.output])[0];
-                const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
-                dispatch(
-                  editDeploymentsSuccess({
-                    projId: selectedProj._id,
-                    cameraConfig,
-                    operation,
-                    reqPayload: deploymentsLoadingState.reqPayload,
-                  }),
-                );
-              },
-              FAIL: (res) => dispatch(editDeploymentsFailure(res)),
-            },
-            DeleteDeployment: {
-              COMPLETE: (res) => {
-                const operation = 'deleteDeployment';
+                const operation = res.task.type.charAt(0).toLowerCase() + res.task.type.slice(1);
                 const cameraConfig = enrichCameraConfigs([res.task.output])[0];
                 const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
                 dispatch(
@@ -324,7 +291,12 @@ export const fetchTask = (taskId) => {
               FAIL: (res) => dispatch(editDeploymentsFailure(res)),
             },
           };
-          dispatchMap[res.task.type][res.task.status](res);
+
+          if (res.task.type.includes('Deployment')) {
+            dispatchMap['EditDeployments'][res.task.status](res);
+          } else {
+            dispatchMap[res.task.type][res.task.status](res);
+          }
         }
       }
     } catch (err) {
