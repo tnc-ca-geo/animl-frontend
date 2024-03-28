@@ -41,14 +41,14 @@ export const tasksSlice = createSlice({
   initialState,
   reducers: {
     getTaskFailure: (state, { payload }) => {
-      console.log('getTaskFailure - payload: ', payload);
-      // TODO: this is temporary and currently only updates loadingState for stats
-      // We need to abstract this reducer logic quite a bit and rethink the shape of the state
-
-      let ls = state.loadingStates.stats;
+      // find the task that failed and update its loading state
+      const taskType = Object.keys(state.loadingStates).find((taskType) => {
+        return state.loadingStates[taskType].taskId === payload.taskId;
+      });
+      let ls = state.loadingStates[taskType];
       ls.isLoading = false;
       ls.noneFound = false;
-      ls.errors = payload;
+      ls.errors = payload.err;
     },
 
     getStatsStart: (state) => {
@@ -184,8 +184,7 @@ export const tasksSlice = createSlice({
       state.loadingStates.deployments.taskId = payload.taskId;
     },
 
-    editDeploymentsSuccess: (state, { payload }) => {
-      console.log('editDeploymentsSuccess - payload: ', payload);
+    editDeploymentsSuccess: (state) => {
       let ls = state.loadingStates.deployments;
       ls.isLoading = false;
       ls.errors = null;
@@ -300,7 +299,7 @@ export const fetchTask = (taskId) => {
         }
       }
     } catch (err) {
-      dispatch(getTaskFailure(err));
+      dispatch(getTaskFailure({ err, taskId }));
     }
   };
 };
