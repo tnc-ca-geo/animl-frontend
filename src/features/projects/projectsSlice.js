@@ -1,8 +1,8 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
-import { enrichCameraConfigs } from './utils';
 import { registerCameraSuccess, unregisterCameraSuccess } from '../cameras/wirelessCamerasSlice';
+import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 import { clearImages } from '../images/imagesSlice.js';
 import { normalizeErrors } from '../../app/utils.js';
 
@@ -28,11 +28,6 @@ const initialState = {
       errors: null,
     },
     automationRules: {
-      isLoading: false,
-      operation: null,
-      errors: null,
-    },
-    deployments: {
       isLoading: false,
       operation: null,
       errors: null,
@@ -236,58 +231,22 @@ export const projectsSlice = createSlice({
     },
 
     /*
-     * Deploployments CRUD
-     */
-
-    editDeploymentsStart: (state) => {
-      const ls = { isLoading: true, operation: 'updating', errors: null };
-      state.loadingStates.deployments = ls;
-    },
-
-    editDeploymentsFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };
-      state.loadingStates.deployments = ls;
-    },
-
-    editDeploymentsSuccess: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: null };
-      state.loadingStates.deployments = ls;
-
-      const editedCamConfig = payload.cameraConfig;
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      for (const camConfig of proj.cameraConfigs) {
-        if (camConfig._id === editedCamConfig._id) {
-          camConfig.deployments = editedCamConfig.deployments;
-        }
-      }
-
-      // TODO AUTH: When we delete a deployment, we should also purge it from
-      // all views that include it in their filters!
-      // that will require updating on the backend too
-    },
-
-    dismissDeploymentsError: (state, { payload }) => {
-      const index = payload;
-      state.loadingStates.deployments.errors.splice(index, 1);
-    },
-
-    /*
      * fetch model source records
      */
 
     getModelsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
-      state.loadingStates.deployments = ls;
+      state.loadingStates.models = ls;
     },
 
     getModelsFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
-      state.loadingStates.deployments = ls;
+      state.loadingStates.models = ls;
     },
 
     getModelsSuccess: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: null };
-      state.loadingStates.deployments = ls;
+      state.loadingStates.models = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
       payload.mlModels.forEach((model) => {
@@ -424,6 +383,23 @@ export const projectsSlice = createSlice({
           if (!defaultProj) return;
           defaultProj.cameraConfigs = payload.project.cameraConfigs;
         }
+      })
+      .addCase(editDeploymentsSuccess, (state, { payload }) => {
+        console.log(
+          'editDeploymentsSuccess caught in projectsSlice extra reducer - payload: ',
+          payload,
+        );
+        const editedCamConfig = payload.cameraConfig;
+        const proj = state.projects.find((p) => p._id === payload.projId);
+        for (const camConfig of proj.cameraConfigs) {
+          if (camConfig._id === editedCamConfig._id) {
+            camConfig.deployments = editedCamConfig.deployments;
+          }
+        }
+
+        // TODO: When we delete a deployment, we should also purge it from
+        // all views that include it in their filters!
+        // that will require updating on the backend too
       });
   },
 });
@@ -451,11 +427,6 @@ export const {
   updateAutomationRulesSuccess,
   updateAutomationRulesFailure,
   dismissAutomationRulesError,
-
-  editDeploymentsStart,
-  editDeploymentsFailure,
-  editDeploymentsSuccess,
-  dismissDeploymentsError,
 
   getModelsStart,
   getModelsFailure,
@@ -609,46 +580,6 @@ export const updateAutomationRules = (payload) => {
   };
 };
 
-// editDeployments thunk
-export const editDeployments = (operation, payload) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(editDeploymentsStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
-
-      if (token && selectedProj) {
-        if (!operation || !payload) {
-          const err = `An operation (create, update, or delete) is required`;
-          throw new Error(err);
-        }
-
-        const res = await call({
-          projId,
-          request: operation,
-          input: payload,
-        });
-
-        const cameraConfig = enrichCameraConfigs([res[operation].cameraConfig])[0];
-        dispatch(
-          editDeploymentsSuccess({
-            projId,
-            cameraConfig,
-            operation,
-            reqPayload: payload,
-          }),
-        );
-      }
-    } catch (err) {
-      console.log(`error attempting to ${operation}: `, err);
-      dispatch(editDeploymentsFailure(err));
-    }
-  };
-};
-
 // fetchModels thunk
 export const fetchModels = (payload) => {
   return async (dispatch, getState) => {
@@ -774,32 +705,44 @@ export const deleteProjectLabel = (payload) => {
 
 // Selectors
 export const selectProjects = (state) => state.projects.projects;
-export const selectSelectedProject = (state) => state.projects.projects.find((proj) => proj.selected);
-export const selectSelectedProjectId = createSelector([selectSelectedProject], (proj) => (proj ? proj._id : null));
-export const selectViews = createSelector([selectSelectedProject], (proj) => (proj ? proj.views : null));
+export const selectSelectedProject = (state) =>
+  state.projects.projects.find((proj) => proj.selected);
+export const selectSelectedProjectId = createSelector([selectSelectedProject], (proj) =>
+  proj ? proj._id : null,
+);
+export const selectViews = createSelector([selectSelectedProject], (proj) =>
+  proj ? proj.views : null,
+);
 export const selectSelectedView = createSelector([selectViews], (views) =>
   views ? views.find((view) => view.selected) : null,
 );
 export const selectUnsavedViewChanges = (state) => state.projects.unsavedViewChanges;
-export const selectMLModels = createSelector([selectSelectedProject], (proj) => (proj ? proj.mlModels : null));
-export const selectLabels = createSelector([selectSelectedProject], (proj) => (proj ? proj.labels : []));
+export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
+  proj ? proj.mlModels : null,
+);
+export const selectLabels = createSelector([selectSelectedProject], (proj) =>
+  proj ? proj.labels : [],
+);
 export const selectProjectsLoading = (state) => state.projects.loadingStates.projects;
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;
-export const selectDeploymentsLoading = (state) => state.projects.loadingStates.deployments;
 export const selectModelsLoadingState = (state) => state.projects.loadingStates.models;
 export const selectModalOpen = (state) => state.projects.modalOpen;
 export const selectModalContent = (state) => state.projects.modalContent;
 export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
-export const selectDeploymentsErrors = (state) => state.projects.loadingStates.deployments.errors;
 export const selectModelsErrors = (state) => state.projects.loadingStates.models.errors;
-export const selectCreateProjectState = (state) => state.projects.loadingStates.createProject.stateMsg;
-export const selectCreateProjectsErrors = (state) => state.projects.loadingStates.createProject.errors;
-export const selectCreateProjectLoading = (state) => state.projects.loadingStates.createProject.isLoading;
+export const selectCreateProjectState = (state) =>
+  state.projects.loadingStates.createProject.stateMsg;
+export const selectCreateProjectsErrors = (state) =>
+  state.projects.loadingStates.createProject.errors;
+export const selectCreateProjectLoading = (state) =>
+  state.projects.loadingStates.createProject.isLoading;
 export const selectModelOptions = (state) => state.projects.modelOptions;
-export const selectModelOptionsLoading = (state) => state.projects.loadingStates.modelOptions.isLoading;
+export const selectModelOptionsLoading = (state) =>
+  state.projects.loadingStates.modelOptions.isLoading;
 export const selectProjectLabelsLoading = (state) => state.projects.loadingStates.projectLabels;
-export const selectManageLabelsErrors = (state) => state.projects.loadingStates.projectLabels.errors;
+export const selectManageLabelsErrors = (state) =>
+  state.projects.loadingStates.projectLabels.errors;
 
 export default projectsSlice.reducer;

@@ -11,7 +11,13 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
-import { clearStats, clearExport, clearErrorsExport } from '../features/tasks/tasksSlice.js';
+import {
+  clearStats,
+  clearExport,
+  clearErrorsExport,
+  clearDeployments,
+  selectDeploymentsLoading,
+} from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
   selectModalContent,
@@ -25,6 +31,7 @@ const HydratedModal = () => {
   const dispatch = useDispatch();
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
+  const deploymentsLoading = useSelector(selectDeploymentsLoading);
 
   const modalContentMap = {
     'stats-modal': {
@@ -46,6 +53,7 @@ const HydratedModal = () => {
       callBackOnClose: () => {
         console.log('callBackOnClose() - reverting moment global timezone to local timezone');
         moment.tz.setDefault();
+        dispatch(clearDeployments());
       },
     },
     'automation-rules-form': {
@@ -87,6 +95,9 @@ const HydratedModal = () => {
   };
 
   const handleModalToggle = (content) => {
+    // TODO: might want to prevent modal from being closed if other async tasks are pending
+    if (deploymentsLoading.isLoading) return;
+
     dispatch(setModalOpen(!modalOpen));
     if (modalOpen) {
       // modal is being closed, so clean up

@@ -17,9 +17,9 @@ import {
   saveViewSuccess,
   selectSelectedView,
   setUnsavedViewChanges,
-  editDeploymentsSuccess,
   deleteViewSuccess,
 } from './projectsSlice';
+import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 
 // enrich newly selected project and view payload
 export const enrichProjAndViewPayload = (store) => (next) => (action) => {
