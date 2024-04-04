@@ -34,9 +34,9 @@ import {
 import {
   selectStatsErrors,
   dismissStatsError,
-  selectExportDataErrors,
+  selectExportAnnotationsErrors,
   dismissExportError,
-  selectExportImageErrorsErrors,
+  selectErrorsExportErrors,
   dismissErrorsExportError,
   selectDeploymentsErrors,
   dismissDeploymentsError,
@@ -64,8 +64,8 @@ const ErrorAlerts = () => {
   const imagesErrors = useSelector(selectImagesErrors);
   const imageContextErrors = useSelector(selectImageContextErrors);
   const statsErrors = useSelector(selectStatsErrors);
-  const exportDataErrors = useSelector(selectExportDataErrors);
-  const exportImageErrorsErrors = useSelector(selectExportImageErrorsErrors);
+  const exportAnnotationsErrors = useSelector(selectExportAnnotationsErrors);
+  const exportImageErrorsErrors = useSelector(selectErrorsExportErrors);
   const redriveBatchErrors = useSelector(selectRedriveBatchErrors);
   const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
@@ -83,7 +83,7 @@ const ErrorAlerts = () => {
     enrichErrors(imagesErrors, 'Image Error', 'images'),
     enrichErrors(imageContextErrors, 'Image Error', 'imageContext'),
     enrichErrors(statsErrors, 'Error Getting Stats', 'stats'),
-    enrichErrors(exportDataErrors, 'Error Exporting Data', 'data'),
+    enrichErrors(exportAnnotationsErrors, 'Error Exporting Data', 'data'),
     enrichErrors(exportImageErrorsErrors, 'Error Downloading Errors CSV', 'uploadImageErrors'),
     enrichErrors(redriveBatchErrors, 'Error Retrying Failed Images in Batch', 'redriveBatch'),
     enrichErrors(manageUserErrors, 'Manage User Error', 'manageUsers'),
