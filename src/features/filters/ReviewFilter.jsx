@@ -20,10 +20,12 @@ const ReviewFilter = () => {
   */
   const handleCheckboxChange = (e) => {
     const objFilter = e.target.dataset.objFilter;
-    if (objFilter === 'reviewed') 
+    if (objFilter === 'reviewed') {
       reviewed = reviewed === null ? false : reviewed === true ? false : null;
-    else 
+    }
+    else {
       reviewed = reviewed === null ? true : reviewed === true ? null : true;
+    } 
 
     dispatch(reviewedFilterToggled({ reviewed }));
   };

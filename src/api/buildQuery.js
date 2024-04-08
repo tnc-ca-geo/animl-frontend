@@ -123,7 +123,6 @@ const viewFields = `
     addedStart
     addedEnd
     reviewed
-    notReviewed
     custom
   }
 `;
