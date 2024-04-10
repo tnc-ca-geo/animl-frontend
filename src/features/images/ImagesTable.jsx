@@ -362,25 +362,15 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
     const dtAdded = DateTime.fromISO(img.dateAdded).toLocaleString(DateTime.DATE_SHORT);
 
     // reviewed columns
-    const hasObjs = img.objects.length > 0;
-    const hasUnlockedObjs = img.objects.some((obj) => obj.locked === false);
-    const hasAllInvalidatedLabels = !img.objects.some((obj) =>
-      obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated),
-    );
-    const reviewed =
-      hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels ? (
-        <ReviewedIcon reviewed={true} />
-      ) : (
-        <ReviewedIcon reviewed={false} />
-      );
+    const reviewedIcon = <ReviewedIcon reviewed={img.reviewed} />;
 
     return {
       thumbnail,
       labelPills,
       dtOriginal,
       dtAdded,
-      reviewed,
-      ...img,
+      reviewedIcon,
+      ...img
     };
   });
 }

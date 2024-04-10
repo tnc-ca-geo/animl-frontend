@@ -60,6 +60,7 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  reviewed
 `;
 
 const pageInfoFields = `
