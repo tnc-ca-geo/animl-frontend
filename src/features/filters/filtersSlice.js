@@ -183,7 +183,6 @@ export const {
   getModelsSuccess,
   checkboxFilterToggled,
   reviewedFilterToggled,
-  notReviewedFilterToggled,
   customFilterChanged,
   dateFilterChanged,
   setActiveFilters,
