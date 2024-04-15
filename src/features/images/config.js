@@ -28,7 +28,7 @@ export const columnConfig = [
   },
   {
     Header: 'Reviewed',
-    accessor: 'reviewed',
+    accessor: 'reviewedIcon',
     disableSortBy: true,
     width: '50'
   },
@@ -53,9 +53,9 @@ export const tableBreakpoints = [
 ];
 
 export const columnsToHideMap = {
-  'loupeOpen': ['dtOriginal', 'dtAdded', 'reviewed', 'cameraId', 'deploymentName'],
-  'xxs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed', 'dtOriginal'],
-  'xs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewed'],
+  'loupeOpen': ['dtOriginal', 'dtAdded', 'reviewedIcon', 'cameraId', 'deploymentName'],
+  'xxs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewedIcon', 'dtOriginal'],
+  'xs': ['dtAdded', 'deploymentName', 'cameraId', 'reviewedIcon'],
   'sm': ['dtAdded', 'deploymentName', 'cameraId'],
   'md': ['dtAdded', 'deploymentName'],
   'lg': ['dtAdded']
