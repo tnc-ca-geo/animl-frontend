@@ -362,14 +362,14 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
     const dtAdded = DateTime.fromISO(img.dateAdded).toLocaleString(DateTime.DATE_SHORT);
 
     // reviewed columns
-    const reviewedIcon = <ReviewedIcon reviewed={img.reviewed} />;
+    const reviewed = <ReviewedIcon reviewed={img.reviewed} />;
 
     return {
       thumbnail,
       labelPills,
       dtOriginal,
       dtAdded,
-      reviewedIcon,
+      reviewed,
       ...img
     };
   });
