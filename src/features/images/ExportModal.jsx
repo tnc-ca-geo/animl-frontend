@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
-import { selectExport, selectExportLoading, exportData, fetchTask } from '../tasks/tasksSlice.js';
+import {
+  selectAnnotationsExport,
+  selectAnnotationsExportLoading,
+  exportAnnotations,
+  fetchTask,
+} from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
@@ -26,19 +31,19 @@ const NotReviewedWarning = ({ reviewedCount }) => {
 
 const ExportModal = () => {
   const filters = useSelector(selectActiveFilters);
-  const dataExport = useSelector(selectExport);
-  const exportLoading = useSelector(selectExportLoading);
+  const annotationsExport = useSelector(selectAnnotationsExport);
+  const exportLoading = useSelector(selectAnnotationsExportLoading);
   const dispatch = useDispatch();
 
   const exportReady =
-    !exportLoading.isLoading && !exportLoading.errors && dataExport && dataExport.url;
+    !exportLoading.isLoading && !exportLoading.errors && annotationsExport && annotationsExport.url;
 
   // when we have a url for the exported CSV file, open it
   useEffect(() => {
     if (exportReady) {
-      window.open(dataExport.url, 'downloadTab');
+      window.open(annotationsExport.url, 'downloadTab');
     }
-  }, [exportReady, dataExport, dispatch]);
+  }, [exportReady, annotationsExport, dispatch]);
 
   const exportPending = exportLoading.isLoading && exportLoading.taskId;
   useEffect(() => {
@@ -52,7 +57,7 @@ const ExportModal = () => {
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportData({ format, filters }));
+      dispatch(exportAnnotations({ format, filters }));
     }
   };
 
@@ -93,7 +98,7 @@ const ExportModal = () => {
             <em>
               Success! Your export is ready for download. If the download did not start
               automatically, click{' '}
-              <a href={dataExport.url} target="downloadTab">
+              <a href={annotationsExport.url} target="downloadTab">
                 this link
               </a>{' '}
               to initiate it.
@@ -102,9 +107,9 @@ const ExportModal = () => {
         )}
       </HelperText>
       {exportReady &&
-        dataExport.meta.reviewedCount &&
-        dataExport.meta.reviewedCount.notReviewed > 0 && (
-          <NotReviewedWarning reviewedCount={dataExport.meta.reviewedCount} />
+        annotationsExport.meta.reviewedCount &&
+        annotationsExport.meta.reviewedCount.notReviewed > 0 && (
+          <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
         )}
       <ButtonRow>
         <Button

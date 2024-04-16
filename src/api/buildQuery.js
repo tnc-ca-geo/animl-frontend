@@ -348,10 +348,10 @@ const queries = {
   }),
 
   // TODO: name this something more specific (like exportImageData)
-  export: ({ format, filters }) => ({
+  exportAnnotations: ({ format, filters }) => ({
     template: `
-      query Export($input: ExportInput!) {
-        export(input: $input) {
+      query ExportAnnotations($input: ExportInput!) {
+        exportAnnotations(input: $input) {
           _id
         }
       }

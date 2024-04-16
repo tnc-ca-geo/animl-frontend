@@ -11,7 +11,7 @@ const initialState = {
       errors: null,
       noneFound: false,
     },
-    export: {
+    annotationsExport: {
       taskId: null,
       isLoading: false,
       errors: null,
@@ -32,7 +32,7 @@ const initialState = {
     },
   },
   imagesStats: null,
-  export: null,
+  annotationsExport: null,
   errorsExport: null,
 };
 
@@ -90,41 +90,41 @@ export const tasksSlice = createSlice({
 
     // export annotations
 
-    exportStart: (state) => {
-      let ls = state.loadingStates.export;
+    exportAnnotationsStart: (state) => {
+      let ls = state.loadingStates.annotationsExport;
       ls.taskId = null;
       ls.isLoading = true;
       ls.errors = null;
       ls.noneFound = false;
     },
 
-    exportUpdate: (state, { payload }) => {
-      state.loadingStates.export.taskId = payload.taskId;
+    exportAnnotationsUpdate: (state, { payload }) => {
+      state.loadingStates.annotationsExport.taskId = payload.taskId;
     },
 
-    exportSuccess: (state, { payload }) => {
-      state.export = payload.task.output;
-      let ls = state.loadingStates.export;
+    exportAnnotationsSuccess: (state, { payload }) => {
+      state.annotationsExport = payload.task.output;
+      let ls = state.loadingStates.annotationsExport;
       ls.isLoading = false;
       ls.noneFound = payload.task.output.count === 0;
       ls.errors = null;
     },
 
-    exportFailure: (state, { payload }) => {
-      let ls = state.loadingStates.export;
+    exportAnnotationsFailure: (state, { payload }) => {
+      let ls = state.loadingStates.annotationsExport;
       ls.isLoading = false;
       ls.noneFound = false;
       ls.errors = [payload.task.output.error];
     },
 
     clearExport: (state) => {
-      state.export = null;
-      state.loadingStates.export = initialState.loadingStates.export;
+      state.annotationsExport = null;
+      state.loadingStates.annotationsExport = initialState.loadingStates.annotationsExport;
     },
 
     dismissExportError: (state, { payload }) => {
       const index = payload;
-      state.loadingStates.export.errors.splice(index, 1);
+      state.loadingStates.annotationsExport.errors.splice(index, 1);
     },
 
     // export image errors
@@ -217,10 +217,10 @@ export const {
   clearStats,
   dismissStatsError,
 
-  exportStart,
-  exportUpdate,
-  exportSuccess,
-  exportFailure,
+  exportAnnotationsStart,
+  exportAnnotationsUpdate,
+  exportAnnotationsSuccess,
+  exportAnnotationsFailure,
   clearExport,
   dismissExportError,
 
@@ -265,11 +265,11 @@ export const fetchTask = (taskId) => {
               COMPLETE: (res) => dispatch(getStatsSuccess(res)),
               FAIL: (res) => dispatch(getStatsFailure(res)),
             },
-            AnnotationsExport: {
-              COMPLETE: (res) => dispatch(exportSuccess(res)),
-              FAIL: (res) => dispatch(exportFailure(res)),
+            ExportAnnotations: {
+              COMPLETE: (res) => dispatch(exportAnnotationsSuccess(res)),
+              FAIL: (res) => dispatch(exportAnnotationsFailure(res)),
             },
-            ImageErrorsExport: {
+            ExportImageErrors: {
               COMPLETE: (res) => dispatch(exportErrorsSuccess(res)),
               FAIL: (res) => dispatch(exportErrorsFailure(res)),
             },
@@ -330,11 +330,10 @@ export const fetchStats = (filters) => {
 };
 
 // export annotations thunk
-// TODO: rename exportData to exportAnnotations
-export const exportData = ({ format, filters }) => {
+export const exportAnnotations = ({ format, filters }) => {
   return async (dispatch, getState) => {
     try {
-      dispatch(exportStart());
+      dispatch(exportAnnotationsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -343,14 +342,14 @@ export const exportData = ({ format, filters }) => {
       if (token && selectedProj) {
         const res = await call({
           projId: selectedProj._id,
-          request: 'export',
+          request: 'exportAnnotations',
           input: { format, filters },
         });
-        console.log('exportData - res: ', res);
-        dispatch(exportUpdate({ taskId: res.export._id }));
+        console.log('exportAnnotations - res: ', res);
+        dispatch(exportAnnotationsUpdate({ taskId: res.exportAnnotations._id }));
       }
     } catch (err) {
-      dispatch(exportFailure(err));
+      dispatch(exportAnnotationsFailure(err));
     }
   };
 };
@@ -414,13 +413,14 @@ export const editDeployments = (operation, payload) => {
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
-export const selectExport = (state) => state.tasks.export;
-export const selectExportLoading = (state) => state.tasks.loadingStates.export;
-export const selectExportDataErrors = (state) => state.tasks.loadingStates.export.errors;
+export const selectAnnotationsExport = (state) => state.tasks.annotationsExport;
+export const selectAnnotationsExportLoading = (state) =>
+  state.tasks.loadingStates.annotationsExport;
+export const selectExportAnnotationsErrors = (state) =>
+  state.tasks.loadingStates.annotationsExport.errors;
 export const selectErrorsExport = (state) => state.tasks.errorsExport;
 export const selectErrorsExportLoading = (state) => state.tasks.loadingStates.errorsExport;
-export const selectExportImageErrorsErrors = (state) =>
-  state.tasks.loadingStates.errorsExport.errors;
+export const selectErrorsExportErrors = (state) => state.tasks.loadingStates.errorsExport.errors;
 export const selectDeploymentsLoading = (state) => state.tasks.loadingStates.deployments;
 export const selectDeploymentsErrors = (state) => state.tasks.loadingStates.deployments.errors;
 
