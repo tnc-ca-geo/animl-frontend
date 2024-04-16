@@ -1,6 +1,6 @@
 const API_URLS = {
-  development: 'https://oogwqd3v1f.execute-api.us-west-2.amazonaws.com/dev/external',
-  staging: 'https://oogwqd3v1f.execute-api.us-west-2.amazonaws.com/dev/external',
+  development: 'https://7bs5tmbd8e.execute-api.us-west-2.amazonaws.com/dev/external',
+  staging: 'https://7bs5tmbd8e.execute-api.us-west-2.amazonaws.com/dev/external',
   production: 'https://ffblbru7zk.execute-api.us-west-2.amazonaws.com/prod/external/',
 };
 
