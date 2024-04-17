@@ -98,7 +98,6 @@ const StatsItem = ({name, stat}) => {
       );
     }
     case "reviewerList": {
-      stat = []
       if (stat.length === 0) {
         break;
       }
