@@ -154,3 +154,12 @@ export const normalizeErrors = (error, code) => {
   }
   return errs;
 };
+
+export const isImageReviwed = (image) => {
+  const hasObjs = image.objects.length > 0;
+  const hasUnlockedObjs = image.objects.some((obj) => obj.locked === false);
+  const hasAllInvalidatedLabels = !image.objects.some((obj) =>
+    obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated),
+  );
+  return hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels;
+};

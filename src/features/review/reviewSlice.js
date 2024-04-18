@@ -1,7 +1,7 @@
 import { createSlice, createAction, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
-import { findImage, findObject, findLabel } from '../../app/utils';
+import { findImage, findObject, findLabel, isImageReviwed } from '../../app/utils';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
 
@@ -50,6 +50,8 @@ export const reviewSlice = createSlice({
       const { imgId, objId } = payload;
       const object = findObject(state.workingImages, imgId, objId);
       object.bbox = payload.bbox;
+      const image = findImage(state.workingImages, imgId);
+      image.reviewed = isImageReviwed(image);
     },
 
     objectsRemoved: (state, { payload }) => {
@@ -57,6 +59,7 @@ export const reviewSlice = createSlice({
         const image = findImage(state.workingImages, obj.imgId);
         const objectIndex = image.objects.findIndex((o) => o._id === obj.objId);
         image.objects.splice(objectIndex, 1);
+        image.reviewed = isImageReviwed(image);
       }
     },
 
@@ -70,6 +73,7 @@ export const reviewSlice = createSlice({
           const object = image.objects.find((obj) => obj._id === objId);
           object.labels.unshift(newLabel);
         }
+        image.reviewed = isImageReviwed(image);
       }
       state.lastAction = 'labels-added';
       state.lastCategoryApplied = payload.labels[0].labelId;
@@ -87,6 +91,7 @@ export const reviewSlice = createSlice({
         if (!object.labels.length) {
           const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
           image.objects.splice(objectIndex, 1);
+          image.reviewed = isImageReviwed(image);
         }
       }
     },
@@ -95,7 +100,11 @@ export const reviewSlice = createSlice({
       payload.labels.forEach(({ userId, imgId, objId, lblId, validated }) => {
         const label = findLabel(state.workingImages, imgId, objId, lblId);
         label.validation = { validated, userId };
+        const image = findImage(state.workingImages, imgId);
+        image.reviewed = isImageReviwed(image);
+        console.log(image);
       });
+
       state.lastAction = payload.labels[0].validated ? 'labels-validated' : 'labels-invalidated';
     },
 
@@ -106,6 +115,7 @@ export const reviewSlice = createSlice({
         object.locked = oldLocked;
         const label = findLabel(state.workingImages, imgId, objId, lblId);
         label.validation = oldValidation;
+        image.reviewed = isImageReviwed(image);
       });
     },
 
@@ -113,6 +123,8 @@ export const reviewSlice = createSlice({
       payload.objects.forEach(({ imgId, objId, locked }) => {
         const object = findObject(state.workingImages, imgId, objId);
         object.locked = locked;
+        const image = findImage(state.workingImages, imgId);
+        image.reviewed = isImageReviwed(image);
       });
     },
 
@@ -121,6 +133,7 @@ export const reviewSlice = createSlice({
         if (img.newObject) {
           const image = findImage(state.workingImages, img.imgId);
           image.objects.push(img.newObject);
+          image.reviewed = isImageReviwed(image);
         }
       }
       state.lastAction = 'marked-empty';
