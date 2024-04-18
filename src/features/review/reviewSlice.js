@@ -1,7 +1,7 @@
 import { createSlice, createAction, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
-import { findImage, findObject, findLabel, isImageReviwed } from '../../app/utils';
+import { findImage, findObject, findLabel, isImageReviewed } from '../../app/utils';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
 
@@ -51,7 +51,7 @@ export const reviewSlice = createSlice({
       const object = findObject(state.workingImages, imgId, objId);
       object.bbox = payload.bbox;
       const image = findImage(state.workingImages, imgId);
-      image.reviewed = isImageReviwed(image);
+      image.reviewed = isImageReviewed(image);
     },
 
     objectsRemoved: (state, { payload }) => {
@@ -59,7 +59,7 @@ export const reviewSlice = createSlice({
         const image = findImage(state.workingImages, obj.imgId);
         const objectIndex = image.objects.findIndex((o) => o._id === obj.objId);
         image.objects.splice(objectIndex, 1);
-        image.reviewed = isImageReviwed(image);
+        image.reviewed = isImageReviewed(image);
       }
     },
 
@@ -73,7 +73,7 @@ export const reviewSlice = createSlice({
           const object = image.objects.find((obj) => obj._id === objId);
           object.labels.unshift(newLabel);
         }
-        image.reviewed = isImageReviwed(image);
+        image.reviewed = isImageReviewed(image);
       }
       state.lastAction = 'labels-added';
       state.lastCategoryApplied = payload.labels[0].labelId;
@@ -91,7 +91,7 @@ export const reviewSlice = createSlice({
         if (!object.labels.length) {
           const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
           image.objects.splice(objectIndex, 1);
-          image.reviewed = isImageReviwed(image);
+          image.reviewed = isImageReviewed(image);
         }
       }
     },
@@ -101,7 +101,7 @@ export const reviewSlice = createSlice({
         const label = findLabel(state.workingImages, imgId, objId, lblId);
         label.validation = { validated, userId };
         const image = findImage(state.workingImages, imgId);
-        image.reviewed = isImageReviwed(image);
+        image.reviewed = isImageReviewed(image);
         console.log(image);
       });
 
@@ -115,7 +115,7 @@ export const reviewSlice = createSlice({
         object.locked = oldLocked;
         const label = findLabel(state.workingImages, imgId, objId, lblId);
         label.validation = oldValidation;
-        image.reviewed = isImageReviwed(image);
+        image.reviewed = isImageReviewed(image);
       });
     },
 
@@ -124,7 +124,7 @@ export const reviewSlice = createSlice({
         const object = findObject(state.workingImages, imgId, objId);
         object.locked = locked;
         const image = findImage(state.workingImages, imgId);
-        image.reviewed = isImageReviwed(image);
+        image.reviewed = isImageReviewed(image);
       });
     },
 
@@ -133,7 +133,7 @@ export const reviewSlice = createSlice({
         if (img.newObject) {
           const image = findImage(state.workingImages, img.imgId);
           image.objects.push(img.newObject);
-          image.reviewed = isImageReviwed(image);
+          image.reviewed = isImageReviewed(image);
         }
       }
       state.lastAction = 'marked-empty';
