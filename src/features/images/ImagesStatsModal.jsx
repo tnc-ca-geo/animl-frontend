@@ -98,17 +98,11 @@ const StatsItem = ({name, stat}) => {
       );
     }
     case "reviewerList": {
-      if (stat.length === 0) {
-        break;
-      }
       return (
         <ListCard label={mapLabel(name)} list={stat} content={reviewerList}></ListCard>
       );
     }
     case "labelList": {
-      if (Object.keys(stat).length === 0) {
-        break;
-      }
       return (
         <GraphCard label={mapLabel(name)} list={stat} content={labelList}></GraphCard>
       );
@@ -273,7 +267,7 @@ const ImagesStatsModal = ({ open }) => {
       dispatch(fetchTask(imagesStatsLoading.taskId));
     }
   }, [imagesStatsLoading, dispatch]);
-  
+
   return (
     <div>
       {imagesStatsLoading.isLoading && (
@@ -289,17 +283,23 @@ const ImagesStatsModal = ({ open }) => {
       {stats && (
         <div>
            <StatsDash>
-            <div style={{display: 'flex', flexDirection: 'row', gap: '10px'}}>
-              <StatsItem  name={"imageCount"} stat={stats["imageCount"]}></StatsItem>
-              <StatsItem  name={"reviewedCount"} stat={stats["reviewedCount"]}></StatsItem>
-              <StatsItem name={"multiReviewerCount"} stat={stats["multiReviewerCount"]}></StatsItem>
-            </div>
-            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
-              <StatsItem name={"labelList"} stat={stats["labelList"]}></StatsItem>
-            </div>
-            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
-              <StatsItem name={"reviewerList"} stat={stats["reviewerList"]}></StatsItem>
-            </div>
+              <div style={{display: 'flex', flexDirection: 'row', gap: '10px'}}>
+                <StatsItem  name={"imageCount"} stat={stats["imageCount"]}></StatsItem>
+                <StatsItem  name={"reviewedCount"} stat={stats["reviewedCount"]}></StatsItem>
+                <StatsItem  name={"multiReviewerCount"} stat={stats["multiReviewerCount"]}></StatsItem>
+              </div>
+
+              {Object.keys(stats["labelList"]).length !== 0 && 
+                <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                  <StatsItem name={"labelList"} stat={stats["labelList"]} />
+                </div>
+              }
+              
+              {stats["reviewerList"].length !== 0 &&
+                <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                  <StatsItem name={"reviewerList"} stat={stats["reviewerList"]} />
+                </div>
+              }
           </StatsDash>
         </div>
       )}
