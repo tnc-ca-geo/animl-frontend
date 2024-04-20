@@ -91,8 +91,9 @@ export const reviewSlice = createSlice({
         if (!object.labels.length) {
           const objectIndex = image.objects.findIndex((obj) => obj._id === objId);
           image.objects.splice(objectIndex, 1);
-          image.reviewed = isImageReviewed(image);
         }
+
+        image.reviewed = isImageReviewed(image);
       }
     },
 
@@ -102,7 +103,6 @@ export const reviewSlice = createSlice({
         label.validation = { validated, userId };
         const image = findImage(state.workingImages, imgId);
         image.reviewed = isImageReviewed(image);
-        console.log(image);
       });
 
       state.lastAction = payload.labels[0].validated ? 'labels-validated' : 'labels-invalidated';
@@ -115,6 +115,7 @@ export const reviewSlice = createSlice({
         object.locked = oldLocked;
         const label = findLabel(state.workingImages, imgId, objId, lblId);
         label.validation = oldValidation;
+        const image = findImage(state.workingImages, imgId);
         image.reviewed = isImageReviewed(image);
       });
     },
