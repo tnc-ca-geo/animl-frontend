@@ -135,7 +135,10 @@ export const getRandomColor = () => {
   const green = Math.floor(Math.random() * (255 - 0) + 0);
   const blue = Math.floor(Math.random() * (255 - 0) + 0);
 
-  const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
+  const integer =
+    ((Math.round(red) & 0xff) << 16) +
+    ((Math.round(green) & 0xff) << 8) +
+    (Math.round(blue) & 0xff);
 
   const string = integer.toString(16).toUpperCase();
   return '000000'.substring(string.length) + string;
@@ -153,4 +156,17 @@ export const normalizeErrors = (error, code) => {
     errs = [{ message: error.message, extensions: { code } }];
   }
   return errs;
+};
+
+export const isImageReviewed = (image) => {
+  // images are considered reviewed if they:
+  // have objects,
+  // all objects are locked,
+  // AND not all labels of all objects have been invalidated
+  const hasObjs = image.objects.length > 0;
+  const hasUnlockedObjs = image.objects.some((obj) => obj.locked === false);
+  const hasAllInvalidatedLabels = !image.objects.some((obj) =>
+    obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated),
+  );
+  return hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels;
 };
