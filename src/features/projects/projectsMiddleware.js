@@ -6,7 +6,6 @@ import {
   checkboxFilterToggled,
   dateFilterChanged,
   reviewedFilterToggled,
-  notReviewedFilterToggled,
   selectActiveFilters,
   customFilterChanged,
   checkboxOnlyButtonClicked,
@@ -72,7 +71,6 @@ export const diffFilters = (store) => (next) => (action) => {
     checkboxOnlyButtonClicked.match(action) ||
     dateFilterChanged.match(action) ||
     reviewedFilterToggled.match(action) ||
-    notReviewedFilterToggled.match(action) ||
     customFilterChanged.match(action) ||
     setSelectedProjAndView.match(action) ||
     editDeploymentsSuccess.match(action) ||

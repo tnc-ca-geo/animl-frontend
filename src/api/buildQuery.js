@@ -60,6 +60,7 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  reviewed
 `;
 
 const pageInfoFields = `
@@ -123,7 +124,6 @@ const viewFields = `
     addedStart
     addedEnd
     reviewed
-    notReviewed
     custom
   }
 `;
