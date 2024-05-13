@@ -33,23 +33,19 @@ const StatsDash = styled('div', {
   minWidth: '660px',
 });
 
-const reviewedCount =
-  'The total number of images that are edited in some way. Note that this does not include ' +
-  'images which a user invalidated all labels on all objects, but didn\'t mark it empty. Because multiple users can edit the same image, the sum of all reviewers "Reviewed Counts" very likely will not equal the total number of images "Reviewed".';
-
-const notReviewedCount =
-  'The total number of images that either have unlocked objects that still require review or have no objects and have not been marked empty.';
-
-const reviewerList =
-  'Each reviewer\'s "Reviewed Count" is the total number of images they have edited in some way (validated/invalidated a label, added objects, etc.). ' +
-  'Because multiple users can edit the same image, and because images that have been edited can still be considered "not reviewed" (e.g., if a user invalidated all labels on all objects, but did\'t mark it empty), the sum of all reviewers "Reviewed Counts" very likely will not equal the "Reviewed Count".';
-
-const labelList =
-  'The quantities in this chart are of locked objects with validated labels only, so they do not include ML predicted labels that need review.';
-
-// const multiReviewerCount = 'Total number of images with multiple reviewers.';
-
-const imagesCount = 'Total number of images.';
+const hints = {
+  reviewedCount:
+    'The total number of images that have been reviewed in some way. Note that this does not include ' +
+    'images which a user invalidated all labels on all objects, but didn\'t mark it empty. Because multiple users can edit the same image, the sum of all reviewers "Reviewed Counts" very likely will not equal the total number of images "Reviewed".',
+  notReviewedCount:
+    'The total number of images that either have unlocked objects that still require review or have no objects and have not been marked empty.',
+  reviewerList:
+    'Each reviewer\'s "Reviewed Count" is the total number of images they have edited in some way (validated/invalidated a label, added objects, etc.). ' +
+    'Because multiple users can edit the same image, and because images that have been edited can still be considered "not reviewed" (e.g., if a user invalidated all labels on all objects, but did\'t mark it empty), the sum of all reviewers "Reviewed Counts" very likely will not equal the "Reviewed Count".',
+  labelList:
+    'The quantities in this chart are of locked objects with validated labels only, so they do not include ML predicted labels that need review.',
+  imagesCount: 'Total number of images.',
+};
 
 const Content = styled('div', {
   maxWidth: '300px',
@@ -106,9 +102,9 @@ const RatioCard = ({ label, tnum, bnum, content }) => {
       <Heading content={content} label={label} />
       <Container>
         <NumerContainer>
-          <LargeNumber>{tnum}</LargeNumber>
+          <LargeNumber>{tnum.toLocaleString('en-US')}</LargeNumber>
         </NumerContainer>
-        {bnum && <SmallNumber>/ {bnum}</SmallNumber>}
+        {bnum && <SmallNumber>/ {bnum.toLocaleString('en-US')}</SmallNumber>}
       </Container>
     </StatsCard>
   );
@@ -139,39 +135,31 @@ const TableCell = styled('div', {
   overflowX: 'scroll',
 });
 
-const ListCard = ({ label, list, content }) => {
-  const Header = () => {
-    let headers = list[0];
-    return (
-      <Row>
-        {Object.keys(headers).map((keyName) => (
-          <TableCell key={keyName} css={{ background: '$backgroundDark' }}>
-            {keyName == 'userId'
-              ? 'User'
-              : keyName === 'reviewedCount'
-                ? 'Reviewed Count'
-                : keyName}
-          </TableCell>
-        ))}
-      </Row>
-    );
-  };
-  return (
-    <StatsCard>
-      <Heading content={content} label={label} />
-      <Table>
-        <Header />
-        {list.map((stat, index) => (
-          <Row key={index}>
-            {Object.keys(stat).map((keyName, i) => (
-              <TableCell key={i}>{stat[keyName]}</TableCell>
-            ))}
-          </Row>
-        ))}
-      </Table>
-    </StatsCard>
-  );
-};
+const ListTableHeader = (list) => (
+  <Row>
+    {Object.keys(list.list[0]).map((keyName) => (
+      <TableCell key={keyName} css={{ background: '$backgroundDark' }}>
+        {keyName == 'userId' ? 'User' : keyName === 'reviewedCount' ? 'Reviewed Count' : keyName}
+      </TableCell>
+    ))}
+  </Row>
+);
+
+const ListCard = ({ label, list, content }) => (
+  <StatsCard>
+    <Heading content={content} label={label} />
+    <Table>
+      {list && <ListTableHeader list={list} />}
+      {list.map((stat, index) => (
+        <Row key={index}>
+          {Object.keys(stat).map((keyName, i) => (
+            <TableCell key={i}>{stat[keyName].toLocaleString('en-US')}</TableCell>
+          ))}
+        </Row>
+      ))}
+    </Table>
+  </StatsCard>
+);
 
 const GraphCard = ({ label, list, content }) => {
   let width = 0;
@@ -197,7 +185,11 @@ const GraphCard = ({ label, list, content }) => {
       >
         <BarChart layout="vertical" data={data}>
           <CartesianGrid stroke="#f5f5f5" />
-          <XAxis type="number" allowDecimals={false} />
+          <XAxis
+            type="number"
+            allowDecimals={false}
+            tickFormatter={(tick) => tick.toLocaleString('en-US')}
+          />
           <YAxis width={width} dataKey="name" type="category" scale="auto" interval={0} />
           <Tooltip />
           <Legend />
@@ -230,8 +222,6 @@ const ImagesStatsModal = ({ open }) => {
     }
   }, [imagesStatsLoading, dispatch]);
 
-  console.log('stats: ', stats);
-
   return (
     <div>
       {imagesStatsLoading.isLoading && (
@@ -247,32 +237,32 @@ const ImagesStatsModal = ({ open }) => {
       {stats && (
         <StatsDash>
           <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-            <RatioCard label="Images" tnum={stats.imageCount} content={imagesCount} />
+            <RatioCard label="Images" tnum={stats.imageCount} content={hints.imagesCount} />
             <RatioCard
               label="Reviewed"
               tnum={stats.reviewedCount.reviewed}
               // bnum={stats.imageCount}
-              content={reviewedCount}
+              content={hints.reviewedCount}
             />
             <RatioCard
               label="Not reviewed"
               tnum={stats.reviewedCount.notReviewed}
               // bnum={stats.imageCount}
-              content={notReviewedCount}
+              content={hints.notReviewedCount}
             />
           </div>
           {Object.keys(stats['labelList']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-              <GraphCard label="Validated labels" list={stats.labelList} content={labelList} />
+              <GraphCard
+                label="Validated labels"
+                list={stats.labelList}
+                content={hints.labelList}
+              />
             </div>
           )}
           {stats['reviewerList'].length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-              <ListCard
-                label="Reviewers"
-                list={stats.reviewerList}
-                content={reviewerList}
-              ></ListCard>
+              <ListCard label="Reviewers" list={stats.reviewerList} content={hints.reviewerList} />
             </div>
           )}
         </StatsDash>
