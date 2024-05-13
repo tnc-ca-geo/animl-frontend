@@ -7,7 +7,7 @@ import PanelHeader from './PanelHeader';
 const ModalBody = styled('div', {
   padding: '$3',
   minHeight: '$7',
-  maxHeight: 'calc(85vh - $7)',
+  maxHeight: 'calc(95vh - $7)',
   overflowY: 'scroll',
   position: 'relative',
 });
@@ -42,7 +42,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '90vw',
-  maxHeight: '85vh',
+  maxHeight: '95vh',
   '&:focus': { outline: 'none' },
 
   variants: {
@@ -56,7 +56,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
       },
       lg: {
         width: '95vw',
-        // height: '95vh',
+        maxHeight: '95vh',
       },
     },
   },
