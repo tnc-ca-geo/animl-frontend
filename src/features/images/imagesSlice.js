@@ -29,7 +29,7 @@ const initialState = {
   visibleRows: [],
   deleteImagesAlertOpen: false,
   pageInfo: {
-    limit: IMAGE_QUERY_LIMITS[1],
+    limit: IMAGE_QUERY_LIMITS[2],
     paginatedField: 'dateTimeOriginal',
     sortAscending: false,
     previous: null,
