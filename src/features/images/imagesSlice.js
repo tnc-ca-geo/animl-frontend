@@ -285,12 +285,12 @@ export const fetchImageContext = (imgId) => {
           input: { imageId: imgId },
         });
 
-        // Fetch all images from the image's deployment w/ a createdStart date
-        // 5 mins before dateTimeOriginal of image-to-focus
+        // Fetch all images from the image's deployment within a
+        // 5 minute window of the dateTimeOriginal of image-to-focus
 
         const dto = DateTime.fromISO(res.image.dateTimeOriginal);
-        const startDate = dto.minus({ minutes: 5 }).toISO();
-        const endDate = dto.plus({ minutes: 5 }).toISO();
+        const startDate = dto.minus({ minutes: 2.5 }).toISO();
+        const endDate = dto.plus({ minutes: 2.5 }).toISO();
         const filters = {
           addedEnd: null,
           addedStart: null,
