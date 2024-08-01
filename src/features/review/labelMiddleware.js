@@ -1,4 +1,5 @@
 import { ObjectID } from 'bson';
+import _ from 'lodash';
 import { addLabelEnd } from '../loupe/loupeSlice';
 import {
   editLabel,
@@ -49,10 +50,14 @@ export const labelMiddleware = (store) => (next) => (action) => {
     if (tempObjs.length) {
       store.dispatch(
         editLabel('create', 'objects', {
-          objects: tempObjs.map(({ newObject, imgId }) => ({
-            object: newObject,
-            imageId: imgId,
-          })),
+          objects: tempObjs.map(({ newObject, imgId }) => {
+            const obj = _.cloneDeep(newObject);
+            obj.labels = obj.labels.map((lbl) => ({ ...lbl, imageId: imgId }));
+            return {
+              object: obj,
+              imageId: imgId,
+            };
+          }),
         }),
       );
     }
@@ -144,7 +149,9 @@ export const labelMiddleware = (store) => (next) => (action) => {
     const objects = [];
     lbls.forEach(({ imgId, objId, validated }) => {
       const object = findObject(workingImages, imgId, objId);
-      const allLabelsInvalidated = object.labels.every((lbl) => lbl.validation && lbl.validation.validated === false);
+      const allLabelsInvalidated = object.labels.every(
+        (lbl) => lbl.validation && lbl.validation.validated === false,
+      );
       const locked = (!validated && allLabelsInvalidated) || validated;
       objects.push({ imgId, objId, locked });
     });
