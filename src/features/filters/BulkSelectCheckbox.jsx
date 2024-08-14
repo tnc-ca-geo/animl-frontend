@@ -24,11 +24,11 @@ const StyledBulkSelectCheckbox = styled('div', {
 
 const BulkSelectCheckbox = ({ filterCat, managedIds, isHeader }) => {
   const activeFilters = useSelector(selectActiveFilters);
-  const [checkboxState, setCheckboxState] = useState('someSelected');
+  const [checkboxState, setCheckboxState] = useState('allSelected');
   const dispatch = useDispatch();
 
   const stateMap = {
-    noneSelected: {
+    notAllSelected: {
       checked: false,
       active: false,
       indeterminate: false,
@@ -40,25 +40,16 @@ const BulkSelectCheckbox = ({ filterCat, managedIds, isHeader }) => {
       indeterminate: false,
       label: 'unselect all',
     },
-    someSelected: {
-      checked: false,
-      active: true,
-      indeterminate: true,
-      label: 'clear selection',
-    },
   };
 
   useEffect(() => {
     const allSelected = (idsToCheck, activeIds) =>
       (activeIds && idsToCheck.every((id) => activeIds.includes(id))) || activeIds === null;
-    const noneSelected = (idsToCheck, activeIds) => activeIds && idsToCheck.every((id) => !activeIds.includes(id));
 
     if (allSelected(managedIds, activeFilters[filterCat])) {
       setCheckboxState('allSelected');
-    } else if (noneSelected(managedIds, activeFilters[filterCat])) {
-      setCheckboxState('noneSelected');
     } else {
-      setCheckboxState('someSelected');
+      setCheckboxState('notAllSelected');
     }
   }, [activeFilters, filterCat, managedIds]);
 
