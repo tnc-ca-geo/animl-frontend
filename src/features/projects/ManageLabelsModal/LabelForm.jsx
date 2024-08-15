@@ -4,9 +4,14 @@ import { Form, Field, useFormikContext } from 'formik';
 import Button from '../../../components/Button';
 import IconButton from '../../../components/IconButton.jsx';
 import InfoIcon from '../../../components/InfoIcon';
-import { SymbolIcon } from '@radix-ui/react-icons';
+import { LockClosedIcon, SymbolIcon } from '@radix-ui/react-icons';
 import { SwitchRoot, SwitchThumb } from '../../../components/Switch.jsx';
-import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../../components/Tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../../components/Tooltip.jsx';
 import { FormWrapper, FormFieldWrapper, FormError } from '../../../components/Form';
 import { FormRow, FormButtons, ColorPicker } from './components';
 import { getRandomColor, getTextColor } from '../../../app/utils.js';
@@ -19,12 +24,15 @@ const LabelForm = ({ onCancel }) => {
       <Form>
         <FormRow>
           <FormFieldWrapper>
-            <label htmlFor="name">Name</label>
-            <Field name="name" id="name" />
+            <label htmlFor="name">
+              Name
+              {values.ml && <LabelLock />}
+            </label>
+            <Field name="name" id="name" disabled={values.ml} />
             {!!errors.name && touched.name && <FormError>{errors.name}</FormError>}
           </FormFieldWrapper>
           <FormFieldWrapper>
-            <label htmlFor="name">Color</label>
+            <label htmlFor="color">Color</label>
             <ColorPicker>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -152,9 +160,32 @@ const ColorSwatch = styled('button', {
 
 const ReviewerEnabledHelp = () => (
   <div style={{ maxWidth: '200px' }}>
-    Disabling a label will prevent users from applying it to images going forward, but it will not remove existing
-    instances of the label on your images.
+    Disabling a label will prevent users from applying it to images going forward, but it will not
+    remove existing instances of the label on your images.
   </div>
+);
+
+const LockIcon = styled(LockClosedIcon, {
+  marginLeft: '$2',
+});
+
+const LabelLock = () => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <LockIcon />
+    </TooltipTrigger>
+    <TooltipContent
+      side="top"
+      sideOffset={5}
+      css={{
+        maxWidth: 324,
+      }}
+    >
+      You can&apos;t edit this label&apos;s name because it is managed by a machine learning model,
+      but you can change it&apos;s color and enable/disable it.
+      <TooltipArrow />
+    </TooltipContent>
+  </Tooltip>
 );
 
 export default LabelForm;

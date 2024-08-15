@@ -18,7 +18,7 @@ const DisabledIndicator = styled('span', {
 });
 
 const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
-  const { _id, name, color, reviewerEnabled } = label;
+  const { _id, name, color, reviewerEnabled, ml } = label;
   const dispatch = useDispatch();
   const [showForm, setShowForm] = useState(false);
 
@@ -60,7 +60,7 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
   return (
     <Formik
       enableReinitialize
-      initialValues={{ _id, name, color, reviewerEnabled }}
+      initialValues={{ _id, name, color, reviewerEnabled, ml }}
       validationSchema={schema(name)}
       onSubmit={onSubmit}
     >
