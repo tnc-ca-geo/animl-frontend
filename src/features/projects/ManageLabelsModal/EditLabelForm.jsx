@@ -23,9 +23,10 @@ const EditLabelForm = ({ label, labels, setLabelToDelete, setAlertOpen }) => {
   const [showForm, setShowForm] = useState(false);
 
   const toggleOpenForm = useCallback(() => setShowForm((prev) => !prev), []);
-  const onSubmit = useCallback((values) => {
+  const onSubmit = useCallback((values, { resetForm }) => {
     dispatch(updateProjectLabel(values));
     setShowForm(false);
+    resetForm();
   }, []);
 
   const deleteLabel = useCallback((values) => {
