@@ -9,6 +9,7 @@ const ModalBody = styled('div', {
   minHeight: '$7',
   maxHeight: 'calc(95vh - $7)',
   overflowY: 'scroll',
+  overflowX: 'hidden',
   position: 'relative',
 });
 

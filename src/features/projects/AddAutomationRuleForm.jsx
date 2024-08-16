@@ -7,13 +7,14 @@ import * as Yup from 'yup';
 import { updateAutomationRules, selectMLModels, fetchModels } from './projectsSlice.js';
 import SelectField from '../../components/SelectField.jsx';
 import Button from '../../components/Button.jsx';
-import { FormWrapper, FieldRow, ButtonRow, FormFieldWrapper, FormError } from '../../components/Form.jsx';
+import {
+  FormWrapper,
+  FieldRow,
+  ButtonRow,
+  FormFieldWrapper,
+  FormError,
+} from '../../components/Form.jsx';
 import CategoryConfigForm from './CategoryConfigForm.jsx';
-
-const CategoryConfigSection = styled('div', {
-  maxHeight: '220px',
-  overflowY: 'scroll',
-});
 
 const emptyRule = {
   name: '',
@@ -145,7 +146,11 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
               {values.event.type.value === 'label-added' && (
                 <FormFieldWrapper css={{ flexGrow: '0' }}>
                   <label htmlFor="event-label">Label</label>
-                  <Field id="event-label" name="event.label" value={values.event.label ? values.event.label : ''} />
+                  <Field
+                    id="event-label"
+                    name="event.label"
+                    value={values.event.label ? values.event.label : ''}
+                  />
                   <ErrorMessage component={FormError} name="event.label" />
                 </FormFieldWrapper>
               )}
@@ -157,6 +162,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                 <SelectField
                   name="action.type"
                   label="Action"
+                  menuPlacement="top"
                   value={values.action.type}
                   onChange={(name, value) => {
                     setFieldValue(name, value);
@@ -181,6 +187,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                   <SelectField
                     name="action.model"
                     label="Model"
+                    menuPlacement="top"
                     value={values.action.model}
                     onChange={(name, value) => {
                       setFieldValue(name, value);
@@ -220,20 +227,21 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
             </FieldRow>
 
             {/* category configurations */}
-            {values.action.categoryConfig && Object.entries(values.action.categoryConfig).length > 0 && (
-              <CategoryConfigSection>
-                <label>Confidence thresholds</label>
-                <FieldArray name="categoryConfigs">
-                  <>
-                    {Object.entries(values.action.categoryConfig)
-                      .filter(([k]) => k !== 'empty') // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
-                      .map(([k, v]) => (
-                        <CategoryConfigForm key={k} catName={k} config={v} />
-                      ))}
-                  </>
-                </FieldArray>
-              </CategoryConfigSection>
-            )}
+            {values.action.categoryConfig &&
+              Object.entries(values.action.categoryConfig).length > 0 && (
+                <div>
+                  <label>Confidence thresholds</label>
+                  <FieldArray name="categoryConfigs">
+                    <>
+                      {Object.entries(values.action.categoryConfig)
+                        .filter(([k]) => k !== 'empty') // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
+                        .map(([k, v]) => (
+                          <CategoryConfigForm key={k} catName={k} config={v} />
+                        ))}
+                    </>
+                  </FieldArray>
+                </div>
+              )}
 
             <ButtonRow>
               <Button type="button" size="large" onClick={handleDiscardRuleClick}>
