@@ -23,12 +23,10 @@ const LabelForm = ({ onCancel }) => {
     <FormWrapper>
       <Form>
         <FormRow>
-          <FormFieldWrapper>
-            <label htmlFor="name">
-              Name
-              {values.ml && <LabelLock />}
-            </label>
+          <FormFieldWrapper css={{ position: 'relative' }}>
+            <label htmlFor="name">Name</label>
             <Field name="name" id="name" disabled={values.ml} />
+            {values.ml && <LabelLockOverlay />}
             {!!errors.name && touched.name && <FormError>{errors.name}</FormError>}
           </FormFieldWrapper>
           <FormFieldWrapper>
@@ -167,12 +165,29 @@ const ReviewerEnabledHelp = () => (
 
 const LockIcon = styled(LockClosedIcon, {
   marginLeft: '$2',
+  marginRight: '$2',
 });
 
-const LabelLock = () => (
+const Overlay = styled('div', {
+  position: 'absolute',
+  color: '$textMedium',
+  height: '53px',
+  width: '176px',
+  top: '30px',
+  left: '1px',
+  padding: '$1',
+  borderRadius: '$1',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+});
+
+const LabelLockOverlay = () => (
   <Tooltip>
     <TooltipTrigger asChild>
-      <LockIcon />
+      <Overlay>
+        <LockIcon />
+      </Overlay>
     </TooltipTrigger>
     <TooltipContent
       side="top"
