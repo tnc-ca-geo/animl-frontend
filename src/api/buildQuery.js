@@ -149,6 +149,7 @@ const projectLabelFields = `
   name
   color
   reviewerEnabled
+  ml
 `;
 
 const projectFields = `
