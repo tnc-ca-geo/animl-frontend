@@ -172,7 +172,7 @@ const Overlay = styled('div', {
   position: 'absolute',
   color: '$textMedium',
   height: '53px',
-  width: '176px',
+  width: '100%',
   top: '30px',
   left: '1px',
   padding: '$1',
