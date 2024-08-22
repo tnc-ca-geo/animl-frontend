@@ -11,6 +11,7 @@ import {
   ReloadIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChatBubbleIcon
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
@@ -34,6 +35,15 @@ import {
 } from '../../components/Tooltip.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
+import {
+  Root as PopoverRoot,
+  PopoverTrigger,
+  PopoverAnchor,
+  PopoverPortal,
+  PopoverContent,
+  PopoverClose
+} from '@radix-ui/react-popover';
+import { CommentsPopover } from './CommentsPopover.jsx';
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -126,6 +136,9 @@ const ImageReviewToolbar = ({
   useEffect(() => {
     setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
   }, [isAddingLabel]);
+
+  // manage comments popover
+  const [isCommentsPopoverVisible, setIsCommentsPopoverVisible] = useState(false);
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
@@ -271,6 +284,21 @@ const ImageReviewToolbar = ({
               </TooltipContent>
             </Tooltip>
           )}
+
+          <Separator />
+
+          {/* Comments */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <ToolbarIconButton onClick={handleUnlockAllButtonClick}>
+                <CommentsPopover />
+              </ToolbarIconButton>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5}>
+              Add comments
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
 
           <Separator />
 
