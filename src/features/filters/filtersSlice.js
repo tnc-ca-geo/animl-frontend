@@ -82,12 +82,12 @@ export const filtersSlice = createSlice({
       const availIds = state.availFilters[filterCat].options.map(({ _id }) => _id);
       let newActiveIds;
 
-      if (currState === 'noneSelected') {
-        // none are currently selected, so add all managedIds to activeFilters
+      if (currState !== 'allSelected') {
+        // not all labels are currently selected, so add all managedIds to activeFilters
         const idsToAdd = managedIds.filter((id) => !activeIds.includes(id));
         newActiveIds = activeIds.concat(idsToAdd);
       } else {
-        // some or all managed ids are selected, so unselect all:
+        // all managed ids are selected, so unselect all:
         // i.e, return all available Ids, minus the managed ids
         newActiveIds =
           activeIds === null
