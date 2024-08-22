@@ -13,7 +13,12 @@ import {
   selectUnsavedViewChanges,
   setSelectedProjAndView,
 } from './projectsSlice.js';
-import { selectRouterLocation, fetchImageContext, preFocusImageStart, clearImages } from '../images/imagesSlice.js';
+import {
+  selectRouterLocation,
+  fetchImageContext,
+  preFocusImageStart,
+  clearImages,
+} from '../images/imagesSlice.js';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -42,6 +47,8 @@ const ContentList = styled('ul', {
   margin: 0,
   columnGap: 10,
   listStyle: 'none',
+  maxHeight: '75vh',
+  overflowY: 'auto',
 
   variants: {
     layout: {
@@ -222,7 +229,9 @@ const ProjectAndViewNav = () => {
       {selectedView && (
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger onPointerMove={(e) => e.preventDefault()}>{selectedProj.name}</NavigationMenuTrigger>
+            <NavigationMenuTrigger onPointerMove={(e) => e.preventDefault()}>
+              {selectedProj.name}
+            </NavigationMenuTrigger>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Projects</MenuTitle>
               <ContentList layout="one">
@@ -241,7 +250,10 @@ const ProjectAndViewNav = () => {
           </NavigationMenuItem>
 
           <NavigationMenuItem>
-            <NavigationMenuTriggerViews onPointerMove={(e) => e.preventDefault()} edited={unsavedViewChanges}>
+            <NavigationMenuTriggerViews
+              onPointerMove={(e) => e.preventDefault()}
+              edited={unsavedViewChanges}
+            >
               {selectedView.name}
             </NavigationMenuTriggerViews>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
