@@ -15,7 +15,7 @@ const CategoryName = styled(CheckboxLabel, {
   fontSize: '$3',
   fontFamily: '$Roboto',
   fontWeight: '$2',
-  minWidth: '130px',
+  minWidth: '250px',
 });
 
 const ConfThreshold = styled('div', {
@@ -146,7 +146,9 @@ const CategoryConfigForm = ({ catName, config }) => {
             disabled={config.disabled}
           />
         </div>
-        <ConfDisplay disabled={config.disabled}>{Math.round(config.confThreshold * 100)}%</ConfDisplay>
+        <ConfDisplay disabled={config.disabled}>
+          {Math.round(config.confThreshold * 100)}%
+        </ConfDisplay>
       </ConfThreshold>
     </StyledFieldRow>
   );

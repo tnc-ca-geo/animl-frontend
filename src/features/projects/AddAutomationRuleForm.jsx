@@ -233,7 +233,10 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                   <FieldArray name="categoryConfigs">
                     <>
                       {Object.entries(values.action.categoryConfig)
-                        .filter(([k]) => k !== 'empty') // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
+                        .filter(
+                          ([k]) =>
+                            !(values.action.model.value.includes('megadetector') && k === 'empty'),
+                        ) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
                         .map(([k, v]) => (
                           <CategoryConfigForm key={k} catName={k} config={v} />
                         ))}
