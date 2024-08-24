@@ -37,11 +37,8 @@ import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
 import {
   Root as PopoverRoot,
-  PopoverTrigger,
-  PopoverAnchor,
   PopoverPortal,
   PopoverContent,
-  PopoverClose
 } from '@radix-ui/react-popover';
 import { CommentsPopover } from './CommentsPopover.jsx';
 
@@ -113,6 +110,10 @@ const CancelHint = styled('div', {
   },
 });
 
+const StyledPopoverContent = styled(PopoverContent, {
+  zIndex: 200
+});
+
 const ImageReviewToolbar = ({
   image,
   lastAction,
@@ -136,9 +137,6 @@ const ImageReviewToolbar = ({
   useEffect(() => {
     setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
   }, [isAddingLabel]);
-
-  // manage comments popover
-  const [isCommentsPopoverVisible, setIsCommentsPopoverVisible] = useState(false);
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
@@ -289,15 +287,24 @@ const ImageReviewToolbar = ({
 
           {/* Comments */}
           <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleUnlockAllButtonClick}>
-                <CommentsPopover />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Add comments
-              <TooltipArrow />
-            </TooltipContent>
+            <PopoverRoot>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
+                  <ToolbarIconButton onClick={() => console.log("popover")}>
+                    <ChatBubbleIcon />
+                  </ToolbarIconButton>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Add comments
+                <TooltipArrow />
+              </TooltipContent>
+              <PopoverPortal>
+                <StyledPopoverContent side="top" sideOffset={25}>
+                  <CommentsPopover />
+                </StyledPopoverContent>
+              </PopoverPortal>
+            </PopoverRoot>
           </Tooltip>
 
           <Separator />

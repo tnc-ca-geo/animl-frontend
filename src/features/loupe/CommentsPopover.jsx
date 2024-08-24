@@ -1,27 +1,16 @@
-import {
-  Root as PopoverRoot,
-  PopoverTrigger,
-  PopoverPortal,
-  PopoverContent,
-  PopoverClose,
-  PopoverArrow
-} from '@radix-ui/react-popover';
+import React from 'react';
 import { 
   Cross2Icon,
-  ChatBubbleIcon
 } from '@radix-ui/react-icons';
 import { FieldRow } from '../../components/Form.jsx';
 import { styled } from '../../theme/stitches.config.js';
+import { PopoverClose } from '@radix-ui/react-popover';
 
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
 });
 
-const StyledPopoverPortal = styled(PopoverPortal, {
-  marginBottom: '100px'
-})
-
-const StyledPopoverContent = styled(PopoverContent, {
+const StyledContent = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   gap: '10px',
@@ -61,35 +50,69 @@ const StyledPopoverClose = styled(PopoverClose, {
   }
 });
 
-const StyledPopoverArrow = styled(PopoverArrow, {
-  fill: '$backgroundLight'
+const StyledAvatar = styled('div', {
+  border: 'none',
+  borderRadius: '$round',
+  height: '$5',
+  width: '$5',
+  backgroundColor: '$backgroundExtraDark',
+  fontWeight: 'bold',
+  display: 'grid',
+  placeItems: 'center',
+  lineHeight: '$5',
+  marginTop: 'auto',
+  marginBottom: 'auto'
+});
+
+const StyledNameRow = styled('div', {
+  display: 'flex',
+  gap: '$3',
+  marginBottom: '$2'
 })
+
+const StyledNameField = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const StyledName = styled('div', {
+  fontWeight: 'bold',
+  lineHeight: '1.2'
+});
+
+const StyledCommentTime = styled('div', {
+  color: '$textLight',
+  fontSize: '$2',
+});
+
+
 
 export const CommentsPopover = ({
   comments
 }) => {
-  comments = ["first comment", "second comment"]
+  comments = ["A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", "comment 2"]
   return (
-    <PopoverRoot>
-      <PopoverTrigger asChild>
-        <ChatBubbleIcon />
-      </PopoverTrigger>
-      <StyledPopoverPortal>
-        <StyledPopoverContent sideOffset={25}>
-          <StyledHeader>
-            Comments
-            <StyledPopoverClose>
-              <Cross2Icon />
-            </StyledPopoverClose>
-          </StyledHeader>
-            { comments.map((comment) => (
-              <StyledFieldRow key={Math.random()}>
-                {comment}
-              </StyledFieldRow>
-            ))}
-          <StyledPopoverArrow />
-        </StyledPopoverContent>
-      </StyledPopoverPortal>
-    </PopoverRoot>
+    <StyledContent>
+      <StyledHeader>
+        Comments
+        <StyledPopoverClose>
+          <Cross2Icon />
+        </StyledPopoverClose>
+      </StyledHeader>
+      { comments.map((cmt) => (
+        <StyledFieldRow>
+          <StyledNameRow>
+            <StyledAvatar>
+              JL
+            </StyledAvatar>
+            <StyledNameField>
+              <StyledName>Jesse Leung</StyledName>
+              <StyledCommentTime>27 minutes ago</StyledCommentTime>
+            </StyledNameField>
+          </StyledNameRow>
+        { cmt }
+        </StyledFieldRow>
+      ))}
+    </StyledContent>
   );
 }
