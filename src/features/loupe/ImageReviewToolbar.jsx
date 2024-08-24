@@ -39,6 +39,7 @@ import {
   Root as PopoverRoot,
   PopoverPortal,
   PopoverContent,
+  PopoverTrigger
 } from '@radix-ui/react-popover';
 import { CommentsPopover } from './CommentsPopover.jsx';
 

@@ -85,8 +85,6 @@ const StyledCommentTime = styled('div', {
   fontSize: '$2',
 });
 
-
-
 export const CommentsPopover = ({
   comments
 }) => {
@@ -100,7 +98,7 @@ export const CommentsPopover = ({
         </StyledPopoverClose>
       </StyledHeader>
       { comments.map((cmt) => (
-        <StyledFieldRow>
+        <StyledFieldRow key={Math.random()}>
           <StyledNameRow>
             <StyledAvatar>
               JL
