@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { truncateString } from '../../app/utils.js';
 import { checkboxFilterToggled, checkboxOnlyButtonClicked } from './filtersSlice.js';
@@ -16,6 +16,12 @@ import {
   ContextMenuItem,
   ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
+import {
+  setModalOpen,
+  setModalContent,
+  setSelectedCamera,
+  selectModalOpen,
+} from '../projects/projectsSlice.js';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -58,6 +64,8 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
 
+  console.log('camConfig', camConfig);
+
   // format default deployment names
   const deployments = camConfig.deployments.map((dep) => {
     const name = dep.name === 'default' ? `${camConfig._id} (default)` : dep.name;
@@ -78,6 +86,15 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const handleExpandCameraButtonClick = (e) => {
     e.preventDefault();
     setExpanded(!expanded);
+  };
+
+  const modalOpen = useSelector(selectModalOpen);
+  const handleModalToggle = (content) => {
+    dispatch(setModalOpen(!modalOpen));
+    dispatch(setModalContent(content));
+    if (content === 'update-serial-number-form') {
+      dispatch(setSelectedCamera(camConfig._id));
+    }
   };
 
   return (
@@ -110,13 +127,13 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
         <ContextMenuContent>
           <ContextMenuItem
             className="update-serial-number"
-            onSelect={() => console.log('update serial number')}
+            onSelect={() => handleModalToggle('update-serial-number-form')}
             // disabled={object.locked}
           >
             <ContextMenuItemIconLeft>
               <Pencil1Icon />
             </ContextMenuItemIconLeft>
-            Update Camera Serial Number
+            Edit Camera Serial Number
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

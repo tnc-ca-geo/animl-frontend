@@ -11,6 +11,7 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
+import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
 import {
   clearStats,
   clearExport,
@@ -23,6 +24,7 @@ import {
   selectModalContent,
   setModalOpen,
   setModalContent,
+  setSelectedCamera,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 
@@ -91,6 +93,12 @@ const HydratedModal = () => {
       size: 'md',
       content: <ManageLabelsModal />,
       callBackOnClose: () => true,
+    },
+    'update-serial-number-form': {
+      title: 'Edit Camera Serial Number',
+      size: 'sm',
+      content: <UpdateCameraSerialNumberForm />,
+      callBackOnClose: () => dispatch(setSelectedCamera(null)),
     },
   };
 

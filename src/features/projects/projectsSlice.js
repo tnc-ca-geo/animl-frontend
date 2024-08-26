@@ -57,6 +57,7 @@ const initialState = {
   unsavedViewChanges: false,
   modalOpen: false,
   modalContent: null,
+  selectedCamera: null,
 };
 
 export const projectsSlice = createSlice({
@@ -367,6 +368,10 @@ export const projectsSlice = createSlice({
     setModalContent: (state, { payload }) => {
       state.modalContent = payload;
     },
+
+    setSelectedCamera: (state, { payload }) => {
+      state.selectedCamera = payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -449,6 +454,7 @@ export const {
 
   setModalOpen,
   setModalContent,
+  setSelectedCamera,
 } = projectsSlice.actions;
 
 // fetchProjects thunk
@@ -729,6 +735,7 @@ export const selectAutomationRulesLoading = (state) => state.projects.loadingSta
 export const selectModelsLoadingState = (state) => state.projects.loadingStates.models;
 export const selectModalOpen = (state) => state.projects.modalOpen;
 export const selectModalContent = (state) => state.projects.modalContent;
+export const selectSelectedCamera = (state) => state.projects.selectedCamera;
 export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
 export const selectModelsErrors = (state) => state.projects.loadingStates.models.errors;
