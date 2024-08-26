@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
@@ -12,7 +12,7 @@ import {
   FormError,
 } from '../../components/Form';
 // import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { selectSelectedCamera } from '../projects/projectsSlice';
+import { selectSelectedCamera, updateCameraSerialNumber } from '../projects/projectsSlice';
 
 const updateSerialNumberSchema = Yup.object().shape({
   serialNumber: Yup.string().matches(
@@ -23,10 +23,12 @@ const updateSerialNumberSchema = Yup.object().shape({
 
 const UpdateCameraSerialNumberForm = () => {
   const selectedCamera = useSelector(selectSelectedCamera);
+  const dispatch = useDispatch();
 
   const handleUpdateSerialNumberSubmit = (formVals) => {
     console.log('handleUpdateSerialNumberSubmit() - formVals:', formVals);
     console.log('selectedCamera: ', selectedCamera);
+    dispatch(updateCameraSerialNumber({ cameraId: selectedCamera, newId: formVals.serialNumber }));
   };
 
   return (

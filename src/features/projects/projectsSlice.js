@@ -372,6 +372,23 @@ export const projectsSlice = createSlice({
     setSelectedCamera: (state, { payload }) => {
       state.selectedCamera = payload;
     },
+
+    updateCameraSerialNumberStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };
+      state.loadingStates.projects = ls; // TODO: should this be projects or cameras?
+    },
+
+    updateCameraSerialNumberSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.projects = ls;
+
+      console.log('updateCameraSerialNumberSuccess caught in projectsSlice - payload: ', payload);
+    },
+
+    updateCameraSerialNumberFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projects = ls;
+    },
   },
 
   extraReducers: (builder) => {
@@ -455,6 +472,10 @@ export const {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
+
+  updateCameraSerialNumberStart,
+  updateCameraSerialNumberSuccess,
+  updateCameraSerialNumberFailure,
 } = projectsSlice.actions;
 
 // fetchProjects thunk
@@ -705,6 +726,33 @@ export const deleteProjectLabel = (payload) => {
     } catch (err) {
       console.log(`error attempting to update label: `, err);
       dispatch(updateProjectLabelFailure(err));
+    }
+  };
+};
+
+export const updateCameraSerialNumber = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateCameraSerialNumberStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'updateCameraSerialNumber',
+          input: payload,
+        });
+        dispatch(updateCameraSerialNumberSuccess(res.updateCameraSerialNumber));
+        dispatch(clearImages());
+        dispatch(fetchProjects({ _ids: [projId] }));
+      }
+    } catch (err) {
+      console.log(`error attempting to update camera serial number: `, err);
+      dispatch(updateCameraSerialNumberFailure(err));
     }
   };
 };

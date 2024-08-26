@@ -653,6 +653,17 @@ const queries = {
     variables: { input: input },
   }),
 
+  updateCameraSerialNumber: (input) => ({
+    template: `
+      mutation UpdateCameraSerialNumber($input: UpdateCameraSerialNumberInput!) {
+        updateCameraSerialNumber(input: $input) {
+          isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
   createUpload: (input) => ({
     template: `
       mutation CreateUpload($input: CreateUploadInput!) {
