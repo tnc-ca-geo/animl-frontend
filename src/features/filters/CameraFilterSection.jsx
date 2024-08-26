@@ -7,8 +7,15 @@ import Checkbox from '../../components/Checkbox.jsx';
 import BulkSelectCheckbox from './BulkSelectCheckbox.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
-import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { ChevronRightIcon, ChevronDownIcon, Pencil1Icon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuItemIconLeft,
+} from '../../components/ContextMenu';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -75,22 +82,44 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
 
   return (
     <StyledCameraFilterSection>
-      <CameraCheckboxWrapper>
-        <label>
-          <BulkSelectCheckbox filterCat="deployments" managedIds={managedIds} isHeader={false} />
-          <CameraCheckboxLabel
-            filterCat="deployments"
-            managedIds={managedIds}
-            deployments={deployments}
-            activeDeps={activeDeps}
-          />
-          <ExpandButton onClick={handleExpandCameraButtonClick}>
-            <IconButton size="small" variant="ghost">
-              {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-            </IconButton>
-          </ExpandButton>
-        </label>
-      </CameraCheckboxWrapper>
+      <ContextMenu>
+        <ContextMenuTrigger
+        // disabled={!isAuthorized}
+        >
+          <CameraCheckboxWrapper>
+            <label>
+              <BulkSelectCheckbox
+                filterCat="deployments"
+                managedIds={managedIds}
+                isHeader={false}
+              />
+              <CameraCheckboxLabel
+                filterCat="deployments"
+                managedIds={managedIds}
+                deployments={deployments}
+                activeDeps={activeDeps}
+              />
+              <ExpandButton onClick={handleExpandCameraButtonClick}>
+                <IconButton size="small" variant="ghost">
+                  {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                </IconButton>
+              </ExpandButton>
+            </label>
+          </CameraCheckboxWrapper>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            className="update-serial-number"
+            onSelect={() => console.log('update serial number')}
+            // disabled={object.locked}
+          >
+            <ContextMenuItemIconLeft>
+              <Pencil1Icon />
+            </ContextMenuItemIconLeft>
+            Update Camera Serial Number
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
 
       {expanded && (
         <Deployments>
