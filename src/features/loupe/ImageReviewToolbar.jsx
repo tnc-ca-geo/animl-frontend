@@ -39,7 +39,8 @@ import {
   Root as PopoverRoot,
   PopoverPortal,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
+  PopoverArrow
 } from '@radix-ui/react-popover';
 import { CommentsPopover } from './CommentsPopover.jsx';
 
@@ -113,6 +114,11 @@ const CancelHint = styled('div', {
 
 const StyledPopoverContent = styled(PopoverContent, {
   zIndex: 200
+});
+
+const StyledPopoverArrow = styled(PopoverArrow, {
+  zIndex: 200,
+  fill: '$backgroundLight'
 });
 
 const ImageReviewToolbar = ({
@@ -303,6 +309,7 @@ const ImageReviewToolbar = ({
               <PopoverPortal>
                 <StyledPopoverContent side="top" sideOffset={25}>
                   <CommentsPopover />
+                  <StyledPopoverArrow />
                 </StyledPopoverContent>
               </PopoverPortal>
             </PopoverRoot>

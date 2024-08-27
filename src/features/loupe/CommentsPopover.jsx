@@ -5,9 +5,15 @@ import {
 import { FieldRow } from '../../components/Form.jsx';
 import { styled } from '../../theme/stitches.config.js';
 import { PopoverClose } from '@radix-ui/react-popover';
+import Button from '../../components/Button.jsx';
 
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
+  paddingBottom: '$3'
+});
+
+const StyledCommentsContainer = styled('div', {
+  overflowY: 'scroll'
 });
 
 const StyledContent = styled('div', {
@@ -16,7 +22,8 @@ const StyledContent = styled('div', {
   gap: '10px',
   backgroundColor: '$loContrast',
   borderRadius: '$2',
-  width: '350px',
+  width: '450px',
+  maxHeight: '70vh',
   padding: '$0 $3 $0 $3',
 });
 
@@ -30,6 +37,8 @@ const StyledHeader = styled('div', {
   backgroundColor: '$backgroundLight',
   fontWeight: '$5',
   color: '$textDark',
+  paddingTop: '$2',
+  paddingBottom: '$2'
 });
 
 const StyledPopoverClose = styled(PopoverClose, {
@@ -77,7 +86,7 @@ const StyledNameField = styled('div', {
 
 const StyledName = styled('div', {
   fontWeight: 'bold',
-  lineHeight: '1.2'
+  lineHeight: '1.1'
 });
 
 const StyledCommentTime = styled('div', {
@@ -85,10 +94,72 @@ const StyledCommentTime = styled('div', {
   fontSize: '$2',
 });
 
+const StyledComment = styled('div', {
+  fontSize: '$3'
+});
+
+const StyledAddCommentRow = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '$1',
+  borderBottomLeftRadius: '$2',
+  borderBottomRightRadius: '$2',
+  borderTop: '1px solid $border',
+  backgroundColor: '$backgroundLight',
+  fontWeight: '$5',
+  color: '$textDark',
+  paddingTop: '$2',
+  paddingBottom: '$2',
+});
+
+const StyledTextArea = styled('textarea', {
+  resize: 'none',
+  width: '100%',
+  rows: '2',
+  color: '$textDark',
+  padding: '$1',
+  fontSize: '$3',
+  fontWeight: '$2',
+  boxSizing: 'border-box',
+  border: '1px solid',
+  borderColor: '$border',
+  backgroundColor: '#FFFFFF',
+  borderRadius: '$1',
+  '&:focus': {
+    transition: 'all 0.2s ease',
+    outline: 'none',
+    boxShadow: '0 0 0 3px $gray3',
+    // borderColor: '$textDark',
+    '&:hover': {
+      boxShadow: '0 0 0 3px $blue200',
+      borderColor: '$blue500',
+    },
+  },
+});
+
+const StyledAddCommentButton = styled(Button, {
+  marginLeft: 'auto',
+  marginRight: '0',
+});
+
+
 export const CommentsPopover = ({
   comments
 }) => {
-  comments = ["A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", "comment 2"]
+  // TODO
+  // remove when implementing actual comments functionality
+  comments = [
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    // "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    // "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
+    "comment 2"
+  ]
   return (
     <StyledContent>
       <StyledHeader>
@@ -97,6 +168,7 @@ export const CommentsPopover = ({
           <Cross2Icon />
         </StyledPopoverClose>
       </StyledHeader>
+      <StyledCommentsContainer>
       { comments.map((cmt) => (
         <StyledFieldRow key={Math.random()}>
           <StyledNameRow>
@@ -108,9 +180,19 @@ export const CommentsPopover = ({
               <StyledCommentTime>27 minutes ago</StyledCommentTime>
             </StyledNameField>
           </StyledNameRow>
-        { cmt }
+            <StyledComment>
+              { cmt }
+            </StyledComment>
         </StyledFieldRow>
       ))}
+      </StyledCommentsContainer>
+      <StyledAddCommentRow>
+        <StyledTextArea
+          placeholder='Enter comment'
+        >
+        </StyledTextArea>
+        <StyledAddCommentButton size="small">Add Comment</StyledAddCommentButton>
+      </StyledAddCommentRow>
     </StyledContent>
   );
 }
