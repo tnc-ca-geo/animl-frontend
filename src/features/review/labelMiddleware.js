@@ -52,7 +52,7 @@ export const labelMiddleware = (store) => (next) => (action) => {
         editLabel('create', 'objects', {
           objects: tempObjs.map(({ newObject, imgId }) => {
             const obj = _.cloneDeep(newObject);
-            obj.labels = obj.labels.map((lbl) => ({ ...lbl, imageId: imgId }));
+            obj.labels = obj.labels.map((lbl) => ({ ...lbl, imageId: imgId, objectId: obj._id }));
             return {
               object: obj,
               imageId: imgId,
