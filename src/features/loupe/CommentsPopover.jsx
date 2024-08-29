@@ -1,16 +1,9 @@
 import React from 'react';
-import { 
-  Cross2Icon,
-} from '@radix-ui/react-icons';
-import { FieldRow } from '../../components/Form.jsx';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { styled } from '../../theme/stitches.config.js';
 import { PopoverClose } from '@radix-ui/react-popover';
 import Button from '../../components/Button.jsx';
-
-const StyledFieldRow = styled(FieldRow, {
-  display: 'block',
-  paddingBottom: '$3'
-});
+import { Comment } from './Comment.jsx';
 
 const StyledCommentsContainer = styled('div', {
   overflowY: 'scroll'
@@ -59,45 +52,6 @@ const StyledPopoverClose = styled(PopoverClose, {
   }
 });
 
-const StyledAvatar = styled('div', {
-  border: 'none',
-  borderRadius: '$round',
-  height: '$5',
-  width: '$5',
-  backgroundColor: '$backgroundExtraDark',
-  fontWeight: 'bold',
-  display: 'grid',
-  placeItems: 'center',
-  lineHeight: '$5',
-  marginTop: 'auto',
-  marginBottom: 'auto'
-});
-
-const StyledNameRow = styled('div', {
-  display: 'flex',
-  gap: '$3',
-  marginBottom: '$2'
-})
-
-const StyledNameField = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const StyledName = styled('div', {
-  fontWeight: 'bold',
-  lineHeight: '1.1'
-});
-
-const StyledCommentTime = styled('div', {
-  color: '$textLight',
-  fontSize: '$2',
-});
-
-const StyledComment = styled('div', {
-  fontSize: '$3'
-});
-
 const StyledAddCommentRow = styled('div', {
   display: 'flex',
   flexDirection: 'column',
@@ -142,23 +96,32 @@ const StyledAddCommentButton = styled(Button, {
   marginRight: '0',
 });
 
-
 export const CommentsPopover = ({
   comments
 }) => {
   // TODO
   // remove when implementing actual comments functionality
   comments = [
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    // "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    // "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks.", 
-    "comment 2"
+    {
+      author: "jesse.leung@tnc.org",
+      time: "08/28/24 23:19",
+      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    },
+    {
+      author: "jesse.leung-aws@tnc.org",
+      time: "08/28/24 23:20",
+      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    },
+    {
+      author: "jesse.leung@tnc.org",
+      time: "08/28/24 23:19",
+      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    },
+    {
+      author: "jesse.leung-aws@tnc.org",
+      time: "08/28/24 23:20",
+      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    },
   ]
   return (
     <StyledContent>
@@ -169,28 +132,20 @@ export const CommentsPopover = ({
         </StyledPopoverClose>
       </StyledHeader>
       <StyledCommentsContainer>
-      { comments.map((cmt) => (
-        <StyledFieldRow key={Math.random()}>
-          <StyledNameRow>
-            <StyledAvatar>
-              JL
-            </StyledAvatar>
-            <StyledNameField>
-              <StyledName>Jesse Leung</StyledName>
-              <StyledCommentTime>27 minutes ago</StyledCommentTime>
-            </StyledNameField>
-          </StyledNameRow>
-            <StyledComment>
-              { cmt }
-            </StyledComment>
-        </StyledFieldRow>
+      { comments.map((comment) => (
+        <Comment 
+          key={Math.random()}
+          isAuthor={true}
+          author={comment.author}
+          time={comment.time}
+          comment={comment.comment}
+        />
       ))}
       </StyledCommentsContainer>
       <StyledAddCommentRow>
         <StyledTextArea
           placeholder='Enter comment'
-        >
-        </StyledTextArea>
+        />
         <StyledAddCommentButton size="small">Add Comment</StyledAddCommentButton>
       </StyledAddCommentRow>
     </StyledContent>
