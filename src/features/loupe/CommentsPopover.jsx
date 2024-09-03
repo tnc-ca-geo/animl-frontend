@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { styled } from '../../theme/stitches.config.js';
 import { PopoverClose } from '@radix-ui/react-popover';
@@ -97,6 +97,8 @@ const StyledAddCommentButton = styled(Button, {
 });
 
 export const CommentsPopover = ({
+  changeActionMenuState,
+  onClose,
   comments
 }) => {
   // TODO
@@ -107,27 +109,28 @@ export const CommentsPopover = ({
       time: "08/28/24 23:19",
       comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
     },
-    {
-      author: "jesse.leung-aws@tnc.org",
-      time: "08/28/24 23:20",
-      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    },
-    {
-      author: "jesse.leung@tnc.org",
-      time: "08/28/24 23:19",
-      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    },
-    {
-      author: "jesse.leung-aws@tnc.org",
-      time: "08/28/24 23:20",
-      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    },
+    // {
+    //   author: "jesse.leung-aws@tnc.org",
+    //   time: "08/28/24 23:20",
+    //   comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    // },
+    // {
+    //   author: "jesse.leung@tnc.org",
+    //   time: "08/28/24 23:19",
+    //   comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    // },
+    // {
+    //   author: "jesse.leung-aws@tnc.org",
+    //   time: "08/28/24 23:20",
+    //   comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
+    // },
   ]
+
   return (
     <StyledContent>
       <StyledHeader>
         Comments
-        <StyledPopoverClose>
+        <StyledPopoverClose onClick={() => onClose()}>
           <Cross2Icon />
         </StyledPopoverClose>
       </StyledHeader>
@@ -145,6 +148,8 @@ export const CommentsPopover = ({
       <StyledAddCommentRow>
         <StyledTextArea
           placeholder='Enter comment'
+          onKeyDown={(e) => e.stopPropagation()}
+          onKeyDownCapture={(e) => e.stopPropagation()}
         />
         <StyledAddCommentButton size="small">Add Comment</StyledAddCommentButton>
       </StyledAddCommentRow>

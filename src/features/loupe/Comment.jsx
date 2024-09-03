@@ -11,6 +11,7 @@ import {
 } from '../../components/Dropdown.jsx';
 import Button from '../../components/Button.jsx';
 import IconButton from '../../components/IconButton.jsx';
+import { DeleteCommentAlert } from './DeleteCommentAlert.jsx';
 
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
@@ -62,7 +63,9 @@ const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
 });
 
 const StyledDropdownMenuContent = styled(DropdownMenuContent, {
-  width: '25px'
+  minWidth: '100px',
+  width: '100px',
+  right: '20px'
 });
 
 const StyledAddCommentRow = styled('div', {
@@ -115,45 +118,66 @@ export const Comment = ({
 }) => {
   const initial = author[0].toUpperCase();
   const [isEdit, setIsEdit] = useState(false);
+  const [isDeleteConfirm, setIsDeleteConfirm] = useState(false);
+
+  const onDeleteConfirm = () => {
+    // commit change to db
+    setIsDeleteConfirm(false);
+  };
+
+  const onEditConfirm = () => {
+    setIsEdit(false);
+  };
 
   return (
-    <StyledFieldRow key={Math.random()}>
-      <StyledNameRow>
-        <StyledAvatar>
-          { initial }
-        </StyledAvatar>
-        <StyledNameField>
-          <StyledName>{ author }</StyledName>
-          <StyledCommentTime>{ time }</StyledCommentTime>
-        </StyledNameField>
-        { isAuthor &&
-          <DropdownMenu>
-            <StyledDropdownMenuTrigger asChild>
-              <IconButton variant="ghost">
-                <DotsHorizontalIcon />
-              </IconButton>
-            </StyledDropdownMenuTrigger>
-            <StyledDropdownMenuContent sideOffset={5}>
-              <DropdownMenuItem onClick={() => setIsEdit(true)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
-              <DropdownMenuArrow offset={12} />
-            </StyledDropdownMenuContent>
-          </DropdownMenu>
-        }
-      </StyledNameRow>
-      { isEdit ? (
-        <StyledAddCommentRow>
-          <StyledTextArea value={comment} />
-          <StyledButtonContainer>
-            <Button size="small">Update</Button>
-            <Button size="small" onClick={() => setIsEdit(false)}>Discard</Button>
-          </StyledButtonContainer>
-        </StyledAddCommentRow>
-      ) : (
-        <StyledComment>
-          { comment }
-        </StyledComment>
-      )}
-    </StyledFieldRow>
+    <>
+      <DeleteCommentAlert 
+        isOpen={isDeleteConfirm}
+        onDeleteConfirm={onDeleteConfirm}
+        onDeleteCancel={() => setIsDeleteConfirm(false)}
+      />
+      <StyledFieldRow key={Math.random()}>
+        <StyledNameRow>
+          <StyledAvatar>
+            { initial }
+          </StyledAvatar>
+          <StyledNameField>
+            <StyledName>{ author }</StyledName>
+            <StyledCommentTime>{ time }</StyledCommentTime>
+          </StyledNameField>
+          { isAuthor &&
+            <DropdownMenu>
+              <StyledDropdownMenuTrigger asChild disabled={isEdit}>
+                <IconButton variant="ghost">
+                  <DotsHorizontalIcon />
+                </IconButton>
+              </StyledDropdownMenuTrigger>
+              <StyledDropdownMenuContent sideOffset={5}>
+                <DropdownMenuItem onClick={() => setIsDeleteConfirm(true)}>Delete</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsEdit(true)}>Edit</DropdownMenuItem>
+                <DropdownMenuArrow offset={12} />
+              </StyledDropdownMenuContent>
+            </DropdownMenu>
+          }
+        </StyledNameRow>
+        { isEdit ? (
+          <StyledAddCommentRow>
+            <StyledTextArea 
+              value={comment} 
+              onKeyDown={(e) => e.stopPropagation()} 
+              onKeyDownCapture={(e) => e.stopPropagation()} 
+            />
+            <StyledButtonContainer>
+              <Button size="small" onClick={() => onEditConfirm()}>Update</Button>
+              <Button size="small" onClick={() => setIsEdit(false)}>Discard</Button>
+            </StyledButtonContainer>
+          </StyledAddCommentRow>
+        ) : (
+          <StyledComment>
+            { comment }
+          </StyledComment>
+        )}
+      </StyledFieldRow>
+    </>
   )
 }

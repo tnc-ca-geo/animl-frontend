@@ -177,6 +177,12 @@ const ImageReviewToolbar = ({
       ),
     );
 
+  const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
+  const [isCommentsPopoverActionMenuOpen, setIsCommentsPopoverActionMenuOpen] = useState(false);
+  useEffect(() => {
+    console.log("is child open", isCommentsPopoverActionMenuOpen)
+  }, [isCommentsPopoverActionMenuOpen]);
+
   return (
     <Toolbar>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
@@ -294,10 +300,10 @@ const ImageReviewToolbar = ({
 
           {/* Comments */}
           <Tooltip>
-            <PopoverRoot>
+            <PopoverRoot open={isCommentsPopoverOpen}>
               <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <ToolbarIconButton onClick={() => console.log("popover")}>
+                <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
+                  <ToolbarIconButton>
                     <ChatBubbleIcon />
                   </ToolbarIconButton>
                 </PopoverTrigger>
@@ -307,8 +313,11 @@ const ImageReviewToolbar = ({
                 <TooltipArrow />
               </TooltipContent>
               <PopoverPortal>
-                <StyledPopoverContent side="top" sideOffset={25}>
-                  <CommentsPopover />
+                <StyledPopoverContent side="top" sideOffset={25} onPointerDownOutside={() => {}}>
+                  <CommentsPopover 
+                    changeActionMenuState={setIsCommentsPopoverActionMenuOpen}
+                    onClose={() => setIsCommentsPopoverOpen(false)}
+                  />
                   <StyledPopoverArrow />
                 </StyledPopoverContent>
               </PopoverPortal>
