@@ -178,10 +178,6 @@ const ImageReviewToolbar = ({
     );
 
   const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
-  const [isCommentsPopoverActionMenuOpen, setIsCommentsPopoverActionMenuOpen] = useState(false);
-  useEffect(() => {
-    console.log("is child open", isCommentsPopoverActionMenuOpen)
-  }, [isCommentsPopoverActionMenuOpen]);
 
   return (
     <Toolbar>
@@ -315,7 +311,6 @@ const ImageReviewToolbar = ({
               <PopoverPortal>
                 <StyledPopoverContent side="top" sideOffset={25} onPointerDownOutside={() => {}}>
                   <CommentsPopover 
-                    changeActionMenuState={setIsCommentsPopoverActionMenuOpen}
                     onClose={() => setIsCommentsPopoverOpen(false)}
                   />
                   <StyledPopoverArrow />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { styled } from '../../theme/stitches.config.js';
 import { PopoverClose } from '@radix-ui/react-popover';
@@ -97,7 +97,6 @@ const StyledAddCommentButton = styled(Button, {
 });
 
 export const CommentsPopover = ({
-  changeActionMenuState,
   onClose,
   comments
 }) => {
