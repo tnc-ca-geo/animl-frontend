@@ -17,7 +17,11 @@ import {
   clearExport,
   clearErrorsExport,
   clearDeployments,
+  selectStatsLoading,
+  selectAnnotationsExportLoading,
+  selectErrorsExportLoading,
   selectDeploymentsLoading,
+  selectCameraSerialNumberLoading,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -33,7 +37,19 @@ const HydratedModal = () => {
   const dispatch = useDispatch();
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
+
+  // loading states of async tasks
+  const statsLoading = useSelector(selectStatsLoading);
+  const annotationsExportLoading = useSelector(selectAnnotationsExportLoading);
+  const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const deploymentsLoading = useSelector(selectDeploymentsLoading);
+  const cameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
+  const asyncTaskLoading =
+    statsLoading.isLoading ||
+    annotationsExportLoading.isLoading ||
+    errorsExportLoading.isLoading ||
+    deploymentsLoading.isLoading ||
+    cameraSerialNumberLoading.isLoading;
 
   const modalContentMap = {
     'stats-modal': {
@@ -103,8 +119,8 @@ const HydratedModal = () => {
   };
 
   const handleModalToggle = (content) => {
-    // TODO: might want to prevent modal from being closed if other async tasks are pending
-    if (deploymentsLoading.isLoading) return;
+    // If async tasks are loading, don't allow modal to close
+    if (asyncTaskLoading) return;
 
     dispatch(setModalOpen(!modalOpen));
     if (modalOpen) {
