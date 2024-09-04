@@ -657,7 +657,7 @@ const queries = {
     template: `
       mutation UpdateCameraSerialNumber($input: UpdateCameraSerialNumberInput!) {
         updateCameraSerialNumber(input: $input) {
-          isOk
+          _id
         }
       }
     `,

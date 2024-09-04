@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -11,8 +11,13 @@ import {
   ButtonRow,
   FormError,
 } from '../../components/Form';
-// import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { selectSelectedCamera, updateCameraSerialNumber } from '../projects/projectsSlice';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
+import { selectSelectedCamera } from '../projects/projectsSlice';
+import {
+  updateCameraSerialNumber,
+  fetchTask,
+  selectCameraSerialNumberLoading,
+} from '../tasks/tasksSlice.js';
 
 const updateSerialNumberSchema = Yup.object().shape({
   serialNumber: Yup.string().matches(
@@ -31,13 +36,23 @@ const UpdateCameraSerialNumberForm = () => {
     dispatch(updateCameraSerialNumber({ cameraId: selectedCamera, newId: formVals.serialNumber }));
   };
 
+  // fetch task status
+  const updateCameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
+  useEffect(() => {
+    const updateSerialNumberPending =
+      updateCameraSerialNumberLoading.isLoading && updateCameraSerialNumberLoading.taskId;
+    if (updateSerialNumberPending) {
+      dispatch(fetchTask(updateCameraSerialNumberLoading.taskId));
+    }
+  }, [updateCameraSerialNumberLoading, dispatch]);
+
   return (
     <div>
-      {/* {camerasLoading.isLoading && (
+      {updateCameraSerialNumberLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      )} */}
+      )}
       <FormWrapper>
         <Formik
           initialValues={{
