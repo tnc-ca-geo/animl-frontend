@@ -22,6 +22,7 @@ import {
   selectErrorsExportLoading,
   selectDeploymentsLoading,
   selectCameraSerialNumberLoading,
+  clearCameraSerialNumberTask,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -114,7 +115,10 @@ const HydratedModal = () => {
       title: 'Edit Camera Serial Number',
       size: 'sm',
       content: <UpdateCameraSerialNumberForm />,
-      callBackOnClose: () => dispatch(setSelectedCamera(null)),
+      callBackOnClose: () => {
+        dispatch(setSelectedCamera(null));
+        dispatch(clearCameraSerialNumberTask());
+      },
     },
   };
 

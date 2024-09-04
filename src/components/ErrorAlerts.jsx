@@ -40,6 +40,8 @@ import {
   dismissErrorsExportError,
   selectDeploymentsErrors,
   dismissDeploymentsError,
+  selectCameraSerialNumberErrors,
+  dismissCameraSerialNumberError,
 } from '../features/tasks/tasksSlice';
 import {
   selectRedriveBatchErrors,
@@ -71,6 +73,7 @@ const ErrorAlerts = () => {
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
   const manageLabelsErrors = useSelector(selectManageLabelsErrors);
   const uploadErrors = useSelector(selectUploadErrors);
+  const cameraSerialNumberErrors = useSelector(selectCameraSerialNumberErrors);
 
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -90,6 +93,11 @@ const ErrorAlerts = () => {
     enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
     enrichErrors(manageLabelsErrors, 'Error Updating Label', 'manageLabels'),
     enrichErrors(uploadErrors, 'Error Uploading Images', 'upload'),
+    enrichErrors(
+      cameraSerialNumberErrors,
+      'Error Updating Camera Serial Number',
+      'cameraSerialNumber',
+    ),
   ];
 
   const errors = enrichedErrors.reduce(
@@ -152,6 +160,7 @@ const dismissErrorActions = {
   manageUsers: (i) => dismissManageUsersError(i),
   manageLabels: (i) => dismissManageLabelsError(i),
   upload: (i) => dismissUploadError(i),
+  cameraSerialNumber: (i) => dismissCameraSerialNumberError(i),
 };
 
 function enrichErrors(errors, title, entity) {

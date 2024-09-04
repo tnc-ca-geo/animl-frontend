@@ -238,15 +238,15 @@ export const tasksSlice = createSlice({
       ls.errors = [payload.task.output.error];
     },
 
-    // clearStats: (state) => {
-    //   state.imagesStats = null;
-    //   state.loadingStates.stats = initialState.loadingStates.stats;
-    // },
+    clearCameraSerialNumberTask: (state) => {
+      state.loadingStates.cameraSerialNumber = initialState.loadingStates.cameraSerialNumber;
+    },
 
-    // dismissStatsError: (state, { payload }) => {
-    //   const index = payload;
-    //   state.loadingStates.stats.errors.splice(index, 1);
-    // },
+    dismissCameraSerialNumberError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.cameraSerialNumber.taskId = null;
+      state.loadingStates.cameraSerialNumber.errors.splice(index, 1);
+    },
   },
 });
 
@@ -285,6 +285,8 @@ export const {
   updateCameraSerialNumberUpdate,
   updateCameraSerialNumberSuccess,
   updateCameraSerialNumberFailure,
+  clearCameraSerialNumberTask,
+  dismissCameraSerialNumberError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
