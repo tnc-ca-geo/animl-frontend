@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
+import { fetchProjects, setModalOpen, setModalContent } from '../projects/projectsSlice';
+import { toggleOpenLoupe } from '../loupe/loupeSlice';
 
 const initialState = {
   loadingStates: {
@@ -342,7 +344,13 @@ export const fetchTask = (taskId) => {
               FAIL: (res) => dispatch(editDeploymentsFailure(res)),
             },
             UpdateSerialNumber: {
-              COMPLETE: () => dispatch(updateCameraSerialNumberSuccess()),
+              COMPLETE: () => {
+                dispatch(updateCameraSerialNumberSuccess());
+                dispatch(toggleOpenLoupe(false));
+                dispatch(setModalOpen(false));
+                dispatch(setModalContent(null));
+                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+              },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
           };
