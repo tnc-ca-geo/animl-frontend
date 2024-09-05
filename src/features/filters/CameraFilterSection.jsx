@@ -64,8 +64,6 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
 
-  console.log('camConfig', camConfig);
-
   // format default deployment names
   const deployments = camConfig.deployments.map((dep) => {
     const name = dep.name === 'default' ? `${camConfig._id} (default)` : dep.name;

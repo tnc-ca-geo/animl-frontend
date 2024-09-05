@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import {
   FormWrapper,
-  // FormSubheader,
   FieldRow,
   FormFieldWrapper,
   ButtonRow,
   FormError,
 } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { selectSelectedCamera } from '../projects/projectsSlice';
+import { selectSelectedProject, selectSelectedCamera } from '../projects/projectsSlice';
 import {
   updateCameraSerialNumber,
   fetchTask,
@@ -31,9 +30,18 @@ const UpdateCameraSerialNumberForm = () => {
   const dispatch = useDispatch();
 
   const handleUpdateSerialNumberSubmit = (formVals) => {
-    console.log('handleUpdateSerialNumberSubmit() - formVals:', formVals);
-    console.log('selectedCamera: ', selectedCamera);
     dispatch(updateCameraSerialNumber({ cameraId: selectedCamera, newId: formVals.serialNumber }));
+  };
+
+  const project = useSelector(selectSelectedProject);
+  const cameraIds = project?.cameraConfigs.map((cc) => cc._id);
+  const [isMerge, setIsMerge] = useState(false);
+  const handleInputChange = (values) => {
+    if (values.serialNumber === selectedCamera) {
+      setIsMerge(false);
+      return;
+    }
+    setIsMerge(cameraIds.includes(values.serialNumber));
   };
 
   // fetch task status
@@ -61,13 +69,23 @@ const UpdateCameraSerialNumberForm = () => {
           validationSchema={updateSerialNumberSchema}
           onSubmit={(values) => handleUpdateSerialNumberSubmit(values)}
         >
-          {({ isValid, dirty }) => (
+          {({ isValid, dirty, values }) => (
             <Form>
-              {/* <FormSubheader>Update Camera Serial Number</FormSubheader> */}
+              <p>Update Camera Serial Number</p>
+              {isMerge && (
+                <p>
+                  NOTE: a camera with this serial number already exists. By updating the selected
+                  camera, you will be merging images from the selected camera to the target camera
+                </p>
+              )}
               <FieldRow>
                 <FormFieldWrapper>
                   {/* <label htmlFor="serialNumber">New Serial Number</label> */}
-                  <Field name="serialNumber" id="serialNumber" />
+                  <Field
+                    name="serialNumber"
+                    id="serialNumber"
+                    onKeyUp={() => handleInputChange(values)}
+                  />
                   <ErrorMessage component={FormError} name="cameraId" />
                 </FormFieldWrapper>
               </FieldRow>

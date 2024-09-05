@@ -1,6 +1,6 @@
 const API_URLS = {
-  development: 'http://localhost:3000/dev/external', // if serving animl-api locally
-  // development: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
+  // development: 'http://localhost:3000/dev/external', // if serving animl-api locally
+  development: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
   staging: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external',
   production: 'https://4634jgo56f.execute-api.us-west-2.amazonaws.com/prod/external/',
 };

@@ -350,6 +350,7 @@ export const fetchTask = (taskId) => {
                 dispatch(setModalOpen(false));
                 dispatch(setModalContent(null));
                 dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+                // TODO: do we need to reset Project slice's selectedCamera as well?
               },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
