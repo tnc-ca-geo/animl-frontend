@@ -17,9 +17,9 @@ const StyledCallout = styled('div', {
   backgroundColor: '$backgroundDark',
 
   p: {
-    marginTop: '$2',
+    marginTop: '$3',
     color: '$textMedium',
-    fontSize: '$3',
+    fontSize: '$4',
   },
   variants: {
     type: {

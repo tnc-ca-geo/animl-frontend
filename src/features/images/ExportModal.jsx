@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled } from '../../theme/stitches.config';
 import {
   selectAnnotationsExport,
   selectAnnotationsExportLoading,
@@ -11,21 +10,19 @@ import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
 import Button from '../../components/Button';
-import Warning from '../../components/Warning';
+import Callout from '../../components/Callout';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
-
-const StyledWarning = styled(Warning, {
-  marginTop: '$0',
-});
 
 const NotReviewedWarning = ({ reviewedCount }) => {
   const total = reviewedCount.notReviewed + reviewedCount.reviewed;
   return (
-    <StyledWarning>
-      {reviewedCount.notReviewed.toLocaleString('en-US')} of the {total.toLocaleString('en-US')}{' '}
-      images that matched the current filters still need review and were not included in the export
-      file.
-    </StyledWarning>
+    <Callout type="info">
+      <p>
+        {reviewedCount.notReviewed.toLocaleString('en-US')} of the {total.toLocaleString('en-US')}{' '}
+        images that matched the current filters <strong>still need review</strong> and were not
+        included in the export file.
+      </p>
+    </Callout>
   );
 };
 
@@ -75,7 +72,7 @@ const ExportModal = () => {
       )}
       <HelperText>
         <p>
-          Reviewed images matching the current filters can be downloaded to CSV or{' '}
+          Annotations from images matching the current filters can be downloaded to CSV or{' '}
           <a
             href="https://github.com/microsoft/CameraTraps/blob/main/data_management/README.md"
             target="_blank"
@@ -94,23 +91,25 @@ const ExportModal = () => {
           </p>
         )}
         {exportReady && (
-          <p>
-            <em>
-              Success! Your export is ready for download. If the download did not start
-              automatically, click{' '}
-              <a href={annotationsExport.url} target="downloadTab">
-                this link
-              </a>{' '}
-              to initiate it.
-            </em>
-          </p>
+          <Callout type="success" title="Export successsful">
+            <p>
+              <em>
+                Your export is ready for download. If the download did not start automatically,
+                click{' '}
+                <a href={annotationsExport.url} target="downloadTab">
+                  this link
+                </a>{' '}
+                to initiate it.
+              </em>
+            </p>
+          </Callout>
         )}
+        {exportReady &&
+          annotationsExport.meta.reviewedCount &&
+          annotationsExport.meta.reviewedCount.notReviewed > 0 && (
+            <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
+          )}
       </HelperText>
-      {exportReady &&
-        annotationsExport.meta.reviewedCount &&
-        annotationsExport.meta.reviewedCount.notReviewed > 0 && (
-          <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
-        )}
       <ButtonRow>
         <Button
           type="submit"

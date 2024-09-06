@@ -60,7 +60,7 @@ const HydratedModal = () => {
       callBackOnClose: () => dispatch(clearStats()),
     },
     'export-modal': {
-      title: 'Export data',
+      title: 'Export annotations',
       size: 'md',
       content: <ExportModal />,
       callBackOnClose: () => dispatch(clearExport()),
