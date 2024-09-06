@@ -54,7 +54,7 @@ import { selectManageUserErrors, dismissManageUsersError } from '../features/pro
 
 // TODO: add updateAutomationRules errors
 
-const ErrorAlerts = () => {
+const ErrorToast = () => {
   const dispatch = useDispatch();
   const labelsErrors = useSelector(selectLabelsErrors);
   const commentsErrors = useSelector(selectCommentsErrors);
@@ -176,4 +176,4 @@ function enrichErrors(errors, title, entity) {
   }));
 }
 
-export default ErrorAlerts;
+export default ErrorToast;

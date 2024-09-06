@@ -7,7 +7,7 @@ import SidebarNav from './SidebarNav.jsx';
 import FiltersPanel from '../filters/FiltersPanel.jsx';
 import ImagesPanel from '../images/ImagesPanel.jsx';
 import Loupe from '../loupe/Loupe.jsx';
-import ErrorAlerts from '../../components/ErrorAlerts.jsx';
+import ErrorToast from '../../components/ErrorToast.jsx';
 import HydratedModal from '../../components/HydratedModal.jsx';
 
 const ViewExplorerWrapper = styled('div', {
@@ -39,7 +39,7 @@ const ViewExplorer = () => {
       <ImagesPanel />
       {loupeOpen && <Loupe />}
       <HydratedModal />
-      <ErrorAlerts />
+      <ErrorToast />
     </ViewExplorerWrapper>
   );
 };
