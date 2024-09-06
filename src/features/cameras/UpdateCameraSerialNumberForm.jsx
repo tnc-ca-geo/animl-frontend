@@ -69,7 +69,7 @@ const UpdateCameraSerialNumberForm = () => {
           validationSchema={updateSerialNumberSchema}
           onSubmit={(values) => handleUpdateSerialNumberSubmit(values)}
         >
-          {({ isValid, dirty, values }) => (
+          {({ isValid, dirty, values, setFieldTouched }) => (
             <Form>
               <p>Update Camera Serial Number</p>
               {isMerge && (
@@ -84,9 +84,12 @@ const UpdateCameraSerialNumberForm = () => {
                   <Field
                     name="serialNumber"
                     id="serialNumber"
-                    onKeyUp={() => handleInputChange(values)}
+                    onKeyUp={() => {
+                      handleInputChange(values);
+                      setFieldTouched('serialNumber', true);
+                    }}
                   />
-                  <ErrorMessage component={FormError} name="cameraId" />
+                  <ErrorMessage component={FormError} name="serialNumber" />
                 </FormFieldWrapper>
               </FieldRow>
               <ButtonRow>
