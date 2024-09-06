@@ -7,7 +7,7 @@ import {
   ExclamationTriangleIcon,
 } from '@radix-ui/react-icons';
 
-const StyledAlert = styled('div', {
+const StyledCallout = styled('div', {
   marginTop: '$2',
   marginBottom: '$3',
   padding: '$1 $3',
@@ -18,6 +18,8 @@ const StyledAlert = styled('div', {
 
   p: {
     marginTop: '$2',
+    color: '$textMedium',
+    fontSize: '$3',
   },
   variants: {
     type: {
@@ -45,7 +47,7 @@ const StyledAlert = styled('div', {
   },
 });
 
-const AlertTitle = styled('div', {
+const CalloutTitle = styled('div', {
   display: 'flex',
   alignItems: 'center',
   fontWeight: '500',
@@ -55,7 +57,7 @@ const AlertTitle = styled('div', {
   },
 });
 
-const Alert = ({ type, title, children }) => {
+const Callout = ({ type, title, children }) => {
   const icon = () => {
     if (type === 'info') {
       return <InfoCircledIcon />;
@@ -76,14 +78,14 @@ const Alert = ({ type, title, children }) => {
   };
 
   return (
-    <StyledAlert type={type || 'warning'}>
-      <AlertTitle>
+    <StyledCallout type={type || 'warning'}>
+      <CalloutTitle>
         {icon()}
         {title || titleMap[type]}
-      </AlertTitle>
+      </CalloutTitle>
       {children}
-    </StyledAlert>
+    </StyledCallout>
   );
 };
 
-export default Alert;
+export default Callout;

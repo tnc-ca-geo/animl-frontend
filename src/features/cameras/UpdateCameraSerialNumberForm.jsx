@@ -17,7 +17,7 @@ import {
   fetchTask,
   selectCameraSerialNumberLoading,
 } from '../tasks/tasksSlice.js';
-import Alert from '../../components/Alert';
+import Callout from '../../components/Callout.jsx';
 
 const updateSerialNumberSchema = Yup.object().shape({
   serialNumber: Yup.string().matches(
@@ -88,14 +88,14 @@ const UpdateCameraSerialNumberForm = () => {
                 </FormFieldWrapper>
               </FieldRow>
               {isMerge && (
-                <Alert type="warning">
+                <Callout type="warning">
                   <p>
                     A camera with the serial number you entered already exists. By updating camera{' '}
                     <strong>{selectedCamera}</strong> with this serial number, you will be{' '}
                     <strong>merging</strong> images from the selected camera to the target camera,
                     which can not be undone.
                   </p>
-                </Alert>
+                </Callout>
               )}
               <ButtonRow>
                 <Button type="submit" size="large" disabled={!isValid || !dirty}>
