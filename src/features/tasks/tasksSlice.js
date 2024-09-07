@@ -2,7 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
-import { fetchProjects, setModalOpen, setModalContent } from '../projects/projectsSlice';
+import {
+  fetchProjects,
+  setModalOpen,
+  setModalContent,
+  setSelectedCamera,
+} from '../projects/projectsSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 
 const initialState = {
@@ -349,8 +354,8 @@ export const fetchTask = (taskId) => {
                 dispatch(toggleOpenLoupe(false));
                 dispatch(setModalOpen(false));
                 dispatch(setModalContent(null));
+                dispatch(setSelectedCamera(null));
                 dispatch(fetchProjects({ _ids: [selectedProj._id] }));
-                // TODO: do we need to reset Project slice's selectedCamera as well?
               },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
