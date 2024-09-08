@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { styled } from '../../theme/stitches.config.js';
 import { PopoverClose } from '@radix-ui/react-popover';
 import Button from '../../components/Button.jsx';
 import { Comment } from './Comment.jsx';
+import { useDispatch } from 'react-redux';
+import { editComment } from '../review/reviewSlice.js';
 
 const StyledCommentsContainer = styled('div', {
-  overflowY: 'scroll'
+  overflowY: 'scroll',
+  scrollbarWidth: 'none'
 });
 
 const StyledContent = styled('div', {
@@ -83,7 +86,6 @@ const StyledTextArea = styled('textarea', {
     transition: 'all 0.2s ease',
     outline: 'none',
     boxShadow: '0 0 0 3px $gray3',
-    // borderColor: '$textDark',
     '&:hover': {
       boxShadow: '0 0 0 3px $blue200',
       borderColor: '$blue500',
@@ -98,32 +100,19 @@ const StyledAddCommentButton = styled(Button, {
 
 export const CommentsPopover = ({
   onClose,
-  comments
+  comments,
+  imageId
 }) => {
-  // TODO
-  // remove when implementing actual comments functionality
-  comments = [
-    {
-      author: "jesse.leung@tnc.org",
-      time: "08/28/24 23:19",
-      comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    },
-    // {
-    //   author: "jesse.leung-aws@tnc.org",
-    //   time: "08/28/24 23:20",
-    //   comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    // },
-    // {
-    //   author: "jesse.leung@tnc.org",
-    //   time: "08/28/24 23:19",
-    //   comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    // },
-    // {
-    //   author: "jesse.leung-aws@tnc.org",
-    //   time: "08/28/24 23:20",
-    //   comment: "A better understanding of usage can aid in prioritizing future efforts.  I'm sorry I replied to your emails after three weeks."
-    // },
-  ]
+  const dispatch = useDispatch();
+  const [addCommentText, setAddCommentText] = useState("");
+  const handleAddComment = (commentText) => {
+    const addCommentDto = {
+      comment: commentText,
+      imageId: imageId
+    };
+    dispatch(editComment('create', addCommentDto));
+    setAddCommentText("");
+  };
 
   return (
     <StyledContent>
@@ -136,21 +125,26 @@ export const CommentsPopover = ({
       <StyledCommentsContainer>
       { comments.map((comment) => (
         <Comment 
-          key={Math.random()}
-          isAuthor={true}
-          author={comment.author}
-          time={comment.time}
-          comment={comment.comment}
+          key={comment._id}
+          comment={comment}
+          imageId={imageId}
         />
       ))}
       </StyledCommentsContainer>
       <StyledAddCommentRow>
         <StyledTextArea
+          value={addCommentText}
+          onChange={(e) => setAddCommentText(e.target.value)}
           placeholder='Enter comment'
           onKeyDown={(e) => e.stopPropagation()}
           onKeyDownCapture={(e) => e.stopPropagation()}
         />
-        <StyledAddCommentButton size="small">Add Comment</StyledAddCommentButton>
+        <StyledAddCommentButton 
+          size="small" 
+          onClick={() => handleAddComment(addCommentText)}
+        >
+          Add Comment
+        </StyledAddCommentButton>
       </StyledAddCommentRow>
     </StyledContent>
   );

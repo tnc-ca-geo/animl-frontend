@@ -312,6 +312,8 @@ const ImageReviewToolbar = ({
                 <StyledPopoverContent side="top" sideOffset={25} onPointerDownOutside={() => {}}>
                   <CommentsPopover 
                     onClose={() => setIsCommentsPopoverOpen(false)}
+                    comments={image.comments}
+                    imageId={image._id}
                   />
                   <StyledPopoverArrow />
                 </StyledPopoverContent>

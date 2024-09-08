@@ -12,10 +12,16 @@ import {
 import Button from '../../components/Button.jsx';
 import IconButton from '../../components/IconButton.jsx';
 import { DeleteCommentAlert } from './DeleteCommentAlert.jsx';
+import { useSelector } from 'react-redux';
+import { selectUserUsername } from '../auth/authSlice.js';
+import { DateTime } from 'luxon';
+import { useDispatch } from 'react-redux';
+import { editComment } from '../review/reviewSlice.js';
 
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
-  paddingBottom: '$3'
+  paddingBottom: '$3',
+  borderRight: 'none'
 });
 
 const StyledAvatar = styled('div', {
@@ -109,23 +115,60 @@ const StyledButtonContainer = styled('div', {
   gap: '$1'
 });
 
+const timeAgoPrettyPrint = (isoDateTimeString) => {
+  const then = DateTime.fromISO(isoDateTimeString);
+  const now = DateTime.now();
+  const diff = now.diff(then, ['years', 'months', 'days', 'hours', 'minutes']);
+
+  const removeDecimals = (dateDiffString) => {
+    return dateDiffString.split('.')[0];
+  }
+
+  if (diff.years >= 1) {
+    return `${removeDecimals(diff.years.toString())} year${Math.floor(diff.years) === 1 ? '' : 's'} ago`;
+  }
+  if (diff.months >= 1) {
+    return `${removeDecimals(diff.months.toString())} month${Math.floor(diff.months) === 1 ? '' : 's'} ago`;
+  }
+  if (diff.days >= 1) {
+    return `${removeDecimals(diff.days.toString())} day${Math.floor(diff.days === 1) ? '' : 's'} ago`;
+  }
+  if (diff.hours >= 1) {
+    return `${removeDecimals(diff.hours.toString())} hour${Math.floor(diff.hours) === 1 ? '' : 's'} ago`;
+  }
+  if (diff.minutes >= 1) {
+    return `${removeDecimals(diff.minutes.toString())} minute${Math.floor(diff.minutes) === 1 ? '' : 's'} ago`;
+  }
+  return 'a few seconds ago'; 
+}
 
 export const Comment = ({
-  isAuthor,
-  author,
-  time,
-  comment
+  comment,
+  imageId
 }) => {
-  const initial = author[0].toUpperCase();
-  const [isEdit, setIsEdit] = useState(false);
+  const dispatch = useDispatch();
+  const authorInitial = comment.author[0].toUpperCase();
+  const currentUser = useSelector(selectUserUsername);
   const [isDeleteConfirm, setIsDeleteConfirm] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editCommentText, setEditCommentText] = useState(comment.comment);
 
   const onDeleteConfirm = () => {
-    // commit change to db
     setIsDeleteConfirm(false);
+    const deleteCommentDto = {
+      id: comment._id,
+      imageId: imageId
+    };
+    dispatch(editComment("delete", deleteCommentDto));
   };
 
   const onEditConfirm = () => {
+    const editCommentDto = {
+      id: comment._id,
+      imageId: imageId,
+      comment: editCommentText
+    };
+    dispatch(editComment("update", editCommentDto));
     setIsEdit(false);
   };
 
@@ -136,16 +179,16 @@ export const Comment = ({
         onDeleteConfirm={onDeleteConfirm}
         onDeleteCancel={() => setIsDeleteConfirm(false)}
       />
-      <StyledFieldRow key={Math.random()}>
+      <StyledFieldRow>
         <StyledNameRow>
           <StyledAvatar>
-            { initial }
+            { authorInitial }
           </StyledAvatar>
           <StyledNameField>
-            <StyledName>{ author }</StyledName>
-            <StyledCommentTime>{ time }</StyledCommentTime>
+            <StyledName>{ comment.author }</StyledName>
+            <StyledCommentTime>{ timeAgoPrettyPrint(comment.created) }</StyledCommentTime>
           </StyledNameField>
-          { isAuthor &&
+          { comment.author === currentUser &&
             <DropdownMenu>
               <StyledDropdownMenuTrigger asChild disabled={isEdit}>
                 <IconButton variant="ghost">
@@ -163,7 +206,8 @@ export const Comment = ({
         { isEdit ? (
           <StyledAddCommentRow>
             <StyledTextArea 
-              value={comment} 
+              value={editCommentText} 
+              onChange={(e) => setEditCommentText(e.target.value)}
               onKeyDown={(e) => e.stopPropagation()} 
               onKeyDownCapture={(e) => e.stopPropagation()} 
             />
@@ -174,7 +218,7 @@ export const Comment = ({
           </StyledAddCommentRow>
         ) : (
           <StyledComment>
-            { comment }
+            { comment.comment }
           </StyledComment>
         )}
       </StyledFieldRow>
