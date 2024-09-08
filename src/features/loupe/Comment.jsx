@@ -12,10 +12,9 @@ import {
 import Button from '../../components/Button.jsx';
 import IconButton from '../../components/IconButton.jsx';
 import { DeleteCommentAlert } from './DeleteCommentAlert.jsx';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectUserUsername } from '../auth/authSlice.js';
 import { DateTime } from 'luxon';
-import { useDispatch } from 'react-redux';
 import { editComment } from '../review/reviewSlice.js';
 
 const StyledFieldRow = styled(FieldRow, {
