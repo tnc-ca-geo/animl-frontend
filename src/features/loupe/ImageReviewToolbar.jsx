@@ -24,7 +24,7 @@ import {
   selectUserUsername,
   selectUserCurrentRoles,
 } from '../auth/authSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { hasRole, READ_COMMENT_ROLES, WRITE_COMMENT_ROLES, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import { violet, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import {
@@ -297,7 +297,7 @@ const ImageReviewToolbar = ({
           {/* Comments */}
           <Tooltip>
             <PopoverRoot open={isCommentsPopoverOpen}>
-              <TooltipTrigger asChild>
+              <TooltipTrigger asChild disabled={!hasRole(userRoles, READ_COMMENT_ROLES) || !hasRole(userRoles, WRITE_COMMENT_ROLES)}>
                 <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
                   <ToolbarIconButton>
                     <ChatBubbleIcon />
