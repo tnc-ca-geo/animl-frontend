@@ -4,8 +4,9 @@ import { styled } from '../../theme/stitches.config.js';
 import { PopoverClose } from '@radix-ui/react-popover';
 import Button from '../../components/Button.jsx';
 import { Comment } from './Comment.jsx';
-import { useDispatch } from 'react-redux';
-import { editComment } from '../review/reviewSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { editComment, selectCommentsLoading } from '../review/reviewSlice.js';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 const StyledCommentsContainer = styled('div', {
   overflowY: 'scroll',
@@ -99,6 +100,7 @@ const StyledAddCommentButton = styled(Button, {
 
 export const CommentsPopover = ({ onClose, comments, imageId }) => {
   const dispatch = useDispatch();
+  const commentsLoading = useSelector(selectCommentsLoading);
   const [addCommentText, setAddCommentText] = useState('');
   const handleAddComment = (commentText) => {
     const addCommentDto = {
@@ -110,34 +112,41 @@ export const CommentsPopover = ({ onClose, comments, imageId }) => {
   };
 
   return (
-    <StyledContent>
-      <StyledHeader>
-        Comments
-        <StyledPopoverClose onClick={() => onClose()}>
-          <Cross2Icon />
-        </StyledPopoverClose>
-      </StyledHeader>
-      <StyledCommentsContainer>
-        {comments.map((comment) => (
-          <Comment key={comment._id} comment={comment} imageId={imageId} />
-        ))}
-      </StyledCommentsContainer>
-      <StyledAddCommentRow>
-        <StyledTextArea
-          value={addCommentText}
-          onChange={(e) => setAddCommentText(e.target.value)}
-          placeholder="Enter comment"
-          onKeyDown={(e) => e.stopPropagation()}
-          onKeyDownCapture={(e) => e.stopPropagation()}
-        />
-        <StyledAddCommentButton
-          size="small"
-          onClick={() => handleAddComment(addCommentText)}
-          disabled={addCommentText === ''}
-        >
-          Add Comment
-        </StyledAddCommentButton>
-      </StyledAddCommentRow>
-    </StyledContent>
+    <>
+      {commentsLoading && (
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      )}
+      <StyledContent>
+        <StyledHeader>
+          Comments
+          <StyledPopoverClose onClick={() => onClose()}>
+            <Cross2Icon />
+          </StyledPopoverClose>
+        </StyledHeader>
+        <StyledCommentsContainer>
+          {comments.map((comment) => (
+            <Comment key={comment._id} comment={comment} imageId={imageId} />
+          ))}
+        </StyledCommentsContainer>
+        <StyledAddCommentRow>
+          <StyledTextArea
+            value={addCommentText}
+            onChange={(e) => setAddCommentText(e.target.value)}
+            placeholder="Enter comment"
+            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDownCapture={(e) => e.stopPropagation()}
+          />
+          <StyledAddCommentButton
+            size="small"
+            onClick={() => handleAddComment(addCommentText)}
+            disabled={addCommentText === ''}
+          >
+            Add Comment
+          </StyledAddCommentButton>
+        </StyledAddCommentRow>
+      </StyledContent>
+    </>
   );
 };
