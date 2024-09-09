@@ -111,7 +111,7 @@ const CancelHint = styled('div', {
 });
 
 const StyledPopoverContent = styled(PopoverContent, {
-  zIndex: 200,
+  zIndex: '$4',
 });
 
 const StyledPopoverArrow = styled(PopoverArrow, {
