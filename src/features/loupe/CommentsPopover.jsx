@@ -9,7 +9,7 @@ import { editComment } from '../review/reviewSlice.js';
 
 const StyledCommentsContainer = styled('div', {
   overflowY: 'scroll',
-  scrollbarWidth: 'none'
+  scrollbarWidth: 'none',
 });
 
 const StyledContent = styled('div', {
@@ -34,7 +34,7 @@ const StyledHeader = styled('div', {
   fontWeight: '$5',
   color: '$textDark',
   paddingTop: '$2',
-  paddingBottom: '$2'
+  paddingBottom: '$2',
 });
 
 const StyledPopoverClose = styled(PopoverClose, {
@@ -50,9 +50,8 @@ const StyledPopoverClose = styled(PopoverClose, {
   marginLeft: 'auto',
   '&:hover': {
     cursor: 'pointer',
-    backgroundColor: '$gray4'
-
-  }
+    backgroundColor: '$gray4',
+  },
 });
 
 const StyledAddCommentRow = styled('div', {
@@ -98,20 +97,16 @@ const StyledAddCommentButton = styled(Button, {
   marginRight: '0',
 });
 
-export const CommentsPopover = ({
-  onClose,
-  comments,
-  imageId
-}) => {
+export const CommentsPopover = ({ onClose, comments, imageId }) => {
   const dispatch = useDispatch();
-  const [addCommentText, setAddCommentText] = useState("");
+  const [addCommentText, setAddCommentText] = useState('');
   const handleAddComment = (commentText) => {
     const addCommentDto = {
       comment: commentText,
-      imageId: imageId
+      imageId: imageId,
     };
     dispatch(editComment('create', addCommentDto));
-    setAddCommentText("");
+    setAddCommentText('');
   };
 
   return (
@@ -123,29 +118,26 @@ export const CommentsPopover = ({
         </StyledPopoverClose>
       </StyledHeader>
       <StyledCommentsContainer>
-      { comments.map((comment) => (
-        <Comment 
-          key={comment._id}
-          comment={comment}
-          imageId={imageId}
-        />
-      ))}
+        {comments.map((comment) => (
+          <Comment key={comment._id} comment={comment} imageId={imageId} />
+        ))}
       </StyledCommentsContainer>
       <StyledAddCommentRow>
         <StyledTextArea
           value={addCommentText}
           onChange={(e) => setAddCommentText(e.target.value)}
-          placeholder='Enter comment'
+          placeholder="Enter comment"
           onKeyDown={(e) => e.stopPropagation()}
           onKeyDownCapture={(e) => e.stopPropagation()}
         />
-        <StyledAddCommentButton 
-          size="small" 
+        <StyledAddCommentButton
+          size="small"
           onClick={() => handleAddComment(addCommentText)}
+          disabled={addCommentText === ''}
         >
           Add Comment
         </StyledAddCommentButton>
       </StyledAddCommentRow>
     </StyledContent>
   );
-}
+};
