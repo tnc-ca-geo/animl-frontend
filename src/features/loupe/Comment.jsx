@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { FieldRow } from '../../components/Form.jsx';
 import { styled } from '../../theme/stitches.config.js';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
@@ -219,7 +219,14 @@ export const Comment = ({ comment, imageId }) => {
             </StyledButtonContainer>
           </StyledAddCommentRow>
         ) : (
-          <StyledComment>{comment.comment}</StyledComment>
+          <StyledComment>
+            {comment.comment.split('\n').map((text, index) => (
+              <Fragment key={index}>
+                {text}
+                <br />
+              </Fragment>
+            ))}
+          </StyledComment>
         )}
       </StyledFieldRow>
     </>
