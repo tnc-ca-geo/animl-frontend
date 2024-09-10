@@ -10,37 +10,38 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 const StyledCommentsContainer = styled('div', {
   overflowY: 'scroll',
-  scrollbarWidth: 'none',
+  padding: '$3 $3',
 });
 
 const StyledContent = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '10px',
   backgroundColor: '$loContrast',
   borderRadius: '$2',
+  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   width: '450px',
   maxHeight: '70vh',
-  padding: '$0 $3 $0 $3',
 });
 
 const StyledHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  height: '$7',
   borderTopLeftRadius: '$2',
   borderTopRightRadius: '$2',
   borderBottom: '1px solid $border',
   backgroundColor: '$backgroundLight',
   fontWeight: '$5',
   color: '$textDark',
-  paddingTop: '$2',
-  paddingBottom: '$2',
+  padding: '$0 $3',
+  minHeight: '$7',
+  position: 'relative',
 });
 
 const StyledPopoverClose = styled(PopoverClose, {
   alignItems: 'center',
   display: 'inline-flex',
+  position: 'absolute',
+  right: '0',
   justifyContent: 'center',
   lineHeight: '1',
   backgroundColor: '$backgroundLight',
@@ -48,7 +49,7 @@ const StyledPopoverClose = styled(PopoverClose, {
   borderRadius: '$round',
   height: '$5',
   width: '$5',
-  marginLeft: 'auto',
+  margin: '0 $2',
   '&:hover': {
     cursor: 'pointer',
     backgroundColor: '$gray4',
@@ -58,15 +59,12 @@ const StyledPopoverClose = styled(PopoverClose, {
 const StyledAddCommentRow = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '$1',
   borderBottomLeftRadius: '$2',
   borderBottomRightRadius: '$2',
-  borderTop: '1px solid $border',
   backgroundColor: '$backgroundLight',
   fontWeight: '$5',
   color: '$textDark',
-  paddingTop: '$2',
-  paddingBottom: '$2',
+  padding: '$3',
 });
 
 const StyledTextArea = styled('textarea', {
@@ -74,7 +72,8 @@ const StyledTextArea = styled('textarea', {
   width: '100%',
   rows: '2',
   color: '$textDark',
-  padding: '$1',
+  marginBottom: '$3',
+  padding: '$3',
   fontSize: '$3',
   fontWeight: '$2',
   boxSizing: 'border-box',
@@ -125,12 +124,14 @@ export const CommentsPopover = ({ onClose, comments, imageId }) => {
             <Cross2Icon />
           </StyledPopoverClose>
         </StyledHeader>
-        <StyledCommentsContainer>
-          {comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} imageId={imageId} />
-          ))}
-        </StyledCommentsContainer>
-        <StyledAddCommentRow>
+        {comments.length > 0 && (
+          <StyledCommentsContainer>
+            {comments.map((comment) => (
+              <Comment key={comment._id} comment={comment} imageId={imageId} />
+            ))}
+          </StyledCommentsContainer>
+        )}
+        <StyledAddCommentRow css={{ borderTop: comments.length ? '1px solid $border' : 'none' }}>
           <StyledTextArea
             value={addCommentText}
             onChange={(e) => setAddCommentText(e.target.value)}

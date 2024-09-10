@@ -21,6 +21,9 @@ const StyledFieldRow = styled(FieldRow, {
   display: 'block',
   paddingBottom: '$3',
   borderRight: 'none',
+  '&:last-child': {
+    paddingBottom: '0',
+  },
 });
 
 const StyledAvatar = styled('div', {
@@ -60,6 +63,7 @@ const StyledCommentTime = styled('div', {
 });
 
 const StyledComment = styled('div', {
+  marginLeft: '49px',
   fontSize: '$3',
 });
 
@@ -76,7 +80,6 @@ const StyledDropdownMenuContent = styled(DropdownMenuContent, {
 const StyledAddCommentRow = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '$1',
   fontWeight: '$5',
   color: '$textDark',
   paddingTop: '$2',
@@ -88,7 +91,7 @@ const StyledTextArea = styled('textarea', {
   width: '100%',
   rows: '2',
   color: '$textDark',
-  padding: '$1',
+  padding: '$3',
   fontSize: '$3',
   fontWeight: '$2',
   boxSizing: 'border-box',
@@ -96,6 +99,7 @@ const StyledTextArea = styled('textarea', {
   borderColor: '$border',
   backgroundColor: '#FFFFFF',
   borderRadius: '$1',
+  marginBottom: '$3',
   '&:focus': {
     transition: 'all 0.2s ease',
     outline: 'none',
