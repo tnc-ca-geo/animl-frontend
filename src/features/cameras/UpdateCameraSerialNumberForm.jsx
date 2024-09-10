@@ -45,6 +45,27 @@ const UpdateCameraSerialNumberForm = () => {
     setIsMerge(cameraIds.includes(values.serialNumber));
   };
 
+  // if the camera is being merged, check which views will be affected
+  const [affectedViews, setAffectedViews] = useState([]);
+  useEffect(() => {
+    if (isMerge) {
+      const affectedViews = [];
+      const sourceCam = project.cameraConfigs.find((cc) => cc._id === selectedCamera);
+      const sourceDeployments = sourceCam?.deployments.map((dep) => dep._id.toString()) || [];
+      project.views.forEach((view) => {
+        if (view.filters.deployments?.length) {
+          const isViewAffected = view.filters.deployments.some((depId) =>
+            sourceDeployments.includes(depId),
+          );
+          if (isViewAffected && !affectedViews.includes(view.name)) {
+            affectedViews.push(view.name);
+          }
+        }
+      });
+      setAffectedViews(affectedViews);
+    }
+  }, [selectedCamera, isMerge, project.views]);
+
   // fetch task status
   const updateCameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
   useEffect(() => {
@@ -88,13 +109,27 @@ const UpdateCameraSerialNumberForm = () => {
                 </FormFieldWrapper>
               </FieldRow>
               {isMerge && (
-                <Callout type="warning">
+                <Callout type="warning" title="Merge warning">
                   <p>
                     A camera with the serial number you entered already exists. By updating camera{' '}
                     <strong>{selectedCamera}</strong> with this serial number, you will be{' '}
                     <strong>merging</strong> images from the selected camera to the target camera,
                     which can not be undone.
                   </p>
+                  {affectedViews.length > 0 && (
+                    <p>
+                      Additionally, some of the deployments associated with the selected camera are{' '}
+                      used as filters in the following Views:{' '}
+                      {affectedViews.map((view, i) => (
+                        <strong key={view}>
+                          {view}
+                          {i < affectedViews.length - 1 ? ', ' : ''}
+                        </strong>
+                      ))}
+                      . If you complete this merge, the deployment filters associated with the
+                      currently selected camera will be removed from those Views.
+                    </p>
+                  )}
                 </Callout>
               )}
               <ButtonRow>
