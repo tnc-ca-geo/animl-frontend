@@ -43,6 +43,7 @@ const ManageCamButton = styled('button', {
 
 const DepButtons = styled('div', {
   minWidth: '50px',
+  placeSelf: 'end',
 });
 
 const DateDash = styled('span', {
@@ -70,6 +71,7 @@ const Bookend = styled('span', {
 });
 
 const DepDates = styled('div', {
+  placeSelf: 'center',
   display: 'flex',
   alignItems: 'center',
   color: '$textDark',
@@ -78,29 +80,32 @@ const DepDates = styled('div', {
 const DepName = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  marginLeft: `$5`,
+  width: 210,
 });
 
 const DeploymentItem = styled('div', {
   fontSize: '$3',
-  paddingTop: '$2',
-  paddingBottom: '$2',
-  display: 'flex',
+  marginLeft: '$5',
+  display: 'grid',
+  gridTemplateColumns: 'auto auto auto',
+  alignContent: 'center',
   color: '$textDark',
-  justifyContent: 'space-between',
   '&:not(:last-child)': {
     borderBottom: '1px solid $gray6',
   },
 });
 
 const StyledActiveState = styled('div', {
+  fontSize: '$3',
   padding: '$0 $2',
-  borderRadius: '$1',
+  borderRadius: '$3',
+  border: '1px solid $border',
   variants: {
     active: {
       true: {
         color: '$successText',
         backgroundColor: '$successBg',
+        borderColor: '$successBorder',
       },
       false: {
         color: '$textMedium',
@@ -115,7 +120,6 @@ const ActiveState = ({ active }) => (
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
-  // const camerasLoading = useSelector(selectWirelessCamerasLoading);
   const userRoles = useSelector(selectUserCurrentRoles);
   const dispatch = useDispatch();
 
