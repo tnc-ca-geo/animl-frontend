@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUserUsername } from '../auth/authSlice.js';
 import { DateTime } from 'luxon';
 import { editComment } from '../review/reviewSlice.js';
+import { indigo } from '@radix-ui/colors';
 
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
@@ -31,7 +32,8 @@ const StyledAvatar = styled('div', {
   borderRadius: '$round',
   height: '$5',
   width: '$5',
-  backgroundColor: '$backgroundExtraDark',
+  backgroundColor: indigo.indigo4,
+  color: indigo.indigo11,
   fontWeight: 'bold',
   display: 'grid',
   placeItems: 'center',
@@ -145,11 +147,7 @@ const timeAgoPrettyPrint = (isoDateTimeString) => {
   return 'a few seconds ago';
 };
 
-export const Comment = ({ 
-  comment, 
-  imageId, 
-  onChangeOpen 
-}) => {
+export const Comment = ({ comment, imageId, onChangeOpen }) => {
   const dispatch = useDispatch();
   const authorInitial = comment.author[0].toUpperCase();
   const currentUser = useSelector(selectUserUsername);
