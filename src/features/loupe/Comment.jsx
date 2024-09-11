@@ -145,7 +145,11 @@ const timeAgoPrettyPrint = (isoDateTimeString) => {
   return 'a few seconds ago';
 };
 
-export const Comment = ({ comment, imageId }) => {
+export const Comment = ({ 
+  comment, 
+  imageId, 
+  onChangeOpen 
+}) => {
   const dispatch = useDispatch();
   const authorInitial = comment.author[0].toUpperCase();
   const currentUser = useSelector(selectUserUsername);
@@ -187,7 +191,7 @@ export const Comment = ({ comment, imageId }) => {
             <StyledCommentTime>{timeAgoPrettyPrint(comment.created)}</StyledCommentTime>
           </StyledNameField>
           {comment.author === currentUser && (
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(isOpen) => onChangeOpen(isOpen)}>
               <StyledDropdownMenuTrigger asChild disabled={isEdit}>
                 <IconButton variant="ghost">
                   <DotsHorizontalIcon />

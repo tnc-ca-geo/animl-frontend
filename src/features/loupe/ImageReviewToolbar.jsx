@@ -182,6 +182,12 @@ const ImageReviewToolbar = ({
     );
 
   const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
+  const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
+  const onClickOutsideComments = () => {
+    if (!isCommentsActionMenuOpen) {
+      setIsCommentsPopoverOpen(false);
+    }
+  }
 
   return (
     <Toolbar>
@@ -315,9 +321,14 @@ const ImageReviewToolbar = ({
                 <TooltipArrow />
               </TooltipContent>
               <PopoverPortal>
-                <StyledPopoverContent side="top" sideOffset={25} onPointerDownOutside={() => {}}>
+                <StyledPopoverContent 
+                  side="top" 
+                  sideOffset={25} 
+                  onPointerDownOutside={() => onClickOutsideComments()}
+                >
                   <CommentsPopover
                     onClose={() => setIsCommentsPopoverOpen(false)}
+                    onChangeActionMenu={setIsCommentsActionMenuOpen}
                     comments={image.comments}
                     imageId={image._id}
                   />
