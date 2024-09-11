@@ -7,12 +7,7 @@ import { unregisterCamera } from './wirelessCamerasSlice';
 import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
 import { Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
-import {
-  hasRole,
-  WRITE_CAMERA_REGISTRATION_ROLES,
-  WRITE_DEPLOYMENTS_ROLES
-} from '../auth/roles';
-
+import { hasRole, WRITE_CAMERA_REGISTRATION_ROLES, WRITE_DEPLOYMENTS_ROLES } from '../auth/roles';
 
 const StyledCameraList = styled('div', {
   border: '1px solid $border',
@@ -24,7 +19,7 @@ const StyledCameraList = styled('div', {
 const ManageCamButtons = styled('div', {
   position: 'absolute',
   right: '$3',
-})
+});
 
 const ManageCamButton = styled('button', {
   border: 'none',
@@ -47,7 +42,7 @@ const ManageCamButton = styled('button', {
 });
 
 const DepButtons = styled('div', {
-  minWidth: '50px'
+  minWidth: '50px',
 });
 
 const DateDash = styled('span', {
@@ -64,9 +59,9 @@ const Date = styled('span', {
       },
       end: {
         textAlign: 'left',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const Bookend = styled('span', {
@@ -83,7 +78,7 @@ const DepDates = styled('div', {
 const DepName = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  width: '150px',
+  marginLeft: `$5`,
 });
 
 const DeploymentItem = styled('div', {
@@ -94,8 +89,8 @@ const DeploymentItem = styled('div', {
   color: '$textDark',
   justifyContent: 'space-between',
   '&:not(:last-child)': {
-    borderBottom: '1px solid $gray4',
-  }
+    borderBottom: '1px solid $gray6',
+  },
 });
 
 const StyledActiveState = styled('div', {
@@ -116,9 +111,7 @@ const StyledActiveState = styled('div', {
 });
 
 const ActiveState = ({ active }) => (
-  <StyledActiveState active={active.toString()}>
-    { active ? 'active' : 'inactive'}
-  </StyledActiveState>
+  <StyledActiveState active={active.toString()}>{active ? 'active' : 'inactive'}</StyledActiveState>
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
@@ -129,89 +122,91 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   const handleUnregisterClick = (cameraId) => {
     dispatch(unregisterCamera(cameraId));
   };
-  
+
   return (
     <>
-      {cameras.length > 0 &&
+      {cameras.length > 0 && (
         <StyledCameraList>
           {cameras.map((cam) => (
             <Accordion
               key={cam._id}
               label={cam._id}
-              expandedDefault={false}
+              boldLabel={true}
+              expandedDefault={true}
               headerButtons={
                 <>
                   {cam.isWireless && <ActiveState active={cam.active} />}
                   <ManageCamButtons>
-                    {(cam.isWireless && (hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES)) && 
-                      cam.active) && 
-                      <ManageCamButton
-                        onClick={() => handleUnregisterClick({
-                          cameraId: cam._id 
-                        })}
-                      >
-                        Release
-                      </ManageCamButton>
-                    }
-                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && 
-                      <ManageCamButton
-                        onClick={() => handleSaveDepClick({ cameraId: cam._id })}
-                      >
+                    {cam.isWireless &&
+                      hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) &&
+                      cam.active && (
+                        <ManageCamButton
+                          onClick={() =>
+                            handleUnregisterClick({
+                              cameraId: cam._id,
+                            })
+                          }
+                        >
+                          Release
+                        </ManageCamButton>
+                      )}
+                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
+                      <ManageCamButton onClick={() => handleSaveDepClick({ cameraId: cam._id })}>
                         Add deployment
                       </ManageCamButton>
-                    }
+                    )}
                   </ManageCamButtons>
                 </>
               }
             >
               {cam.deployments.map((dep) => (
-                <DeploymentItem key={dep._id}> 
-                  <DepName>{dep.name}</DepName>
+                <DeploymentItem key={dep._id}>
+                  <DepName>{dep.name === 'default' ? `${cam._id} (default)` : dep.name}</DepName>
                   <DepDates>
-                    <Date type='start'>{
-                      dep.startDate 
-                        ? format(dep.startDate) 
-                        : <Bookend>dawn of time</Bookend>
-                    }</Date>
+                    <Date type="start">
+                      {dep.startDate ? format(dep.startDate) : <Bookend>dawn of time</Bookend>}
+                    </Date>
                     <DateDash>-</DateDash>
-                    <Date type='end'>{
-                      dep.endDate 
-                      ? format(dep.endDate) 
-                      : <Bookend>today</Bookend>
-                    }</Date>
+                    <Date type="end">
+                      {dep.endDate ? format(dep.endDate) : <Bookend>today</Bookend>}
+                    </Date>
                   </DepDates>
-                  {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && 
+                  {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
                     <DepButtons>
                       <IconButton
-                        variant='ghost'
-                        size='small'
-                        onClick={() => handleSaveDepClick({
-                          cameraId: cam._id,
-                          deployment: dep,
-                        })}
+                        variant="ghost"
+                        size="small"
+                        onClick={() =>
+                          handleSaveDepClick({
+                            cameraId: cam._id,
+                            deployment: dep,
+                          })
+                        }
                         disabled={dep.editable === false}
                       >
-                        <Pencil1Icon/>
+                        <Pencil1Icon />
                       </IconButton>
                       <IconButton
-                        variant='ghost'
-                        size='small'
-                        onClick={() => handleDeleteDepClick({
-                          cameraId: cam._id,
-                          deployment: dep,
-                        })}
+                        variant="ghost"
+                        size="small"
+                        onClick={() =>
+                          handleDeleteDepClick({
+                            cameraId: cam._id,
+                            deployment: dep,
+                          })
+                        }
                         disabled={dep.editable === false}
                       >
-                        <Cross2Icon/>
+                        <Cross2Icon />
                       </IconButton>
                     </DepButtons>
-                  }
+                  )}
                 </DeploymentItem>
               ))}
             </Accordion>
           ))}
         </StyledCameraList>
-      }
+      )}
     </>
   );
 };
@@ -221,4 +216,3 @@ function format(date) {
 }
 
 export default CameraList;
-
