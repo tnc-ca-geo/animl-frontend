@@ -59,8 +59,9 @@ export const objectMiddleware = (store) => (next) => (action) => {
     const { images, userId } = action.payload;
 
     action.payload.images = images.map((img) => {
+      const newObjectId = new ObjectID().toString();
       img.newObject = img.newObject || {
-        _id: new ObjectID().toString(),
+        _id: newObjectId,
         bbox: [0, 0, 1, 1],
         locked: true,
         labels: [
@@ -68,6 +69,7 @@ export const objectMiddleware = (store) => (next) => (action) => {
             _id: new ObjectID().toString(),
             imageId: img.imgId,
             labelId: 'empty',
+            objectId: newObjectId,
             bbox: [0, 0, 1, 1],
             validation: { validated: true, userId },
             conf: 1,
