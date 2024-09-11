@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { FieldRow } from '../../components/Form.jsx';
 import { styled } from '../../theme/stitches.config.js';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
@@ -20,7 +20,10 @@ import { editComment } from '../review/reviewSlice.js';
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
   paddingBottom: '$3',
-  borderRight: 'none'
+  borderRight: 'none',
+  '&:last-child': {
+    paddingBottom: '0',
+  },
 });
 
 const StyledAvatar = styled('div', {
@@ -34,14 +37,14 @@ const StyledAvatar = styled('div', {
   placeItems: 'center',
   lineHeight: '$5',
   marginTop: 'auto',
-  marginBottom: 'auto'
+  marginBottom: 'auto',
 });
 
 const StyledNameRow = styled('div', {
   display: 'flex',
   gap: '$3',
-  marginBottom: '$2'
-})
+  marginBottom: '$2',
+});
 
 const StyledNameField = styled('div', {
   display: 'flex',
@@ -51,7 +54,7 @@ const StyledNameField = styled('div', {
 const StyledName = styled('div', {
   fontWeight: 'bold',
   lineHeight: '1.2',
-  fontSize: '$3'
+  fontSize: '$3',
 });
 
 const StyledCommentTime = styled('div', {
@@ -60,7 +63,8 @@ const StyledCommentTime = styled('div', {
 });
 
 const StyledComment = styled('div', {
-  fontSize: '$3'
+  marginLeft: '49px',
+  fontSize: '$3',
 });
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
@@ -70,13 +74,12 @@ const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
 const StyledDropdownMenuContent = styled(DropdownMenuContent, {
   minWidth: '100px',
   width: '100px',
-  right: '20px'
+  right: '20px',
 });
 
 const StyledAddCommentRow = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '$1',
   fontWeight: '$5',
   color: '$textDark',
   paddingTop: '$2',
@@ -88,7 +91,7 @@ const StyledTextArea = styled('textarea', {
   width: '100%',
   rows: '2',
   color: '$textDark',
-  padding: '$1',
+  padding: '$3',
   fontSize: '$3',
   fontWeight: '$2',
   boxSizing: 'border-box',
@@ -96,6 +99,7 @@ const StyledTextArea = styled('textarea', {
   borderColor: '$border',
   backgroundColor: '#FFFFFF',
   borderRadius: '$1',
+  marginBottom: '$3',
   '&:focus': {
     transition: 'all 0.2s ease',
     outline: 'none',
@@ -111,7 +115,7 @@ const StyledButtonContainer = styled('div', {
   marginLeft: 'auto',
   marginRight: '0',
   display: 'flex',
-  gap: '$1'
+  gap: '$1',
 });
 
 const timeAgoPrettyPrint = (isoDateTimeString) => {
@@ -121,7 +125,7 @@ const timeAgoPrettyPrint = (isoDateTimeString) => {
 
   const removeDecimals = (dateDiffString) => {
     return dateDiffString.split('.')[0];
-  }
+  };
 
   if (diff.years >= 1) {
     return `${removeDecimals(diff.years.toString())} year${Math.floor(diff.years) === 1 ? '' : 's'} ago`;
@@ -138,13 +142,10 @@ const timeAgoPrettyPrint = (isoDateTimeString) => {
   if (diff.minutes >= 1) {
     return `${removeDecimals(diff.minutes.toString())} minute${Math.floor(diff.minutes) === 1 ? '' : 's'} ago`;
   }
-  return 'a few seconds ago'; 
-}
+  return 'a few seconds ago';
+};
 
-export const Comment = ({
-  comment,
-  imageId
-}) => {
+export const Comment = ({ comment, imageId }) => {
   const dispatch = useDispatch();
   const authorInitial = comment.author[0].toUpperCase();
   const currentUser = useSelector(selectUserUsername);
@@ -156,38 +157,36 @@ export const Comment = ({
     setIsDeleteConfirm(false);
     const deleteCommentDto = {
       id: comment._id,
-      imageId: imageId
+      imageId: imageId,
     };
-    dispatch(editComment("delete", deleteCommentDto));
+    dispatch(editComment('delete', deleteCommentDto));
   };
 
   const onEditConfirm = () => {
     const editCommentDto = {
       id: comment._id,
       imageId: imageId,
-      comment: editCommentText
+      comment: editCommentText,
     };
-    dispatch(editComment("update", editCommentDto));
+    dispatch(editComment('update', editCommentDto));
     setIsEdit(false);
   };
 
   return (
     <>
-      <DeleteCommentAlert 
+      <DeleteCommentAlert
         isOpen={isDeleteConfirm}
         onDeleteConfirm={onDeleteConfirm}
         onDeleteCancel={() => setIsDeleteConfirm(false)}
       />
       <StyledFieldRow>
         <StyledNameRow>
-          <StyledAvatar>
-            { authorInitial }
-          </StyledAvatar>
+          <StyledAvatar>{authorInitial}</StyledAvatar>
           <StyledNameField>
-            <StyledName>{ comment.author }</StyledName>
-            <StyledCommentTime>{ timeAgoPrettyPrint(comment.created) }</StyledCommentTime>
+            <StyledName>{comment.author}</StyledName>
+            <StyledCommentTime>{timeAgoPrettyPrint(comment.created)}</StyledCommentTime>
           </StyledNameField>
-          { comment.author === currentUser &&
+          {comment.author === currentUser && (
             <DropdownMenu>
               <StyledDropdownMenuTrigger asChild disabled={isEdit}>
                 <IconButton variant="ghost">
@@ -200,27 +199,36 @@ export const Comment = ({
                 <DropdownMenuArrow offset={12} />
               </StyledDropdownMenuContent>
             </DropdownMenu>
-          }
+          )}
         </StyledNameRow>
-        { isEdit ? (
+        {isEdit ? (
           <StyledAddCommentRow>
-            <StyledTextArea 
-              value={editCommentText} 
+            <StyledTextArea
+              value={editCommentText}
               onChange={(e) => setEditCommentText(e.target.value)}
-              onKeyDown={(e) => e.stopPropagation()} 
-              onKeyDownCapture={(e) => e.stopPropagation()} 
+              onKeyDown={(e) => e.stopPropagation()}
+              onKeyDownCapture={(e) => e.stopPropagation()}
             />
             <StyledButtonContainer>
-              <Button size="small" onClick={() => onEditConfirm()}>Update</Button>
-              <Button size="small" onClick={() => setIsEdit(false)}>Discard</Button>
+              <Button size="small" onClick={() => setIsEdit(false)}>
+                Cancel
+              </Button>
+              <Button size="small" onClick={() => onEditConfirm()}>
+                Update
+              </Button>
             </StyledButtonContainer>
           </StyledAddCommentRow>
         ) : (
           <StyledComment>
-            { comment.comment }
+            {comment.comment.split('\n').map((text, index) => (
+              <Fragment key={index}>
+                {text}
+                <br />
+              </Fragment>
+            ))}
           </StyledComment>
         )}
       </StyledFieldRow>
     </>
-  )
-}
+  );
+};
