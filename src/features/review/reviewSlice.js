@@ -323,6 +323,7 @@ export const selectSelectedImageIndices = (state) => state.review.selectedImageI
 export const selectFocusChangeType = (state) => state.review.focusChangeType;
 export const selectLabelsErrors = (state) => state.review.loadingStates.labels.errors;
 export const selectCommentsErrors = (state) => state.review.loadingStates.comments.errors;
+export const selectCommentsLoading = (state) => state.review.loadingStates.comments.isLoading;
 export const selectLastAction = (state) => state.review.lastAction;
 export const selectLastCategoryApplied = (state) => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(
