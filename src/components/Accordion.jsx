@@ -69,15 +69,22 @@ export const AccordionHeaderNoHover = styled('div', {
 
 const Accordion = (props) => {
   const [expanded, setExpanded] = useState(props.expandedDefault);
+  const expandOnHeaderClick = props.expandOnHeaderClick || false;
 
   const handleAccordionHeaderClick = () => {
+    if (expandOnHeaderClick) {
+      setExpanded(!expanded);
+    }
+  };
+
+  const handleExpandButtonClick = () => {
     setExpanded(!expanded);
   };
 
   return (
     <div>
       <AccordionHeader onClick={handleAccordionHeaderClick}>
-        <ExpandButton>
+        <ExpandButton onClick={handleExpandButtonClick}>
           <IconButton variant="ghost">
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
           </IconButton>

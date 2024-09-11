@@ -122,11 +122,21 @@ const StyledArrow = styled(DropdownMenuPrimitive.Arrow, {
   fill: 'white',
 });
 
+const StyledMenuItemIconLeft = styled('span', {
+  position: 'absolute',
+  left: 0,
+  width: 25,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
 // Exports
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 export const DropdownMenuContent = StyledContent;
 export const DropdownMenuItem = StyledItem;
+export const DropdownMenuItemIconLeft = StyledMenuItemIconLeft;
 export const DropdownMenuCheckboxItem = StyledCheckboxItem;
 export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 export const DropdownMenuRadioItem = StyledRadioItem;

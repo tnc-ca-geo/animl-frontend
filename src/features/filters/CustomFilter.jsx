@@ -50,7 +50,7 @@ const CustomFilter = () => {
   };
 
   return (
-    <Accordion label="Custom" expandedDefault={false}>
+    <Accordion label="Custom" expandedDefault={false} expandOnHeaderClick={true}>
       <div>
         <StyledFormWrapper>
           <Formik

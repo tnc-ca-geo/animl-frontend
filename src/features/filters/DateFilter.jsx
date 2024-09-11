@@ -1,16 +1,12 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  selectDateCreatedFilter,
-  selectDateAddedFilter,
-  dateFilterChanged,
-} from './filtersSlice';
+import { selectDateCreatedFilter, selectDateAddedFilter, dateFilterChanged } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import DateRangePickerWrapper from '../../components/DateRangePicker';
 
 const selectorMap = {
-  'created': selectDateCreatedFilter,
-  'added': selectDateAddedFilter,
+  created: selectDateCreatedFilter,
+  added: selectDateAddedFilter,
 };
 
 const DateFilter = ({ type }) => {
@@ -18,14 +14,11 @@ const DateFilter = ({ type }) => {
   const dispatch = useDispatch();
 
   const handleDatesChange = ({ startDate, endDate }) => {
-    dispatch(dateFilterChanged({ startDate, endDate, type }));    
+    dispatch(dateFilterChanged({ startDate, endDate, type }));
   };
 
   return (
-    <Accordion
-      label={'Date ' + type}
-      expandedDefault={false}
-    >
+    <Accordion label={'Date ' + type} expandedDefault={false} expandOnHeaderClick={true}>
       <DateRangePickerWrapper
         sdate={start || null}
         edate={end || null}
@@ -36,4 +29,3 @@ const DateFilter = ({ type }) => {
 };
 
 export default DateFilter;
-

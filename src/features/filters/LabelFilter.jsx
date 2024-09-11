@@ -28,7 +28,10 @@ const LabelFilter = () => {
     dispatch(checkboxFilterToggled(payload));
   };
 
-  const managedIds = useMemo(() => availLabels.options.map(({ _id }) => _id), [availLabels.options]);
+  const managedIds = useMemo(
+    () => availLabels.options.map(({ _id }) => _id),
+    [availLabels.options],
+  );
   const sortedLabels = [...availLabels.options].sort((labelA, labelB) =>
     labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1,
   );
@@ -38,6 +41,7 @@ const LabelFilter = () => {
       label="Labels"
       selectedCount={activeLabels ? activeLabels.length : availLabels.options.length}
       expandedDefault={false}
+      expandOnHeaderClick={true}
     >
       {availLabels.options.length === 0 && <NoneFoundAlert>no labels found</NoneFoundAlert>}
       {availLabels.options.length > 0 && (
@@ -48,8 +52,19 @@ const LabelFilter = () => {
             return (
               <CheckboxWrapper key={_id}>
                 <label>
-                  <Checkbox checked={checked} active={checked} data-category={_id} onChange={handleCheckboxChange} />
-                  <LabelCheckboxLabel checked={checked} active={checked} filterCat="labels" id={_id} name={name} />
+                  <Checkbox
+                    checked={checked}
+                    active={checked}
+                    data-category={_id}
+                    onChange={handleCheckboxChange}
+                  />
+                  <LabelCheckboxLabel
+                    checked={checked}
+                    active={checked}
+                    filterCat="labels"
+                    id={_id}
+                    name={name}
+                  />
                 </label>
               </CheckboxWrapper>
             );

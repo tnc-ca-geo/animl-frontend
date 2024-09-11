@@ -16,35 +16,31 @@ const DeploymentFilter = () => {
   const noneFound = selectedProject && availDeps.options.length === 0;
   const managedIds = useMemo(() => availDeps.options.map(({ _id }) => _id), [availDeps.options]);
 
-
   return (
-    <Accordion 
-      label='Deployments'
+    <Accordion
+      label="Deployments"
       selectedCount={activeDepCount}
       expandedDefault={false}
+      expandOnHeaderClick={true}
     >
       {noneFound && <NoneFoundAlert>no deployments found</NoneFoundAlert>}
-      {availDeps.options.length > 0 &&
+      {availDeps.options.length > 0 && (
         <>
-          <BulkSelectCheckbox
-            filterCat='deployments'
-            managedIds={managedIds}
-            isHeader={true}
-          />
+          <BulkSelectCheckbox filterCat="deployments" managedIds={managedIds} isHeader={true} />
           <div>
-            {selectedProject && selectedProject.cameraConfigs.map((camConfig) => (
-              <CameraFilterSection 
-                key={camConfig._id}
-                camConfig={camConfig}
-                activeDeps={activeDeps}
-              />
-            ))}
+            {selectedProject &&
+              selectedProject.cameraConfigs.map((camConfig) => (
+                <CameraFilterSection
+                  key={camConfig._id}
+                  camConfig={camConfig}
+                  activeDeps={activeDeps}
+                />
+              ))}
           </div>
         </>
-      }
+      )}
     </Accordion>
   );
 };
 
 export default DeploymentFilter;
-

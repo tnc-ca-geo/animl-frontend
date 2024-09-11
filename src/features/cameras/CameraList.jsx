@@ -2,43 +2,31 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { styled } from '../../theme/stitches.config';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuArrow,
+} from '../../components/Dropdown.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice';
 import { unregisterCamera } from './wirelessCamerasSlice';
+import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
 import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
-import { Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
-import { hasRole, WRITE_CAMERA_REGISTRATION_ROLES, WRITE_DEPLOYMENTS_ROLES } from '../auth/roles';
+import { Cross2Icon, Pencil1Icon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import {
+  hasRole,
+  WRITE_CAMERA_REGISTRATION_ROLES,
+  WRITE_CAMERA_SERIAL_NUMBER_ROLES,
+  WRITE_DEPLOYMENTS_ROLES,
+} from '../auth/roles';
 
 const StyledCameraList = styled('div', {
   border: '1px solid $border',
   borderBottom: 'none',
   maxHeight: '50vh',
   overflowY: 'scroll',
-});
-
-const ManageCamButtons = styled('div', {
-  position: 'absolute',
-  right: '$3',
-});
-
-const ManageCamButton = styled('button', {
-  border: 'none',
-  backgroundColor: '$gray3',
-  borderRadius: '$3',
-  padding: '$1 $3',
-  color: '$textMedium',
-  marginLeft: '$2',
-  textTransform: 'uppercase',
-  fontSize: '$2',
-  fontWeight: '600',
-  '&:hover': {
-    color: '$textDark',
-    backgroundColor: '$gray4',
-    cursor: 'pointer',
-  },
-  '&:active': {
-    backgroundColor: '$gray5',
-  },
 });
 
 const DepButtons = styled('div', {
@@ -98,6 +86,7 @@ const DeploymentItem = styled('div', {
 const StyledActiveState = styled('div', {
   fontSize: '$3',
   padding: '$0 $2',
+  paddingBottom: '1px',
   borderRadius: '$3',
   border: '1px solid $border',
   variants: {
@@ -115,6 +104,16 @@ const StyledActiveState = styled('div', {
   },
 });
 
+const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
+  marginLeft: 'auto',
+});
+
+const StyledDropdownMenuContent = styled(DropdownMenuContent, {
+  minWidth: '100px',
+  // width: '100px',
+  // right: '20px',
+});
+
 const ActiveState = ({ active }) => (
   <StyledActiveState active={active.toString()}>{active ? 'active' : 'inactive'}</StyledActiveState>
 );
@@ -125,6 +124,11 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
 
   const handleUnregisterClick = (cameraId) => {
     dispatch(unregisterCamera(cameraId));
+  };
+
+  const handleEditSerialNumberClick = ({ cameraId }) => {
+    dispatch(setModalContent('update-serial-number-form'));
+    dispatch(setSelectedCamera(cameraId));
   };
 
   return (
@@ -140,7 +144,43 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               headerButtons={
                 <>
                   {cam.isWireless && <ActiveState active={cam.active} />}
-                  <ManageCamButtons>
+                  <DropdownMenu>
+                    <StyledDropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <IconButton variant="ghost">
+                        <DotsHorizontalIcon />
+                      </IconButton>
+                    </StyledDropdownMenuTrigger>
+                    <StyledDropdownMenuContent sideOffset={5}>
+                      {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
+                        <DropdownMenuItem onClick={() => handleSaveDepClick({ cameraId: cam._id })}>
+                          Add Deployment
+                        </DropdownMenuItem>
+                      )}
+                      {hasRole(userRoles, WRITE_CAMERA_SERIAL_NUMBER_ROLES) && (
+                        <DropdownMenuItem
+                          onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
+                          disabled={cam.isWireless}
+                        >
+                          Edit camera serial number
+                        </DropdownMenuItem>
+                      )}
+                      {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation;
+                            handleUnregisterClick({
+                              cameraId: cam._id,
+                            });
+                          }}
+                        >
+                          Release camera
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuArrow offset={12} />
+                    </StyledDropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* <ManageCamButtons>
                     {cam.isWireless &&
                       hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) &&
                       cam.active && (
@@ -159,7 +199,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                         Add deployment
                       </ManageCamButton>
                     )}
-                  </ManageCamButtons>
+                  </ManageCamButtons> */}
                 </>
               }
             >
