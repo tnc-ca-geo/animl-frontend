@@ -11,20 +11,19 @@ import {
   ReloadIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChatBubbleIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
+import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import {
-  addLabelStart,
-  selectIsDrawingBbox,
-  selectIsAddingLabel,
-} from './loupeSlice.js';
-import {
-  selectUserUsername,
-  selectUserCurrentRoles,
-} from '../auth/authSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
-import { violet, mauve } from '@radix-ui/colors';
+  hasRole,
+  READ_COMMENT_ROLES,
+  WRITE_COMMENT_ROLES,
+  WRITE_OBJECTS_ROLES,
+} from '../auth/roles.js';
+import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import {
   Tooltip,
@@ -34,6 +33,14 @@ import {
 } from '../../components/Tooltip.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
+import {
+  Root as PopoverRoot,
+  PopoverPortal,
+  PopoverContent,
+  PopoverTrigger,
+  PopoverArrow,
+} from '@radix-ui/react-popover';
+import { CommentsPopover } from './CommentsPopover.jsx';
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -103,6 +110,27 @@ const CancelHint = styled('div', {
   },
 });
 
+const StyledPopoverContent = styled(PopoverContent, {
+  zIndex: '$4',
+});
+
+const StyledPopoverArrow = styled(PopoverArrow, {
+  zIndex: 200,
+  fill: '$backgroundLight',
+});
+
+const Badge = styled('div', {
+  position: 'absolute',
+  top: 1,
+  left: 18,
+  background: indigo.indigo4,
+  fontSize: '$1',
+  fontWeight: '$5',
+  color: indigo.indigo11,
+  padding: '2px $1',
+  borderRadius: '$2',
+});
+
 const ImageReviewToolbar = ({
   image,
   lastAction,
@@ -120,9 +148,7 @@ const ImageReviewToolbar = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [catSelectorOpen, setCatSelectorOpen] = useState(
-    isAddingLabel === 'from-review-toolbar',
-  );
+  const [catSelectorOpen, setCatSelectorOpen] = useState(isAddingLabel === 'from-review-toolbar');
   useEffect(() => {
     setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
   }, [isAddingLabel]);
@@ -147,17 +173,21 @@ const ImageReviewToolbar = ({
     dispatch(addLabelStart('from-review-toolbar'));
   };
 
-  const allObjectsLocked =
-    image.objects && image.objects.every((obj) => obj.locked);
-  const allObjectsUnlocked =
-    image.objects && image.objects.every((obj) => !obj.locked);
+  const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
+  const allObjectsUnlocked = image.objects && image.objects.every((obj) => !obj.locked);
   const hasRenderedObjects =
     image.objects &&
     image.objects.some((obj) =>
-      obj.labels.some(
-        (lbl) => lbl.validation === null || lbl.validation.validated,
-      ),
+      obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
     );
+
+  const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
+  const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
+  const onClickOutsideComments = () => {
+    if (!isCommentsActionMenuOpen) {
+      setIsCommentsPopoverOpen(false);
+    }
+  }
 
   return (
     <Toolbar>
@@ -166,10 +196,7 @@ const ImageReviewToolbar = ({
           {/* Repeat last action */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={handleRepeatAction}
-                disabled={!lastAction}
-              >
+              <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
                 <ReloadIcon />
               </ToolbarIconButton>
             </TooltipTrigger>
@@ -253,9 +280,7 @@ const ImageReviewToolbar = ({
           {/* Add object */}
           {isDrawingBbox ? (
             <CancelHint>
-              <KeyboardKeyHint css={{ marginRight: '4px' }}>
-                esc
-              </KeyboardKeyHint>
+              <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
               <span style={{ paddingBottom: '2px' }}>to cancel</span>
             </CancelHint>
           ) : (
@@ -271,6 +296,47 @@ const ImageReviewToolbar = ({
               </TooltipContent>
             </Tooltip>
           )}
+
+          <Separator />
+
+          {/* Comments */}
+          <Tooltip>
+            <PopoverRoot open={isCommentsPopoverOpen}>
+              <TooltipTrigger
+                asChild
+                disabled={
+                  !hasRole(userRoles, READ_COMMENT_ROLES) ||
+                  !hasRole(userRoles, WRITE_COMMENT_ROLES)
+                }
+              >
+                <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
+                  <ToolbarIconButton css={{ position: 'relative' }}>
+                    <ChatBubbleIcon />
+                    {image.comments.length > 0 && <Badge>{image.comments.length}</Badge>}
+                  </ToolbarIconButton>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Add comments
+                <TooltipArrow />
+              </TooltipContent>
+              <PopoverPortal>
+                <StyledPopoverContent 
+                  side="top" 
+                  sideOffset={25} 
+                  onPointerDownOutside={() => onClickOutsideComments()}
+                >
+                  <CommentsPopover
+                    onClose={() => setIsCommentsPopoverOpen(false)}
+                    onChangeActionMenu={setIsCommentsActionMenuOpen}
+                    comments={image.comments}
+                    imageId={image._id}
+                  />
+                  <StyledPopoverArrow />
+                </StyledPopoverContent>
+              </PopoverPortal>
+            </PopoverRoot>
+          </Tooltip>
 
           <Separator />
 
