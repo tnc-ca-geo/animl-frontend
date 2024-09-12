@@ -11,6 +11,14 @@ const ModalBody = styled('div', {
   overflowY: 'scroll',
   overflowX: 'hidden',
   position: 'relative',
+
+  variants: {
+    fullHeight: {
+      true: {
+        height: 'calc(95vh - $7)',
+      },
+    },
+  },
 });
 
 const overlayShow = keyframes({
@@ -104,7 +112,7 @@ export const Modal = ({ open, handleModalToggle, size, fullHeight, title, childr
     <Dialog open={open} onOpenChange={() => handleModalToggle()}>
       <DialogContent size={size} fullHeight={fullHeight}>
         <PanelHeader title={title} handlePanelClose={handleModalToggle} />
-        <ModalBody>
+        <ModalBody fullHeight={fullHeight}>
           {React.Children.map(children, (child) =>
             React.cloneElement(child, {
               open: open,

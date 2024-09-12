@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { styled } from '@stitches/react';
+import { mauve } from '@radix-ui/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { selectUserCurrentRoles } from '../auth/authSlice';
@@ -8,12 +10,20 @@ import {
   selectWirelessCameras,
   fetchWirelessCameras,
 } from './wirelessCamerasSlice';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import CameraList from './CameraList';
 import SaveDeploymentForm from './SaveDeploymentForm';
 import DeleteDeploymentForm from './DeleteDeploymentForm';
 import RegisterCameraForm from './RegisterCameraForm';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { enrichCameraConfigs } from '../tasks/utils';
+
+const Separator = styled('div', {
+  width: '100%',
+  height: '1px',
+  backgroundColor: mauve.mauve6,
+  margin: '$3 0',
+});
 
 const CameraAdminModal = () => {
   const project = useSelector(selectSelectedProject);
@@ -69,6 +79,11 @@ const CameraAdminModal = () => {
 
   return (
     <div>
+      {camerasLoading.isLoading && (
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      )}
       {showSaveDepForm ? (
         <SaveDeploymentForm
           project={project}
@@ -89,7 +104,12 @@ const CameraAdminModal = () => {
             handleSaveDepClick={handleSaveDepClick}
             handleDeleteDepClick={handleDeleteDepClick}
           />
-          {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && <RegisterCameraForm />}
+          {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && (
+            <>
+              <Separator />
+              <RegisterCameraForm />
+            </>
+          )}
         </>
       )}
     </div>
