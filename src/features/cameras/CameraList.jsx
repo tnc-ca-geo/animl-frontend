@@ -144,112 +144,116 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     <>
       {cameras.length > 0 && (
         <StyledCameraList>
-          {cameras.map((cam) => (
-            <Accordion
-              key={cam._id}
-              label={cam._id}
-              boldLabel={true}
-              expandedDefault={true}
-              headerButtons={
-                <>
-                  {cam.isWireless && <ActiveState active={cam.active} />}
-                  <DropdownMenu open={dropdownOpen === cam._id}>
-                    <StyledDropdownMenuTrigger onClick={() => setDropdownOpen(cam._id)} asChild>
-                      <IconButton variant="ghost">
-                        <DotsHorizontalIcon />
-                      </IconButton>
-                    </StyledDropdownMenuTrigger>
-                    <StyledDropdownMenuContent
-                      sideOffset={5}
-                      onInteractOutside={() => setDropdownOpen(null)}
-                    >
-                      {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
-                        <DropdownMenuItem onClick={() => handleSaveDepClick({ cameraId: cam._id })}>
-                          Add Deployment
-                        </DropdownMenuItem>
-                      )}
-                      {hasRole(userRoles, WRITE_CAMERA_SERIAL_NUMBER_ROLES) && (
-                        <Tooltip open={tooltipOpen}>
-                          <TooltipTrigger asChild>
-                            <DropdownMenuItem
-                              onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
-                              onMouseEnter={() => cam.isWireless && setTooltipOpen(true)}
-                              onMouseLeave={() => setTooltipOpen(false)}
-                              disabled={cam.isWireless}
-                            >
-                              Edit camera serial number
-                            </DropdownMenuItem>
-                          </TooltipTrigger>
-                          <TooltipContent side="left" sideOffset={5}>
-                            You cannot edit the serial number of a wireless camera
-                            <TooltipArrow />
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                      {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation;
-                            handleUnregisterClick({
+          {cameras.map((cam) => {
+            return (
+              <Accordion
+                key={cam._id}
+                label={cam._id}
+                boldLabel={true}
+                expandedDefault={true}
+                headerButtons={
+                  <>
+                    {cam.isWireless && <ActiveState active={cam.active} />}
+                    <DropdownMenu open={dropdownOpen === cam._id}>
+                      <StyledDropdownMenuTrigger onClick={() => setDropdownOpen(cam._id)} asChild>
+                        <IconButton variant="ghost">
+                          <DotsHorizontalIcon />
+                        </IconButton>
+                      </StyledDropdownMenuTrigger>
+                      <StyledDropdownMenuContent
+                        sideOffset={5}
+                        onInteractOutside={() => setDropdownOpen(null)}
+                      >
+                        {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
+                          <DropdownMenuItem
+                            onClick={() => handleSaveDepClick({ cameraId: cam._id })}
+                          >
+                            Add Deployment
+                          </DropdownMenuItem>
+                        )}
+                        {hasRole(userRoles, WRITE_CAMERA_SERIAL_NUMBER_ROLES) && (
+                          <Tooltip open={tooltipOpen}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuItem
+                                onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
+                                onClick={() => cam.isWireless && setTooltipOpen(true)}
+                                onMouseLeave={() => setTooltipOpen(false)}
+                                disabled={cam.isWireless}
+                              >
+                                Edit camera serial number
+                              </DropdownMenuItem>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" sideOffset={5}>
+                              You cannot edit the serial number of a wireless camera
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                        {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation;
+                              handleUnregisterClick({
+                                cameraId: cam._id,
+                              });
+                            }}
+                          >
+                            Release camera
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuArrow offset={12} />
+                      </StyledDropdownMenuContent>
+                    </DropdownMenu>
+                  </>
+                }
+              >
+                {cam.deployments.map((dep) => (
+                  <DeploymentItem key={dep._id}>
+                    <DepName>{dep.name === 'default' ? `${cam._id} (default)` : dep.name}</DepName>
+                    <DepDates>
+                      <Date type="start">
+                        {dep.startDate ? format(dep.startDate) : <Bookend>dawn of time</Bookend>}
+                      </Date>
+                      <DateDash>-</DateDash>
+                      <Date type="end">
+                        {dep.endDate ? format(dep.endDate) : <Bookend>today</Bookend>}
+                      </Date>
+                    </DepDates>
+                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
+                      <DepButtons>
+                        <IconButton
+                          variant="ghost"
+                          size="small"
+                          onClick={() =>
+                            handleSaveDepClick({
                               cameraId: cam._id,
-                            });
-                          }}
+                              deployment: dep,
+                            })
+                          }
+                          disabled={dep.editable === false}
                         >
-                          Release camera
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuArrow offset={12} />
-                    </StyledDropdownMenuContent>
-                  </DropdownMenu>
-                </>
-              }
-            >
-              {cam.deployments.map((dep) => (
-                <DeploymentItem key={dep._id}>
-                  <DepName>{dep.name === 'default' ? `${cam._id} (default)` : dep.name}</DepName>
-                  <DepDates>
-                    <Date type="start">
-                      {dep.startDate ? format(dep.startDate) : <Bookend>dawn of time</Bookend>}
-                    </Date>
-                    <DateDash>-</DateDash>
-                    <Date type="end">
-                      {dep.endDate ? format(dep.endDate) : <Bookend>today</Bookend>}
-                    </Date>
-                  </DepDates>
-                  {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
-                    <DepButtons>
-                      <IconButton
-                        variant="ghost"
-                        size="small"
-                        onClick={() =>
-                          handleSaveDepClick({
-                            cameraId: cam._id,
-                            deployment: dep,
-                          })
-                        }
-                        disabled={dep.editable === false}
-                      >
-                        <Pencil1Icon />
-                      </IconButton>
-                      <IconButton
-                        variant="ghost"
-                        size="small"
-                        onClick={() =>
-                          handleDeleteDepClick({
-                            cameraId: cam._id,
-                            deployment: dep,
-                          })
-                        }
-                        disabled={dep.editable === false}
-                      >
-                        <Cross2Icon />
-                      </IconButton>
-                    </DepButtons>
-                  )}
-                </DeploymentItem>
-              ))}
-            </Accordion>
-          ))}
+                          <Pencil1Icon />
+                        </IconButton>
+                        <IconButton
+                          variant="ghost"
+                          size="small"
+                          onClick={() =>
+                            handleDeleteDepClick({
+                              cameraId: cam._id,
+                              deployment: dep,
+                            })
+                          }
+                          disabled={dep.editable === false}
+                        >
+                          <Cross2Icon />
+                        </IconButton>
+                      </DepButtons>
+                    )}
+                  </DeploymentItem>
+                ))}
+              </Accordion>
+            );
+          })}
         </StyledCameraList>
       )}
     </>
