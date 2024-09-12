@@ -35,7 +35,7 @@ const StyledFormWrapper = styled('div', {
     fontSize: '$3',
     fontWeight: '$3',
     color: '$textDark',
-    marginBottom: '$2'
+    marginBottom: '$2',
   },
   input: textInput,
   textarea: {
@@ -43,19 +43,15 @@ const StyledFormWrapper = styled('div', {
     ...textInput,
   },
   select: {
-    ...textInput
+    ...textInput,
   },
   p: {
     color: '$textMedium',
     fontSize: '$3',
-  }
+  },
 });
 
-export const FormWrapper = ({ children }) => (
-  <StyledFormWrapper>
-    { children }
-  </StyledFormWrapper>
-);
+export const FormWrapper = ({ children }) => <StyledFormWrapper>{children}</StyledFormWrapper>;
 
 export const FormSubheader = styled('div', {
   padding: '$3 $0',
@@ -75,7 +71,7 @@ export const ButtonRow = styled(FieldRow, {
     '&:last-child': {
       marginRight: '0',
     },
-  }
+  },
 });
 
 export const FormFieldWrapper = styled('div', {
@@ -85,7 +81,7 @@ export const FormFieldWrapper = styled('div', {
   marginLeft: '$3',
   '&:first-child': {
     marginLeft: '0',
-  }
+  },
 });
 
 export const FormError = styled('div', {
@@ -99,11 +95,11 @@ export const HelperText = styled('div', {
   color: '$textDark',
   '& p': {
     marginTop: '$0',
-    
+
     '&:last-child': {
       marginBottom: '$0',
-    }
-  }
+    },
+  },
 });
 
 export const FileUploadInput = styled('input', {
@@ -132,7 +128,7 @@ export const FileUploadInput = styled('input', {
     '&::after': {
       boxSizing: 'border-box',
     },
-    
+
     // Custom
     color: '$loContrast',
     backgroundColor: '$hiContrast',
@@ -156,7 +152,11 @@ export const FileUploadInput = styled('input', {
       borderColor: '$gray5',
     },
     svg: {
-      marginRight: '$2'
+      marginRight: '$2',
     },
-  }
-})
+  },
+});
+
+export const StandAloneInput = styled('input', {
+  ...textInput,
+});
