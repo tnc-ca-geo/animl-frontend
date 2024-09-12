@@ -19,9 +19,16 @@ import { selectUserCurrentRoles } from '../auth/authSlice';
 import { unregisterCamera } from './wirelessCamerasSlice';
 import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
-import { Cross2Icon, Pencil1Icon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import {
+  Cross2Icon,
+  Pencil1Icon,
+  DotsHorizontalIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+} from '@radix-ui/react-icons';
 import { StandAloneInput as Input } from '../../components/Form';
-import { MapPin } from 'lucide-react';
+import { Camera, MapPin } from 'lucide-react';
+import { indigo } from '@radix-ui/colors';
 
 import {
   hasRole,
@@ -239,7 +246,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               >
                 {cam.deployments.map((dep) => {
                   let depName = dep.name === 'default' ? `${cam._id} (default)` : dep.name;
-                  depName = depName.length > 20 ? `${depName.slice(0, 20)}...` : depName;
+                  depName = depName.length > 23 ? `${depName.slice(0, 23)}...` : depName;
                   return (
                     <DeploymentItem key={dep._id}>
                       <DepName>
@@ -300,9 +307,6 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
 };
 
 // TODO: move to own component
-import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
-import { indigo } from '@radix-ui/colors';
-import { Camera } from 'lucide-react';
 
 export const SelectedCount = styled('span', {
   background: indigo.indigo4,
