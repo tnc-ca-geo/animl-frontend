@@ -18,10 +18,10 @@ import {
 import { selectUserCurrentRoles } from '../auth/authSlice';
 import { unregisterCamera } from './wirelessCamerasSlice';
 import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
-import Accordion from '../../components/Accordion';
 import IconButton from '../../components/IconButton';
 import { Cross2Icon, Pencil1Icon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { StandAloneInput as Input } from '../../components/Form';
+import { MapPin } from 'lucide-react';
 
 import {
   hasRole,
@@ -76,12 +76,12 @@ const DepDates = styled('div', {
 const DepName = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  width: 210,
+  width: 250,
 });
 
 const DeploymentItem = styled('div', {
   fontSize: '$3',
-  marginLeft: '$5',
+  marginLeft: '$6',
   display: 'grid',
   gridTemplateColumns: 'auto auto auto',
   alignContent: 'center',
@@ -176,7 +176,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
 
           <StyledCameraList>
             {filteredCameras.map((cam) => (
-              <Accordion
+              <CameraItem
                 key={cam._id}
                 label={cam._id}
                 boldLabel={true}
@@ -237,58 +237,164 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                   </>
                 }
               >
-                {cam.deployments.map((dep) => (
-                  <DeploymentItem key={dep._id}>
-                    <DepName>{dep.name === 'default' ? `${cam._id} (default)` : dep.name}</DepName>
-                    <DepDates>
-                      <Date type="start">
-                        {dep.startDate ? format(dep.startDate) : <Bookend>dawn of time</Bookend>}
-                      </Date>
-                      <DateDash>-</DateDash>
-                      <Date type="end">
-                        {dep.endDate ? format(dep.endDate) : <Bookend>today</Bookend>}
-                      </Date>
-                    </DepDates>
-                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
-                      <DepButtons>
-                        <IconButton
-                          variant="ghost"
-                          size="small"
-                          css={{ marginRight: '$1' }}
-                          onClick={() =>
-                            handleSaveDepClick({
-                              cameraId: cam._id,
-                              deployment: dep,
-                            })
-                          }
-                          disabled={dep.editable === false}
-                        >
-                          <Pencil1Icon />
-                        </IconButton>
-                        <IconButton
-                          variant="ghost"
-                          size="small"
-                          onClick={() =>
-                            handleDeleteDepClick({
-                              cameraId: cam._id,
-                              deployment: dep,
-                            })
-                          }
-                          disabled={dep.editable === false}
-                        >
-                          <Cross2Icon />
-                        </IconButton>
-                      </DepButtons>
-                    )}
-                  </DeploymentItem>
-                ))}
-              </Accordion>
+                {cam.deployments.map((dep) => {
+                  let depName = dep.name === 'default' ? `${cam._id} (default)` : dep.name;
+                  depName = depName.length > 20 ? `${depName.slice(0, 20)}...` : depName;
+                  return (
+                    <DeploymentItem key={dep._id}>
+                      <DepName>
+                        <MapPin size={14} style={{ marginRight: '10px' }} />
+                        {depName}
+                      </DepName>
+                      <DepDates>
+                        <Date type="start">
+                          {dep.startDate ? format(dep.startDate) : <Bookend>dawn of time</Bookend>}
+                        </Date>
+                        <DateDash>-</DateDash>
+                        <Date type="end">
+                          {dep.endDate ? format(dep.endDate) : <Bookend>today</Bookend>}
+                        </Date>
+                      </DepDates>
+                      {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
+                        <DepButtons>
+                          <IconButton
+                            variant="ghost"
+                            size="small"
+                            css={{ marginRight: '$1' }}
+                            onClick={() =>
+                              handleSaveDepClick({
+                                cameraId: cam._id,
+                                deployment: dep,
+                              })
+                            }
+                            disabled={dep.editable === false}
+                          >
+                            <Pencil1Icon />
+                          </IconButton>
+                          <IconButton
+                            variant="ghost"
+                            size="small"
+                            onClick={() =>
+                              handleDeleteDepClick({
+                                cameraId: cam._id,
+                                deployment: dep,
+                              })
+                            }
+                            disabled={dep.editable === false}
+                          >
+                            <Cross2Icon />
+                          </IconButton>
+                        </DepButtons>
+                      )}
+                    </DeploymentItem>
+                  );
+                })}
+              </CameraItem>
             ))}
             {filteredCameras.length === 0 && <NoCamerasFound>No cameras found.</NoCamerasFound>}
           </StyledCameraList>
         </>
       )}
     </>
+  );
+};
+
+// TODO: move to own component
+import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { indigo } from '@radix-ui/colors';
+import { Camera } from 'lucide-react';
+
+export const SelectedCount = styled('span', {
+  background: indigo.indigo4,
+  fontSize: '$2',
+  fontWeight: '$5',
+  color: indigo.indigo11,
+  padding: '2px $2',
+  borderRadius: '$2',
+});
+
+export const Label = styled('span', {
+  marginRight: '$4',
+  marginLeft: '$2',
+
+  variants: {
+    bold: {
+      true: {
+        fontWeight: '$4',
+      },
+    },
+  },
+});
+
+const AccordionBody = styled('div', {
+  borderBottom: '1px solid $border',
+  backgroundColor: '$backgroundDark',
+  fontFamily: '$mono',
+  '& > div': {
+    padding: '$2 $3',
+  },
+});
+
+const ExpandButton = styled('div', {
+  paddingRight: '$2',
+});
+
+const AccordionHeader = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  fontWeight: '$3',
+  fontFamily: '$sourceSansPro',
+  height: '$7',
+  borderBottom: '1px solid $border',
+  color: '$textDark',
+  backgroundColor: '$backgroundLight',
+  padding: '$0 $2 $0 $2',
+  pointerEvents: 'auto',
+  position: 'relative',
+});
+
+const CameraIcon = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '30px',
+  height: '30px',
+  backgroundColor: indigo.indigo4,
+  // color: indigo.indigo11,
+  borderRadius: '50%',
+});
+
+const CameraItem = (props) => {
+  const [expanded, setExpanded] = useState(props.expandedDefault);
+  const expandOnHeaderClick = props.expandOnHeaderClick || false;
+
+  const handleAccordionHeaderClick = () => {
+    if (expandOnHeaderClick) {
+      setExpanded(!expanded);
+    }
+  };
+
+  const handleExpandButtonClick = () => {
+    setExpanded(!expanded);
+  };
+
+  return (
+    <div>
+      <AccordionHeader onClick={handleAccordionHeaderClick}>
+        <ExpandButton onClick={handleExpandButtonClick}>
+          <IconButton variant="ghost">
+            {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </ExpandButton>
+        <CameraIcon>
+          <Camera size={16} />
+        </CameraIcon>
+        {props.label && <Label bold={props.boldLabel}>{props.label}</Label>}
+        {props.selectedCount > 0 && <SelectedCount>{props.selectedCount}</SelectedCount>}
+        {props.headerButtons}
+      </AccordionHeader>
+      {expanded && <AccordionBody>{props.children}</AccordionBody>}
+    </div>
   );
 };
 
