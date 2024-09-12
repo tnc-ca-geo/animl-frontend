@@ -68,6 +68,7 @@ const HydratedModal = () => {
     'camera-admin-modal': {
       title: 'Manage Cameras',
       size: 'md',
+      fullHeight: true,
       content: <CameraAdminModal />,
       callBackOnClose: () => {
         console.log('callBackOnClose() - reverting moment global timezone to local timezone');
@@ -141,6 +142,7 @@ const HydratedModal = () => {
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}
       size={modalContent && modalContentMap[modalContent].size}
+      fullHeight={modalContent && modalContentMap[modalContent].fullHeight}
     >
       {modalContent && modalContentMap[modalContent].content}
     </Modal>

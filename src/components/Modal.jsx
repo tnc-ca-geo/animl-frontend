@@ -60,6 +60,11 @@ const StyledContent = styled(DialogPrimitive.Content, {
         maxHeight: '95vh',
       },
     },
+    fullHeight: {
+      true: {
+        height: '95vh',
+      },
+    },
   },
 });
 
@@ -94,18 +99,20 @@ export const DialogTitle = StyledTitle;
 export const DialogDescription = StyledDescription;
 export const DialogClose = DialogPrimitive.Close;
 
-export const Modal = ({ open, handleModalToggle, size, title, children }) => (
-  <Dialog open={open} onOpenChange={() => handleModalToggle()}>
-    <DialogContent size={size}>
-      <PanelHeader title={title} handlePanelClose={handleModalToggle} />
-      <ModalBody>
-        {React.Children.map(children, (child) =>
-          React.cloneElement(child, {
-            open: open,
-            handleClose: handleModalToggle,
-          }),
-        )}
-      </ModalBody>
-    </DialogContent>
-  </Dialog>
-);
+export const Modal = ({ open, handleModalToggle, size, fullHeight, title, children }) => {
+  return (
+    <Dialog open={open} onOpenChange={() => handleModalToggle()}>
+      <DialogContent size={size} fullHeight={fullHeight}>
+        <PanelHeader title={title} handlePanelClose={handleModalToggle} />
+        <ModalBody>
+          {React.Children.map(children, (child) =>
+            React.cloneElement(child, {
+              open: open,
+              handleClose: handleModalToggle,
+            }),
+          )}
+        </ModalBody>
+      </DialogContent>
+    </Dialog>
+  );
+};

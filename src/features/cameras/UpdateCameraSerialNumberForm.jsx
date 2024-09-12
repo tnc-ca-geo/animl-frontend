@@ -93,10 +93,8 @@ const UpdateCameraSerialNumberForm = () => {
         >
           {({ isValid, dirty, values, setFieldTouched }) => (
             <Form>
-              <p>Update Camera Serial Number</p>
               <FieldRow>
                 <FormFieldWrapper>
-                  {/* <label htmlFor="serialNumber">New Serial Number</label> */}
                   <Field
                     name="serialNumber"
                     id="serialNumber"
