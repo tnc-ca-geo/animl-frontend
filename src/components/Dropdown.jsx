@@ -61,7 +61,7 @@ const itemStyles = {
 
   '&[data-disabled]': {
     color: mauve.mauve8,
-    pointerEvents: 'none',
+    // pointerEvents: 'none',
   },
 
   '&[data-state="checked"]': {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 import { styled } from '../../theme/stitches.config';
@@ -9,6 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuArrow,
 } from '../../components/Dropdown.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice';
 import { unregisterCamera } from './wirelessCamerasSlice';
 import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
@@ -131,6 +137,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(setSelectedCamera(cameraId));
   };
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+
   return (
     <>
       {cameras.length > 0 && (
@@ -144,25 +153,38 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               headerButtons={
                 <>
                   {cam.isWireless && <ActiveState active={cam.active} />}
-                  <DropdownMenu>
-                    <StyledDropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenu open={dropdownOpen === cam._id}>
+                    <StyledDropdownMenuTrigger onClick={() => setDropdownOpen(cam._id)} asChild>
                       <IconButton variant="ghost">
                         <DotsHorizontalIcon />
                       </IconButton>
                     </StyledDropdownMenuTrigger>
-                    <StyledDropdownMenuContent sideOffset={5}>
+                    <StyledDropdownMenuContent
+                      sideOffset={5}
+                      onInteractOutside={() => setDropdownOpen(null)}
+                    >
                       {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
                         <DropdownMenuItem onClick={() => handleSaveDepClick({ cameraId: cam._id })}>
                           Add Deployment
                         </DropdownMenuItem>
                       )}
                       {hasRole(userRoles, WRITE_CAMERA_SERIAL_NUMBER_ROLES) && (
-                        <DropdownMenuItem
-                          onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
-                          disabled={cam.isWireless}
-                        >
-                          Edit camera serial number
-                        </DropdownMenuItem>
+                        <Tooltip open={tooltipOpen}>
+                          <TooltipTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
+                              onMouseEnter={() => cam.isWireless && setTooltipOpen(true)}
+                              onMouseLeave={() => setTooltipOpen(false)}
+                              disabled={cam.isWireless}
+                            >
+                              Edit camera serial number
+                            </DropdownMenuItem>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" sideOffset={5}>
+                            You cannot edit the serial number of a wireless camera
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                       {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
                         <DropdownMenuItem
@@ -179,27 +201,6 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                       <DropdownMenuArrow offset={12} />
                     </StyledDropdownMenuContent>
                   </DropdownMenu>
-
-                  {/* <ManageCamButtons>
-                    {cam.isWireless &&
-                      hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) &&
-                      cam.active && (
-                        <ManageCamButton
-                          onClick={() =>
-                            handleUnregisterClick({
-                              cameraId: cam._id,
-                            })
-                          }
-                        >
-                          Release
-                        </ManageCamButton>
-                      )}
-                    {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
-                      <ManageCamButton onClick={() => handleSaveDepClick({ cameraId: cam._id })}>
-                        Add deployment
-                      </ManageCamButton>
-                    )}
-                  </ManageCamButtons> */}
                 </>
               }
             >
