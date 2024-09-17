@@ -114,7 +114,7 @@ const HydratedModal = () => {
     },
     'update-serial-number-form': {
       title: 'Edit Camera Serial Number',
-      size: 'sm',
+      size: 'md',
       content: <UpdateCameraSerialNumberForm />,
       callBackOnClose: () => {
         dispatch(setSelectedCamera(null));

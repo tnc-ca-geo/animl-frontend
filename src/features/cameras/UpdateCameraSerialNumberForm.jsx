@@ -106,6 +106,22 @@ const UpdateCameraSerialNumberForm = () => {
                   <ErrorMessage component={FormError} name="serialNumber" />
                 </FormFieldWrapper>
               </FieldRow>
+              <Callout type="info" title="Cameras vs. Deployments">
+                <p>
+                  A Camera Serial Number is a unique identifier for a physical camera. If you would
+                  like to create a representation of a Deployment (i.e., a Camera deployed at a
+                  specific location for some length of time), consider creating a
+                  &quot;Deployment&quot; instead. See the{' '}
+                  <a
+                    href="https://docs.animl.camera/fundamentals/camera-management#creating-deleting-updating-deployments"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    documentation
+                  </a>{' '}
+                  for more information.
+                </p>
+              </Callout>
               {isMerge && (
                 <Callout type="warning" title="Merge warning">
                   <p>
