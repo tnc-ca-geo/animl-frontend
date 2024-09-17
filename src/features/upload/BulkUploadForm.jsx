@@ -99,8 +99,8 @@ const SNOverrideContent = styled('div', {
 
 const SerialNumberOverrideHelp = () => (
   <SNOverrideContent>
-    Using this feature will override the camera serial numbers of all images in your Zip file and
-    cannot be undone. Be sure to understand the implications and read the{' '}
+    Using this feature will override the Camera Serial Numbers of all images in your Zip file. Be
+    sure to understand the implications and read the{' '}
     <a
       href="https://docs.animl.camera/fundamentals/uploading-images#overriding-serial-numbers"
       target="_blank"
@@ -255,29 +255,36 @@ const BulkUploadForm = () => {
 };
 
 const alertContent = {
-  'override-serial-set': (
-    <p>
-      You&apos;ve included a camera Serial Number Override in your upload. Setting the Serial Number
-      Override will override the serial number for all images in this ZIP file, so proceed with
-      caution. For more information on the implications of using this feature, please refer to the{' '}
-      <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
-        Animl Documentation
-      </a>
-      .
-    </p>
-  ),
-  'no-automation-rule': (
-    <p>
-      There are currently no machine learning automation rules configured to trigger when new images
-      are added to this Project, so if you proceed, images in this ZIP will be saved, but the upload
-      will not produce in any machine learning predictions. To learn more about how to configure
-      machine learning pipelines using Automation Rules, please refer to the{' '}
-      <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
-        Animl Documentation
-      </a>
-      .
-    </p>
-  ),
+  'override-serial-set': {
+    title: 'Serial Number Override Set',
+    body: (
+      <p>
+        You&apos;ve included a camera Serial Number Override in your upload. Setting the Serial
+        Number Override will override the serial number for all images in this ZIP file, so proceed
+        with caution. For more information on the implications of using this feature, please refer
+        to the{' '}
+        <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+          Animl Documentation
+        </a>
+        .
+      </p>
+    ),
+  },
+  'no-automation-rule': {
+    title: 'No Automation Rules Configured',
+    body: (
+      <p>
+        There are currently no machine learning automation rules configured to trigger when new
+        images are added to this Project, so if you proceed, images in this ZIP will be saved, but
+        the upload will not trigger any machine learning predictions. To learn more about how to
+        configure machine learning pipelines using Automation Rules, please refer to the{' '}
+        <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+          Animl Documentation
+        </a>
+        .
+      </p>
+    ),
+  },
 };
 
 const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
@@ -298,11 +305,10 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
         <AlertContent>
           <AlertTitle>Are you sure you&apos;d like to proceed with this upload?</AlertTitle>
           {warnings &&
-            warnings.map((warn, i) => {
-              const title = warnings.length === 1 ? `Warning` : `Warning ${i + 1}`;
+            warnings.map((warn) => {
               return (
-                <Callout key={warn} type="warning" title={title}>
-                  {alertContent[warn]}
+                <Callout key={warn} type="warning" title={alertContent[warn].title}>
+                  {alertContent[warn].body}
                 </Callout>
               );
             })}
