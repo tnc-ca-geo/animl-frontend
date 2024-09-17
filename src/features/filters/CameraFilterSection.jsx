@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { truncateString } from '../../app/utils.js';
 import { checkboxFilterToggled, checkboxOnlyButtonClicked } from './filtersSlice.js';
@@ -7,21 +7,8 @@ import Checkbox from '../../components/Checkbox.jsx';
 import BulkSelectCheckbox from './BulkSelectCheckbox.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
-import { ChevronRightIcon, ChevronDownIcon, Pencil1Icon } from '@radix-ui/react-icons';
+import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuItemIconLeft,
-} from '../../components/ContextMenu';
-import {
-  setModalOpen,
-  setModalContent,
-  setSelectedCamera,
-  selectModalOpen,
-} from '../projects/projectsSlice.js';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -86,56 +73,24 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
     setExpanded(!expanded);
   };
 
-  const modalOpen = useSelector(selectModalOpen);
-  const handleModalToggle = (content) => {
-    dispatch(setModalOpen(!modalOpen));
-    dispatch(setModalContent(content));
-    if (content === 'update-serial-number-form') {
-      dispatch(setSelectedCamera(camConfig._id));
-    }
-  };
-
   return (
     <StyledCameraFilterSection>
-      <ContextMenu>
-        <ContextMenuTrigger
-        // disabled={!isAuthorized}
-        >
-          <CameraCheckboxWrapper>
-            <label>
-              <BulkSelectCheckbox
-                filterCat="deployments"
-                managedIds={managedIds}
-                isHeader={false}
-              />
-              <CameraCheckboxLabel
-                filterCat="deployments"
-                managedIds={managedIds}
-                deployments={deployments}
-                activeDeps={activeDeps}
-              />
-              <ExpandButton onClick={handleExpandCameraButtonClick}>
-                <IconButton size="small" variant="ghost">
-                  {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-                </IconButton>
-              </ExpandButton>
-            </label>
-          </CameraCheckboxWrapper>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem
-            className="update-serial-number"
-            onSelect={() => handleModalToggle('update-serial-number-form')}
-            // disabled={object.locked}
-          >
-            <ContextMenuItemIconLeft>
-              <Pencil1Icon />
-            </ContextMenuItemIconLeft>
-            Edit Camera Serial Number
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-
+      <CameraCheckboxWrapper>
+        <label>
+          <BulkSelectCheckbox filterCat="deployments" managedIds={managedIds} isHeader={false} />
+          <CameraCheckboxLabel
+            filterCat="deployments"
+            managedIds={managedIds}
+            deployments={deployments}
+            activeDeps={activeDeps}
+          />
+          <ExpandButton onClick={handleExpandCameraButtonClick}>
+            <IconButton size="small" variant="ghost">
+              {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </ExpandButton>
+        </label>
+      </CameraCheckboxWrapper>
       {expanded && (
         <Deployments>
           {deployments.map((dep) => {
