@@ -66,7 +66,7 @@ const HydratedModal = () => {
       callBackOnClose: () => dispatch(clearExport()),
     },
     'camera-admin-modal': {
-      title: 'Manage Cameras',
+      title: 'Manage Cameras and Deployments',
       size: 'md',
       fullHeight: true,
       content: <CameraAdminModal />,

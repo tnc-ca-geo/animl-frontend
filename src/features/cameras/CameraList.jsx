@@ -88,7 +88,7 @@ const DepName = styled('div', {
 
 const DeploymentItem = styled('div', {
   fontSize: '$3',
-  marginLeft: '$6',
+  marginLeft: '$9',
   display: 'grid',
   gridTemplateColumns: 'auto auto auto',
   alignContent: 'center',
@@ -364,7 +364,7 @@ const CameraIcon = styled('div', {
   width: '30px',
   height: '30px',
   backgroundColor: indigo.indigo4,
-  // color: indigo.indigo11,
+  color: indigo.indigo11,
   borderRadius: '50%',
 });
 
@@ -393,8 +393,8 @@ const CameraItem = (props) => {
         <CameraIcon>
           <Camera size={16} />
         </CameraIcon>
+
         {props.label && <Label bold={props.boldLabel}>{props.label}</Label>}
-        {props.selectedCount > 0 && <SelectedCount>{props.selectedCount}</SelectedCount>}
         {props.headerButtons}
       </AccordionHeader>
       {expanded && <AccordionBody>{props.children}</AccordionBody>}
