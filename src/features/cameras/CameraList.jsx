@@ -141,6 +141,20 @@ const NoCamerasFound = styled('div', {
   justifyContent: 'center',
 });
 
+const IconKey = styled('div', {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  fontSize: '$2',
+  padding: '$2 $0',
+  color: '$textMedium',
+  svg: {
+    marginLeft: '6px',
+    marginRight: '4px',
+  },
+});
+
 const ActiveState = ({ active }) => (
   <StyledActiveState active={active.toString()}>{active ? 'active' : 'inactive'}</StyledActiveState>
 );
@@ -319,6 +333,25 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
             ))}
             {filteredCameras.length === 0 && <NoCamerasFound>No cameras found.</NoCamerasFound>}
           </StyledCameraList>
+          <IconKey>
+            <strong style={{ marginRight: '2px' }}>Icon Key: </strong>
+            <Camera size={14} />{' '}
+            <a
+              href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#cameras"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Camera
+            </a>
+            ; <MapPin size={14} />
+            <a
+              href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#deployments"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Deployment
+            </a>
+          </IconKey>
         </>
       )}
     </>
