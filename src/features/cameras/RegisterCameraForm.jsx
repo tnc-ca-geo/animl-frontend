@@ -14,6 +14,7 @@ import {
   ButtonRow,
 } from '../../components/Form';
 import { SUPPORTED_WIRELESS_CAMS } from '../../config.js';
+import InfoIcon from '../../components/InfoIcon';
 
 // TODO: improve validation? Make sure cameraId is not already actively
 // registered to current project
@@ -46,7 +47,9 @@ const RegisterCameraForm = () => {
         >
           {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>
-              <FormSubheader>Register a wireless camera</FormSubheader>
+              <FormSubheader css={{ display: 'flex', alignItems: 'center' }}>
+                Register a wireless camera <InfoIcon tooltipContent={<RegisterCameraHelp />} />
+              </FormSubheader>
               <FieldRow>
                 <FormFieldWrapper>
                   <SelectField
@@ -84,3 +87,10 @@ const RegisterCameraForm = () => {
 };
 
 export default RegisterCameraForm;
+
+const RegisterCameraHelp = () => (
+  <div style={{ maxWidth: '320px' }}>
+    To integrate a new wireless camera, you first need to pair, or &quot;register&quot; it, with
+    your Project.
+  </div>
+);

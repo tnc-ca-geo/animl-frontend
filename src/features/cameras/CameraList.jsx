@@ -172,8 +172,6 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
       cam.deployments.some((dep) => dep.name.includes(cameraFilter)),
   );
 
-  console.log('filtered cameras: ', filteredCameras);
-
   return (
     <>
       {cameras.length > 0 && (
