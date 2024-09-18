@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice';
-import { unregisterCamera } from './wirelessCamerasSlice';
+import { unregisterCamera, registerCamera } from './wirelessCamerasSlice';
 import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
 import {
@@ -153,6 +153,10 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(unregisterCamera(cameraId));
   };
 
+  const handleReRegisterCameraClick = ({ cameraId, make }) => {
+    dispatch(registerCamera({ cameraId, make }));
+  };
+
   const handleEditSerialNumberClick = ({ cameraId }) => {
     dispatch(setModalContent('update-serial-number-form'));
     dispatch(setSelectedCamera(cameraId));
@@ -167,6 +171,8 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
       cam._id.toString().toLowerCase().includes(cameraFilter.toLowerCase()) ||
       cam.deployments.some((dep) => dep.name.includes(cameraFilter)),
   );
+
+  console.log('filtered cameras: ', filteredCameras);
 
   return (
     <>
@@ -238,6 +244,21 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                             Release camera
                           </DropdownMenuItem>
                         )}
+                        {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) &&
+                          cam.isWireless &&
+                          !cam.active && (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation;
+                                handleReRegisterCameraClick({
+                                  cameraId: cam._id,
+                                  make: cam.make,
+                                });
+                              }}
+                            >
+                              Re-register camera
+                            </DropdownMenuItem>
+                          )}
                         <DropdownMenuArrow offset={12} />
                       </StyledDropdownMenuContent>
                     </DropdownMenu>
@@ -250,7 +271,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                   return (
                     <DeploymentItem key={dep._id}>
                       <DepName>
-                        <MapPin size={14} style={{ marginRight: '10px' }} />
+                        <MapPin size={14} style={{ marginRight: '12px' }} />
                         {depName}
                       </DepName>
                       <DepDates>
@@ -319,7 +340,6 @@ export const SelectedCount = styled('span', {
 
 export const Label = styled('span', {
   marginRight: '$4',
-  marginLeft: '$2',
 
   variants: {
     bold: {
@@ -340,7 +360,7 @@ const AccordionBody = styled('div', {
 });
 
 const ExpandButton = styled('div', {
-  paddingRight: '$2',
+  marginRight: '$3',
 });
 
 const AccordionHeader = styled('div', {
@@ -361,10 +381,7 @@ const CameraIcon = styled('div', {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  width: '30px',
-  height: '30px',
-  backgroundColor: indigo.indigo4,
-  color: indigo.indigo11,
+  marginRight: '12px',
   borderRadius: '50%',
 });
 
@@ -390,11 +407,12 @@ const CameraItem = (props) => {
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
           </IconButton>
         </ExpandButton>
-        <CameraIcon>
-          <Camera size={16} />
-        </CameraIcon>
 
+        <CameraIcon>
+          <Camera size={14} />
+        </CameraIcon>
         {props.label && <Label bold={props.boldLabel}>{props.label}</Label>}
+
         {props.headerButtons}
       </AccordionHeader>
       {expanded && <AccordionBody>{props.children}</AccordionBody>}

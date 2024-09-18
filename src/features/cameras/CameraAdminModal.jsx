@@ -52,6 +52,7 @@ const CameraAdminModal = () => {
       const wirelessCam = wirelessCams.find((cam) => cam._id === camConfig._id);
       if (wirelessCam) {
         camera.isWireless = true;
+        camera.make = wirelessCam.make;
         const active = wirelessCam.projRegistrations.some(
           (pr) => pr.projectId === project._id && pr.active,
         );
