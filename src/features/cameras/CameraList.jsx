@@ -334,7 +334,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
             {filteredCameras.length === 0 && <NoCamerasFound>No cameras found.</NoCamerasFound>}
           </StyledCameraList>
           <IconKey>
-            <strong style={{ marginRight: '2px' }}>Icon Key: </strong>
+            <strong style={{ marginRight: '2px' }}>Key: </strong>
             <Camera size={14} />{' '}
             <a
               href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#cameras"
