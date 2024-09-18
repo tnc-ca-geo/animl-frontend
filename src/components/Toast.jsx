@@ -1,5 +1,3 @@
-
-
 import { styled, keyframes } from '@stitches/react';
 import { slate, red, green } from '@radix-ui/colors';
 import * as ToastPrimitive from '@radix-ui/react-toast';
@@ -43,10 +41,9 @@ const StyledToast = styled(ToastPrimitive.Root, {
   boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   padding: 15,
   display: 'grid',
-  gridTemplateAreas: '"title action" "description action"',
+  gridTemplateAreas: '"title action" "description ."',
   gridTemplateColumns: 'auto max-content',
   columnGap: 15,
-  alignItems: 'center',
 
   '@media (prefers-reduced-motion: no-preference)': {
     '&[data-state="open"]': {
@@ -80,9 +77,9 @@ const StyledToast = styled(ToastPrimitive.Root, {
         backgroundColor: green.green2,
         color: '$successText',
         boxShadow: `inset 0 0 0 1px ${green.green7}`,
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const StyledTitle = styled(ToastPrimitive.Title, {
@@ -96,12 +93,12 @@ const StyledTitle = styled(ToastPrimitive.Title, {
     variant: {
       red: {
         color: '$errorText',
-      },  
+      },
       green: {
         color: '$successText',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const StyledDescription = styled(ToastPrimitive.Description, {

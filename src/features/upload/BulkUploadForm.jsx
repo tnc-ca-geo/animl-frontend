@@ -1,15 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { FormWrapper, FieldRow, FormFieldWrapper, ButtonRow, FormError, FileUploadInput } from '../../components/Form';
+import {
+  FormWrapper,
+  FieldRow,
+  FormFieldWrapper,
+  ButtonRow,
+  FormError,
+  FileUploadInput,
+} from '../../components/Form';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 // import ProgressBar from '../../components/ProgressBar';
-import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../../components/AlertDialog';
+import {
+  Alert,
+  AlertPortal,
+  AlertOverlay,
+  AlertContent,
+  AlertTitle,
+} from '../../components/AlertDialog';
+import Callout from '../../components/Callout';
 import * as Progress from '@radix-ui/react-progress';
 import { selectSelectedProject } from '../projects/projectsSlice';
-import { Cross2Icon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { green, red } from '@radix-ui/colors';
 import { uploadFile, uploadMultipartFile, selectUploadsLoading } from './uploadSlice';
 import { styled } from '@stitches/react';
@@ -85,7 +99,7 @@ const SNOverrideContent = styled('div', {
 
 const SerialNumberOverrideHelp = () => (
   <SNOverrideContent>
-    Using this feature will override the camera serial numbers of all images in your Zip file and cannot be undone. Be
+    Using this feature will override the Camera Serial Numbers of all images in your Zip file. Be
     sure to understand the implications and read the{' '}
     <a
       href="https://docs.animl.camera/fundamentals/uploading-images#overriding-serial-numbers"
@@ -179,7 +193,11 @@ const BulkUploadForm = () => {
                       accept=".zip"
                       onChange={(e) => setFieldValue('zipFile', e.target.files[0])}
                     />
-                    <ClearFileButton variant="ghost" disabled={!values.zipFile || isLoading} onClick={reset}>
+                    <ClearFileButton
+                      variant="ghost"
+                      disabled={!values.zipFile || isLoading}
+                      onClick={reset}
+                    >
                       <Cross2Icon />
                     </ClearFileButton>
                   </FileUpload>
@@ -214,7 +232,9 @@ const BulkUploadForm = () => {
 
               <ProgressBar css={{ opacity: isLoading ? 1 : 0 }}>
                 <ProgressRoot>
-                  <ProgressIndicator css={{ transform: `translateX(-${100 - percentUploaded}%)` }} />
+                  <ProgressIndicator
+                    css={{ transform: `translateX(-${100 - percentUploaded}%)` }}
+                  />
                 </ProgressRoot>
                 <ProgressTicker>{percentUploaded}% Uploaded</ProgressTicker>
               </ProgressBar>
@@ -234,53 +254,37 @@ const BulkUploadForm = () => {
   );
 };
 
-// TODO: break out into new file
-
-const Warning = styled('div', {
-  marginTop: '$2',
-  marginBottom: '$3',
-  padding: '$1 $3',
-  color: '$textMedium',
-  p: {
-    marginTop: '$2',
-  },
-});
-
-const WarningTitle = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  color: '$warningText',
-  fontWeight: '500',
-  marginTop: '$2',
-  svg: {
-    marginRight: '$2',
-  },
-});
-
 const alertContent = {
-  'override-serial-set': (
-    <p>
-      You&apos;ve included a camera Serial Number Override in your upload. Setting the Serial Number Override will
-      override the serial number for all images in this ZIP file, so proceed with caution. For more information on the
-      implications of using this feature, please refer to the{' '}
-      <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
-        Animl Documentation
-      </a>
-      .
-    </p>
-  ),
-  'no-automation-rule': (
-    <p>
-      There are currently no machine learning automation rules configured to trigger when new images are added to this
-      Project, so if you proceed, images in this ZIP will be saved, but the upload will not produce in any machine
-      learning predictions. To learn more about how to configure machine learning pipelines using Automation Rules,
-      please refer to the{' '}
-      <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
-        Animl Documentation
-      </a>
-      .
-    </p>
-  ),
+  'override-serial-set': {
+    title: 'Serial Number Override Set',
+    body: (
+      <p>
+        You&apos;ve included a camera Serial Number Override in your upload. Setting the Serial
+        Number Override will override the serial number for all images in this ZIP file, so proceed
+        with caution. For more information on the implications of using this feature, please refer
+        to the{' '}
+        <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+          Animl Documentation
+        </a>
+        .
+      </p>
+    ),
+  },
+  'no-automation-rule': {
+    title: 'No Automation Rules Configured',
+    body: (
+      <p>
+        There are currently no machine learning automation rules configured to trigger when new
+        images are added to this Project, so if you proceed, images in this ZIP will be saved, but
+        the upload will not trigger any machine learning predictions. To learn more about how to
+        configure machine learning pipelines using Automation Rules, please refer to the{' '}
+        <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+          Animl Documentation
+        </a>
+        .
+      </p>
+    ),
+  },
 };
 
 const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
@@ -301,15 +305,13 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
         <AlertContent>
           <AlertTitle>Are you sure you&apos;d like to proceed with this upload?</AlertTitle>
           {warnings &&
-            warnings.map((warn) => (
-              <Warning key={warn}>
-                <WarningTitle>
-                  <ExclamationTriangleIcon />
-                  Warning
-                </WarningTitle>
-                {alertContent[warn]}
-              </Warning>
-            ))}
+            warnings.map((warn) => {
+              return (
+                <Callout key={warn} type="warning" title={alertContent[warn].title}>
+                  {alertContent[warn].body}
+                </Callout>
+              );
+            })}
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
             <Button size="small" css={{ border: 'none' }} onClick={() => setAlertOpen(false)}>
               Cancel

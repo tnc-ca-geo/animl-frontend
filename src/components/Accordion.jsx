@@ -4,7 +4,6 @@ import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from './IconButton.jsx';
 import { indigo } from '@radix-ui/colors';
 
-
 export const SelectedCount = styled('span', {
   background: indigo.indigo4,
   fontSize: '$2',
@@ -16,6 +15,14 @@ export const SelectedCount = styled('span', {
 
 export const Label = styled('span', {
   marginRight: '$4',
+
+  variants: {
+    bold: {
+      true: {
+        fontWeight: '$4',
+      },
+    },
+  },
 });
 
 const AccordionBody = styled('div', {
@@ -23,13 +30,13 @@ const AccordionBody = styled('div', {
   backgroundColor: '$backgroundDark',
   fontFamily: '$mono',
   '& > div': {
-    padding: '$2 $3'
-  }
+    padding: '$2 $3',
+  },
 });
 
 const ExpandButton = styled('div', {
   paddingRight: '$2',
-})
+});
 
 export const AccordionHeader = styled('div', {
   display: 'flex',
@@ -58,37 +65,35 @@ export const AccordionHeaderNoHover = styled('div', {
   backgroundColor: '$backgroundLight',
   padding: '$0 $2 $0 $2',
   position: 'relative',
-  
 });
 
 const Accordion = (props) => {
   const [expanded, setExpanded] = useState(props.expandedDefault);
+  const expandOnHeaderClick = props.expandOnHeaderClick || false;
 
   const handleAccordionHeaderClick = () => {
+    if (expandOnHeaderClick) {
+      setExpanded(!expanded);
+    }
+  };
+
+  const handleExpandButtonClick = () => {
     setExpanded(!expanded);
-  };  
+  };
 
   return (
     <div>
       <AccordionHeader onClick={handleAccordionHeaderClick}>
-        <ExpandButton>
-          <IconButton variant='ghost'>
-            {expanded ? <ChevronDownIcon/> : <ChevronRightIcon />}
+        <ExpandButton onClick={handleExpandButtonClick}>
+          <IconButton variant="ghost">
+            {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
           </IconButton>
         </ExpandButton>
-        {props.label &&
-          <Label>{props.label}</Label>
-        }
-        {(props.selectedCount > 0) &&
-          <SelectedCount>{props.selectedCount}</SelectedCount>
-        }
+        {props.label && <Label bold={props.boldLabel}>{props.label}</Label>}
+        {props.selectedCount > 0 && <SelectedCount>{props.selectedCount}</SelectedCount>}
         {props.headerButtons}
       </AccordionHeader>
-      {expanded && (
-        <AccordionBody>
-          {props.children}
-        </AccordionBody>
-      )}
+      {expanded && <AccordionBody>{props.children}</AccordionBody>}
     </div>
   );
 };

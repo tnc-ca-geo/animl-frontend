@@ -2,6 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
+import {
+  fetchProjects,
+  setModalOpen,
+  setModalContent,
+  setSelectedCamera,
+} from '../projects/projectsSlice';
+import { toggleOpenLoupe } from '../loupe/loupeSlice';
 
 const initialState = {
   loadingStates: {
@@ -30,6 +37,11 @@ const initialState = {
       errors: null,
       reqPayload: null, // we need to store the original request payload for deployments
     },
+    cameraSerialNumber: {
+      taskId: null,
+      isLoading: false,
+      errors: null,
+    },
   },
   imagesStats: null,
   annotationsExport: null,
@@ -50,6 +62,8 @@ export const tasksSlice = createSlice({
       ls.noneFound = false;
       ls.errors = payload.err;
     },
+
+    // get stats
 
     getStatsStart: (state) => {
       let ls = state.loadingStates.stats;
@@ -204,6 +218,42 @@ export const tasksSlice = createSlice({
       const index = payload;
       state.loadingStates.deployments.errors.splice(index, 1);
     },
+
+    // update camera serial number
+
+    updateCameraSerialNumberStart: (state) => {
+      let ls = state.loadingStates.cameraSerialNumber;
+      ls.taskId = null;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    updateCameraSerialNumberUpdate: (state, { payload }) => {
+      state.loadingStates.cameraSerialNumber.taskId = payload.taskId;
+    },
+
+    updateCameraSerialNumberSuccess: (state) => {
+      let ls = state.loadingStates.cameraSerialNumber;
+      ls.taskId = null;
+      ls.isLoading = false;
+      ls.errors = null;
+    },
+
+    updateCameraSerialNumberFailure: (state, { payload }) => {
+      let ls = state.loadingStates.cameraSerialNumber;
+      ls.isLoading = false;
+      ls.errors = [payload.task.output.error];
+    },
+
+    clearCameraSerialNumberTask: (state) => {
+      state.loadingStates.cameraSerialNumber = initialState.loadingStates.cameraSerialNumber;
+    },
+
+    dismissCameraSerialNumberError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.cameraSerialNumber.taskId = null;
+      state.loadingStates.cameraSerialNumber.errors.splice(index, 1);
+    },
   },
 });
 
@@ -237,6 +287,13 @@ export const {
   editDeploymentsSuccess,
   clearDeployments,
   dismissDeploymentsError,
+
+  updateCameraSerialNumberStart,
+  updateCameraSerialNumberUpdate,
+  updateCameraSerialNumberSuccess,
+  updateCameraSerialNumberFailure,
+  clearCameraSerialNumberTask,
+  dismissCameraSerialNumberError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -254,6 +311,8 @@ export const fetchTask = (taskId) => {
           request: 'getTask',
           input: { taskId },
         });
+
+        console.log('fetchTask - res: ', res);
 
         if (res.task.status === 'SUBMITTED' || res.task.status === 'RUNNING') {
           await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -288,6 +347,17 @@ export const fetchTask = (taskId) => {
                 );
               },
               FAIL: (res) => dispatch(editDeploymentsFailure(res)),
+            },
+            UpdateSerialNumber: {
+              COMPLETE: () => {
+                dispatch(updateCameraSerialNumberSuccess());
+                dispatch(toggleOpenLoupe(false));
+                dispatch(setModalOpen(false));
+                dispatch(setModalContent(null));
+                dispatch(setSelectedCamera(null));
+                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+              },
+              FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
           };
 
@@ -410,6 +480,31 @@ export const editDeployments = (operation, payload) => {
   };
 };
 
+// update camera serial number thunk
+export const updateCameraSerialNumber = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateCameraSerialNumberStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'updateCameraSerialNumber',
+          input: payload,
+        });
+        console.log('updateCameraSerialNumber - res: ', res);
+        dispatch(updateCameraSerialNumberUpdate({ taskId: res.updateCameraSerialNumber._id }));
+      }
+    } catch (err) {
+      dispatch(updateCameraSerialNumberFailure(err));
+    }
+  };
+};
+
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
@@ -423,5 +518,9 @@ export const selectErrorsExportLoading = (state) => state.tasks.loadingStates.er
 export const selectErrorsExportErrors = (state) => state.tasks.loadingStates.errorsExport.errors;
 export const selectDeploymentsLoading = (state) => state.tasks.loadingStates.deployments;
 export const selectDeploymentsErrors = (state) => state.tasks.loadingStates.deployments.errors;
+export const selectCameraSerialNumberLoading = (state) =>
+  state.tasks.loadingStates.cameraSerialNumber;
+export const selectCameraSerialNumberErrors = (state) =>
+  state.tasks.loadingStates.cameraSerialNumber.errors;
 
 export default tasksSlice.reducer;

@@ -91,7 +91,6 @@ const CameraFilterSection = ({ camConfig, activeDeps }) => {
           </ExpandButton>
         </label>
       </CameraCheckboxWrapper>
-
       {expanded && (
         <Deployments>
           {deployments.map((dep) => {

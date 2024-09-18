@@ -1,14 +1,20 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { registerCamera, selectWirelessCamerasLoading } from './wirelessCamerasSlice';
+import { registerCamera } from './wirelessCamerasSlice';
 import SelectField from '../../components/SelectField';
 import Button from '../../components/Button';
-import { FormWrapper, FormSubheader, FieldRow, FormFieldWrapper, ButtonRow } from '../../components/Form';
-import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
+import {
+  FormWrapper,
+  FormSubheader,
+  FieldRow,
+  FormFieldWrapper,
+  ButtonRow,
+} from '../../components/Form';
 import { SUPPORTED_WIRELESS_CAMS } from '../../config.js';
+import InfoIcon from '../../components/InfoIcon';
 
 // TODO: improve validation? Make sure cameraId is not already actively
 // registered to current project
@@ -21,7 +27,6 @@ const registerCameraSchema = Yup.object().shape({
 });
 
 const RegisterCameraForm = () => {
-  const camerasLoading = useSelector(selectWirelessCamerasLoading);
   const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({ value: m, label: m }));
   const dispatch = useDispatch();
 
@@ -31,11 +36,6 @@ const RegisterCameraForm = () => {
 
   return (
     <div>
-      {camerasLoading.isLoading && (
-        <SpinnerOverlay>
-          <SimpleSpinner />
-        </SpinnerOverlay>
-      )}
       <FormWrapper>
         <Formik
           initialValues={{
@@ -47,7 +47,9 @@ const RegisterCameraForm = () => {
         >
           {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>
-              <FormSubheader>Register a wireless camera</FormSubheader>
+              <FormSubheader css={{ display: 'flex', alignItems: 'center' }}>
+                Register a wireless camera <InfoIcon tooltipContent={<RegisterCameraHelp />} />
+              </FormSubheader>
               <FieldRow>
                 <FormFieldWrapper>
                   <SelectField
@@ -85,3 +87,10 @@ const RegisterCameraForm = () => {
 };
 
 export default RegisterCameraForm;
+
+const RegisterCameraHelp = () => (
+  <div style={{ maxWidth: '320px' }}>
+    To integrate a new wireless camera, you first need to pair, or &quot;register&quot; it, with
+    your Project.
+  </div>
+);

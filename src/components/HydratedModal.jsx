@@ -11,18 +11,25 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
+import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
 import {
   clearStats,
   clearExport,
   clearErrorsExport,
   clearDeployments,
+  selectStatsLoading,
+  selectAnnotationsExportLoading,
+  selectErrorsExportLoading,
   selectDeploymentsLoading,
+  selectCameraSerialNumberLoading,
+  clearCameraSerialNumberTask,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
   selectModalContent,
   setModalOpen,
   setModalContent,
+  setSelectedCamera,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 
@@ -31,7 +38,19 @@ const HydratedModal = () => {
   const dispatch = useDispatch();
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
+
+  // loading states of async tasks
+  const statsLoading = useSelector(selectStatsLoading);
+  const annotationsExportLoading = useSelector(selectAnnotationsExportLoading);
+  const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const deploymentsLoading = useSelector(selectDeploymentsLoading);
+  const cameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
+  const asyncTaskLoading =
+    statsLoading.isLoading ||
+    annotationsExportLoading.isLoading ||
+    errorsExportLoading.isLoading ||
+    deploymentsLoading.isLoading ||
+    cameraSerialNumberLoading.isLoading;
 
   const modalContentMap = {
     'stats-modal': {
@@ -41,14 +60,15 @@ const HydratedModal = () => {
       callBackOnClose: () => dispatch(clearStats()),
     },
     'export-modal': {
-      title: 'Export data',
+      title: 'Export annotations',
       size: 'md',
       content: <ExportModal />,
       callBackOnClose: () => dispatch(clearExport()),
     },
     'camera-admin-modal': {
-      title: 'Manage Cameras',
+      title: 'Manage Cameras and Deployments',
       size: 'md',
+      fullHeight: true,
       content: <CameraAdminModal />,
       callBackOnClose: () => {
         console.log('callBackOnClose() - reverting moment global timezone to local timezone');
@@ -92,11 +112,20 @@ const HydratedModal = () => {
       content: <ManageLabelsModal />,
       callBackOnClose: () => true,
     },
+    'update-serial-number-form': {
+      title: 'Edit Camera Serial Number',
+      size: 'md',
+      content: <UpdateCameraSerialNumberForm />,
+      callBackOnClose: () => {
+        dispatch(setSelectedCamera(null));
+        dispatch(clearCameraSerialNumberTask());
+      },
+    },
   };
 
   const handleModalToggle = (content) => {
-    // TODO: might want to prevent modal from being closed if other async tasks are pending
-    if (deploymentsLoading.isLoading) return;
+    // If async tasks are loading, don't allow modal to close
+    if (asyncTaskLoading) return;
 
     dispatch(setModalOpen(!modalOpen));
     if (modalOpen) {
@@ -113,6 +142,7 @@ const HydratedModal = () => {
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}
       size={modalContent && modalContentMap[modalContent].size}
+      fullHeight={modalContent && modalContentMap[modalContent].fullHeight}
     >
       {modalContent && modalContentMap[modalContent].content}
     </Modal>

@@ -1,11 +1,10 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { reviewedFilterToggled, selectReviewed } from './filtersSlice';
 import Accordion from '../../components/Accordion';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
-
 
 const ReviewFilter = () => {
   const dispatch = useDispatch();
@@ -22,16 +21,15 @@ const ReviewFilter = () => {
     const objFilter = e.target.dataset.objFilter;
     if (objFilter === 'reviewed') {
       reviewed = reviewed === null ? false : reviewed === true ? false : null;
-    }
-    else {
+    } else {
       reviewed = reviewed === null ? true : reviewed === true ? null : true;
-    } 
+    }
 
     dispatch(reviewedFilterToggled({ reviewed }));
   };
 
   return (
-    <Accordion label='Review' expandedDefault={false}>
+    <Accordion label="Review" expandedDefault={false} expandOnHeaderClick={true}>
       <CheckboxWrapper>
         <label>
           <Checkbox
@@ -40,30 +38,24 @@ const ReviewFilter = () => {
             data-obj-filter={'reviewed'}
             onChange={handleCheckboxChange}
           />
-          <CheckboxLabel
-            checked={reviewed ?? true}
-            active={reviewed ?? true}
-          >
+          <CheckboxLabel checked={reviewed ?? true} active={reviewed ?? true}>
             reviewed images
           </CheckboxLabel>
         </label>
       </CheckboxWrapper>
       <CheckboxWrapper>
-      <label>
-        <Checkbox
-          checked={!reviewed ?? true}
-          active={!reviewed ?? true}
-          data-obj-filter={'notReviewed'}
-          onChange={handleCheckboxChange}
-        />
-        <CheckboxLabel
-          checked={!reviewed ?? true }
-          active={!reviewed ?? true}
-        >
-          not-reviewed images
-        </CheckboxLabel>
-      </label>
-    </CheckboxWrapper>
+        <label>
+          <Checkbox
+            checked={!reviewed ?? true}
+            active={!reviewed ?? true}
+            data-obj-filter={'notReviewed'}
+            onChange={handleCheckboxChange}
+          />
+          <CheckboxLabel checked={!reviewed ?? true} active={!reviewed ?? true}>
+            not-reviewed images
+          </CheckboxLabel>
+        </label>
+      </CheckboxWrapper>
     </Accordion>
   );
 };
