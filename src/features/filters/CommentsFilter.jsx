@@ -40,7 +40,9 @@ export const CommentsFilter = () => {
                   name="filter"
                   id="filter"
                   component="textarea"
-                  placeholder=""
+                  placeholder="Comments with the phrase..."
+                  onKeyDown={(e) => e.stopPropagation()}
+                  onKeyDownCapture={(e) => e.stopPropagation()}
                 />
                 <ErrorMessage component={FormError} name="filter" />
               </StyledFieldRow>
