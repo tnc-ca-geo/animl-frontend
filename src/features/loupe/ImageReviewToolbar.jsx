@@ -187,7 +187,7 @@ const ImageReviewToolbar = ({
     if (!isCommentsActionMenuOpen) {
       setIsCommentsPopoverOpen(false);
     }
-  }
+  };
 
   return (
     <Toolbar>
@@ -312,7 +312,7 @@ const ImageReviewToolbar = ({
                 <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
                   <ToolbarIconButton css={{ position: 'relative' }}>
                     <ChatBubbleIcon />
-                    {image.comments.length > 0 && <Badge>{image.comments.length}</Badge>}
+                    {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
                   </ToolbarIconButton>
                 </PopoverTrigger>
               </TooltipTrigger>
@@ -321,9 +321,9 @@ const ImageReviewToolbar = ({
                 <TooltipArrow />
               </TooltipContent>
               <PopoverPortal>
-                <StyledPopoverContent 
-                  side="top" 
-                  sideOffset={25} 
+                <StyledPopoverContent
+                  side="top"
+                  sideOffset={25}
                   onPointerDownOutside={() => onClickOutsideComments()}
                 >
                   <CommentsPopover
