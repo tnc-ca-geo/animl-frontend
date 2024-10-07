@@ -97,12 +97,7 @@ const StyledAddCommentButton = styled(Button, {
   marginRight: '0',
 });
 
-export const CommentsPopover = ({ 
-  onClose, 
-  comments, 
-  imageId, 
-  onChangeActionMenu 
-}) => {
+export const CommentsPopover = ({ onClose, comments, imageId, onChangeActionMenu }) => {
   const dispatch = useDispatch();
   const commentsLoading = useSelector(selectCommentsLoading);
   const [addCommentText, setAddCommentText] = useState('');
@@ -129,19 +124,19 @@ export const CommentsPopover = ({
             <Cross2Icon />
           </StyledPopoverClose>
         </StyledHeader>
-        {comments.length > 0 && (
+        {comments?.length > 0 && (
           <StyledCommentsContainer>
             {comments.map((comment) => (
-              <Comment 
-                key={comment._id} 
-                comment={comment} 
-                imageId={imageId} 
+              <Comment
+                key={comment._id}
+                comment={comment}
+                imageId={imageId}
                 onChangeOpen={onChangeActionMenu}
               />
             ))}
           </StyledCommentsContainer>
         )}
-        <StyledAddCommentRow css={{ borderTop: comments.length ? '1px solid $border' : 'none' }}>
+        <StyledAddCommentRow css={{ borderTop: comments?.length ? '1px solid $border' : 'none' }}>
           <StyledTextArea
             value={addCommentText}
             onChange={(e) => setAddCommentText(e.target.value)}
