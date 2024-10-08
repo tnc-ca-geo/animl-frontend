@@ -11,6 +11,7 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
+import DeleteCameraForm from '../features/cameras/DeleteCameraForm.jsx';
 import {
   clearStats,
   clearExport,
@@ -32,7 +33,10 @@ import {
   setSelectedCamera,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
-import { ManageLabelsAndTagsModal, ManageLabelsAndTagsModalTitle } from '../features/projects/ManageTagsAndLabelsModal.jsx';
+import {
+  ManageLabelsAndTagsModal,
+  ManageLabelsAndTagsModalTitle,
+} from '../features/projects/ManageTagsAndLabelsModal.jsx';
 
 // Modal populated with content
 const HydratedModal = () => {
@@ -55,7 +59,7 @@ const HydratedModal = () => {
     cameraSerialNumberLoading.isLoading ||
     deleteImagesLoading.isLoading;
 
-  const [manageTagsAndLabelsTab, setManageTagsAndLabelsTab] = useState("labels");
+  const [manageTagsAndLabelsTab, setManageTagsAndLabelsTab] = useState('labels');
 
   const modalContentMap = {
     'stats-modal': {
@@ -120,15 +124,28 @@ const HydratedModal = () => {
         dispatch(clearCameraSerialNumberTask());
       },
     },
-    'manage-tags-and-labels-form': {
-      title: <ManageLabelsAndTagsModalTitle tab={manageTagsAndLabelsTab} setTab={setManageTagsAndLabelsTab} />,
+    'delete-camera-form': {
+      title: 'Delete Camera',
       size: 'md',
-      content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab}/>,
+      content: <DeleteCameraForm />,
       callBackOnClose: () => {
-        setManageTagsAndLabelsTab("labels");
+        dispatch(setSelectedCamera(null));
+      },
+    },
+    'manage-tags-and-labels-form': {
+      title: (
+        <ManageLabelsAndTagsModalTitle
+          tab={manageTagsAndLabelsTab}
+          setTab={setManageTagsAndLabelsTab}
+        />
+      ),
+      size: 'md',
+      content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab} />,
+      callBackOnClose: () => {
+        setManageTagsAndLabelsTab('labels');
         return true;
       },
-    }
+    },
   };
 
   const handleModalToggle = (content) => {

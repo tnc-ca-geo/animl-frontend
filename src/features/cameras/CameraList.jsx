@@ -176,6 +176,10 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(setSelectedCamera(cameraId));
   };
 
+  const handleDeleteCameraClick = () => {
+    dispatch(setModalContent('delete-camera-form'));
+  };
+
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
 
@@ -271,6 +275,19 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                               Re-register camera
                             </DropdownMenuItem>
                           )}
+                        {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && (
+                          <DropdownMenuItem
+                            className=""
+                            onClick={(e) => {
+                              e.stopPropagation;
+                              handleDeleteCameraClick({
+                                cameraId: cam._id,
+                              });
+                            }}
+                          >
+                            Delete camera
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuArrow offset={12} />
                       </StyledDropdownMenuContent>
                     </DropdownMenu>
