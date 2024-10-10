@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-// import { editDeployments } from '../tasks/tasksSlice.js';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
-// import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { deleteCamera, fetchTask, selectDeleteCameraLoading } from '../tasks/tasksSlice.js';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 const CameraId = styled('span', {
   fontWeight: '$5',
@@ -18,34 +18,34 @@ const deleteCameraSchema = Yup.object().shape({
 
 const DeleteCameraForm = ({ cameraId, handleClose }) => {
   const [queuedForClose, setQueuedForClose] = useState(false);
-  // const dispatch = useDispatch();
+  const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
+  const dispatch = useDispatch();
 
   // TODO: extract into hook?
   useEffect(() => {
     if (queuedForClose) handleClose();
   }, [queuedForClose, handleClose]);
 
-  const handleDeleteCameraSubmit = () => {
-    // dispatch(editDeployments('deleteCamera', formVals));
-
+  const handleDeleteCameraSubmit = (formVals) => {
+    dispatch(deleteCamera(formVals));
     setQueuedForClose(true);
   };
 
-  // // handle polling for task completion
-  // useEffect(() => {
-  //   const getDepsPending = depsLoading.isLoading && depsLoading.taskId;
-  //   if (getDepsPending) {
-  //     dispatch(fetchTask(depsLoading.taskId));
-  //   }
-  // }, [depsLoading, dispatch]);
+  // handle polling for task completion
+  useEffect(() => {
+    const getDepsPending = deleteCameraLoading.isLoading && deleteCameraLoading.taskId;
+    if (getDepsPending) {
+      dispatch(fetchTask(deleteCameraLoading.taskId));
+    }
+  }, [deleteCameraLoading, dispatch]);
 
   return (
     <div>
-      {/* {depsLoading.isLoading && (
+      {deleteCameraLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
-      )} */}
+      )}
       <FormWrapper>
         <Formik
           initialValues={{ cameraId: cameraId }}
