@@ -7,6 +7,7 @@ import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import { deleteCamera, fetchTask, selectDeleteCameraLoading } from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { selectSelectedCamera } from '../projects/projectsSlice.js';
 
 const CameraId = styled('span', {
   fontWeight: '$5',
@@ -16,9 +17,10 @@ const deleteCameraSchema = Yup.object().shape({
   cameraId: Yup.string().required('A camera ID is required'),
 });
 
-const DeleteCameraForm = ({ cameraId, handleClose }) => {
+const DeleteCameraForm = ({ handleClose }) => {
   const [queuedForClose, setQueuedForClose] = useState(false);
   const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
+  const selectedCamera = useSelector(selectSelectedCamera);
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
@@ -48,7 +50,7 @@ const DeleteCameraForm = ({ cameraId, handleClose }) => {
       )}
       <FormWrapper>
         <Formik
-          initialValues={{ cameraId: cameraId }}
+          initialValues={{ cameraId: selectedCamera }}
           validationSchema={deleteCameraSchema}
           onSubmit={(values) => {
             handleDeleteCameraSubmit(values);
@@ -57,9 +59,9 @@ const DeleteCameraForm = ({ cameraId, handleClose }) => {
           {() => (
             <Form>
               <HelperText>
-                Are you sure you&apos;d like to delete Camera <CameraId>{cameraId}</CameraId>? This
-                will remove the camera from the project, remove all deployments associated with it,
-                and delete all images. This action cannot be undone.
+                Are you sure you&apos;d like to delete Camera <CameraId>{selectedCamera}</CameraId>?
+                This will remove the camera from the project, remove all deployments associated with
+                it, and delete all images. This action cannot be undone.
               </HelperText>
               <Field name="cameraId" type="hidden" />
               <Field name="deploymentId" type="hidden" />

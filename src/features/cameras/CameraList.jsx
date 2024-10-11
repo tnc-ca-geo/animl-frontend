@@ -176,8 +176,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(setSelectedCamera(cameraId));
   };
 
-  const handleDeleteCameraClick = () => {
+  const handleDeleteCameraClick = ({ cameraId }) => {
     dispatch(setModalContent('delete-camera-form'));
+    dispatch(setSelectedCamera(cameraId));
   };
 
   const [tooltipOpen, setTooltipOpen] = useState(false);
