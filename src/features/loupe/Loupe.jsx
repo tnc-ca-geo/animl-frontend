@@ -79,7 +79,8 @@ const LoupeBody = styled('div', {
   // $7 - height of panel header
   // $8 - height of nav bar
   // 98px - height of toolbar plus height of 2 borders
-  height: 'calc(100vh - $7 - $8 - 98px)',
+  // 50px - height of image tags toolbar plus one border
+  height: 'calc(100vh - $7 - $8 - 98px - 52px)',
   backgroundColor: '$hiContrast',
 });
 
@@ -338,6 +339,7 @@ const Loupe = () => {
       {/*<LoupeFooter image={image}/>*/}
       <ToolbarContainer>
         {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
+
           <ImageReviewToolbar
             image={image}
             lastAction={lastAction}

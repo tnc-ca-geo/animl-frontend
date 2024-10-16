@@ -41,6 +41,7 @@ import {
   PopoverArrow,
 } from '@radix-ui/react-popover';
 import { CommentsPopover } from './CommentsPopover.jsx';
+import { ImageTagsBar } from './ImageTagsBar.jsx';
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -190,203 +191,206 @@ const ImageReviewToolbar = ({
   };
 
   return (
-    <Toolbar>
-      {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
-        <AnnotationControls>
-          {/* Repeat last action */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
-                <ReloadIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Repeat last action
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Edit */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {catSelectorOpen ? (
-                <CategorySelector handleCategoryChange={handleCategoryChange} />
-              ) : (
-                <ToolbarIconButton
-                  onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked}
-                >
-                  <Pencil1Icon />
-                </ToolbarIconButton>
-              )}
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Edit all labels
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Validate/invalidate */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={(e) => handleValidateAllButtonClick(e, true)}
-                disabled={allObjectsLocked}
-              >
-                <CheckIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Validate all labels
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={(e) => handleValidateAllButtonClick(e, false)}
-                disabled={allObjectsLocked}
-              >
-                <Cross2Icon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Invalidate all labels
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Mark empty */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
-                <ValueNoneIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Mark empty
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Add object */}
-          {isDrawingBbox ? (
-            <CancelHint>
-              <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
-              <span style={{ paddingBottom: '2px' }}>to cancel</span>
-            </CancelHint>
-          ) : (
+    <>
+      <ImageTagsBar />
+      <Toolbar>
+        {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
+          <AnnotationControls>
+            {/* Repeat last action */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                  <GroupIcon />
+                <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
+                  <ReloadIcon />
                 </ToolbarIconButton>
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={5}>
-                Add object
+                Repeat last action
                 <TooltipArrow />
               </TooltipContent>
             </Tooltip>
-          )}
 
-          <Separator />
+            <Separator />
 
-          {/* Comments */}
-          <Tooltip>
-            <PopoverRoot open={isCommentsPopoverOpen}>
-              <TooltipTrigger
-                asChild
-                disabled={
-                  !hasRole(userRoles, READ_COMMENT_ROLES) ||
-                  !hasRole(userRoles, WRITE_COMMENT_ROLES)
-                }
-              >
-                <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
-                  <ToolbarIconButton css={{ position: 'relative' }}>
-                    <ChatBubbleIcon />
-                    {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+            {/* Edit */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {catSelectorOpen ? (
+                  <CategorySelector handleCategoryChange={handleCategoryChange} />
+                ) : (
+                  <ToolbarIconButton
+                    onClick={handleEditAllLabelsButtonClick}
+                    disabled={allObjectsLocked}
+                  >
+                    <Pencil1Icon />
                   </ToolbarIconButton>
-                </PopoverTrigger>
+                )}
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={5}>
-                Add comments
+                Edit all labels
                 <TooltipArrow />
               </TooltipContent>
-              <PopoverPortal>
-                <StyledPopoverContent
-                  side="top"
-                  sideOffset={25}
-                  onPointerDownOutside={() => onClickOutsideComments()}
+            </Tooltip>
+
+            <Separator />
+
+            {/* Validate/invalidate */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={(e) => handleValidateAllButtonClick(e, true)}
+                  disabled={allObjectsLocked}
                 >
-                  <CommentsPopover
-                    onClose={() => setIsCommentsPopoverOpen(false)}
-                    onChangeActionMenu={setIsCommentsActionMenuOpen}
-                    comments={image.comments}
-                    imageId={image._id}
-                  />
-                  <StyledPopoverArrow />
-                </StyledPopoverContent>
-              </PopoverPortal>
-            </PopoverRoot>
-          </Tooltip>
+                  <CheckIcon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Validate all labels
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={(e) => handleValidateAllButtonClick(e, false)}
+                  disabled={allObjectsLocked}
+                >
+                  <Cross2Icon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Invalidate all labels
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
 
-          <Separator />
+            <Separator />
 
-          {/* Unlock */}
+            {/* Mark empty */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
+                  <ValueNoneIcon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Mark empty
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+
+            <Separator />
+
+            {/* Add object */}
+            {isDrawingBbox ? (
+              <CancelHint>
+                <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
+                <span style={{ paddingBottom: '2px' }}>to cancel</span>
+              </CancelHint>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                    <GroupIcon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Add object
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            <Separator />
+
+            {/* Comments */}
+            <Tooltip>
+              <PopoverRoot open={isCommentsPopoverOpen}>
+                <TooltipTrigger
+                  asChild
+                  disabled={
+                    !hasRole(userRoles, READ_COMMENT_ROLES) ||
+                    !hasRole(userRoles, WRITE_COMMENT_ROLES)
+                  }
+                >
+                  <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
+                    <ToolbarIconButton css={{ position: 'relative' }}>
+                      <ChatBubbleIcon />
+                      {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+                    </ToolbarIconButton>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Add comments
+                  <TooltipArrow />
+                </TooltipContent>
+                <PopoverPortal>
+                  <StyledPopoverContent
+                    side="top"
+                    sideOffset={25}
+                    onPointerDownOutside={() => onClickOutsideComments()}
+                  >
+                    <CommentsPopover
+                      onClose={() => setIsCommentsPopoverOpen(false)}
+                      onChangeActionMenu={setIsCommentsActionMenuOpen}
+                      comments={image.comments}
+                      imageId={image._id}
+                    />
+                    <StyledPopoverArrow />
+                  </StyledPopoverContent>
+                </PopoverPortal>
+              </PopoverRoot>
+            </Tooltip>
+
+            <Separator />
+
+            {/* Unlock */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={handleUnlockAllButtonClick}
+                  disabled={allObjectsUnlocked || !hasRenderedObjects}
+                >
+                  <LockOpen1Icon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Unlock all objects
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+          </AnnotationControls>
+        )}
+
+        {/* Increment/Decrement */}
+        <IncrementControls>
           <Tooltip>
             <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={handleUnlockAllButtonClick}
-                disabled={allObjectsUnlocked || !hasRenderedObjects}
-              >
-                <LockOpen1Icon />
-              </ToolbarIconButton>
+              <div>
+                <IconButton
+                  variant="ghost"
+                  size="med"
+                  onClick={() => handleIncrementClick('decrement')}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="med"
+                  onClick={() => handleIncrementClick('increment')}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </div>
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={5}>
-              Unlock all objects
+              Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
+              <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
-        </AnnotationControls>
-      )}
-
-      {/* Increment/Decrement */}
-      <IncrementControls>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <IconButton
-                variant="ghost"
-                size="med"
-                onClick={() => handleIncrementClick('decrement')}
-              >
-                <ChevronLeftIcon />
-              </IconButton>
-              <IconButton
-                variant="ghost"
-                size="med"
-                onClick={() => handleIncrementClick('increment')}
-              >
-                <ChevronRightIcon />
-              </IconButton>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5}>
-            Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
-            <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      </IncrementControls>
-    </Toolbar>
+        </IncrementControls>
+      </Toolbar>
+    </>
   );
 };
 

@@ -25,6 +25,11 @@ const initialState = {
       operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
     },
+    tags: {
+      isLoading: false,
+      operation: null /* 'fetching', 'updating', 'deleting' */,
+      errors: null,
+    },
   },
   lastAction: null,
   lastCategoryApplied: null,
@@ -177,6 +182,25 @@ export const reviewSlice = createSlice({
       image.comments = payload.comments;
     },
 
+    editTagStart: (state, { payload }) => {
+      state.loadingStates.tags.isLoading = true;
+      state.loadingStates.tags.operation = payload;
+    },
+
+    editTagFailure: (state, { payload }) => {
+      state.loadingStates.tags.isLoading = false;
+      state.loadingStates.tags.operation = null;
+      state.loadingStates.tags.errors = payload;
+    },
+
+    editTagSuccess: (state, { payload }) => {
+      state.loadingStates.tags.isLoading = false;
+      state.loadingStates.tags.operation = null;
+      state.loadingStates.tags.errors = null;
+      const image = findImage(state.workingImages, payload.imageId);
+      image.tags = payload.tags;
+    },
+
     dismissLabelsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.labels.errors.splice(index, 1);
@@ -228,6 +252,9 @@ export const {
   editCommentStart,
   editCommentFailure,
   editCommentSuccess,
+  editTagStart,
+  editTagFailure,
+  editTagSuccess,
   dismissLabelsError,
   dismissCommentsError,
 } = reviewSlice.actions;
@@ -307,6 +334,44 @@ export const editComment = (operation, payload) => {
     } catch (err) {
       console.log(`error attempting to ${operation}ImageComment: `, err);
       dispatch(editCommentFailure(err));
+    }
+  };
+};
+
+export const editTag = (operation, payload) => {
+  return async (dispatch, getState) => {
+    try {
+      console.log('editTag - operation: ', operation);
+      console.log('editTag - payload: ', payload);
+
+      if (!operation || !payload) {
+        const msg = `An operation (create, update, or delete) and payload is required`;
+        throw new Error(msg);
+      }
+
+      dispatch(editTagStart(operation));
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const req = `${operation}ImageTag`;
+        console.log('req: ', req);
+
+        const res = await call({
+          projId: selectedProj._id,
+          request: req,
+          input: payload,
+        });
+        console.log('editTag - res: ', res);
+        const mutation = Object.keys(res)[0];
+        const tags = res[mutation].tags;
+        dispatch(editTagSuccess({ imageId: payload.imageId, tags }));
+      }
+    } catch (err) {
+      console.log(`error attempting to ${operation}ImageTag: `, err);
+      dispatch(editTagFailure(err));
     }
   };
 };

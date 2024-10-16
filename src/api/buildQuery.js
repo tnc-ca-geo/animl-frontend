@@ -18,6 +18,12 @@ const imageCommentFields = `
   comment
 `;
 
+const imageTagFields = `
+  _id
+  tagId
+  value
+`;
+
 const labelFields = `
   _id
   type
@@ -59,6 +65,9 @@ const imageFields = `
   }
   comments {
     ${imageCommentFields}
+  }
+  tags {
+    ${imageTagFields}
   }
   reviewed
 `;
@@ -581,6 +590,19 @@ const queries = {
         deleteImageComment(input: $input) {
           comments {
             ${imageCommentFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createImageTag: (input) => ({
+    template: `
+      mutation CreateImageTag($input: CreateImageTagInput!){
+        createImageTag(input: $input) {
+          tags {
+            ${imageTagFields}
           }
         }
       }
