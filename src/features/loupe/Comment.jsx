@@ -147,7 +147,7 @@ const timeAgoPrettyPrint = (isoDateTimeString) => {
   return 'a few seconds ago';
 };
 
-export const Comment = ({ comment, imageId, onChangeOpen }) => {
+export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
   const dispatch = useDispatch();
   const authorInitial = comment.author[0].toUpperCase();
   const currentUser = useSelector(selectUserUsername);
@@ -181,7 +181,7 @@ export const Comment = ({ comment, imageId, onChangeOpen }) => {
         onDeleteConfirm={onDeleteConfirm}
         onDeleteCancel={() => setIsDeleteConfirm(false)}
       />
-      <StyledFieldRow>
+      <StyledFieldRow ref={scrollRef}>
         <StyledNameRow>
           <StyledAvatar>{authorInitial}</StyledAvatar>
           <StyledNameField>
