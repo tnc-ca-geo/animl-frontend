@@ -8,6 +8,7 @@ import {
   reviewedFilterToggled,
   selectActiveFilters,
   customFilterChanged,
+  commentsFilterChanged,
   checkboxOnlyButtonClicked,
 } from '../filters/filtersSlice';
 import {
@@ -72,6 +73,7 @@ export const diffFilters = (store) => (next) => (action) => {
     dateFilterChanged.match(action) ||
     reviewedFilterToggled.match(action) ||
     customFilterChanged.match(action) ||
+    commentsFilterChanged.match(action) ||
     setSelectedProjAndView.match(action) ||
     editDeploymentsSuccess.match(action) ||
     saveViewSuccess.match(action) ||
