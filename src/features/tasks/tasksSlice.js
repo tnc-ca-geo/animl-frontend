@@ -42,6 +42,11 @@ const initialState = {
       isLoading: false,
       errors: null,
     },
+    deleteCamera: {
+      taskId: null,
+      isLoading: false,
+      errors: null,
+    },
   },
   imagesStats: null,
   annotationsExport: null,
@@ -254,6 +259,42 @@ export const tasksSlice = createSlice({
       state.loadingStates.cameraSerialNumber.taskId = null;
       state.loadingStates.cameraSerialNumber.errors.splice(index, 1);
     },
+
+    // delete camera
+
+    updateDeleteCameraStart: (state) => {
+      let ls = state.loadingStates.deleteCamera;
+      ls.taskId = null;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    updateDeleteCameraUpdate: (state, { payload }) => {
+      state.loadingStates.deleteCamera.taskId = payload.taskId;
+    },
+
+    updateDeleteCameraSuccess: (state) => {
+      let ls = state.loadingStates.deleteCamera;
+      ls.taskId = null;
+      ls.isLoading = false;
+      ls.errors = null;
+    },
+
+    updateDeleteCameraFailure: (state, { payload }) => {
+      let ls = state.loadingStates.deleteCamera;
+      ls.isLoading = false;
+      ls.errors = [payload.task.output.error];
+    },
+
+    clearDeleteCameraTask: (state) => {
+      state.loadingStates.cameraSerialNumber = initialState.loadingStates.cameraSerialNumber;
+    },
+
+    dismissDeleteCameraError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.deleteCamera.taskId = null;
+      state.loadingStates.deleteCamera.errors.splice(index, 1);
+    },
   },
 });
 
@@ -294,6 +335,13 @@ export const {
   updateCameraSerialNumberFailure,
   clearCameraSerialNumberTask,
   dismissCameraSerialNumberError,
+
+  updateDeleteCameraStart,
+  updateDeleteCameraUpdate,
+  updateDeleteCameraSuccess,
+  updateDeleteCameraFailure,
+  clearDeleteCameraTask,
+  dismissDeleteCameraError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -505,6 +553,29 @@ export const updateCameraSerialNumber = (payload) => {
   };
 };
 
+export const deleteCamera = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateDeleteCameraStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'deleteCamera',
+          input: payload,
+        });
+        console.log('deleteCamera - res: ', res);
+        dispatch(updateDeleteCameraUpdate({ taskId: res.deleteCamera._id }));
+      }
+    } catch (err) {
+      console.log('error attempting to delete camera: ', err);
+    }
+  };
+}
+
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
@@ -522,5 +593,6 @@ export const selectCameraSerialNumberLoading = (state) =>
   state.tasks.loadingStates.cameraSerialNumber;
 export const selectCameraSerialNumberErrors = (state) =>
   state.tasks.loadingStates.cameraSerialNumber.errors;
+export const selectDeleteCameraLoading = (state) => state.tasks.loadingStates.deleteCamera;
 
 export default tasksSlice.reducer;

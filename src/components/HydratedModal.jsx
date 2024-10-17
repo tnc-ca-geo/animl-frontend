@@ -12,6 +12,7 @@ import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
+import DeleteCameraForm from '../features/cameras/DeleteCameraForm.jsx';
 import {
   clearStats,
   clearExport,
@@ -119,6 +120,14 @@ const HydratedModal = () => {
       callBackOnClose: () => {
         dispatch(setSelectedCamera(null));
         dispatch(clearCameraSerialNumberTask());
+      },
+    },
+    'delete-camera-form': {
+      title: 'Delete Camera',
+      size: 'md',
+      content: <DeleteCameraForm />,
+      callBackOnClose: () => {
+        dispatch(setSelectedCamera(null));
       },
     },
   };
