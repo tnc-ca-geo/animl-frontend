@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import { Modal } from './Modal.jsx';
 import ImagesStatsModal from '../features/images/ImagesStatsModal.jsx';
 import ExportModal from '../features/images/ExportModal.jsx';
+import DeleteImagesModal from '../features/images/DeleteImagesModal.jsx';
 import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
@@ -63,6 +64,12 @@ const HydratedModal = () => {
       title: 'Export annotations',
       size: 'md',
       content: <ExportModal />,
+      callBackOnClose: () => dispatch(clearExport()),
+    },
+    'delete-images': {
+      title: 'Delete Selected Images',
+      size: 'md',
+      content: <DeleteImagesModal />,
       callBackOnClose: () => dispatch(clearExport()),
     },
     'camera-admin-modal': {

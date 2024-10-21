@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, keyframes } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES } from '../auth/roles.js';
+import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES, WRITE_IMAGES_ROLES } from '../auth/roles.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, selectImagesCountLoading } from '../images/imagesSlice.js';
 import {
@@ -12,9 +12,14 @@ import {
   fetchProjects,
 } from '../projects/projectsSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
-import { InfoCircledIcon, DownloadIcon, SymbolIcon } from '@radix-ui/react-icons';
+import { InfoCircledIcon, DownloadIcon, SymbolIcon, TrashIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
 
 const RefreshButton = styled('div', {
   height: '100%',
@@ -33,6 +38,14 @@ const InfoButton = styled('div', {
 });
 
 const ExportCSVButton = styled('div', {
+  height: '100%',
+  borderLeft: '1px solid $border',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '0 $1',
+});
+
+const DeleteImagesButton = styled('div', {
   height: '100%',
   borderLeft: '1px solid $border',
   display: 'flex',
@@ -115,7 +128,11 @@ const FiltersPanelFooter = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <InfoButton>
-              <IconButton variant="ghost" size="large" onClick={() => handleModalToggle('stats-modal')}>
+              <IconButton
+                variant="ghost"
+                size="large"
+                onClick={() => handleModalToggle('stats-modal')}
+              >
                 <InfoCircledIcon />
               </IconButton>
             </InfoButton>
@@ -130,13 +147,36 @@ const FiltersPanelFooter = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <ExportCSVButton>
-              <IconButton variant="ghost" size="large" onClick={() => handleModalToggle('export-modal')}>
+              <IconButton
+                variant="ghost"
+                size="large"
+                onClick={() => handleModalToggle('export-modal')}
+              >
                 <DownloadIcon />
               </IconButton>
             </ExportCSVButton>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={5}>
             Export data
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      )}
+      {hasRole(userRoles, WRITE_IMAGES_ROLES) && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DeleteImagesButton>
+              <IconButton
+                variant="ghost"
+                size="large"
+                onClick={() => handleModalToggle('delete-images')}
+              >
+                <TrashIcon />
+              </IconButton>
+            </DeleteImagesButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5}>
+            Delete all images shown
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>
