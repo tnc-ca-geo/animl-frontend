@@ -131,6 +131,17 @@ const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
           tooltipContent="Manage labels"
         />
       )}
+
+      {/* Manage tags view */}
+      {hasRole(userRoles, WRITE_PROJECT_ROLES) && (
+        <SidebarNavItem
+          state={modalOpen && modalContent === 'manage-tags-form' ? 'active' : ''}
+          disabled={!selectedProject}
+          handleClick={() => handleModalToggle('manage-tags-form')}
+          icon={<FontAwesomeIcon icon={['fas', 'highlighter']} />}
+          tooltipContent="Manage tags"
+        />
+      )}
     </StyledSidebarNav>
   );
 };

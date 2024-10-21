@@ -29,7 +29,8 @@ import {
   faUpload,
   faUser,
   faTag,
-  faRetweet
+  faRetweet,
+  faHighlighter
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -62,5 +63,6 @@ library.add(
   faUpload,
   faUser,
   faTag,
-  faRetweet
+  faRetweet,
+  faHighlighter
 );

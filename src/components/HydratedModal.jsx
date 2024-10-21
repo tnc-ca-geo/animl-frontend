@@ -32,6 +32,7 @@ import {
   setSelectedCamera,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
+import { ManageTagsModal } from '../features/projects/ManageTagsModal/ManageTagsModal.jsx';
 
 // Modal populated with content
 const HydratedModal = () => {
@@ -121,6 +122,12 @@ const HydratedModal = () => {
         dispatch(clearCameraSerialNumberTask());
       },
     },
+    'manage-tags-form': {
+      title: 'Manage tags',
+      size: 'md',
+      content: <ManageTagsModal />,
+      callBackOnClose: () => true,
+    }
   };
 
   const handleModalToggle = (content) => {
