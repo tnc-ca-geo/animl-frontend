@@ -1,3 +1,4 @@
+import React from 'react';
 import { styled } from '../../../theme/stitches.config';
 import { EditableTag } from './EditableTag';
 
@@ -41,6 +42,7 @@ export const ManageTagsModal = () => {
           onConfirmEdit={onConfirmEdit}
         />
       ))}
+    
     </EditableTagsContainer>
   );
 }
