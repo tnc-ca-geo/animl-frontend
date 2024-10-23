@@ -115,6 +115,26 @@ const EditActionButtonsContainer = styled('div', {
   justifyContent: 'flex-end'
 });
 
+const PreviewTagContainer = styled('div', {
+  display: 'flex',
+  marginTop: '$2'
+});
+
+const PreviewTag = styled('div', {
+  padding: '$1 $3',
+  borderRadius: '$2',
+  border: '1px solid rgba(0,0,0,0)',
+  color: '$textDark',
+  fontFamily: '$mono',
+  fontWeight: 'bold',
+  fontSize: '$2',
+  display: 'grid',
+  placeItems: 'center',
+  marginLeft: '0',
+  marginRight: 'auto',
+  height: '$5'
+});
+
 export const EditTag = ({
   id,
   currentName,
@@ -125,8 +145,12 @@ export const EditTag = ({
   onCancel,
   isNewLabel,
 }) => {
+  if (isNewLabel) {
+    currentColor = `#${getRandomColor()}`
+    currentName = ''
+  }
+
   // to get rid of warning for now
-  console.log(isNewLabel)
   const [name, setName] = useState(currentName);
   const [color, setColor] = useState(currentColor);
   const [tempColor, setTempColor] = useState(currentColor);
@@ -185,105 +209,121 @@ export const EditTag = ({
       return;
     }
 
-    onSubmit(id, validatedName, validatedColor);
+    if (isNewLabel) {
+      onSubmit(validatedName, validatedColor);
+    } else {
+      onSubmit(id, validatedName, validatedColor);
+    }
   }
 
   return (
-    <EditContainer>
-      {/* Row 1 column 1 */}
-      <EditFieldLabel>Name</EditFieldLabel>
+    <>
+      { isNewLabel &&
+        <PreviewTagContainer>
+          <PreviewTag css={{
+            borderColor: color,
+            backgroundColor: `${color}1A`,
+          }}>
+            { !name ? 'new tag' : name }
+          </PreviewTag>
+        </PreviewTagContainer>
+      }
+      <EditContainer>
+        {/* Row 1 column 1 */}
+        <EditFieldLabel>Name</EditFieldLabel>
 
-      {/* Row 1 column 2 */}
-      <EditFieldLabel>Color</EditFieldLabel>
+        {/* Row 1 column 2 */}
+        <EditFieldLabel>Color</EditFieldLabel>
 
-      {/* Row 1 column 3 */}
-      <div />
+        {/* Row 1 column 3 */}
+        <div />
 
-      {/* Row 2 column 1 */}
-      <EditFieldInput 
-        value={name} 
-        onChange={(e) => setName(e.target.value)}
-      />
+        {/* Row 2 column 1 */}
+        <EditFieldInput 
+          value={name} 
+          onChange={(e) => setName(e.target.value)}
+        />
 
-      {/* Row 2 column 2 */}
-      <ColorPicker>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <IconButton
-              type="button"
-              aria-label="Get a new color"
-              size="md"
-              onClick={() => updateColor(`#${getRandomColor()}`)}
-              css={{
-                backgroundColor: color,
-                borderColor: color,
-                color: getTextColor(color),
-                '&:hover': {
+        {/* Row 2 column 2 */}
+        <ColorPicker>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <IconButton
+                type="button"
+                aria-label="Get a new color"
+                size="md"
+                onClick={() => updateColor(`#${getRandomColor()}`)}
+                css={{
+                  backgroundColor: color,
                   borderColor: color,
-                },
-                '&:active': {
-                  borderColor: '$border',
-                },
+                  color: getTextColor(color),
+                  '&:hover': {
+                    borderColor: color,
+                  },
+                  '&:active': {
+                    borderColor: '$border',
+                  },
+                }}
+              >
+                <SymbolIcon />
+              </IconButton>
+            </TooltipTrigger>
+            <TooltipContent side='top' sideOffset={5}>
+              Get a new color
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <EditFieldInput 
+                value={tempColor}
+                onChange={(e) => setTempColor(`${e.target.value}`)}/>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              sideOffset={5}
+              css={{
+                maxWidth: 324,
+                padding: '$2',
+                color: '$textMedium',
+                backgroundColor: 'white',
               }}
             >
-              <SymbolIcon />
-            </IconButton>
-          </TooltipTrigger>
-          <TooltipContent side='top' sideOffset={5}>
-            Get a new color
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <EditFieldInput 
-              value={tempColor}
-              onChange={(e) => setTempColor(`${e.target.value}`)}/>
-          </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            sideOffset={5}
-            css={{
-              maxWidth: 324,
-              padding: '$2',
-              color: '$textMedium',
-              backgroundColor: 'white',
-            }}
+              <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+              {defaultColors.map((color) => (
+                <ColorSwatch
+                  key={color}
+                  css={{ backgroundColor: color }}
+                  type="button"
+                  onClick={() => updateColor(color)}
+                />
+              ))}
+              <TooltipArrow css={{ fill: 'white' }} />
+            </TooltipContent>
+          </Tooltip>
+        </ColorPicker>
+
+        {/* Row 2 column 3 */}
+        <EditActionButtonsContainer>
+          <Button 
+            size="small" 
+            type="button" 
+            disabled={!name} 
+            onClick={() => onConfirmEdit()}
           >
-            <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
-            {defaultColors.map((color) => (
-              <ColorSwatch
-                key={color}
-                css={{ backgroundColor: color }}
-                type="button"
-                onClick={() => updateColor(color)}
-              />
-            ))}
-            <TooltipArrow css={{ fill: 'white' }} />
-          </TooltipContent>
-        </Tooltip>
-      </ColorPicker>
+            Save
+          </Button>
+          <Button size="small" type="button" onClick={() => onCancelEdit(false)}>
+            Cancel
+          </Button>
+        </EditActionButtonsContainer>
 
-      {/* Row 2 column 3 */}
-      <EditActionButtonsContainer>
-        <Button 
-          size="small" 
-          type="button" 
-          disabled={!name} 
-          onClick={() => onConfirmEdit()}
-        >
-          Save
-        </Button>
-        <Button size="small" type="button" onClick={() => onCancelEdit(false)}>
-          Cancel
-        </Button>
-      </EditActionButtonsContainer>
+        {/* Row 3 column 1 */}
+        <EditFieldError>{nameError}</EditFieldError>
 
-      {/* Row 3 column 1 */}
-      <EditFieldError>{nameError}</EditFieldError>
-
-      {/* Row 3 column 2 */}
-      <EditFieldError>{colorError}</EditFieldError>
-    </EditContainer>
+        {/* Row 3 column 2 */}
+        <EditFieldError>{colorError}</EditFieldError>
+      </EditContainer>
+    </>
   );
 }

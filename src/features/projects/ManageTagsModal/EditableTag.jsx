@@ -38,7 +38,8 @@ export const EditableTag = ({
   currentName,
   currentColor,
   allTagNames,
-  onConfirmEdit
+  onConfirmEdit,
+  onDelete
 }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(currentColor);
@@ -61,7 +62,7 @@ export const EditableTag = ({
           </IconButton>
           <IconButton
             variant='ghost'
-            onClick={() => {console.log('open form')}}
+            onClick={() => onDelete(id)}
           >
             <TrashIcon />
           </IconButton>
