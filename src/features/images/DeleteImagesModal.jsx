@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteImagesTask, fetchTask, selectDeleteImagesLoading } from '../tasks/tasksSlice.js';
+import {
+  deleteImagesByFilterTask,
+  fetchTask,
+  selectDeleteImagesByFilterLoading,
+} from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
@@ -10,25 +14,25 @@ import { fetchImagesCount, fetchImages, deleteImages } from './imagesSlice.js';
 
 const DeleteImagesModal = async () => {
   const filters = useSelector(selectActiveFilters);
-  const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
+  const deleteImagesByFilterLoading = useSelector(selectDeleteImagesByFilterLoading);
   const dispatch = useDispatch();
 
   const imageCount = await dispatch(fetchImagesCount(filters));
 
-  const deleteImagesPending = deleteImagesLoading.isLoading && deleteImagesLoading.taskId;
+  const deleteImagesPending =
+    deleteImagesByFilterLoading.isLoading && deleteImagesByFilterLoading.taskId;
   useEffect(() => {
     if (deleteImagesPending) {
-      dispatch(fetchTask(deleteImagesLoading.taskId));
+      dispatch(fetchTask(deleteImagesByFilterLoading.taskId));
     }
-  }, [deleteImagesPending, deleteImagesLoading, dispatch]);
+  }, [deleteImagesPending, deleteImagesByFilterLoading, dispatch]);
 
-  const handleDeleteImagesButtonClick = () => {
-    const { isLoading, errors, noneFound } = deleteImagesLoading;
+  const handleDeleteImagesButtonClick = async () => {
+    const { isLoading, errors } = deleteImagesByFilterLoading;
     const noErrors = !errors || errors.length === 0;
-    if (!noneFound && !isLoading && noErrors) {
-      // const images = dispatch(fetchImages(filters));
-      if (imageCount > 50) {
-        dispatch(deleteImagesTask({ filters }));
+    if (!isLoading && noErrors) {
+      if (imageCount > 100) {
+        dispatch(deleteImagesByFilterTask({ filters }));
       } else {
         dispatch(fetchImages(filters)).then((images) => {
           dispatch(deleteImages({ images }));
@@ -39,7 +43,7 @@ const DeleteImagesModal = async () => {
 
   return (
     <div>
-      {deleteImagesLoading.isLoading && (
+      {deleteImagesByFilterLoading.isLoading && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
@@ -59,7 +63,7 @@ const DeleteImagesModal = async () => {
         <Button
           type="submit"
           size="large"
-          disabled={deleteImagesLoading.isLoading}
+          disabled={deleteImagesByFilterLoading.isLoading}
           data-format="coco"
           onClick={handleDeleteImagesButtonClick}
         >

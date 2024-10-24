@@ -24,6 +24,8 @@ import {
   selectDeploymentsLoading,
   selectCameraSerialNumberLoading,
   clearCameraSerialNumberTask,
+  selectDeleteImagesLoading,
+  selectDeleteImagesByFilterLoading,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -46,12 +48,16 @@ const HydratedModal = () => {
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const deploymentsLoading = useSelector(selectDeploymentsLoading);
   const cameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
+  const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
+  const deleteImagesByFilterLoading = useSelector(selectDeleteImagesByFilterLoading);
   const asyncTaskLoading =
     statsLoading.isLoading ||
     annotationsExportLoading.isLoading ||
     errorsExportLoading.isLoading ||
     deploymentsLoading.isLoading ||
-    cameraSerialNumberLoading.isLoading;
+    cameraSerialNumberLoading.isLoading ||
+    deleteImagesLoading.isLoading ||
+    deleteImagesByFilterLoading.isLoading;
 
   const modalContentMap = {
     'stats-modal': {
@@ -127,6 +133,12 @@ const HydratedModal = () => {
         dispatch(setSelectedCamera(null));
         dispatch(clearCameraSerialNumberTask());
       },
+    },
+    'delete-images-by-filter': {
+      title: 'Delete Filtered Images',
+      size: 'md',
+      content: <DeleteImagesModal />,
+      callBackOnClose: () => true,
     },
   };
 
