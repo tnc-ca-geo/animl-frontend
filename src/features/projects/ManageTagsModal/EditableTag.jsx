@@ -44,6 +44,11 @@ export const EditableTag = ({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(currentColor);
 
+  const onEdit = (newName, newColor) => {
+    onConfirmEdit(id, newName, newColor);
+    setIsEditOpen(false);
+  }
+
   return (
     <Container>
       <Inner>
@@ -77,7 +82,7 @@ export const EditableTag = ({
           currentColor={currentColor}
           onPreviewColor={(newColor) => setPreviewColor(newColor)}
           allTagNames={allTagNames}
-          onSubmit={onConfirmEdit}
+          onSubmit={(_id, newName, newColor) => onEdit(newName, newColor)}
           onCancel={() => setIsEditOpen(false)}
         />
       }

@@ -152,6 +152,12 @@ const projectLabelFields = `
   ml
 `;
 
+const projectTagFields = `
+  _id
+  name
+  color
+`;
+
 const projectFields = `
   _id
   name
@@ -168,6 +174,9 @@ const projectFields = `
   }
   labels {
     ${projectLabelFields}
+  }
+  tags {
+    ${projectTagFields}
   }
   availableMLModels 
 `;
@@ -506,6 +515,45 @@ const queries = {
       mutation DeleteLabels($input: DeleteLabelsInput!) {
         deleteLabels(input: $input) {
           isOk
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  createProjectTag: (input) => ({
+    template: `
+      mutation CreateProjectTag($input: CreateProjectTagInput!) {
+        createProjectTag(input: $input) {
+          tags {
+            ${projectTagFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteProjectTag: (input) => ({
+    template: `
+      mutation DeleteProjectTag($input: DeleteProjectTagInput!) {
+        deleteProjectTag(input: $input) {
+          tags {
+            ${projectTagFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateProjectTag: (input) => ({
+    template: `
+      mutation UpdateProjectTag($input: UpdateProjectTagInput!) {
+        updateProjectTag(input: $input) {
+          tags {
+            ${projectTagFields}
+          }
         }
       }
     `,

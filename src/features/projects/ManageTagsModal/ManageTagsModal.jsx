@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '../../../theme/stitches.config';
 import { EditableTag } from './EditableTag';
 import { EditTag } from './EditTag';
 import Button from '../../../components/Button';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner';
 import { DeleteTagAlert } from './DeleteTagAlert';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProjectTag, deleteProjectTag, selectTags, updateProjectTag } from '../projectsSlice';
 
 const EditableTagsContainer = styled('div', {
   overflowY: 'scroll',
@@ -28,40 +30,34 @@ const EditTagContainer = styled('div', {
 
 
 export const ManageTagsModal = () => {
+  const dispatch = useDispatch();
+  const tags = useSelector(selectTags);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isNewTagOpen, setIsNewTagOpen] = useState(false);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [tagToDelete, setTagToDelete] = useState('');
 
-  const tags = [
-    {
-      id: "1",
-      name: "example tag",
-      color: "#E93D82"
-    },
-    {
-      id: "2",
-      name: "example tag",
-      color: "#00A2C7"
-    },
-    {
-      id: "3",
-      name: "example tag",
-      color: "#29A383"
-    },
-  ]
+  // TODO
+  // to avoid lint error
+  useEffect(() => {
+    setIsLoading(false)
+  })
 
   const onConfirmEdit = (tagId, tagName, tagColor) => {
     console.log("edit", tagId, tagName, tagColor);
+    dispatch(updateProjectTag({ _id: tagId, name: tagName, color: tagColor }));
   }
 
   const onConfirmAdd = (tagName, tagColor) => {
-    console.log("add", tagName, tagColor);
+    dispatch(createProjectTag({ name: tagName, color: tagColor }));
+    setIsNewTagOpen(false);
   }
 
-  const onConfirmDelete = (tagid) => {
-    console.log('delete', tagid);
+  const onConfirmDelete = (tagId) => {
+    dispatch(deleteProjectTag({ _id: tagId }));
+    setIsAlertOpen(false);
   }
 
   const onStartDelete = (id) => {
@@ -70,7 +66,6 @@ export const ManageTagsModal = () => {
   }
 
   const onCancelDelete = () => {
-    console.log("what")
     setIsAlertOpen(false);
     setTagToDelete('');
   }
@@ -83,10 +78,10 @@ export const ManageTagsModal = () => {
         </SpinnerOverlay>
       )}
       <EditableTagsContainer>
-        { tags.map(({ id, name, color }) => (
+        { tags.map(({ _id, name, color }) => (
           <EditableTag 
-            key={id}
-            id={id}
+            key={Math.random()}
+            id={_id}
             currentName={name}
             currentColor={color}
             allTagNames={tags.map((tag) => tag.name)}
@@ -118,7 +113,7 @@ export const ManageTagsModal = () => {
       }
       <DeleteTagAlert 
         open={isAlertOpen} 
-        tag={tags.find((tag) => tag.id === tagToDelete)} 
+        tag={tags.find((tag) => tag._id === tagToDelete)} 
         onConfirm={onConfirmDelete}
         onCancel={onCancelDelete}
       />

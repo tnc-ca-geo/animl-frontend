@@ -82,7 +82,7 @@ export const DeleteTagAlert = ({
                 border: 'none',
                 '&:hover': { color: red.red11, backgroundColor: red.red5 },
               }}
-              onClick={() => onConfirm(tag.id)}
+              onClick={() => onConfirm(tag._id)}
             >
               Yes, delete
             </Button>
