@@ -24,6 +24,7 @@ import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import ShareImageButton from './ShareImageButton';
 import LoupeDropdown from './LoupeDropdown.jsx';
+import { ImageTagsToolbar } from './ImageTagsToolbar.jsx';
 
 const ItemValue = styled('div', {
   fontSize: '$3',
@@ -79,7 +80,7 @@ const LoupeBody = styled('div', {
   // $7 - height of panel header
   // $8 - height of nav bar
   // 98px - height of toolbar plus height of 2 borders
-  height: 'calc(100vh - $7 - $8 - 98px)',
+  height: 'calc(100vh - $7 - $8 - 145px)',
   backgroundColor: '$hiContrast',
 });
 
@@ -99,7 +100,7 @@ const StyledLoupe = styled('div', {
 });
 
 const ToolbarContainer = styled('div', {
-  height: '97px',
+  height: '145px',
 });
 
 const ShareImage = styled('div', {
@@ -338,16 +339,19 @@ const Loupe = () => {
       {/*<LoupeFooter image={image}/>*/}
       <ToolbarContainer>
         {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
-          <ImageReviewToolbar
-            image={image}
-            lastAction={lastAction}
-            handleRepeatAction={handleRepeatAction}
-            handleValidateAllButtonClick={handleValidateAllButtonClick}
-            handleMarkEmptyButtonClick={markEmpty}
-            handleAddObjectButtonClick={handleAddObjectButtonClick}
-            handleUnlockAllButtonClick={handleUnlockAllButtonClick}
-            handleIncrementClick={handleIncrementClick}
-          />
+          <>
+            <ImageTagsToolbar />
+            <ImageReviewToolbar
+              image={image}
+              lastAction={lastAction}
+              handleRepeatAction={handleRepeatAction}
+              handleValidateAllButtonClick={handleValidateAllButtonClick}
+              handleMarkEmptyButtonClick={markEmpty}
+              handleAddObjectButtonClick={handleAddObjectButtonClick}
+              handleUnlockAllButtonClick={handleUnlockAllButtonClick}
+              handleIncrementClick={handleIncrementClick}
+            />
+          </>
         )}
         <ShareImage>
           <ShareImageButton imageId={image?._id} />
