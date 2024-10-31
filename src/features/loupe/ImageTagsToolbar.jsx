@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from "../../theme/stitches.config";
-import CategorySelector from '../../components/CategorySelector.jsx';
 import { mauve } from '@radix-ui/colors';
 import { ImageTag } from "./ImageTag.jsx";
+import { TagSelector } from '../../components/TagSelector.jsx';
+import { editTag } from '../review/reviewSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectProjectTags } from '../projects/projectsSlice.js';
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -44,61 +47,63 @@ const Separator = styled('div', {
   margin: '$2 10px'
 });
 
-export const ImageTagsToolbar = () => {
-  const tags = [
-    {
-      id: `${Math.random()}`,
-      name: 'example',
-      color: '#B06D2F',
-      onDelete: () => {console.log("hello")}
-    },
-    {
-      id: `${Math.random()}`,
-      name: 'example 2',
-      color: '#3C6DDE',
-      onDelete: () => {console.log("hello")}
-    },
-    {
-      id: `${Math.random()}`,
-      name: 'example 3',
-      color: '#08C04C',
-      onDelete: () => {console.log("hello")}
-    },
-    {
-      id: `${Math.random()}`,
-      name: 'example',
-      color: '#EEBC03',
-      onDelete: () => {console.log("hello")}
-    },
-    {
-      id: `${Math.random()}`,
-      name: 'example 2',
-      color: '#3CE26E',
-      onDelete: () => {console.log("hello")}
-    },
-    {
-      id: `${Math.random()}`,
-      name: 'example 3',
-      color: '#C31C76',
-      onDelete: () => {console.log("hello")}
-    },
-  ]
+const getImageTagInfo = (imageTags, projectTags) => {
+  console.log("img", imageTags)
+  console.log("proj", projectTags)
+  return projectTags.filter((t) => {
+    return imageTags.find((it) => it === t._id) !== undefined
+  });
+}
+
+export const ImageTagsToolbar = ({
+  image
+}) => {
+  const dispatch = useDispatch();
+  const projectTags = useSelector(selectProjectTags);
+  const [imageTags, setImageTags] = useState(image.tags ?? []);
+
+  console.log("tg", image.tags)
+
+  useEffect(() => {
+    const imageTagInfo = getImageTagInfo(image.tags ?? [], projectTags);
+    setImageTags(imageTagInfo);
+  }, [image, projectTags])
+
+  useEffect(() => {
+    const imageTagInfo = getImageTagInfo(image.tags ?? [], projectTags);
+    console.log(imageTagInfo)
+    setImageTags(imageTagInfo);
+  }, []);
+
+  const onDeleteTag = (tagId) => {
+    console.log(`delete tag: ${tagId}`)
+  }
+
+  const onAddTag = ({ value }) => {
+    const addTagDto = {
+      tagId: value,
+      imageId: image._id
+    };
+    dispatch(editTag('create', addTagDto));
+  }
 
   return (
     <Toolbar>
       <TagSelectorContainer>
-        <CategorySelector handleCategoryChange={() => console.log("cat chagen")} />
+        <TagSelector 
+          handleTagChange={(tag) => onAddTag(tag)} 
+        />
       </TagSelectorContainer>
       <Separator />
       <TagsContainer>
         <ScrollContainer>
-          { tags.map(({ id, name, color, onDelete }) => (
+          { imageTags.map(({ id, name, color }) => (
             <ImageTag
               key={id}
               id={id}
               name={name}
               color={color}
-              onDelete={onDelete}
+              onDelete={onDeleteTag}
             />
           ))}
         </ScrollContainer>

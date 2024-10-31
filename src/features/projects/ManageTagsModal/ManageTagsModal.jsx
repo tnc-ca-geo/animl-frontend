@@ -6,7 +6,7 @@ import Button from '../../../components/Button';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner';
 import { DeleteTagAlert } from './DeleteTagAlert';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProjectTag, deleteProjectTag, selectTags, updateProjectTag } from '../projectsSlice';
+import { createProjectTag, deleteProjectTag, selectProjectTags, updateProjectTag } from '../projectsSlice';
 
 const EditableTagsContainer = styled('div', {
   overflowY: 'scroll',
@@ -31,7 +31,7 @@ const EditTagContainer = styled('div', {
 
 export const ManageTagsModal = () => {
   const dispatch = useDispatch();
-  const tags = useSelector(selectTags);
+  const tags = useSelector(selectProjectTags);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isNewTagOpen, setIsNewTagOpen] = useState(false);

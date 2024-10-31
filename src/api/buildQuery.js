@@ -60,6 +60,7 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  tags
   reviewed
 `;
 
@@ -630,6 +631,17 @@ const queries = {
           comments {
             ${imageCommentFields}
           }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+  
+  createImageTag: (input) => ({
+    template: `
+      mutation CreateImageTag($input: CreateImageTagInput!){
+        createImageTag(input: $input) {
+          tags
         }
       }
     `,
