@@ -4,6 +4,7 @@ import { call } from '../../api';
 import { findImage, findObject, findLabel, isImageReviewed } from '../../app/utils';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
+import { deleteImagesSuccess as deleteImageTaskSuccess } from '../tasks/tasksSlice';
 
 const initialState = {
   workingImages: [],
@@ -206,6 +207,9 @@ export const reviewSlice = createSlice({
         }
       })
       .addCase(deleteImagesSuccess, (state, { payload }) => {
+        state.workingImages = state.workingImages.filter(({ _id }) => !payload.includes(_id));
+      })
+      .addCase(deleteImageTaskSuccess, (state, { payload }) => {
         state.workingImages = state.workingImages.filter(({ _id }) => !payload.includes(_id));
       });
   },

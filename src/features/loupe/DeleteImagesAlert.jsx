@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteImages, setDeleteImagesAlertOpen, selectDeleteImagesAlertOpen } from '../images/imagesSlice.js';
+import {
+  deleteImages,
+  setDeleteImagesAlertOpen,
+  selectDeleteImagesAlertOpen,
+} from '../images/imagesSlice.js';
 import { selectSelectedImages } from '../review/reviewSlice.js';
-import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../../components/AlertDialog.jsx';
+import {
+  Alert,
+  AlertPortal,
+  AlertOverlay,
+  AlertContent,
+  AlertTitle,
+} from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
 import { red } from '@radix-ui/colors';
+import { deleteImagesTask, fetchTask, selectDeleteImagesLoading } from '../tasks/tasksSlice.js';
+import { IMAGE_QUERY_LIMITS } from '../../config.js';
 
 const DeleteImagesAlert = () => {
   const dispatch = useDispatch();
@@ -12,8 +24,20 @@ const DeleteImagesAlert = () => {
   const selectedImages = useSelector(selectSelectedImages);
   const selectedImageIds = selectedImages.map((img) => img._id);
 
+  const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
+
+  useEffect(() => {
+    if (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) {
+      dispatch(fetchTask(deleteImagesLoading.taskId));
+    }
+  }, [deleteImagesLoading, dispatch]);
+
   const handleConfirmDelete = () => {
-    dispatch(deleteImages(selectedImageIds));
+    if (selectedImages.length <= IMAGE_QUERY_LIMITS[2]) {
+      dispatch(deleteImages(selectedImageIds));
+    } else {
+      dispatch(deleteImagesTask({ imageIds: selectedImageIds }));
+    }
   };
 
   const handleCancelDelete = () => {

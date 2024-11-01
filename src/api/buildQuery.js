@@ -237,6 +237,38 @@ const queries = {
     };
   },
 
+  deleteImagesTask: (input) => {
+    return {
+      template: `
+        mutation DeleteImagesTask($input: DeleteImagesInput!) {
+          deleteImagesTask(input: $input) {
+            _id
+          }
+        }
+      `,
+      variables: {
+        input,
+      },
+    };
+  },
+
+  deleteImagesByFilterTask: ({ filters }) => {
+    return {
+      template: `
+        mutation DeleteImagesByFilterTask($input: DeleteImagesByFilterTaskInput!) {
+          deleteImagesByFilterTask(input: $input) {
+            _id
+          }
+        }
+      `,
+      variables: {
+        input: {
+          filters: filters
+        },
+      },
+    };
+  },
+
   getImages: ({ filters, pageInfo, page }) => ({
     template: `
       query GetImages($input: QueryImagesInput!) {

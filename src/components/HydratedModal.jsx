@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 import { Modal } from './Modal.jsx';
 import ImagesStatsModal from '../features/images/ImagesStatsModal.jsx';
 import ExportModal from '../features/images/ExportModal.jsx';
-import DeleteImagesModal from '../features/images/DeleteImagesModal.jsx';
+import DeleteImagesByFilterModal from '../features/images/DeleteImagesByFilterModal.jsx';
 import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
@@ -26,6 +26,7 @@ import {
   clearCameraSerialNumberTask,
   selectDeleteImagesLoading,
   selectDeleteImagesByFilterLoading,
+  clearDeleteImagesByFilterTask,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -70,12 +71,6 @@ const HydratedModal = () => {
       title: 'Export annotations',
       size: 'md',
       content: <ExportModal />,
-      callBackOnClose: () => dispatch(clearExport()),
-    },
-    'delete-images': {
-      title: 'Delete Selected Images',
-      size: 'md',
-      content: <DeleteImagesModal />,
       callBackOnClose: () => dispatch(clearExport()),
     },
     'camera-admin-modal': {
@@ -137,15 +132,16 @@ const HydratedModal = () => {
     'delete-images-by-filter': {
       title: 'Delete Filtered Images',
       size: 'md',
-      content: <DeleteImagesModal />,
-      callBackOnClose: () => true,
+      content: <DeleteImagesByFilterModal />,
+      callBackOnClose: () => {
+        dispatch(clearDeleteImagesByFilterTask());
+      },
     },
   };
 
   const handleModalToggle = (content) => {
     // If async tasks are loading, don't allow modal to close
     if (asyncTaskLoading) return;
-
     dispatch(setModalOpen(!modalOpen));
     if (modalOpen) {
       // modal is being closed, so clean up

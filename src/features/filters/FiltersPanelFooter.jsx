@@ -169,7 +169,7 @@ const FiltersPanelFooter = () => {
               <IconButton
                 variant="ghost"
                 size="large"
-                onClick={() => handleModalToggle('delete-images')}
+                onClick={() => handleModalToggle('delete-images-by-filter')}
               >
                 <TrashIcon />
               </IconButton>

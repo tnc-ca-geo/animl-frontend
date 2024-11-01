@@ -9,6 +9,8 @@ import {
   setSelectedCamera,
 } from '../projects/projectsSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
+import { setFocus, setSelectedImageIndices } from '../review/reviewSlice.js';
+import { fetchImages, setDeleteImagesAlertOpen } from '../images/imagesSlice.js';
 
 const initialState = {
   loadingStates: {
@@ -401,7 +403,7 @@ export const fetchTask = (taskId) => {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
-      if (token && selectedProj) {
+      if (token && selectedProj && taskId) {
         const res = await call({
           projId: selectedProj._id,
           request: 'getTask',
@@ -456,10 +458,25 @@ export const fetchTask = (taskId) => {
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
             DeleteImages: {
-              COMPLETE: () => {
-                dispatch(deleteImagesByFilterSuccess());
+              COMPLETE: (res) => {
+                dispatch(deleteImagesSuccess(res.task.output.imageIds));
               },
-              FAIL: (res) => dispatch(deleteImagesByFilterFailure(res)),
+              FAIL: (res) => dispatch(deleteImagesFailure(res))
+            },
+            DeleteImagesByFilter: {
+              COMPLETE: (res) => {
+                dispatch(deleteImagesByFilterSuccess());
+                dispatch(
+                  setFocus({
+                    index: { image: null, object: null, label: null },
+                    type: 'auto',
+                  }),
+                );
+                dispatch(setModalOpen(false));
+                dispatch(setModalContent(null));
+                dispatch(fetchImages(res.task.output.filters));
+              },
+              FAIL: (res) => dispatch(deleteImagesByFilterFailure(res))
             }
           };
 
@@ -616,16 +633,23 @@ export const deleteImagesTask = ({ imageIds }) => {
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      console.log(imageIds)
 
       if (token && selectedProj) {
         const res = await call({
           projId: selectedProj._id,
           request: 'deleteImagesTask',
-          input: imageIds,
+          input: { imageIds },
         });
         console.log('deleteImages - res: ', res);
         dispatch(deleteImagesUpdate({ taskId: res.deleteImagesTask._id }));
+        dispatch(
+          setFocus({
+            index: { image: null, object: null, label: null },
+            type: 'auto',
+          }),
+        );
+        dispatch(setSelectedImageIndices([]));
+        dispatch(setDeleteImagesAlertOpen(false));
       }
     }
     catch (err) {
@@ -649,10 +673,10 @@ export const deleteImagesByFilterTask = ({ filters }) => {
         const res = await call({
           projId: selectedProj._id,
           request: 'deleteImagesByFilterTask',
-          input: filters,
+          input: { filters },
         });
         console.log('deleteImagesByFilter - res: ', res);
-        dispatch(deleteImagesByFilterUpdate({ taskId: res.deleteImagesTask._id }));
+        dispatch(deleteImagesByFilterUpdate({ taskId: res.deleteImagesByFilterTask._id }));
       }
     }
     catch (err) {
@@ -679,6 +703,6 @@ export const selectCameraSerialNumberLoading = (state) =>
 export const selectCameraSerialNumberErrors = (state) =>
   state.tasks.loadingStates.cameraSerialNumber.errors;
 export const selectDeleteImagesLoading = (state) => state.tasks.loadingStates.deleteImages;
-export const selectDeleteImagesByFilterLoading = (state) => state.tasks.loadingStates.deleteImagesbyFilter;
+export const selectDeleteImagesByFilterLoading = (state) => state.tasks.loadingStates.deleteImagesByFilter;
 
 export default tasksSlice.reducer;
