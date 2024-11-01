@@ -56,8 +56,8 @@ const DeleteImagesByFilterModal = () => {
   }, [deleteImagesByFilterLoading, imageCountIsLoading.isLoading]);
 
   const handleCancelDelete = () => {
-    setModalOpen(false);
-    setModalContent(null);
+    dispatch(setModalOpen(false));
+    dispatch(setModalContent(null));
   };
 
   return (
