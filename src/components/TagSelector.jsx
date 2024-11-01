@@ -3,7 +3,6 @@ import { styled } from '../theme/stitches.config.js';
 import { useSelector, useDispatch } from 'react-redux';
 import Select, { createFilter } from 'react-select';
 import {
-  selectProjectTags,
   selectTagsLoading
 } from '../features/projects/projectsSlice.js';
 import { addLabelEnd } from '../features/loupe/loupeSlice.js';
@@ -60,12 +59,12 @@ const StyledTagSelector = styled(Select, {
 
 export const TagSelector = ({
   css,
+  tags,
   handleTagChange,
   handleTagChangeBlur,
   menuPlacement = 'top',
 }) => {
   const tagsLoading = useSelector(selectTagsLoading);
-  const tags = useSelector(selectProjectTags);
   const options = tags.map((tag) => {
     return {
       value: tag._id,
@@ -80,6 +79,7 @@ export const TagSelector = ({
       value={""}
       css={css}
       autoFocus
+      closeMenuOnSelect={options.length <= 1}
       isClearable
       isSearchable
       openMenuOnClick

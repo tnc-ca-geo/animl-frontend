@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { styled } from '../../../theme/stitches.config';
 import { EditableTag } from './EditableTag';
 import { EditTag } from './EditTag';
@@ -6,7 +6,7 @@ import Button from '../../../components/Button';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner';
 import { DeleteTagAlert } from './DeleteTagAlert';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProjectTag, deleteProjectTag, selectProjectTags, updateProjectTag } from '../projectsSlice';
+import { createProjectTag, deleteProjectTag, selectProjectTags, selectTagsLoading, updateProjectTag } from '../projectsSlice';
 
 const EditableTagsContainer = styled('div', {
   overflowY: 'scroll',
@@ -33,17 +33,12 @@ export const ManageTagsModal = () => {
   const dispatch = useDispatch();
   const tags = useSelector(selectProjectTags);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [isNewTagOpen, setIsNewTagOpen] = useState(false);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [tagToDelete, setTagToDelete] = useState('');
 
-  // TODO
-  // to avoid lint error
-  useEffect(() => {
-    setIsLoading(false)
-  })
+  const isLoading = useSelector(selectTagsLoading);
 
   const onConfirmEdit = (tagId, tagName, tagColor) => {
     console.log("edit", tagId, tagName, tagColor);

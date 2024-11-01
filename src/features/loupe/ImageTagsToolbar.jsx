@@ -48,11 +48,13 @@ const Separator = styled('div', {
 });
 
 const getImageTagInfo = (imageTags, projectTags) => {
-  console.log("img", imageTags)
-  console.log("proj", projectTags)
   return projectTags.filter((t) => {
     return imageTags.find((it) => it === t._id) !== undefined
   });
+}
+
+const getUnaddedTags = (imageTags, projectTags) => {
+  return projectTags.filter((t) => imageTags.indexOf(t._id) === -1)
 }
 
 export const ImageTagsToolbar = ({
@@ -61,22 +63,26 @@ export const ImageTagsToolbar = ({
   const dispatch = useDispatch();
   const projectTags = useSelector(selectProjectTags);
   const [imageTags, setImageTags] = useState(image.tags ?? []);
-
-  console.log("tg", image.tags)
+  const [unaddedTags, setUnaddedTags] = useState([]);
 
   useEffect(() => {
     const imageTagInfo = getImageTagInfo(image.tags ?? [], projectTags);
     setImageTags(imageTagInfo);
+    setUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags));
   }, [image, projectTags])
 
   useEffect(() => {
     const imageTagInfo = getImageTagInfo(image.tags ?? [], projectTags);
-    console.log(imageTagInfo)
     setImageTags(imageTagInfo);
+    setUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags));
   }, []);
 
   const onDeleteTag = (tagId) => {
-    console.log(`delete tag: ${tagId}`)
+    const deleteTagDto = {
+      tagId: tagId,
+      imageId: image._id
+    };
+    dispatch(editTag('delete', deleteTagDto));
   }
 
   const onAddTag = ({ value }) => {
@@ -91,19 +97,20 @@ export const ImageTagsToolbar = ({
     <Toolbar>
       <TagSelectorContainer>
         <TagSelector 
+          tags={unaddedTags}
           handleTagChange={(tag) => onAddTag(tag)} 
         />
       </TagSelectorContainer>
       <Separator />
       <TagsContainer>
         <ScrollContainer>
-          { imageTags.map(({ id, name, color }) => (
+          { imageTags.map(({ _id, name, color }) => (
             <ImageTag
-              key={id}
-              id={id}
+              key={_id}
+              id={_id}
               name={name}
               color={color}
-              onDelete={onDeleteTag}
+              onDelete={(tagId) => onDeleteTag(tagId)}
             />
           ))}
         </ScrollContainer>

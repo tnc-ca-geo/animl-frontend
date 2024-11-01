@@ -639,9 +639,20 @@ const queries = {
   
   createImageTag: (input) => ({
     template: `
-      mutation CreateImageTag($input: CreateImageTagInput!){
+      mutation CreateImageTag($input: CreateImageTagInput!) {
         createImageTag(input: $input) {
           tags
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteImageTag: (input) => ({
+    template: `
+      mutation DeleteImageTag($input: DeleteImageTagInput!) {
+        deleteImageTag(input: $input) {
+          tags 
         }
       }
     `,
