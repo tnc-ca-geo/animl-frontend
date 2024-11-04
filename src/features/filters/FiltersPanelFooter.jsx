@@ -1,7 +1,12 @@
 import React from 'react';
 import { styled, keyframes } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES, WRITE_IMAGES_ROLES } from '../auth/roles.js';
+import {
+  hasRole,
+  READ_STATS_ROLES,
+  DELETE_IMAGES_ROLES,
+  EXPORT_DATA_ROLES,
+} from '../auth/roles.js';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectImagesCount,
@@ -166,7 +171,7 @@ const FiltersPanelFooter = () => {
           </TooltipContent>
         </Tooltip>
       )}
-      {hasRole(userRoles, WRITE_IMAGES_ROLES) && (
+      {hasRole(userRoles, DELETE_IMAGES_ROLES) && (
         <Tooltip>
           <TooltipTrigger asChild>
             <DeleteImagesButton>
