@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   deleteImages,
-  setDeleteImagesAlertOpen,
-  selectDeleteImagesAlertOpen,
+  selectImagesCount,
+  selectImagesCountLoading,
+  selectDeleteImagesAlertState,
+  setDeleteImagesAlertClose,
 } from '../images/imagesSlice.js';
+import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { selectSelectedImages } from '../review/reviewSlice.js';
 import {
   Alert,
@@ -16,15 +19,20 @@ import {
 import Button from '../../components/Button.jsx';
 import { red } from '@radix-ui/colors';
 import { deleteImagesTask, fetchTask, selectDeleteImagesLoading } from '../tasks/tasksSlice.js';
-import { IMAGE_QUERY_LIMITS } from '../../config.js';
+import { IMAGE_DELETE_LIMIT } from '../../config.js';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 const DeleteImagesAlert = () => {
   const dispatch = useDispatch();
-  const open = useSelector(selectDeleteImagesAlertOpen);
+  const alertState = useSelector(selectDeleteImagesAlertState);
   const selectedImages = useSelector(selectSelectedImages);
   const selectedImageIds = selectedImages.map((img) => img._id);
 
   const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
+
+  const filters = useSelector(selectActiveFilters);
+  const imageCountIsLoading = useSelector(selectImagesCountLoading);
+  const imageCount = useSelector(selectImagesCount);
 
   useEffect(() => {
     if (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) {
@@ -33,25 +41,48 @@ const DeleteImagesAlert = () => {
   }, [deleteImagesLoading, dispatch]);
 
   const handleConfirmDelete = () => {
-    if (selectedImages.length <= IMAGE_QUERY_LIMITS[2]) {
-      dispatch(deleteImages(selectedImageIds));
+    if (alertState.deleteImagesAlertByFilter) {
+      dispatch(deleteImagesTask([], filters, true));
     } else {
-      dispatch(deleteImagesTask({ imageIds: selectedImageIds }));
+      if (selectedImages.length > IMAGE_DELETE_LIMIT) {
+        dispatch(deleteImagesTask(selectedImageIds, null, false));
+      } else {
+        dispatch(deleteImages(selectedImageIds));
+      }
     }
   };
 
   const handleCancelDelete = () => {
-    dispatch(setDeleteImagesAlertOpen(false));
+    dispatch(setDeleteImagesAlertClose());
   };
 
+  const [isSpinnerActive, setSpinner] = useState(
+    (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) ||
+      (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading),
+  );
+
+  useEffect(() => {
+    setSpinner(
+      (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) ||
+        (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading),
+    );
+  }, [deleteImagesLoading, imageCountIsLoading.isLoading]);
+
+  const filterText = `Are you sure you'd like to delete ${imageCount === 1 ? 'this image' : `these ${imageCount} images`}?`;
+  const selectionText = `Are you sure you'd like to delete ${selectedImages.length === 1 ? 'this image' : `these ${selectedImages.length} images`}?`;
   return (
-    <Alert open={open}>
+    <Alert open={alertState.deleteImagesAlertOpen}>
       <AlertPortal>
-        <AlertOverlay />
+        <AlertOverlay>
+          {isSpinnerActive && (
+            <SpinnerOverlay>
+              <SimpleSpinner />
+            </SpinnerOverlay>
+          )}
+        </AlertOverlay>
         <AlertContent>
           <AlertTitle>
-            Are you sure you&apos;d like to delete{' '}
-            {selectedImages.length > 1 ? `these ${selectedImages.length} images` : `this image`}?
+            {alertState.deleteImagesAlertByFilter ? filterText : selectionText}
           </AlertTitle>
           <p>This action can not be undone.</p>
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>

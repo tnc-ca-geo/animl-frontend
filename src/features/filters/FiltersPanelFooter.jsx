@@ -3,7 +3,11 @@ import { styled, keyframes } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, READ_STATS_ROLES, EXPORT_DATA_ROLES, WRITE_IMAGES_ROLES } from '../auth/roles.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectImagesCount, selectImagesCountLoading } from '../images/imagesSlice.js';
+import {
+  selectImagesCount,
+  selectImagesCountLoading,
+  setDeleteImagesAlertOpen,
+} from '../images/imagesSlice.js';
 import {
   selectModalOpen,
   selectSelectedProject,
@@ -169,7 +173,9 @@ const FiltersPanelFooter = () => {
               <IconButton
                 variant="ghost"
                 size="large"
-                onClick={() => handleModalToggle('delete-images-by-filter')}
+                onClick={() => {
+                  dispatch(setDeleteImagesAlertOpen(true));
+                }}
               >
                 <TrashIcon />
               </IconButton>

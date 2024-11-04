@@ -27,7 +27,10 @@ const initialState = {
   },
   preFocusImage: null,
   visibleRows: [],
-  deleteImagesAlertOpen: false,
+  deleteImagesAlertState: {
+    deleteImagesAlertOpen: false,
+    deleteImagesAlertByFilter: null,
+  },
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[2],
     paginatedField: 'dateTimeOriginal',
@@ -166,7 +169,6 @@ export const imagesSlice = createSlice({
       state.loadingStates.images.isLoading = true;
       state.loadingStates.images.operation = 'deleting';
       state.loadingStates.images.error = null;
-      state.deleteImagesAlertOpen = false;
     },
 
     deleteImagesSuccess: (state) => {
@@ -180,8 +182,13 @@ export const imagesSlice = createSlice({
     },
 
     setDeleteImagesAlertOpen: (state, { payload }) => {
-      state.deleteImagesAlertOpen = payload;
+      state.deleteImagesAlertState.deleteImagesAlertOpen = true;
+      state.deleteImagesAlertState.deleteImagesAlertByFilter = payload;
     },
+    setDeleteImagesAlertClose: (state) => {
+      state.deleteImagesAlertState.deleteImagesAlertOpen = false;
+      state.deleteImagesAlertState.deleteImagesAlertByFilter = null;
+    }
   },
 });
 
@@ -206,6 +213,7 @@ export const {
   deleteImagesSuccess,
   deleteImagesError,
   setDeleteImagesAlertOpen,
+  setDeleteImagesAlertClose,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -356,7 +364,7 @@ export const selectVisibleRows = (state) => state.images.visibleRows;
 export const selectPreFocusImage = (state) => state.images.preFocusImage;
 export const selectImageContextLoading = (state) => state.images.loadingStates.imageContext;
 export const selectImageContextErrors = (state) => state.images.loadingStates.imageContext.errors;
-export const selectDeleteImagesAlertOpen = (state) => state.images.deleteImagesAlertOpen;
+export const selectDeleteImagesAlertState = (state) => state.images.deleteImagesAlertState;
 
 // TODO: find a different place for this?
 export const selectRouterLocation = (state) => state.router.location;

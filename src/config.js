@@ -16,6 +16,8 @@ const stage = import.meta.env.VITE_STAGE || process.env.NODE_ENV;
 export const API_URL = API_URLS[stage];
 export const IMAGES_URL = IMAGES_URLS[stage];
 export const IMAGE_QUERY_LIMITS = [10, 50, 100];
+export const IMAGE_DELETE_LIMIT = 100;
+
 
 export const SUPPORTED_WIRELESS_CAMS = ['BuckEyeCam', 'RidgeTec', 'CUDDEBACK', 'RECONYX'];
 

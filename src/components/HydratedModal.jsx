@@ -4,7 +4,6 @@ import moment from 'moment-timezone';
 import { Modal } from './Modal.jsx';
 import ImagesStatsModal from '../features/images/ImagesStatsModal.jsx';
 import ExportModal from '../features/images/ExportModal.jsx';
-import DeleteImagesByFilterModal from '../features/images/DeleteImagesByFilterModal.jsx';
 import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
 import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
@@ -25,8 +24,6 @@ import {
   selectCameraSerialNumberLoading,
   clearCameraSerialNumberTask,
   selectDeleteImagesLoading,
-  selectDeleteImagesByFilterLoading,
-  clearDeleteImagesByFilterTask,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -50,15 +47,13 @@ const HydratedModal = () => {
   const deploymentsLoading = useSelector(selectDeploymentsLoading);
   const cameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
   const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
-  const deleteImagesByFilterLoading = useSelector(selectDeleteImagesByFilterLoading);
   const asyncTaskLoading =
     statsLoading.isLoading ||
     annotationsExportLoading.isLoading ||
     errorsExportLoading.isLoading ||
     deploymentsLoading.isLoading ||
     cameraSerialNumberLoading.isLoading ||
-    deleteImagesLoading.isLoading ||
-    deleteImagesByFilterLoading.isLoading;
+    deleteImagesLoading.isLoading;
 
   const modalContentMap = {
     'stats-modal': {
@@ -127,14 +122,6 @@ const HydratedModal = () => {
       callBackOnClose: () => {
         dispatch(setSelectedCamera(null));
         dispatch(clearCameraSerialNumberTask());
-      },
-    },
-    'delete-images-by-filter': {
-      title: 'Delete Filtered Images',
-      size: 'md',
-      content: <DeleteImagesByFilterModal />,
-      callBackOnClose: () => {
-        dispatch(clearDeleteImagesByFilterTask());
       },
     },
   };
