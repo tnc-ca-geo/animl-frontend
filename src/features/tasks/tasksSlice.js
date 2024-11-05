@@ -425,10 +425,10 @@ export const fetchTask = (taskId) => {
                     type: 'auto',
                   }),
                 );
-                dispatch(setModalOpen(false));
-                dispatch(setModalContent(null));
+                dispatch(setDeleteImagesAlertClose());
                 dispatch(fetchImages(res.task.output.filters));
               },
+
               FAIL: (res) => dispatch(deleteImagesFailure(res))
             }
           };
