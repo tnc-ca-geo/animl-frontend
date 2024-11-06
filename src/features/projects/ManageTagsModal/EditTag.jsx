@@ -47,13 +47,14 @@ const ColorSwatch = styled('button', {
 
 const createTagNameSchema = (currentName, allNames) => {
   return Yup.string()
-    .required('Enter a label name.')
-    .matches(/^[a-zA-Z0-9_. -]*$/, "Labels can't contain special characters")
-    .test('unique', 'A label with this name already exists.', (val) => {
+    .required('Enter a tag name.')
+    .matches(/^[a-zA-Z0-9_. -]*$/, "Tags can't contain special characters")
+    .test('unique', 'A tag with this name already exists.', (val) => {
+      const allNamesLowerCase = allNames.map((n) => n.toLowerCase())
       if (val?.toLowerCase() === currentName.toLowerCase()) {
         // name hasn't changed
         return true;
-      } else if (!allNames.includes(val?.toLowerCase())) {
+      } else if (!allNamesLowerCase.includes(val?.toLowerCase())) {
         // name hasn't already been used
         return true;
       } else {
@@ -155,7 +156,6 @@ export const EditTag = ({
   const [color, setColor] = useState(currentColor);
   const [tempColor, setTempColor] = useState(currentColor);
 
-  const tagNameSchema = createTagNameSchema(currentName, allTagNames);
 
   const [nameError, setNameError] = useState("");
   const [colorError, setColorError] = useState("");
@@ -191,6 +191,9 @@ export const EditTag = ({
   const onConfirmEdit = () => {
     let validatedName = "";
     let validatedColor = "";
+
+    const tagNameSchema = createTagNameSchema(currentName, allTagNames);
+
     // If the user typed in a color, tempColor !== color
     const submittedColor = tempColor !== color ? tempColor : color;
     try {

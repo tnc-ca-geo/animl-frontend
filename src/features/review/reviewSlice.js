@@ -206,6 +206,11 @@ export const reviewSlice = createSlice({
       state.loadingStates.labels.errors.splice(index, 1);
     },
 
+    dismissTagsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.tags.errors.splice(index, 1);
+    },
+
     dismissCommentsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.comments.errors.splice(index, 1);
@@ -256,6 +261,7 @@ export const {
   editTagFailure,
   editTagSuccess,
   dismissLabelsError,
+  dismissTagsError,
   dismissCommentsError,
 } = reviewSlice.actions;
 

@@ -8,6 +8,8 @@ import {
   dismissLabelsError,
   selectCommentsErrors,
   dismissCommentsError,
+  selectTagsErrors,
+  dismissTagsError,
 } from '../features/review/reviewSlice';
 import {
   selectProjectsErrors,
@@ -20,6 +22,8 @@ import {
   dismissCreateProjectError,
   selectManageLabelsErrors,
   dismissManageLabelsError,
+  selectProjectTagErrors,
+  dismissProjectTagErrors
 } from '../features/projects/projectsSlice';
 import {
   selectWirelessCamerasErrors,
@@ -57,6 +61,7 @@ import { selectManageUserErrors, dismissManageUsersError } from '../features/pro
 const ErrorToast = () => {
   const dispatch = useDispatch();
   const labelsErrors = useSelector(selectLabelsErrors);
+  const tagsErrors = useSelector(selectTagsErrors);
   const commentsErrors = useSelector(selectCommentsErrors);
   const projectsErrors = useSelector(selectProjectsErrors);
   const viewsErrors = useSelector(selectViewsErrors);
@@ -74,9 +79,12 @@ const ErrorToast = () => {
   const manageLabelsErrors = useSelector(selectManageLabelsErrors);
   const uploadErrors = useSelector(selectUploadErrors);
   const cameraSerialNumberErrors = useSelector(selectCameraSerialNumberErrors);
+  const projectTagErrors = useSelector(selectProjectTagErrors);
 
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
+    enrichErrors(tagsErrors, 'Tag Error', 'tags'),
+    enrichErrors(projectTagErrors, 'Tag Error', 'projectTags'),
     enrichErrors(commentsErrors, 'Comment Error', 'comments'),
     enrichErrors(projectsErrors, 'Project Error', 'projects'),
     enrichErrors(viewsErrors, 'View Error', 'views'),
@@ -144,6 +152,8 @@ const ErrorToast = () => {
 
 const dismissErrorActions = {
   labels: (i) => dismissLabelsError(i),
+  tags: (i) => dismissTagsError(i),
+  projectTags: (i) => dismissProjectTagErrors(i),
   comments: (i) => dismissCommentsError(i),
   projects: (i) => dismissProjectsError(i),
   createProject: (i) => dismissCreateProjectError(i),

@@ -432,6 +432,11 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags = ls;
     },
 
+    dismissProjectTagErrors: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.projectTags.errors.splice(index, 1);
+    },
+
     setModalOpen: (state, { payload }) => {
       state.modalOpen = payload;
     },
@@ -487,6 +492,7 @@ export const {
   setSelectedProjAndView,
   setUnsavedViewChanges,
   dismissProjectsError,
+  dismissProjectTagErrors,
   createProjectStart,
   createProjectSuccess,
   createProjectFailure,
@@ -915,5 +921,6 @@ export const selectModelOptionsLoading = (state) =>
 export const selectProjectLabelsLoading = (state) => state.projects.loadingStates.projectLabels;
 export const selectManageLabelsErrors = (state) =>
   state.projects.loadingStates.projectLabels.errors;
+export const selectProjectTagErrors = (state) => state.projects.loadingStates.projectTags.errors;
 
 export default projectsSlice.reducer;
