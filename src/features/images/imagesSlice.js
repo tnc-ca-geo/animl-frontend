@@ -345,9 +345,11 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
     );
     dispatch(setSelectedImageIndices([]));
     dispatch(deleteImagesSuccess(imageIds));
+    dispatch(setDeleteImagesAlertClose())
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
     dispatch(deleteImagesError(err));
+    dispatch(setDeleteImagesAlertClose())
   }
 };
 

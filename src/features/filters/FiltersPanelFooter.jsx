@@ -187,7 +187,7 @@ const FiltersPanelFooter = () => {
             </DeleteImagesButton>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={5}>
-            Delete all images shown
+            Delete all filtered images
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>

@@ -73,14 +73,13 @@ const DeleteImagesAlert = () => {
   return (
     <Alert open={alertState.deleteImagesAlertOpen}>
       <AlertPortal>
-        <AlertOverlay>
+        <AlertOverlay />
+        <AlertContent>
           {isSpinnerActive && (
             <SpinnerOverlay>
               <SimpleSpinner />
             </SpinnerOverlay>
           )}
-        </AlertOverlay>
-        <AlertContent>
           <AlertTitle>
             {alertState.deleteImagesAlertByFilter ? filterText : selectionText}
           </AlertTitle>
