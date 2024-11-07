@@ -102,7 +102,6 @@ const FiltersPanelFooter = () => {
   };
 
   const handleModalToggle = (content) => {
-    console.log(content);
     dispatch(setModalOpen(!modalOpen));
     dispatch(setModalContent(content));
   };
