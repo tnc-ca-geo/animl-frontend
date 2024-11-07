@@ -15,7 +15,12 @@ import {
   ContextMenuSeparator,
   ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
-import { bboxUpdated, labelsValidated, setFocus, objectsManuallyUnlocked } from '../review/reviewSlice';
+import {
+  bboxUpdated,
+  labelsValidated,
+  setFocus,
+  objectsManuallyUnlocked,
+} from '../review/reviewSlice';
 import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
@@ -117,6 +122,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
   const catSelectorRef = useRef(null);
   const focusRef = useRef(null);
   const dispatch = useDispatch();
+  const dragRef = useRef(null);
 
   // track whether the object is focused
   const objectFocused = object.isTemp || focusIndex.object === objectIndex;
@@ -259,8 +265,10 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
           onDrag={onDrag}
           onStop={onDragEnd}
           disabled={!isAuthorized || object.locked}
+          nodeRef={dragRef}
         >
           <StyledResizableBox
+            ref={dragRef}
             width={width}
             height={height}
             minConstraints={[0, 0]}
@@ -289,25 +297,27 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
               background: displayLabel?.color + '0D',
             }}
           >
-            {label && (
-              <BoundingBoxLabel
-                imgId={imgId}
-                index={index}
-                object={object}
-                label={label}
-                displayLabel={displayLabel}
-                conf={conf}
-                selected={objectFocused}
-                showLabelButtons={showLabelButtons}
-                setTempObject={setTempObject}
-                verticalPos={top > 30 ? 'top' : 'bottom'}
-                horizontalPos={imgDims.width - left - width < 75 ? 'right' : 'left'}
-                ref={catSelectorRef}
-                isAuthorized={isAuthorized}
-                username={username}
-              />
-            )}
-            <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
+            <>
+              {label && (
+                <BoundingBoxLabel
+                  imgId={imgId}
+                  index={index}
+                  object={object}
+                  label={label}
+                  displayLabel={displayLabel}
+                  conf={conf}
+                  selected={objectFocused}
+                  showLabelButtons={showLabelButtons}
+                  setTempObject={setTempObject}
+                  verticalPos={top > 30 ? 'top' : 'bottom'}
+                  horizontalPos={imgDims.width - left - width < 75 ? 'right' : 'left'}
+                  ref={catSelectorRef}
+                  isAuthorized={isAuthorized}
+                  username={username}
+                />
+              )}
+              <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
+            </>
           </StyledResizableBox>
         </Draggable>
       </ContextMenuTrigger>
