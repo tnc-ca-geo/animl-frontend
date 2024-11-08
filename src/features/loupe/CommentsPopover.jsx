@@ -114,24 +114,24 @@ export const CommentsPopover = ({ onClose, comments, imageId, onChangeActionMenu
   const [isShiftDown, setIsShiftDown] = useState(false);
   const handleKeyDown = (event) => {
     event.stopPropagation();
-    if (event.key === "Shift") {
+    if (event.key === 'Shift') {
       setIsShiftDown(true);
     }
-    if (event.key === "Enter" && !isShiftDown) {
+    if (event.key === 'Enter' && !isShiftDown) {
       handleAddComment(addCommentText);
       event.preventDefault();
     }
-  }
+  };
   const handleKeyUp = (event) => {
-    if (event.key === "Shift") {
+    if (event.key === 'Shift') {
       setIsShiftDown(false);
     }
-  }
+  };
   // Scroll to bottom when adding a new comment
   const scrollRef = useRef();
   useEffect(() => {
-    if (scrollRef.current !== undefined) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [comments]);
 
