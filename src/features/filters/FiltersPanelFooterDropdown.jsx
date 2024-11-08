@@ -40,12 +40,12 @@ const FiltersPanelFooterDropdown = (props) => {
       <DropdownMenuContent sideOffset={5}>
         {hasRole(userRoles, EXPORT_DATA_ROLES) && (
           <DropdownMenuItem onClick={() => props.handleModalToggle('export-modal')}>
-            Export data
+            Export filtered data
           </DropdownMenuItem>
         )}
         {hasRole(userRoles, DELETE_IMAGES_ROLES) && (
           <DropdownMenuItem onClick={handleDeleteImageItemClick}>
-            Delete Filtered Images
+            Delete filtered images
           </DropdownMenuItem>
         )}
         <DropdownMenuArrow offset={12} />
