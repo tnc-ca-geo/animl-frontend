@@ -89,8 +89,17 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
   const isAddingLabel = useSelector(selectIsAddingLabel);
   const open = isAddingLabel === 'from-object' && selected;
   const [catSelectorOpen, setCatSelectorOpen] = useState(open);
+  const [ignoreBlur, setIgnoreBlur] = useState(false);
   useEffect(() => {
     setCatSelectorOpen(isAddingLabel === 'from-object' && selected);
+    // NOTE: Firefox steals focus away from the category selector when it's opened
+    // via the context menu. This is a hacky workaround to prevent that from happening.
+    if (isAddingLabel === 'from-object' && selected) {
+      setIgnoreBlur(true);
+      setTimeout(() => {
+        setIgnoreBlur(false);
+      }, 100);
+    }
   }, [isAddingLabel, selected]);
 
   // manually focus catSelector if it's open
@@ -127,7 +136,7 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
 
   const handleCategorySelectorBlur = () => {
     if (object.isTemp) setTempObject(null);
-    dispatch(addLabelEnd());
+    if (!ignoreBlur) dispatch(addLabelEnd());
   };
 
   return (
@@ -146,20 +155,30 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
           handleCategorySelectorBlur={handleCategorySelectorBlur}
           menuPlacement="bottom"
         />
-        <LabelDisplay css={{ display: catSelectorOpen ? 'none' : 'block', color: getTextColor(displayLabel?.color) }}>
+        <LabelDisplay
+          css={{
+            display: catSelectorOpen ? 'none' : 'block',
+            color: getTextColor(displayLabel?.color),
+          }}
+        >
           <Category>{displayLabel?.name}</Category>
-          {!object.locked && displayLabel._id !== 'fallback_label' && <Confidence>{conf}%</Confidence>}
+          {!object.locked && displayLabel._id !== 'fallback_label' && (
+            <Confidence>{conf}%</Confidence>
+          )}
         </LabelDisplay>
       </div>
-      {showLabelButtons && !catSelectorOpen && isAuthorized && displayLabel._id !== 'fallback_label' && (
-        <ValidationButtons
-          imgId={imgId}
-          object={object}
-          label={label}
-          labelColor={displayLabel?.color}
-          username={username}
-        />
-      )}
+      {showLabelButtons &&
+        !catSelectorOpen &&
+        isAuthorized &&
+        displayLabel._id !== 'fallback_label' && (
+          <ValidationButtons
+            imgId={imgId}
+            object={object}
+            label={label}
+            labelColor={displayLabel?.color}
+            username={username}
+          />
+        )}
     </StyledBoundingBoxLabel>
   );
 });

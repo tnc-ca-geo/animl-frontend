@@ -15,7 +15,12 @@ import {
   ContextMenuSeparator,
   ContextMenuItemIconLeft,
 } from '../../components/ContextMenu';
-import { bboxUpdated, labelsValidated, setFocus, objectsManuallyUnlocked } from '../review/reviewSlice';
+import {
+  bboxUpdated,
+  labelsValidated,
+  setFocus,
+  objectsManuallyUnlocked,
+} from '../review/reviewSlice';
 import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
