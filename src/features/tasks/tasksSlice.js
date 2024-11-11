@@ -412,21 +412,23 @@ export const fetchTask = (taskId) => {
             },
             DeleteImages: {
               COMPLETE: (res) => {
-                dispatch(deleteImagesSuccess(res.task.output.imageIds));
-                dispatch(
-                  setFocus({
-                    index: { image: null, object: null, label: null },
-                    type: 'auto',
-                  }),
-                );
-                dispatch(setSelectedImageIndices([]));
-                dispatch(setDeleteImagesAlertClose());
+                if (res.task._id === getState().tasks.loadingStates.deleteImages.taskId) {
+                  console.log('deleteImages - res: ', res);
+                  dispatch(
+                    setFocus({
+                      index: { image: null, object: null, label: null },
+                      type: 'auto',
+                    }),
+                  );
+                  dispatch(setSelectedImageIndices([]));
+                  dispatch(deleteImagesSuccess(res.task.output.imageIds));
+                  dispatch(setDeleteImagesAlertClose());
+                }
               },
               FAIL: (res) => dispatch(deleteImagesFailure(res))
             },
             DeleteImagesByFilter: {
               COMPLETE: (res) => {
-                dispatch(deleteImagesSuccess([]));
                 dispatch(
                   setFocus({
                     index: { image: null, object: null, label: null },
@@ -434,6 +436,7 @@ export const fetchTask = (taskId) => {
                   }),
                 );
                 dispatch(setSelectedImageIndices([]));
+                dispatch(deleteImagesSuccess([]));
                 dispatch(setDeleteImagesAlertClose());
                 dispatch(fetchImages(res.task.output.filters));
               },
