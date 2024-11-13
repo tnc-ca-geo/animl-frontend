@@ -23,7 +23,7 @@ const LoupeDropdown = ({ image }) => {
   const dispatch = useDispatch();
 
   const handleDeleteImageItemClick = () => {
-    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteByFilter: false }));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteImagesByFilter: false }));
   };
 
   return (

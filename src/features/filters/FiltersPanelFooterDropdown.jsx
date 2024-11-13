@@ -29,7 +29,7 @@ const FiltersPanelFooterDropdown = (props) => {
   const userRoles = useSelector(selectUserCurrentRoles);
 
   const handleDeleteImageItemClick = () => {
-    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteByFilter: true }));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteImagesByFilter: true }));
   };
 
   return (

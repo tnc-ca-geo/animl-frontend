@@ -185,7 +185,7 @@ export const imagesSlice = createSlice({
       state.loadingStates.images.errors = payload;
     },
 
-    setDeleteImagesAlertStatus: (state, { openStatus, deleteImagesByFilter }) => {
+    setDeleteImagesAlertStatus: (state, { payload: { openStatus, deleteImagesByFilter } }) => {
       if (openStatus) {
         state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
         state.deleteImagesAlertState.deleteImagesAlertByFilter = deleteImagesByFilter;

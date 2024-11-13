@@ -281,7 +281,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   };
 
   const handleDeleteImagesMenuItemClick = () => {
-    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteByFilter: false }));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteImagesByFilter: false }));
   };
 
   return (
