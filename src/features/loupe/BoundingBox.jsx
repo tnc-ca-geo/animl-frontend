@@ -242,7 +242,6 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
     // focus to shift to the react-select category selector component.
     // see https://github.com/radix-ui/primitives/issues/1446
     focusRef.current = catSelectorRef.current;
-    console.log('focusRef.current: ', focusRef.current);
     const newIndex = { image: focusIndex.image, object: objectIndex, label: null };
     dispatch(setFocus({ index: newIndex, type: 'manual' }));
     dispatch(addLabelStart('from-object'));
@@ -294,25 +293,27 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
               background: displayLabel?.color + '0D',
             }}
           >
-            {label && (
-              <BoundingBoxLabel
-                imgId={imgId}
-                index={index}
-                object={object}
-                label={label}
-                displayLabel={displayLabel}
-                conf={conf}
-                selected={objectFocused}
-                showLabelButtons={showLabelButtons}
-                setTempObject={setTempObject}
-                verticalPos={top > 30 ? 'top' : 'bottom'}
-                horizontalPos={imgDims.width - left - width < 75 ? 'right' : 'left'}
-                ref={catSelectorRef}
-                isAuthorized={isAuthorized}
-                username={username}
-              />
-            )}
-            <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
+            <>
+              {label && (
+                <BoundingBoxLabel
+                  imgId={imgId}
+                  index={index}
+                  object={object}
+                  label={label}
+                  displayLabel={displayLabel}
+                  conf={conf}
+                  selected={objectFocused}
+                  showLabelButtons={showLabelButtons}
+                  setTempObject={setTempObject}
+                  verticalPos={top > 30 ? 'top' : 'bottom'}
+                  horizontalPos={imgDims.width - left - width < 75 ? 'right' : 'left'}
+                  ref={catSelectorRef}
+                  isAuthorized={isAuthorized}
+                  username={username}
+                />
+              )}
+              <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
+            </>
           </StyledResizableBox>
         </Draggable>
       </ContextMenuTrigger>

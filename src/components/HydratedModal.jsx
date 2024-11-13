@@ -23,6 +23,7 @@ import {
   selectDeploymentsLoading,
   selectCameraSerialNumberLoading,
   clearCameraSerialNumberTask,
+  selectDeleteImagesLoading,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -45,12 +46,14 @@ const HydratedModal = () => {
   const errorsExportLoading = useSelector(selectErrorsExportLoading);
   const deploymentsLoading = useSelector(selectDeploymentsLoading);
   const cameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
+  const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
   const asyncTaskLoading =
     statsLoading.isLoading ||
     annotationsExportLoading.isLoading ||
     errorsExportLoading.isLoading ||
     deploymentsLoading.isLoading ||
-    cameraSerialNumberLoading.isLoading;
+    cameraSerialNumberLoading.isLoading ||
+    deleteImagesLoading.isLoading;
 
   const modalContentMap = {
     'stats-modal': {
@@ -126,7 +129,6 @@ const HydratedModal = () => {
   const handleModalToggle = (content) => {
     // If async tasks are loading, don't allow modal to close
     if (asyncTaskLoading) return;
-
     dispatch(setModalOpen(!modalOpen));
     if (modalOpen) {
       // modal is being closed, so clean up

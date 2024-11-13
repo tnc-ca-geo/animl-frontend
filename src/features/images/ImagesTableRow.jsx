@@ -3,8 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
-import { setDeleteImagesAlertOpen } from './imagesSlice.js';
-import { toggleOpenLoupe, selectIsAddingLabel, addLabelStart, addLabelEnd } from '../loupe/loupeSlice.js';
+import { setDeleteImagesAlertStatus } from './imagesSlice.js';
+import {
+  toggleOpenLoupe,
+  selectIsAddingLabel,
+  addLabelStart,
+  addLabelEnd,
+} from '../loupe/loupeSlice.js';
 import {
   setFocus,
   setSelectedImageIndices,
@@ -23,7 +28,14 @@ import {
   ContextMenuSeparator,
 } from '../../components/ContextMenu.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
-import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon, ValueNoneIcon, TrashIcon } from '@radix-ui/react-icons';
+import {
+  CheckIcon,
+  Cross2Icon,
+  LockOpen1Icon,
+  Pencil1Icon,
+  ValueNoneIcon,
+  TrashIcon,
+} from '@radix-ui/react-icons';
 
 // TODO: redundant component (exists in ImagesTable)
 const TableRow = styled('div', {
@@ -168,12 +180,18 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   // NOTE: if this evaluation seems to cause performance issues
   // we can always not disable the buttons and perform these checks
   // in the handleMenuItemClick functions
-  const allObjectsLocked = selectedImages.every((img) => img.objects && img.objects.every((obj) => obj.locked));
-  const allObjectsUnlocked = selectedImages.every((img) => img.objects && img.objects.every((obj) => !obj.locked));
+  const allObjectsLocked = selectedImages.every(
+    (img) => img.objects && img.objects.every((obj) => obj.locked),
+  );
+  const allObjectsUnlocked = selectedImages.every(
+    (img) => img.objects && img.objects.every((obj) => !obj.locked),
+  );
   const hasRenderedObjects = selectedImages.some(
     (img) =>
       img.objects &&
-      img.objects.some((obj) => obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated)),
+      img.objects.some((obj) =>
+        obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
+      ),
   );
 
   // validate all labels
@@ -185,7 +203,9 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
       const unlockedObjects = image.objects.filter((obj) => !obj.locked);
       for (const object of unlockedObjects) {
         // find first non-invalidated label in array
-        const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
+        const label = object.labels.find(
+          (lbl) => lbl.validation === null || lbl.validation.validated,
+        );
         labelsToValidate.push({
           imgId: image._id,
           objId: object._id,
@@ -213,7 +233,11 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
     let objects = [];
     for (const image of selectedImages) {
       const objectsToUnlock = image.objects
-        .filter((obj) => obj.locked && obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated))
+        .filter(
+          (obj) =>
+            obj.locked &&
+            obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
+        )
         .map((obj) => ({ imgId: image._id, objId: obj._id }));
 
       objects = objects.concat(objectsToUnlock);
@@ -257,7 +281,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   };
 
   const handleDeleteImagesMenuItemClick = () => {
-    dispatch(setDeleteImagesAlertOpen(true));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteImagesByFilter: false }));
   };
 
   return (
@@ -265,7 +289,11 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
       {' '}
       {/* modal={false} is fix for pointer-events:none bug: https://github.com/radix-ui/primitives/issues/2416#issuecomment-1738294359 */}
       <ContextMenuTrigger disabled={!selected || !isAuthorized}>
-        <TableRow {...row.getRowProps({ style })} onClick={(e) => handleRowClick(e, row.id)} selected={selected}>
+        <TableRow
+          {...row.getRowProps({ style })}
+          onClick={(e) => handleRowClick(e, row.id)}
+          selected={selected}
+        >
           {row.cells.map((cell) => (
             <DataCell
               {...cell.getCellProps()}
