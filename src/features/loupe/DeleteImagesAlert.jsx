@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   deleteImages,
@@ -6,6 +6,7 @@ import {
   selectImagesCountLoading,
   selectDeleteImagesAlertState,
   setDeleteImagesAlertClose,
+  selectImagesLoading,
 } from '../images/imagesSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { selectSelectedImages } from '../review/reviewSlice.js';
@@ -28,17 +29,18 @@ const DeleteImagesAlert = () => {
   const selectedImages = useSelector(selectSelectedImages);
   const selectedImageIds = selectedImages.map((img) => img._id);
 
-  const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
+  const imagesLoading = useSelector(selectImagesLoading);
+  const deleteImagesTaskLoading = useSelector(selectDeleteImagesLoading);
 
   const filters = useSelector(selectActiveFilters);
   const imageCountIsLoading = useSelector(selectImagesCountLoading);
   const imageCount = useSelector(selectImagesCount);
 
   useEffect(() => {
-    if (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) {
-      dispatch(fetchTask(deleteImagesLoading.taskId));
+    if (deleteImagesTaskLoading.isLoading && deleteImagesTaskLoading.taskId) {
+      dispatch(fetchTask(deleteImagesTaskLoading.taskId));
     }
-  }, [deleteImagesLoading, dispatch]);
+  }, [deleteImagesTaskLoading, dispatch]);
 
   const handleConfirmDelete = () => {
     if (alertState.deleteImagesAlertByFilter) {
@@ -56,20 +58,13 @@ const DeleteImagesAlert = () => {
     dispatch(setDeleteImagesAlertClose());
   };
 
-  const [isSpinnerActive, setSpinner] = useState(
-    (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) ||
-      (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading),
-  );
+  const isSpinnerActive =
+    (deleteImagesTaskLoading.isLoading && deleteImagesTaskLoading.taskId) ||
+    (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading) ||
+    imagesLoading.isLoading;
 
-  useEffect(() => {
-    setSpinner(
-      (deleteImagesLoading.isLoading && deleteImagesLoading.taskId) ||
-        (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading),
-    );
-  }, [deleteImagesLoading, imageCountIsLoading.isLoading]);
-
-  const filterText = `Are you sure you'd like to delete ${imageCount === 1 ? 'this image' : `these ${imageCount} images`}?`;
-  const selectionText = `Are you sure you'd like to delete ${selectedImages.length === 1 ? 'this image' : `these ${selectedImages.length} images`}?`;
+  const filterText = `Are you sure you'd like to delete ${imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`}?`;
+  const selectionText = `Are you sure you'd like to delete ${selectedImages.length === 1 ? 'this image' : `these ${selectedImages && selectedImages.length.toLocaleString()} images`}?`;
   return (
     <Alert open={alertState.deleteImagesAlertOpen}>
       <AlertPortal>

@@ -165,6 +165,10 @@ export const imagesSlice = createSlice({
       state.loadingStates.imageContext.errors.splice(index, 1);
     },
 
+    // NOTE: the following deleteImages actions are for deleting small
+    // numbers of images synchronously. For deleting large numbers of images,
+    // use deleteImagesTask from the taskSlice
+
     deleteImagesStart: (state) => {
       state.loadingStates.images.isLoading = true;
       state.loadingStates.images.operation = 'deleting';
@@ -185,10 +189,11 @@ export const imagesSlice = createSlice({
       state.deleteImagesAlertState.deleteImagesAlertOpen = true;
       state.deleteImagesAlertState.deleteImagesAlertByFilter = payload;
     },
+
     setDeleteImagesAlertClose: (state) => {
       state.deleteImagesAlertState.deleteImagesAlertOpen = false;
       state.deleteImagesAlertState.deleteImagesAlertByFilter = null;
-    }
+    },
   },
 });
 
@@ -345,11 +350,11 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
     );
     dispatch(setSelectedImageIndices([]));
     dispatch(deleteImagesSuccess(imageIds));
-    dispatch(setDeleteImagesAlertClose())
+    dispatch(setDeleteImagesAlertClose());
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
     dispatch(deleteImagesError(err));
-    dispatch(setDeleteImagesAlertClose())
+    dispatch(setDeleteImagesAlertClose());
   }
 };
 

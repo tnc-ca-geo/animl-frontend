@@ -243,7 +243,6 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
     // focus to shift to the react-select category selector component.
     // see https://github.com/radix-ui/primitives/issues/1446
     focusRef.current = catSelectorRef.current;
-    console.log('focusRef.current: ', focusRef.current);
     const newIndex = { image: focusIndex.image, object: objectIndex, label: null };
     dispatch(setFocus({ index: newIndex, type: 'manual' }));
     dispatch(addLabelStart('from-object'));
