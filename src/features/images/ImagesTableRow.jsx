@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
-import { setDeleteImagesAlertOpen } from './imagesSlice.js';
+import { setDeleteImagesAlertStatus } from './imagesSlice.js';
 import {
   toggleOpenLoupe,
   selectIsAddingLabel,
@@ -281,7 +281,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   };
 
   const handleDeleteImagesMenuItemClick = () => {
-    dispatch(setDeleteImagesAlertOpen(false));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteByFilter: false }));
   };
 
   return (

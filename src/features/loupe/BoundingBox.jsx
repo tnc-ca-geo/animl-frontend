@@ -122,7 +122,6 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
   const catSelectorRef = useRef(null);
   const focusRef = useRef(null);
   const dispatch = useDispatch();
-  const dragRef = useRef(null);
 
   // track whether the object is focused
   const objectFocused = object.isTemp || focusIndex.object === objectIndex;
@@ -264,10 +263,8 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
           onDrag={onDrag}
           onStop={onDragEnd}
           disabled={!isAuthorized || object.locked}
-          nodeRef={dragRef}
         >
           <StyledResizableBox
-            ref={dragRef}
             width={width}
             height={height}
             minConstraints={[0, 0]}

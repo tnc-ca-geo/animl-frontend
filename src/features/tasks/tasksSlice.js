@@ -10,7 +10,7 @@ import {
 } from '../projects/projectsSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice.js';
-import { fetchImages, setDeleteImagesAlertClose } from '../images/imagesSlice.js';
+import { fetchImages, setDeleteImagesAlertStatus } from '../images/imagesSlice.js';
 
 const initialState = {
   loadingStates: {
@@ -422,7 +422,7 @@ export const fetchTask = (taskId) => {
                   );
                   dispatch(setSelectedImageIndices([]));
                   dispatch(deleteImagesSuccess(res.task.output.imageIds));
-                  dispatch(setDeleteImagesAlertClose());
+                  dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
                 }
               },
               FAIL: (res) => dispatch(deleteImagesFailure(res))
@@ -437,7 +437,7 @@ export const fetchTask = (taskId) => {
                 );
                 dispatch(setSelectedImageIndices([]));
                 dispatch(deleteImagesSuccess([]));
-                dispatch(setDeleteImagesAlertClose());
+                dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
                 dispatch(fetchImages(res.task.output.filters));
               },
 
@@ -590,7 +590,12 @@ export const updateCameraSerialNumber = (payload) => {
 };
 
 // delete images thunk
-export const deleteImagesTask = (imageIds = [], filters = null, useFilters) => {
+export const deleteImagesTask = ({ imageIds = [], filters = null }) => {
+  /**
+   * Deletes images by either imageIds or by filters, one argument has to be populated and filters take precedence
+   * @param {Array} imageIds - array of image ids to delete
+   * @param {Object} filters - filters to delete images by
+   */
   return async (dispatch, getState) => {
     try {
       dispatch(deleteImagesStart());
@@ -599,7 +604,7 @@ export const deleteImagesTask = (imageIds = [], filters = null, useFilters) => {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
       if (token && selectedProj) {
-        if (useFilters) {
+        if (filters !== null) {
           const res = await call({
             projId: selectedProj._id,
             request: 'deleteImagesByFilterTask',

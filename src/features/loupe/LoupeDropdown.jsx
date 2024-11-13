@@ -11,7 +11,7 @@ import {
 import IconButton from '../../components/IconButton.jsx';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
-import { setDeleteImagesAlertOpen } from '../images/imagesSlice';
+import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -23,7 +23,7 @@ const LoupeDropdown = ({ image }) => {
   const dispatch = useDispatch();
 
   const handleDeleteImageItemClick = () => {
-    dispatch(setDeleteImagesAlertOpen(false));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteByFilter: false }));
   };
 
   return (

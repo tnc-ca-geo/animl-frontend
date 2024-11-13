@@ -11,7 +11,7 @@ import {
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, DELETE_IMAGES_ROLES, EXPORT_DATA_ROLES } from '../auth/roles.js';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { setDeleteImagesAlertOpen } from '../images/imagesSlice';
+import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   height: '100%',
@@ -29,7 +29,7 @@ const FiltersPanelFooterDropdown = (props) => {
   const userRoles = useSelector(selectUserCurrentRoles);
 
   const handleDeleteImageItemClick = () => {
-    dispatch(setDeleteImagesAlertOpen(true));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteByFilter: true }));
   };
 
   return (

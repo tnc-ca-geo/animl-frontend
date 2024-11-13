@@ -5,7 +5,7 @@ import {
   selectImagesCount,
   selectImagesCountLoading,
   selectDeleteImagesAlertState,
-  setDeleteImagesAlertClose,
+  setDeleteImagesAlertStatus,
   selectImagesLoading,
 } from '../images/imagesSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
@@ -44,10 +44,10 @@ const DeleteImagesAlert = () => {
 
   const handleConfirmDelete = () => {
     if (alertState.deleteImagesAlertByFilter) {
-      dispatch(deleteImagesTask([], filters, true));
+      dispatch(deleteImagesTask({ imageIds: [], filters: filters }));
     } else {
       if (selectedImages.length > IMAGE_DELETE_LIMIT) {
-        dispatch(deleteImagesTask(selectedImageIds, null, false));
+        dispatch(deleteImagesTask({ imageIds: selectedImageIds, filters: null }));
       } else {
         dispatch(deleteImages(selectedImageIds));
       }
@@ -55,7 +55,7 @@ const DeleteImagesAlert = () => {
   };
 
   const handleCancelDelete = () => {
-    dispatch(setDeleteImagesAlertClose());
+    dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   };
 
   const isSpinnerActive =

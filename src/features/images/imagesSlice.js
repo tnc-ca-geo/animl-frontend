@@ -185,14 +185,15 @@ export const imagesSlice = createSlice({
       state.loadingStates.images.errors = payload;
     },
 
-    setDeleteImagesAlertOpen: (state, { payload }) => {
-      state.deleteImagesAlertState.deleteImagesAlertOpen = true;
-      state.deleteImagesAlertState.deleteImagesAlertByFilter = payload;
-    },
-
-    setDeleteImagesAlertClose: (state) => {
-      state.deleteImagesAlertState.deleteImagesAlertOpen = false;
-      state.deleteImagesAlertState.deleteImagesAlertByFilter = null;
+    setDeleteImagesAlertStatus: (state, { openStatus, deleteImagesByFilter }) => {
+      if (openStatus) {
+        state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
+        state.deleteImagesAlertState.deleteImagesAlertByFilter = deleteImagesByFilter;
+      }
+      else {
+        state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
+        state.deleteImagesAlertState.deleteImagesAlertByFilter = null;
+      }
     },
   },
 });
@@ -217,8 +218,7 @@ export const {
   deleteImagesStart,
   deleteImagesSuccess,
   deleteImagesError,
-  setDeleteImagesAlertOpen,
-  setDeleteImagesAlertClose,
+  setDeleteImagesAlertStatus,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -350,11 +350,11 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
     );
     dispatch(setSelectedImageIndices([]));
     dispatch(deleteImagesSuccess(imageIds));
-    dispatch(setDeleteImagesAlertClose());
+    dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
     dispatch(deleteImagesError(err));
-    dispatch(setDeleteImagesAlertClose());
+    dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   }
 };
 
