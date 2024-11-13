@@ -10,7 +10,7 @@ import {
 } from '../projects/projectsSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice.js';
-import { fetchImages, setDeleteImagesAlertStatus } from '../images/imagesSlice.js';
+import { fetchImages, fetchImagesCount, setDeleteImagesAlertStatus } from '../images/imagesSlice.js';
 
 const initialState = {
   loadingStates: {
@@ -412,18 +412,18 @@ export const fetchTask = (taskId) => {
             },
             DeleteImages: {
               COMPLETE: (res) => {
-                if (res.task._id === getState().tasks.loadingStates.deleteImages.taskId) {
-                  console.log('deleteImages - res: ', res);
-                  dispatch(
-                    setFocus({
-                      index: { image: null, object: null, label: null },
-                      type: 'auto',
-                    }),
-                  );
-                  dispatch(setSelectedImageIndices([]));
-                  dispatch(deleteImagesSuccess(res.task.output.imageIds));
-                  dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
-                }
+                const filters = getState().filters.activeFilters;
+                dispatch(
+                  setFocus({
+                    index: { image: null, object: null, label: null },
+                    type: 'auto',
+                  }),
+                );
+                dispatch(setSelectedImageIndices([]));
+                dispatch(deleteImagesSuccess(res.task.output.imageIds));
+                dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
+                dispatch(fetchImages(filters));
+                dispatch(fetchImagesCount(filters));
               },
               FAIL: (res) => dispatch(deleteImagesFailure(res))
             },
@@ -439,6 +439,7 @@ export const fetchTask = (taskId) => {
                 dispatch(deleteImagesSuccess([]));
                 dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
                 dispatch(fetchImages(res.task.output.filters));
+                dispatch(fetchImagesCount(res.task.output.filters));
               },
 
               FAIL: (res) => dispatch(deleteImagesFailure(res))
