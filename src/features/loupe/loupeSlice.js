@@ -18,12 +18,17 @@ export const loupeSlice = createSlice({
   name: 'loupe',
   initialState,
   reducers: {
+    toggleOpenLoupe: (state, { payload }) => {
+      state.open = payload;
+    },
 
-    toggleOpenLoupe: (state, { payload }) => { state.open = payload; },
+    reviewModeToggled: (state) => {
+      state.reviewMode = !state.reviewMode;
+    },
 
-    reviewModeToggled: (state) => { state.reviewMode = !state.reviewMode; },
-
-    drawBboxStart: (state) => { state.isDrawingBbox = true; },
+    drawBboxStart: (state) => {
+      state.isDrawingBbox = true;
+    },
 
     drawBboxEnd: (state) => {
       if (state.isDrawingBbox) state.isDrawingBbox = false;
@@ -37,7 +42,7 @@ export const loupeSlice = createSlice({
       state.mouseEventOutsideOverlay = null;
     },
 
-    addLabelStart: (state, { payload }) => { 
+    addLabelStart: (state, { payload }) => {
       // payload can be 'from-object' or 'all-objects
       state.isAddingLabel = payload;
     },
@@ -49,14 +54,13 @@ export const loupeSlice = createSlice({
     iterationOptionsChanged: (state, { payload }) => {
       state.iterationOptions = payload;
     },
-
   },
 
   extraReducers: (builder) => {
-    builder
-      .addCase(clearImages, (state) => { state.open = false; });
-  }
-
+    builder.addCase(clearImages, (state) => {
+      state.open = false;
+    });
+  },
 });
 
 export const {
@@ -83,13 +87,12 @@ export const copyUrlToClipboard = (url) => {
   };
 };
 
-
 // Selectors
-export const selectLoupeOpen = state => state.loupe.open;
-export const selectReviewMode = state => state.loupe.reviewMode;
-export const selectIsDrawingBbox = state => state.loupe.isDrawingBbox;
-export const selectMouseEventDetected = state => state.loupe.mouseEventOutsideOverlay;
-export const selectIsAddingLabel = state => state.loupe.isAddingLabel;
-export const selectIterationOptions = state => state.loupe.iterationOptions;
+export const selectLoupeOpen = (state) => state.loupe.open;
+export const selectReviewMode = (state) => state.loupe.reviewMode;
+export const selectIsDrawingBbox = (state) => state.loupe.isDrawingBbox;
+export const selectMouseEventDetected = (state) => state.loupe.mouseEventOutsideOverlay;
+export const selectIsAddingLabel = (state) => state.loupe.isAddingLabel;
+export const selectIterationOptions = (state) => state.loupe.iterationOptions;
 
 export default loupeSlice.reducer;

@@ -59,12 +59,7 @@ const StyledCategorySelector = styled(Select, {
 });
 
 const CategorySelector = forwardRef(function CategorySelector(
-  {
-    css,
-    handleCategoryChange,
-    handleCategorySelectorBlur,
-    menuPlacement = 'top',
-  },
+  { css, handleCategoryChange, handleCategorySelectorBlur, menuPlacement = 'top' },
   ref,
 ) {
   // update selector options when new labels become available

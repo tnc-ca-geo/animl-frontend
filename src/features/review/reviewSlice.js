@@ -236,7 +236,7 @@ export const reviewSlice = createSlice({
       })
       .addCase(deleteImagesSuccess, (state, { payload }) => {
         state.workingImages = state.workingImages.filter(({ _id }) => !payload.includes(_id));
-      });
+      })
   },
 });
 

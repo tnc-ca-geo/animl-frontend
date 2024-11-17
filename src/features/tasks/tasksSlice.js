@@ -9,6 +9,8 @@ import {
   setSelectedCamera,
 } from '../projects/projectsSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
+import { setFocus, setSelectedImageIndices } from '../review/reviewSlice.js';
+import { fetchImages, fetchImagesCount, setDeleteImagesAlertStatus } from '../images/imagesSlice.js';
 
 const initialState = {
   loadingStates: {
@@ -41,6 +43,11 @@ const initialState = {
       taskId: null,
       isLoading: false,
       errors: null,
+    },
+    deleteImages: {
+      taskId: null,
+      isLoading: false,
+      errors: null
     },
   },
   imagesStats: null,
@@ -254,6 +261,43 @@ export const tasksSlice = createSlice({
       state.loadingStates.cameraSerialNumber.taskId = null;
       state.loadingStates.cameraSerialNumber.errors.splice(index, 1);
     },
+
+    // delete images
+
+    deleteImagesStart: (state) => {
+      let ls = state.loadingStates.deleteImages;
+      ls.taskId = null;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    deleteImagesUpdate: (state, { payload }) => {
+      state.loadingStates.deleteImages.taskId = payload.taskId;
+    },
+
+    deleteImagesSuccess: (state) => {
+      let ls = state.loadingStates.deleteImages;
+      ls.taskId = null;
+      ls.isLoading = false;
+      ls.errors = null;
+    },
+
+    deleteImagesFailure: (state, { payload }) => {
+      let ls = state.loadingStates.deleteImages;
+      ls.isLoading = false;
+      ls.errors = [payload.task.output.error];
+    },
+
+    clearDeleteImagesTask: (state) => {
+      state.loadingStates.deleteImages = initialState.loadingStates.deleteImages;
+    },
+
+    dismissDeleteImagesError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.deleteImages.taskId = null;
+      state.loadingStates.deleteImages.errors.splice(index, 1);
+    },
+
   },
 });
 
@@ -294,6 +338,13 @@ export const {
   updateCameraSerialNumberFailure,
   clearCameraSerialNumberTask,
   dismissCameraSerialNumberError,
+
+  deleteImagesStart,
+  deleteImagesUpdate,
+  deleteImagesSuccess,
+  deleteImagesFailure,
+  clearDeleteImagesTask,
+  dismissDeleteImagesError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -305,7 +356,7 @@ export const fetchTask = (taskId) => {
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
 
-      if (token && selectedProj) {
+      if (token && selectedProj && taskId) {
         const res = await call({
           projId: selectedProj._id,
           request: 'getTask',
@@ -359,6 +410,40 @@ export const fetchTask = (taskId) => {
               },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
+            DeleteImages: {
+              COMPLETE: (res) => {
+                const filters = getState().filters.activeFilters;
+                dispatch(
+                  setFocus({
+                    index: { image: null, object: null, label: null },
+                    type: 'auto',
+                  }),
+                );
+                dispatch(setSelectedImageIndices([]));
+                dispatch(deleteImagesSuccess(res.task.output.imageIds));
+                dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
+                dispatch(fetchImages(filters));
+                dispatch(fetchImagesCount(filters));
+              },
+              FAIL: (res) => dispatch(deleteImagesFailure(res))
+            },
+            DeleteImagesByFilter: {
+              COMPLETE: (res) => {
+                dispatch(
+                  setFocus({
+                    index: { image: null, object: null, label: null },
+                    type: 'auto',
+                  }),
+                );
+                dispatch(setSelectedImageIndices([]));
+                dispatch(deleteImagesSuccess([]));
+                dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
+                dispatch(fetchImages(res.task.output.filters));
+                dispatch(fetchImagesCount(res.task.output.filters));
+              },
+
+              FAIL: (res) => dispatch(deleteImagesFailure(res))
+            }
           };
 
           if (res.task.type.includes('Deployment')) {
@@ -505,6 +590,45 @@ export const updateCameraSerialNumber = (payload) => {
   };
 };
 
+// delete images thunk
+export const deleteImagesTask = ({ imageIds = [], filters = null }) => {
+  /**
+   * Deletes images by either imageIds or by filters, one argument has to be populated and filters take precedence
+   * @param {Array} imageIds - array of image ids to delete
+   * @param {Object} filters - filters to delete images by
+   */
+  return async (dispatch, getState) => {
+    try {
+      dispatch(deleteImagesStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      if (token && selectedProj) {
+        if (filters !== null) {
+          const res = await call({
+            projId: selectedProj._id,
+            request: 'deleteImagesByFilterTask',
+            input: { filters },
+          });
+          dispatch(deleteImagesUpdate({ taskId: res.deleteImagesByFilterTask._id }));
+        } else {
+          const res = await call({
+            projId: selectedProj._id,
+            request: 'deleteImagesTask',
+            input: { imageIds },
+          });
+          dispatch(deleteImagesUpdate({ taskId: res.deleteImagesTask._id }));
+        }
+      }
+    }
+    catch (err) {
+      dispatch(deleteImagesFailure(err));
+    }
+  };
+};
+
+
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
@@ -522,5 +646,7 @@ export const selectCameraSerialNumberLoading = (state) =>
   state.tasks.loadingStates.cameraSerialNumber;
 export const selectCameraSerialNumberErrors = (state) =>
   state.tasks.loadingStates.cameraSerialNumber.errors;
+export const selectDeleteImagesLoading = (state) => state.tasks.loadingStates.deleteImages;
+export const selectDeleteImagesErrors = (state) => state.tasks.loadingStates.deleteImages.errors;
 
 export default tasksSlice.reducer;

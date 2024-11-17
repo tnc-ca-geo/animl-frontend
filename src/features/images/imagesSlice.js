@@ -27,7 +27,10 @@ const initialState = {
   },
   preFocusImage: null,
   visibleRows: [],
-  deleteImagesAlertOpen: false,
+  deleteImagesAlertState: {
+    deleteImagesAlertOpen: false,
+    deleteImagesAlertByFilter: null,
+  },
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[2],
     paginatedField: 'dateTimeOriginal',
@@ -162,11 +165,14 @@ export const imagesSlice = createSlice({
       state.loadingStates.imageContext.errors.splice(index, 1);
     },
 
+    // NOTE: the following deleteImages actions are for deleting small
+    // numbers of images synchronously. For deleting large numbers of images,
+    // use deleteImagesTask from the taskSlice
+
     deleteImagesStart: (state) => {
       state.loadingStates.images.isLoading = true;
       state.loadingStates.images.operation = 'deleting';
       state.loadingStates.images.error = null;
-      state.deleteImagesAlertOpen = false;
     },
 
     deleteImagesSuccess: (state) => {
@@ -179,8 +185,15 @@ export const imagesSlice = createSlice({
       state.loadingStates.images.errors = payload;
     },
 
-    setDeleteImagesAlertOpen: (state, { payload }) => {
-      state.deleteImagesAlertOpen = payload;
+    setDeleteImagesAlertStatus: (state, { payload: { openStatus, deleteImagesByFilter } }) => {
+      if (openStatus) {
+        state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
+        state.deleteImagesAlertState.deleteImagesAlertByFilter = deleteImagesByFilter;
+      }
+      else {
+        state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
+        state.deleteImagesAlertState.deleteImagesAlertByFilter = null;
+      }
     },
   },
 });
@@ -205,7 +218,7 @@ export const {
   deleteImagesStart,
   deleteImagesSuccess,
   deleteImagesError,
-  setDeleteImagesAlertOpen,
+  setDeleteImagesAlertStatus,
 } = imagesSlice.actions;
 
 // fetchImages thunk
@@ -337,9 +350,11 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
     );
     dispatch(setSelectedImageIndices([]));
     dispatch(deleteImagesSuccess(imageIds));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
     dispatch(deleteImagesError(err));
+    dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   }
 };
 
@@ -356,7 +371,7 @@ export const selectVisibleRows = (state) => state.images.visibleRows;
 export const selectPreFocusImage = (state) => state.images.preFocusImage;
 export const selectImageContextLoading = (state) => state.images.loadingStates.imageContext;
 export const selectImageContextErrors = (state) => state.images.loadingStates.imageContext.errors;
-export const selectDeleteImagesAlertOpen = (state) => state.images.deleteImagesAlertOpen;
+export const selectDeleteImagesAlertState = (state) => state.images.deleteImagesAlertState;
 
 // TODO: find a different place for this?
 export const selectRouterLocation = (state) => state.router.location;
