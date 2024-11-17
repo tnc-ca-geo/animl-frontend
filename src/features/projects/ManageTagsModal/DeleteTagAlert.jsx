@@ -48,19 +48,9 @@ export const DeleteTagAlert = ({
             Deleting this tag will:
             <ul>
               <li>
-                remove it as an option to apply to your images (
-                <i>
-                  Note: if this is your only goal, this can also be accomplished by &quot;disabling&quot;, rather than
-                  deleting, the tag.
-                </i>
-                )
+                remove it as an option to apply to your images
               </li>
               <li>remove all instances of it from your existing images</li>
-              <li>
-                if the tag has been validated as the correct, accurate tag on objects, deleting it will remove the
-                tag and unlock those objects, which will revert all affected images to a &quot;not-reviewed&quot;
-                state
-              </li>
             </ul>
             This action can not be undone.
           </div>

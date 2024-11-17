@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
 import { Modal } from './Modal.jsx';
@@ -9,7 +9,6 @@ import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
-import ManageLabelsModal from '../features/projects/ManageLabelsModal/index.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
 import {
@@ -33,7 +32,7 @@ import {
   setSelectedCamera,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
-import { ManageTagsModal } from '../features/projects/ManageTagsModal/ManageTagsModal.jsx';
+import { ManageLabelsAndTagsModal, ManageLabelsAndTagsModalTitle } from '../features/projects/ManageTagsAndLabelsModal.jsx';
 
 // Modal populated with content
 const HydratedModal = () => {
@@ -55,6 +54,8 @@ const HydratedModal = () => {
     deploymentsLoading.isLoading ||
     cameraSerialNumberLoading.isLoading ||
     deleteImagesLoading.isLoading;
+
+  const [manageTagsAndLabelsTab, setManageTagsAndLabelsTab] = useState("labels");
 
   const modalContentMap = {
     'stats-modal': {
@@ -110,12 +111,6 @@ const HydratedModal = () => {
       content: <ManageUsersModal />,
       callBackOnClose: () => dispatch(clearUsers()),
     },
-    'manage-labels-form': {
-      title: 'Manage labels',
-      size: 'md',
-      content: <ManageLabelsModal />,
-      callBackOnClose: () => true,
-    },
     'update-serial-number-form': {
       title: 'Edit Camera Serial Number',
       size: 'md',
@@ -125,10 +120,10 @@ const HydratedModal = () => {
         dispatch(clearCameraSerialNumberTask());
       },
     },
-    'manage-tags-form': {
-      title: 'Manage tags',
+    'manage-tags-and-labels-form': {
+      title: <ManageLabelsAndTagsModalTitle tab={manageTagsAndLabelsTab} setTab={setManageTagsAndLabelsTab} />,
       size: 'md',
-      content: <ManageTagsModal />,
+      content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab}/>,
       callBackOnClose: () => true,
     }
   };

@@ -121,27 +121,17 @@ const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
         />
       )}
 
-      {/* Manage label view */}
+      {/* Manage label and tag view */}
       {hasRole(userRoles, WRITE_PROJECT_ROLES) && (
         <SidebarNavItem
-          state={modalOpen && modalContent === 'manage-labels-form' ? 'active' : ''}
+          state={modalOpen && modalContent === 'manage-tags-and-labels-form' ? 'active' : ''}
           disabled={!selectedProject}
-          handleClick={() => handleModalToggle('manage-labels-form')}
+          handleClick={() => handleModalToggle('manage-tags-and-labels-form')}
           icon={<FontAwesomeIcon icon={['fas', 'tag']} />}
-          tooltipContent="Manage labels"
+          tooltipContent="Manage labels and tags"
         />
       )}
 
-      {/* Manage tags view */}
-      {hasRole(userRoles, WRITE_PROJECT_ROLES) && (
-        <SidebarNavItem
-          state={modalOpen && modalContent === 'manage-tags-form' ? 'active' : ''}
-          disabled={!selectedProject}
-          handleClick={() => handleModalToggle('manage-tags-form')}
-          icon={<FontAwesomeIcon icon={['fas', 'highlighter']} />}
-          tooltipContent="Manage tags"
-        />
-      )}
     </StyledSidebarNav>
   );
 };

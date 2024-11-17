@@ -340,9 +340,6 @@ const Loupe = () => {
       <ToolbarContainer>
         {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
           <>
-            <ImageTagsToolbar 
-              image={image}
-            />
             <ImageReviewToolbar
               image={image}
               lastAction={lastAction}
@@ -352,6 +349,9 @@ const Loupe = () => {
               handleAddObjectButtonClick={handleAddObjectButtonClick}
               handleUnlockAllButtonClick={handleUnlockAllButtonClick}
               handleIncrementClick={handleIncrementClick}
+            />
+            <ImageTagsToolbar 
+              image={image}
             />
           </>
         )}

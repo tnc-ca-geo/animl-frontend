@@ -5,6 +5,7 @@ import IconButton from './IconButton';
 
 const PanelTitle = styled('span', {
   // marginLeft: '$2',
+  flex: '1'
 });
 
 const ClosePanelButton = styled(IconButton, {
