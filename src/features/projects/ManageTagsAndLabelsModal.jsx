@@ -1,3 +1,4 @@
+import React from "react";
 import { styled } from "../../theme/stitches.config";
 import ManageLabelsModal from "./ManageLabelsModal";
 import { ManageTagsModal } from "./ManageTagsModal/ManageTagsModal";

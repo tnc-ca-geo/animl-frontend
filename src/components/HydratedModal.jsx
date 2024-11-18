@@ -124,7 +124,10 @@ const HydratedModal = () => {
       title: <ManageLabelsAndTagsModalTitle tab={manageTagsAndLabelsTab} setTab={setManageTagsAndLabelsTab} />,
       size: 'md',
       content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab}/>,
-      callBackOnClose: () => true,
+      callBackOnClose: () => {
+        setManageTagsAndLabelsTab("labels");
+        return true;
+      },
     }
   };
 

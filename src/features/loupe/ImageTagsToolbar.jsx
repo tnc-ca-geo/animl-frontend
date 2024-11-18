@@ -85,9 +85,9 @@ export const ImageTagsToolbar = ({
     dispatch(editTag('delete', deleteTagDto));
   }
 
-  const onAddTag = ({ value }) => {
+  const onAddTag = (tagId) => {
     const addTagDto = {
-      tagId: value,
+      tagId: tagId,
       imageId: image._id
     };
     dispatch(editTag('create', addTagDto));
@@ -97,8 +97,8 @@ export const ImageTagsToolbar = ({
     <Toolbar>
       <TagSelectorContainer>
         <TagSelector 
-          tags={unaddedTags}
-          handleTagChange={(tag) => onAddTag(tag)} 
+          tagList={unaddedTags} 
+          onAddTag={onAddTag}
         />
       </TagSelectorContainer>
       <Separator />
