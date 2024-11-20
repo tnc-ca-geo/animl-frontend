@@ -104,10 +104,10 @@ export const TagSelector = ({
     setTagOptions(options);
   }, [searchValue]);
 
-  const onClickTag = (tagId) => {
-    const options = tagOptions.filter(({ _id }) => _id !== tagId );
+  const onClickTag = (tag) => {
+    const options = tagOptions.filter(({ _id }) => _id !== tag._id );
     setTagOptions(options);
-    onAddTag(tagId);
+    onAddTag(tag);
   }
 
   return (
@@ -129,12 +129,12 @@ export const TagSelector = ({
                   All tags added
                 </AllTagsAdded>
               }
-              { tagOptions.map(({ _id, name }) => (
+              { tagOptions.map((tag) => (
                 <TagOption 
-                  key={_id}
-                  onClick={() => onClickTag(_id)}
+                  key={tag._id}
+                  onClick={() => onClickTag(tag)}
                 >
-                  { name }
+                  { tag.name }
                 </TagOption>
               ))}
             </TagOptionsContainer>

@@ -54,7 +54,7 @@ const getImageTagInfo = (imageTags, projectTags) => {
 }
 
 const getUnaddedTags = (imageTags, projectTags) => {
-  return projectTags.filter((t) => imageTags.indexOf(t._id) === -1)
+  return projectTags.filter((t) => imageTags.findIndex((i) => i._id === t._id) === -1)
 }
 
 export const ImageTagsToolbar = ({
@@ -62,14 +62,13 @@ export const ImageTagsToolbar = ({
 }) => {
   const dispatch = useDispatch();
   const projectTags = useSelector(selectProjectTags);
-  const [imageTags, setImageTags] = useState(image.tags ?? []);
+  const [imageTags, setImageTags] = useState([]);
   const [unaddedTags, setUnaddedTags] = useState([]);
 
   useEffect(() => {
     const imageTagInfo = getImageTagInfo(image.tags ?? [], projectTags);
     setImageTags(imageTagInfo);
-    setUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags));
-  }, [image, projectTags])
+  }, [image._id, projectTags])
 
   useEffect(() => {
     const imageTagInfo = getImageTagInfo(image.tags ?? [], projectTags);
@@ -77,19 +76,29 @@ export const ImageTagsToolbar = ({
     setUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags));
   }, []);
 
+  useEffect(() => {
+    setUnaddedTags(getUnaddedTags(imageTags, projectTags))
+  }, [imageTags, projectTags])
+
   const onDeleteTag = (tagId) => {
     const deleteTagDto = {
       tagId: tagId,
       imageId: image._id
     };
+    const idx = imageTags.findIndex((t) => t._id === tagId)
+    if (idx >= 0) {
+      imageTags.splice(idx, 1)
+      setImageTags([...imageTags])
+    }
     dispatch(editTag('delete', deleteTagDto));
   }
 
-  const onAddTag = (tagId) => {
+  const onAddTag = (tag) => {
     const addTagDto = {
-      tagId: tagId,
+      tagId: tag._id,
       imageId: image._id
     };
+    setImageTags([...imageTags, tag])
     dispatch(editTag('create', addTagDto));
   }
 
