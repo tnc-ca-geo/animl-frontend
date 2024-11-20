@@ -48,7 +48,13 @@ const TagSearchContainer = styled('div', {
 const TagSearchIcon = styled('div', {
   width: 32,
   display: 'grid',
-  placeItems: 'center'
+  placeItems: 'center',
+});
+
+const CrossIcon = styled(Cross2Icon, {
+  '&:hover': {
+    cursor: 'pointer'
+  }
 });
 
 const TagSearch = styled('input', {
@@ -84,16 +90,18 @@ const filterList = (tags, searchTerm) => {
   });
 }
 
+const allTagsAdded = "All tags added"
+const noMatches = "No matches"
+
 export const TagSelector = ({
   tagList,
   onAddTag,
 }) => {
   const [tagOptions, setTagOptions] = useState(tagList);
   const [searchValue, setSearchValue] = useState("");
+  const [errMessage, setErrMessage] = useState(allTagsAdded);
 
   const onInput = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
     if (e.target.value !== undefined) {
       setSearchValue(e.target.value);
     }
@@ -101,8 +109,18 @@ export const TagSelector = ({
 
   useEffect(() => {
     const options = filterList(tagList, searchValue);
+    if (searchValue === "") {
+      setErrMessage(allTagsAdded)
+    } else if (options.length === 0) {
+      setErrMessage(noMatches);
+    }
     setTagOptions(options);
   }, [searchValue]);
+
+  const onClearSearch = () => {
+    setSearchValue("");
+    setErrMessage(allTagsAdded)
+  }
 
   const onClickTag = (tag) => {
     const options = tagOptions.filter(({ _id }) => _id !== tag._id );
@@ -126,7 +144,7 @@ export const TagSelector = ({
             <TagOptionsContainer>
               { tagOptions.length === 0 &&
                 <AllTagsAdded>
-                  All tags added
+                  { errMessage }
                 </AllTagsAdded>
               }
               { tagOptions.map((tag) => (
@@ -141,8 +159,8 @@ export const TagSelector = ({
             <TagSearchContainer>
               <TagSearchIcon>
                 { searchValue !== "" &&
-                  <Cross2Icon 
-                    onClick={() => setSearchValue("")}
+                  <CrossIcon 
+                    onClick={() => onClearSearch()}
                     height={18}
                     width={18}
                     color={slate.slate9}
@@ -159,6 +177,7 @@ export const TagSelector = ({
               <TagSearch 
                 placeholder='Tag...' 
                 value={searchValue}
+                onKeyDown={(e) => { e.stopPropagation(); }}
                 onChange={(e) => onInput(e)}
               />
             </TagSearchContainer>
