@@ -15,7 +15,7 @@ import {
   incrementImage,
   incrementFocusIndex,
 } from '../review/reviewSlice.js';
-import { selectModalOpen } from '../projects/projectsSlice.js';
+import { selectModalOpen, selectProjectTags } from '../projects/projectsSlice.js';
 import { toggleOpenLoupe, selectReviewMode, selectIsAddingLabel, drawBboxStart, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
@@ -119,6 +119,7 @@ const Loupe = () => {
   const focusIndex = useSelector(selectFocusIndex);
   const image = workingImages[focusIndex.image];
   const dispatch = useDispatch();
+  const projectTags = useSelector(selectProjectTags);
 
   // // track reivew mode
   // const reviewMode = useSelector(selectReviewMode);
@@ -352,6 +353,7 @@ const Loupe = () => {
             />
             <ImageTagsToolbar 
               image={image}
+              projectTags={projectTags}
             />
           </>
         )}

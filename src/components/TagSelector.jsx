@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '../theme/stitches.config.js';
-import { Cross2Icon, MagnifyingGlassIcon, PlusCircledIcon } from '@radix-ui/react-icons';
+// [FUTURE FEATURE]
+// import { Cross2Icon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { Root as PopoverRoot, PopoverTrigger, PopoverContent, PopoverPortal } from '@radix-ui/react-popover';
-import { mauve, slate, violet } from '@radix-ui/colors';
+import { mauve, violet } from '@radix-ui/colors';
 
 const Selector = styled('div', {
   padding: '$1 $3',
@@ -38,34 +40,35 @@ const TagSelectorContent = styled('div', {
   fontWeight: '$1',
 });
 
-const TagSearchContainer = styled('div', {
-  display: 'flex',
-  borderTop: '1px solid $border',
-  paddingBottom: '$1',
-  paddingTop: '$1',
-});
-
-const TagSearchIcon = styled('div', {
-  width: 32,
-  display: 'grid',
-  placeItems: 'center',
-});
-
-const CrossIcon = styled(Cross2Icon, {
-  '&:hover': {
-    cursor: 'pointer'
-  }
-});
-
-const TagSearch = styled('input', {
-  all: 'unset',
-  padding: '$1 $3',
-  paddingLeft: 'unset'
-});
+// [FUTURE FEATURE]
+// const TagSearchContainer = styled('div', {
+//   display: 'flex',
+//   borderTop: '1px solid $border',
+//   paddingBottom: '$1',
+//   paddingTop: '$1',
+// });
+//
+// const TagSearchIcon = styled('div', {
+//   width: 32,
+//   display: 'grid',
+//   placeItems: 'center',
+// });
+//
+// const CrossIcon = styled(Cross2Icon, {
+//   '&:hover': {
+//     cursor: 'pointer'
+//   }
+// });
+//
+// const TagSearch = styled('input', {
+//   all: 'unset',
+//   padding: '$1 $3',
+//   paddingLeft: 'unset'
+// });
 
 const TagOptionsContainer = styled('div', {
   maxHeight: '50vh',
-  overflowY: 'scroll',
+  overflowY: 'auto',
   maxWidth: 450
 });
 
@@ -82,45 +85,52 @@ const AllTagsAdded = styled('div', {
   color: '$gray10'
 });
 
-const filterList = (tags, searchTerm) => {
-  return tags.filter(({ name }) => {
-    const lower = name.toLowerCase();
-    const searchLower = searchTerm.toLowerCase();
-    return lower.startsWith(searchLower)
-  });
-}
-
-const allTagsAdded = "All tags added"
-const noMatches = "No matches"
+// [FUTURE FEATURE]
+// const filterList = (tags, searchTerm) => {
+//   return tags.filter(({ name }) => {
+//     const lower = name.toLowerCase();
+//     const searchLower = searchTerm.toLowerCase();
+//     return lower.startsWith(searchLower)
+//   });
+// }
+//
+// const allTagsAdded = "All tags added"
+// const noMatches = "No matches"
 
 export const TagSelector = ({
   tagList,
   onAddTag,
+  imageId,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [tagOptions, setTagOptions] = useState(tagList);
-  const [searchValue, setSearchValue] = useState("");
-  const [errMessage, setErrMessage] = useState(allTagsAdded);
+  const errMessage = "All tags added";
+  // [FUTURE FEATURE]
+  // const [searchValue, setSearchValue] = useState("");
+  // const [errMessage, setErrMessage] = useState(allTagsAdded);
 
-  const onInput = (e) => {
-    if (e.target.value !== undefined) {
-      setSearchValue(e.target.value);
-    }
-  }
-
-  useEffect(() => {
-    const options = filterList(tagList, searchValue);
-    if (searchValue === "") {
-      setErrMessage(allTagsAdded)
-    } else if (options.length === 0) {
-      setErrMessage(noMatches);
-    }
-    setTagOptions(options);
-  }, [searchValue]);
-
-  const onClearSearch = () => {
-    setSearchValue("");
-    setErrMessage(allTagsAdded)
-  }
+  // [FUTURE FEATURE]
+  // const onInput = (e) => {
+  //   if (e.target.value !== undefined) {
+  //     setSearchValue(e.target.value);
+  //   }
+  // }
+  //
+  // useEffect(() => {
+  //   const options = filterList(tagList, searchValue);
+  //   if (searchValue === "") {
+  //     setErrMessage(allTagsAdded)
+  //   } else if (options.length === 0) {
+  //     setErrMessage(noMatches);
+  //   }
+  //   setTagOptions(options);
+  // }, [searchValue]);
+  //
+  // [FUTURE FEATURE] Leave search commented for now
+  // const onClearSearch = () => {
+  //   setSearchValue("");
+  //   setErrMessage(allTagsAdded)
+  // }
 
   const onClickTag = (tag) => {
     const options = tagOptions.filter(({ _id }) => _id !== tag._id );
@@ -128,8 +138,13 @@ export const TagSelector = ({
     onAddTag(tag);
   }
 
+  // Close when changing image using keyboard nav
+  useEffect(() => {
+    setIsOpen(false);
+  }, [imageId]);
+
   return (
-    <PopoverRoot>
+    <PopoverRoot open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild onClick={() => setTagOptions(tagList)}>
         <Selector>
           <SelectorTitle>
@@ -156,6 +171,7 @@ export const TagSelector = ({
                 </TagOption>
               ))}
             </TagOptionsContainer>
+            {/* [FUTURE FEATURE]
             <TagSearchContainer>
               <TagSearchIcon>
                 { searchValue !== "" &&
@@ -181,6 +197,7 @@ export const TagSelector = ({
                 onChange={(e) => onInput(e)}
               />
             </TagSearchContainer>
+          */}
           </TagSelectorContent>
         </PopoverContent>
       </PopoverPortal>
