@@ -23,7 +23,8 @@ const TitleContainer = styled('div', {
 const TabTitle = styled('div', {
   width: 'fit-content',
   padding: '$1 $3',
-  borderRadius: '$2',
+  borderRadius: '$4',
+  fontSize: '$3',
   transition: 'all 40ms linear',
   '&:hover': {
     background: '$gray4',
@@ -36,7 +37,12 @@ const TabTitle = styled('div', {
   variants: {
     active: {
       true: {
-        background: '$gray4',
+        background: '$hiContrast',
+        color: '$loContrast',
+        '&:hover': {
+          background: '$hiContrast',
+          cursor: 'pointer',
+        },
       },
     },
   },
@@ -56,12 +62,12 @@ const TagsVsLabelsContent = styled('div', {
 const TagsVsLabelsHelp = () => (
   <TagsVsLabelsContent>
     <p>
-      Labels describe an Object within an image (e.g., “animal”, “rodent”, “sasquatch“) and can be
-      applied by either AI or humans.
+      Labels are used to describe an Object <em>within</em> an image (e.g., “animal”, “rodent”,
+      “sasquatch“) and can be applied by either AI or humans.
     </p>
     <p>
-      Tags are used to describe the image as a whole (e.g., “favorite”, “seen”, “predation event”),
-      and can only be applied to an image by a human reviewers.
+      Tags are used to annotate <em>the image as a whole</em> (e.g., “favorite”, “seen”, “predation
+      event”), and can only be applied to an image by human reviewers.
     </p>
     <p>
       See the{' '}
