@@ -3,7 +3,12 @@ import { styled } from '../theme/stitches.config.js';
 // [FUTURE FEATURE]
 // import { Cross2Icon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
-import { Root as PopoverRoot, PopoverTrigger, PopoverContent, PopoverPortal } from '@radix-ui/react-popover';
+import {
+  Root as PopoverRoot,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverPortal,
+} from '@radix-ui/react-popover';
 import { mauve, violet } from '@radix-ui/colors';
 
 const Selector = styled('div', {
@@ -20,13 +25,13 @@ const Selector = styled('div', {
   borderWidth: '1px',
   '&:hover': {
     cursor: 'pointer',
-    background: violet.violet3
-  }
+    background: violet.violet3,
+  },
 });
 
 const SelectorTitle = styled('div', {
   display: 'flex',
-  gap: '$2'
+  gap: '$2',
 });
 
 const TagSelectorContent = styled('div', {
@@ -69,7 +74,7 @@ const TagSelectorContent = styled('div', {
 const TagOptionsContainer = styled('div', {
   maxHeight: '50vh',
   overflowY: 'auto',
-  maxWidth: 450
+  maxWidth: 450,
 });
 
 const TagOption = styled('div', {
@@ -77,12 +82,12 @@ const TagOption = styled('div', {
   '&:hover': {
     background: '$gray3',
     cursor: 'pointer',
-  }
+  },
 });
 
-const AllTagsAdded = styled('div', {
+const DefaultTagMessage = styled('div', {
   padding: '$2 $3',
-  color: '$gray10'
+  color: '$gray10',
 });
 
 // [FUTURE FEATURE]
@@ -97,15 +102,12 @@ const AllTagsAdded = styled('div', {
 // const allTagsAdded = "All tags added"
 // const noMatches = "No matches"
 
-export const TagSelector = ({
-  tagList,
-  onAddTag,
-  imageId,
-}) => {
+export const TagSelector = ({ projectTags, unaddedTags, onAddTag, imageId }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [tagOptions, setTagOptions] = useState(tagList);
-  const errMessage = "All tags added";
+  const [tagOptions, setTagOptions] = useState(unaddedTags);
+
   // [FUTURE FEATURE]
+  // const errMessage = 'All tags added';
   // const [searchValue, setSearchValue] = useState("");
   // const [errMessage, setErrMessage] = useState(allTagsAdded);
 
@@ -133,10 +135,10 @@ export const TagSelector = ({
   // }
 
   const onClickTag = (tag) => {
-    const options = tagOptions.filter(({ _id }) => _id !== tag._id );
+    const options = tagOptions.filter(({ _id }) => _id !== tag._id);
     setTagOptions(options);
     onAddTag(tag);
-  }
+  };
 
   // Close when changing image using keyboard nav
   useEffect(() => {
@@ -145,29 +147,25 @@ export const TagSelector = ({
 
   return (
     <PopoverRoot open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild onClick={() => setTagOptions(tagList)}>
+      <PopoverTrigger asChild onClick={() => setTagOptions(unaddedTags)}>
         <Selector>
           <SelectorTitle>
-            <PlusCircledIcon style={{ margin: "auto 0" }} />
+            <PlusCircledIcon style={{ margin: 'auto 0' }} />
             Tag
           </SelectorTitle>
         </Selector>
       </PopoverTrigger>
       <PopoverPortal>
-        <PopoverContent side='top' sideOffset={5} align='start'>
+        <PopoverContent side="top" sideOffset={5} align="start">
           <TagSelectorContent>
             <TagOptionsContainer>
-              { tagOptions.length === 0 &&
-                <AllTagsAdded>
-                  { errMessage }
-                </AllTagsAdded>
-              }
-              { tagOptions.map((tag) => (
-                <TagOption 
-                  key={tag._id}
-                  onClick={() => onClickTag(tag)}
-                >
-                  { tag.name }
+              {projectTags.length === 0 && <DefaultTagMessage>No tags available</DefaultTagMessage>}
+              {projectTags.length > 0 && tagOptions.length === 0 && (
+                <DefaultTagMessage>All tags added</DefaultTagMessage>
+              )}
+              {tagOptions.map((tag) => (
+                <TagOption key={tag._id} onClick={() => onClickTag(tag)}>
+                  {tag.name}
                 </TagOption>
               ))}
             </TagOptionsContainer>
@@ -203,4 +201,4 @@ export const TagSelector = ({
       </PopoverPortal>
     </PopoverRoot>
   );
-}
+};

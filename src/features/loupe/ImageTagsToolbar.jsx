@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { styled } from "../../theme/stitches.config";
+import { styled } from '../../theme/stitches.config';
 import { mauve } from '@radix-ui/colors';
-import { ImageTag } from "./ImageTag.jsx";
+import { ImageTag } from './ImageTag.jsx';
 import { TagSelector } from '../../components/TagSelector.jsx';
 import { editTag } from '../review/reviewSlice.js';
 import { useDispatch } from 'react-redux';
@@ -11,19 +11,19 @@ const Toolbar = styled('div', {
   height: 'calc(32px + $2 + $2)',
   width: '100%',
   borderBottom: '1px solid $border',
-  position: 'relative'
+  position: 'relative',
 });
 
 const TagsContainer = styled('div', {
   position: 'relative',
-  width: '100%'
+  width: '100%',
 });
 
 const TagSelectorContainer = styled('div', {
   margin: '$2',
   marginRight: '0',
   display: 'grid',
-  placeItems: 'center'
+  placeItems: 'center',
 });
 
 const ScrollContainer = styled('div', {
@@ -43,32 +43,31 @@ const ScrollContainer = styled('div', {
 const Separator = styled('div', {
   width: '1px',
   backgroundColor: mauve.mauve6,
-  margin: '$2 10px'
+  margin: '$2 10px',
 });
 
 const getImageTagInfo = (imageTags, projectTags) => {
   return projectTags.filter((t) => {
-    return imageTags.find((it) => it === t._id) !== undefined
+    return imageTags.find((it) => it === t._id) !== undefined;
   });
-}
+};
 
 const getUnaddedTags = (imageTags, projectTags) => {
-  return projectTags.filter((t) => imageTags.findIndex((it) => it === t._id) === -1)
-}
+  return projectTags.filter((t) => imageTags.findIndex((it) => it === t._id) === -1);
+};
 
 // Sort alphabetically with JS magic
 const orderUnaddedTags = (unaddedTags) => {
   return unaddedTags.sort((a, b) => a.name.localeCompare(b.name));
-}
+};
 
-export const ImageTagsToolbar = ({
-  image,
-  projectTags
-}) => {
+export const ImageTagsToolbar = ({ image, projectTags }) => {
   const dispatch = useDispatch();
 
   const [imageTags, setImageTags] = useState(getImageTagInfo(image.tags, projectTags));
-  const [unaddedTags, setUnaddedTags] = useState(orderUnaddedTags(getUnaddedTags(image.tags, projectTags)));
+  const [unaddedTags, setUnaddedTags] = useState(
+    orderUnaddedTags(getUnaddedTags(image.tags, projectTags)),
+  );
 
   // image._id -> when the enlarged image changes
   // projectTags -> so that newly added project tags show up without refreshing
@@ -80,36 +79,37 @@ export const ImageTagsToolbar = ({
   const onDeleteTag = (tagId) => {
     const deleteTagDto = {
       tagId: tagId,
-      imageId: image._id
+      imageId: image._id,
     };
-    const idx = imageTags.findIndex((t) => t._id === tagId)
+    const idx = imageTags.findIndex((t) => t._id === tagId);
     if (idx >= 0) {
-      const removed = imageTags.splice(idx, 1)
-      setImageTags([...imageTags])
-      setUnaddedTags(orderUnaddedTags([...unaddedTags, ...removed]))
+      const removed = imageTags.splice(idx, 1);
+      setImageTags([...imageTags]);
+      setUnaddedTags(orderUnaddedTags([...unaddedTags, ...removed]));
     }
     dispatch(editTag('delete', deleteTagDto));
-  }
+  };
 
   const onAddTag = (tag) => {
     const addTagDto = {
       tagId: tag._id,
-      imageId: image._id
+      imageId: image._id,
     };
-    const idx = unaddedTags.findIndex((t) => t._id === tag._id)
+    const idx = unaddedTags.findIndex((t) => t._id === tag._id);
     if (idx >= 0) {
       setImageTags([...imageTags, tag]);
       unaddedTags.splice(idx, 1);
       setUnaddedTags(orderUnaddedTags([...unaddedTags]));
     }
     dispatch(editTag('create', addTagDto));
-  }
+  };
 
   return (
     <Toolbar>
       <TagSelectorContainer>
-        <TagSelector 
-          tagList={unaddedTags} 
+        <TagSelector
+          projectTags={projectTags}
+          unaddedTags={unaddedTags}
           onAddTag={onAddTag}
           imageId={image._id}
         />
@@ -117,7 +117,7 @@ export const ImageTagsToolbar = ({
       <Separator />
       <TagsContainer>
         <ScrollContainer>
-          { imageTags.map(({ _id, name, color }) => (
+          {imageTags.map(({ _id, name, color }) => (
             <ImageTag
               key={_id}
               id={_id}
@@ -130,4 +130,4 @@ export const ImageTagsToolbar = ({
       </TagsContainer>
     </Toolbar>
   );
-}
+};
