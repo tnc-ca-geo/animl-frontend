@@ -159,7 +159,19 @@ export const TagSelector = ({ projectTags, unaddedTags, onAddTag, imageId }) => 
         <PopoverContent side="top" sideOffset={5} align="start">
           <TagSelectorContent>
             <TagOptionsContainer>
-              {projectTags.length === 0 && <DefaultTagMessage>No tags available</DefaultTagMessage>}
+              {projectTags.length === 0 && (
+                <DefaultTagMessage>
+                  No tags{' '}
+                  <a
+                    href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#tags"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    tags
+                  </a>{' '}
+                  available
+                </DefaultTagMessage>
+              )}
               {projectTags.length > 0 && tagOptions.length === 0 && (
                 <DefaultTagMessage>All tags added</DefaultTagMessage>
               )}
