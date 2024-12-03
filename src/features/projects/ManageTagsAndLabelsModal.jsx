@@ -62,23 +62,26 @@ const TagsVsLabelsContent = styled('div', {
 const TagsVsLabelsHelp = () => (
   <TagsVsLabelsContent>
     <p>
-      Labels are used to describe an Object <em>within</em> an image (e.g., “animal”, “rodent”,
+      <a
+        href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#objects-and-labels"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Labels
+      </a>{' '}
+      are used to describe an Object <em>within</em> an image (e.g., “animal”, “rodent”,
       “sasquatch“) and can be applied by either AI or humans.
     </p>
     <p>
-      Tags are used to annotate <em>the image as a whole</em> (e.g., “favorite”, “seen”, “predation
-      event”), and can only be applied to an image by human reviewers.
-    </p>
-    <p>
-      See the{' '}
       <a
         href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#tags"
         target="_blank"
         rel="noopener noreferrer"
       >
-        documentation
+        Tags
       </a>{' '}
-      for more information.
+      are used to annotate <em>the image as a whole</em> (e.g., “favorite”, “seen”, “predation
+      event”), and can only be applied to an image by human reviewers.
     </p>
   </TagsVsLabelsContent>
 );

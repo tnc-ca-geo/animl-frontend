@@ -161,7 +161,7 @@ export const TagSelector = ({ projectTags, unaddedTags, onAddTag, imageId }) => 
             <TagOptionsContainer>
               {projectTags.length === 0 && (
                 <DefaultTagMessage>
-                  No tags{' '}
+                  No{' '}
                   <a
                     href="https://docs.animl.camera/getting-started/structure-concepts-and-terminology#tags"
                     target="_blank"
@@ -169,7 +169,8 @@ export const TagSelector = ({ projectTags, unaddedTags, onAddTag, imageId }) => 
                   >
                     tags
                   </a>{' '}
-                  available
+                  available. To add tags to your Project, select the &quot;Manage labels and
+                  tags&quot; button in the sidebar.
                 </DefaultTagMessage>
               )}
               {projectTags.length > 0 && tagOptions.length === 0 && (
