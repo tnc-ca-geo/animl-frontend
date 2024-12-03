@@ -15,7 +15,7 @@ import {
   incrementImage,
   incrementFocusIndex,
 } from '../review/reviewSlice.js';
-import { selectModalOpen } from '../projects/projectsSlice.js';
+import { selectModalOpen, selectProjectTags } from '../projects/projectsSlice.js';
 import { toggleOpenLoupe, selectReviewMode, selectIsAddingLabel, drawBboxStart, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
@@ -24,6 +24,7 @@ import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import ShareImageButton from './ShareImageButton';
 import LoupeDropdown from './LoupeDropdown.jsx';
+import { ImageTagsToolbar } from './ImageTagsToolbar.jsx';
 
 const ItemValue = styled('div', {
   fontSize: '$3',
@@ -79,7 +80,7 @@ const LoupeBody = styled('div', {
   // $7 - height of panel header
   // $8 - height of nav bar
   // 98px - height of toolbar plus height of 2 borders
-  height: 'calc(100vh - $7 - $8 - 98px)',
+  height: 'calc(100vh - $7 - $8 - 145px)',
   backgroundColor: '$hiContrast',
 });
 
@@ -99,7 +100,7 @@ const StyledLoupe = styled('div', {
 });
 
 const ToolbarContainer = styled('div', {
-  height: '97px',
+  height: '145px',
 });
 
 const ShareImage = styled('div', {
@@ -118,6 +119,7 @@ const Loupe = () => {
   const focusIndex = useSelector(selectFocusIndex);
   const image = workingImages[focusIndex.image];
   const dispatch = useDispatch();
+  const projectTags = useSelector(selectProjectTags);
 
   // // track reivew mode
   // const reviewMode = useSelector(selectReviewMode);
@@ -338,16 +340,22 @@ const Loupe = () => {
       {/*<LoupeFooter image={image}/>*/}
       <ToolbarContainer>
         {image && hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
-          <ImageReviewToolbar
-            image={image}
-            lastAction={lastAction}
-            handleRepeatAction={handleRepeatAction}
-            handleValidateAllButtonClick={handleValidateAllButtonClick}
-            handleMarkEmptyButtonClick={markEmpty}
-            handleAddObjectButtonClick={handleAddObjectButtonClick}
-            handleUnlockAllButtonClick={handleUnlockAllButtonClick}
-            handleIncrementClick={handleIncrementClick}
-          />
+          <>
+            <ImageReviewToolbar
+              image={image}
+              lastAction={lastAction}
+              handleRepeatAction={handleRepeatAction}
+              handleValidateAllButtonClick={handleValidateAllButtonClick}
+              handleMarkEmptyButtonClick={markEmpty}
+              handleAddObjectButtonClick={handleAddObjectButtonClick}
+              handleUnlockAllButtonClick={handleUnlockAllButtonClick}
+              handleIncrementClick={handleIncrementClick}
+            />
+            <ImageTagsToolbar 
+              image={image}
+              projectTags={projectTags}
+            />
+          </>
         )}
         <ShareImage>
           <ShareImageButton imageId={image?._id} />

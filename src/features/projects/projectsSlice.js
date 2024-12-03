@@ -53,6 +53,11 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    projectTags: {
+      isLoading: false,
+      operation: null,
+      errors: null
+    },
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -361,6 +366,77 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectLabels.errors.splice(index, 1);
     },
 
+    /*
+     * Project Tags CRUD
+     */
+
+    createProjectTagStart: (state) => {
+      const ls = { isLoading: true, operation: 'creating', errors: null };
+      state.loadingStates.projectTags = ls;
+    },
+
+    createProjectTagSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+      };
+      state.loadingStates.projectTags = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.tags = payload.tags;
+    },
+
+    createProjectTagFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectTags = ls;
+    },
+
+    deleteProjectTagStart: (state) => {
+      const ls = { isLoading: true, operation: 'deleting', errors: null };
+      state.loadingStates.projectTags = ls;
+    },
+
+    deleteProjectTagSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.projectTags = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.tags = payload.tags
+    },
+
+    deleteProjectTagFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectTags = ls;
+    },
+
+    updateProjectTagStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };
+      state.loadingStates.projectTags = ls;
+    },
+
+    updateProjectTagSuccess: (state, { payload }) => {
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+      };
+      state.loadingStates.projectTags = ls;
+
+      const proj = state.projects.find((p) => p._id === payload.projId);
+      proj.tags = payload.tags
+    },
+
+    updateProjectTagFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.projectTags = ls;
+    },
+
+    dismissProjectTagErrors: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.projectTags.errors.splice(index, 1);
+    },
+
     setModalOpen: (state, { payload }) => {
       state.modalOpen = payload;
     },
@@ -416,6 +492,7 @@ export const {
   setSelectedProjAndView,
   setUnsavedViewChanges,
   dismissProjectsError,
+  dismissProjectTagErrors,
   createProjectStart,
   createProjectSuccess,
   createProjectFailure,
@@ -451,6 +528,16 @@ export const {
   deleteProjectLabelSuccess,
   deleteProjectLabelFailure,
   dismissManageLabelsError,
+
+  createProjectTagStart,
+  createProjectTagFailure,
+  createProjectTagSuccess,
+  deleteProjectTagStart,
+  deleteProjectTagFailure,
+  deleteProjectTagSuccess,
+  updateProjectTagStart,
+  updateProjectTagFailure,
+  updateProjectTagSuccess,
 
   setModalOpen,
   setModalContent,
@@ -631,6 +718,85 @@ export const fetchModelOptions = () => {
   };
 };
 
+// Project Tags thunks
+export const createProjectTag = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(createProjectTagStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'createProjectTag',
+          input: payload,
+        });
+        dispatch(createProjectTagSuccess({ projId, tags: res.createProjectTag.tags }));
+      }
+    } catch (err) {
+      console.log(`error attempting to create tag: `, err);
+      dispatch(createProjectTagFailure(err));
+    }
+  };
+};
+
+export const deleteProjectTag = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(deleteProjectTagStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'deleteProjectTag',
+          input: payload,
+        });
+        dispatch(deleteProjectTagSuccess({ projId, tags: res.deleteProjectTag.tags }));
+        // TODO waterfall delete
+        // dispatch(clearImages());
+        // dispatch(fetchProjects({ _ids: [projId] }));
+      }
+    } catch (err) {
+      console.log(`error attempting to delete tag: `, err);
+      dispatch(deleteProjectTagFailure(err));
+    }
+  };
+};
+
+export const updateProjectTag = (payload) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updateProjectTagStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId,
+          request: 'updateProjectTag',
+          input: payload,
+        });
+        dispatch(updateProjectTagSuccess({ projId, tags: res.updateProjectTag.tags }));
+      }
+    } catch (err) {
+      console.log(`error attempting to update tag: `, err);
+      dispatch(updateProjectTagFailure(err));
+    }
+  };
+};
+
 // Project Labels thunks
 export const createProjectLabel = (payload) => {
   return async (dispatch, getState) => {
@@ -729,6 +895,10 @@ export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
 export const selectLabels = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.labels : [],
 );
+export const selectProjectTags = createSelector([selectSelectedProject], (proj) => 
+  proj ? proj.tags : [],
+);
+export const selectTagsLoading = (state) => state.projects.loadingStates.projectTags.isLoading;
 export const selectProjectsLoading = (state) => state.projects.loadingStates.projects;
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;
@@ -751,5 +921,6 @@ export const selectModelOptionsLoading = (state) =>
 export const selectProjectLabelsLoading = (state) => state.projects.loadingStates.projectLabels;
 export const selectManageLabelsErrors = (state) =>
   state.projects.loadingStates.projectLabels.errors;
+export const selectProjectTagErrors = (state) => state.projects.loadingStates.projectTags.errors;
 
 export default projectsSlice.reducer;

@@ -60,6 +60,7 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  tags
   reviewed
 `;
 
@@ -152,6 +153,12 @@ const projectLabelFields = `
   ml
 `;
 
+const projectTagFields = `
+  _id
+  name
+  color
+`;
+
 const projectFields = `
   _id
   name
@@ -168,6 +175,9 @@ const projectFields = `
   }
   labels {
     ${projectLabelFields}
+  }
+  tags {
+    ${projectTagFields}
   }
   availableMLModels 
 `;
@@ -544,6 +554,45 @@ const queries = {
     variables: { input: input },
   }),
 
+  createProjectTag: (input) => ({
+    template: `
+      mutation CreateProjectTag($input: CreateProjectTagInput!) {
+        createProjectTag(input: $input) {
+          tags {
+            ${projectTagFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteProjectTag: (input) => ({
+    template: `
+      mutation DeleteProjectTag($input: DeleteProjectTagInput!) {
+        deleteProjectTag(input: $input) {
+          tags {
+            ${projectTagFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateProjectTag: (input) => ({
+    template: `
+      mutation UpdateProjectTag($input: UpdateProjectTagInput!) {
+        updateProjectTag(input: $input) {
+          tags {
+            ${projectTagFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
   createProjectLabel: (input) => ({
     template: `
       mutation CreateProjectLabel($input: CreateProjectLabelInput!) {
@@ -614,6 +663,28 @@ const queries = {
           comments {
             ${imageCommentFields}
           }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+  
+  createImageTag: (input) => ({
+    template: `
+      mutation CreateImageTag($input: CreateImageTagInput!) {
+        createImageTag(input: $input) {
+          tags
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  deleteImageTag: (input) => ({
+    template: `
+      mutation DeleteImageTag($input: DeleteImageTagInput!) {
+        deleteImageTag(input: $input) {
+          tags 
         }
       }
     `,
