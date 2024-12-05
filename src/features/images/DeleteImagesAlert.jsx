@@ -76,9 +76,17 @@ const DeleteImagesAlert = () => {
 
   const filterTitle = `Are you sure you'd like to delete ${imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`}?`;
   const selectionTitle = `Are you sure you'd like to delete ${selectedImages.length === 1 ? 'this image' : `these ${selectedImages && selectedImages.length.toLocaleString()} images`}?`;
-  const defaultText = (
+  const filterText = (
     <div>
-      <p>This action can not be undone.</p>
+      <p>
+        This will delete all images that match the currently applied filters. This action can not be
+        undone.
+      </p>
+    </div>
+  );
+  const selectionText = (
+    <div>
+      <p>This will delete all currently selected images. This action can not be undone.</p>
     </div>
   );
 
@@ -114,7 +122,7 @@ const DeleteImagesAlert = () => {
   );
 
   let title = alertState.deleteImagesAlertByFilter ? filterTitle : selectionTitle;
-  let text = defaultText;
+  let text = alertState.deleteImagesAlertByFilter ? filterText : selectionText;
   if (deleteByIdLimitExceeded) {
     title = deleteByIdLimitAlertTitle;
     text = deleteByIdLimitAlertText;
