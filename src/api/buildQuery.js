@@ -767,10 +767,10 @@ const queries = {
     variables: { input: input },
   }),
 
-  deleteCamera: (input) => ({
+  deleteCameraConfig: (input) => ({
     template: `
-      mutation deleteCamera($input: DeleteCameraInput!) {
-        deleteCamera(input: $input) {
+      mutation deleteCameraConfig($input: DeleteCameraInput!) {
+        deleteCameraConfig(input: $input) {
           _id
         }
       }

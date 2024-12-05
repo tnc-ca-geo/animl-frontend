@@ -652,7 +652,7 @@ export const deleteCamera = (payload) => {
       if (token && selectedProj) {
         const res = await call({
           projId: selectedProj._id,
-          request: 'deleteCamera',
+          request: 'deleteCameraConfig',
           input: payload,
         });
         console.log('deleteCamera - res: ', res);
