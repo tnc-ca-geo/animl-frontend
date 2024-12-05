@@ -7,7 +7,7 @@ import {
   setDeleteImagesAlertStatus,
   selectImagesLoading,
   selectImagesCount,
-} from '../images/imagesSlice.js';
+} from './imagesSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { selectSelectedImages } from '../review/reviewSlice.js';
 import {
@@ -102,7 +102,7 @@ const DeleteImagesAlert = () => {
   const deleteByFilterLimitAlertText = (
     <div>
       <p>
-        There are {imageCount.toLocaleString()} images that match the currently selected filters,
+        There are {imageCount?.toLocaleString()} images that match the currently selected filters,
         which is more than the {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT.toLocaleString()} image limit
         Animl supports when deleting images by filter.
       </p>

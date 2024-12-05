@@ -10,7 +10,7 @@ import {
 } from '../../components/Dropdown.jsx';
 import IconButton from '../../components/IconButton.jsx';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import DeleteImagesAlert from './DeleteImagesAlert.jsx';
+import DeleteImagesAlert from '../images/DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {

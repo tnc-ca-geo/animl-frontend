@@ -11,14 +11,23 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ImagesTableRow from './ImagesTableRow.jsx';
-import { sortChanged, selectImagesLoading, selectPaginatedField, selectSortAscending } from './imagesSlice';
-import { selectFocusIndex, selectFocusChangeType, selectSelectedImageIndices } from '../review/reviewSlice';
+import {
+  sortChanged,
+  selectImagesLoading,
+  selectPaginatedField,
+  selectSortAscending,
+} from './imagesSlice';
+import {
+  selectFocusIndex,
+  selectFocusChangeType,
+  selectSelectedImageIndices,
+} from '../review/reviewSlice';
 import { selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
-import DeleteImagesAlert from '../loupe/DeleteImagesAlert.jsx';
+import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
 
 // TODO: make table horizontally scrollable on smaller screens
@@ -171,7 +180,9 @@ const StyledReviewIcon = styled('div', {
 });
 
 const ReviewedIcon = ({ reviewed }) => (
-  <StyledReviewIcon reviewed={reviewed}>{reviewed ? <CheckIcon /> : <Cross2Icon />}</StyledReviewIcon>
+  <StyledReviewIcon reviewed={reviewed}>
+    {reviewed ? <CheckIcon /> : <Cross2Icon />}
+  </StyledReviewIcon>
 );
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
@@ -319,17 +330,29 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           <SimpleSpinner />
         </SpinnerOverlay>
       )}
-      {imagesLoading.noneFound && <NoneFoundAlert>Rats! We couldn&apos;t find any matching images</NoneFoundAlert>}
+      {imagesLoading.noneFound && (
+        <NoneFoundAlert>Rats! We couldn&apos;t find any matching images</NoneFoundAlert>
+      )}
       {workingImages.length > 0 && (
         <Table {...getTableProps()}>
           <div style={{ height: headerHeight, width: `calc(100% - ${scrollBarSize.width}px)` }}>
             {headerGroups.map((headerGroup) => (
-              <TableRow {...headerGroup.getHeaderGroupProps()} key={headerGroup.getHeaderGroupProps().key}>
+              <TableRow
+                {...headerGroup.getHeaderGroupProps()}
+                key={headerGroup.getHeaderGroupProps().key}
+              >
                 {headerGroup.headers.map((column) => (
-                  <HeaderCell {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
-                    <TableHeader issorted={column.isSorted.toString()} cansort={column.canSort.toString()}>
+                  <HeaderCell
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    key={column.id}
+                  >
+                    <TableHeader
+                      issorted={column.isSorted.toString()}
+                      cansort={column.canSort.toString()}
+                    >
                       {column.render('Header')}
-                      {column.canSort && (column.isSortedDesc ? <TriangleDownIcon /> : <TriangleUpIcon />)}
+                      {column.canSort &&
+                        (column.isSortedDesc ? <TriangleDownIcon /> : <TriangleUpIcon />)}
                     </TableHeader>
                   </HeaderCell>
                 ))}
@@ -352,11 +375,17 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
 
     // label pills
     const labelPills = (
-      <LabelPills objects={workingImages[imageIndex].objects} imageIndex={imageIndex} focusIndex={focusIndex} />
+      <LabelPills
+        objects={workingImages[imageIndex].objects}
+        imageIndex={imageIndex}
+        focusIndex={focusIndex}
+      />
     );
 
     // date created
-    const dtOriginal = DateTime.fromISO(img.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+    const dtOriginal = DateTime.fromISO(img.dateTimeOriginal).toLocaleString(
+      DateTime.DATETIME_SHORT_WITH_SECONDS,
+    );
 
     // date added
     const dtAdded = DateTime.fromISO(img.dateAdded).toLocaleString(DateTime.DATE_SHORT);
@@ -370,7 +399,7 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
       dtOriginal,
       dtAdded,
       reviewedIcon,
-      ...img
+      ...img,
     };
   });
 }
