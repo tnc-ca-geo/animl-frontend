@@ -19,7 +19,7 @@ import {
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
-import { red } from '@radix-ui/colors';
+import { red, green } from '@radix-ui/colors';
 import { deleteImagesTask, fetchTask, selectDeleteImagesLoading } from '../tasks/tasksSlice.js';
 import {
   SYNC_IMAGE_DELETE_LIMIT,
@@ -27,7 +27,6 @@ import {
   ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT,
 } from '../../config.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { green } from '@radix-ui/colors';
 import * as Progress from '@radix-ui/react-progress';
 
 const ProgressBar = styled('div', {
