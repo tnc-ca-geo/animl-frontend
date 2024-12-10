@@ -12,7 +12,6 @@ import {
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
-// import ProgressBar from '../../components/ProgressBar';
 import {
   Alert,
   AlertPortal,
