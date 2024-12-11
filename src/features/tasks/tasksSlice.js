@@ -659,7 +659,7 @@ export const deleteCamera = (payload) => {
         dispatch(updateDeleteCameraUpdate({ taskId: res.deleteCameraConfig._id }));
       }
     } catch (err) {
-      console.log('error attempting to delete camera: ', err);
+      dispatch(updateDeleteCameraFailure(err));
     }
   };
 };
@@ -719,6 +719,7 @@ export const selectCameraSerialNumberLoading = (state) =>
 export const selectCameraSerialNumberErrors = (state) =>
   state.tasks.loadingStates.cameraSerialNumber.errors;
 export const selectDeleteCameraLoading = (state) => state.tasks.loadingStates.deleteCamera;
+export const selectDeleteCameraErrors = (state) => state.tasks.loadingStates.deleteCamera.errors;
 export const selectDeleteImagesLoading = (state) => state.tasks.loadingStates.deleteImages;
 export const selectDeleteImagesErrors = (state) => state.tasks.loadingStates.deleteImages.errors;
 

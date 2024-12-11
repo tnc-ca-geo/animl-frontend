@@ -20,7 +20,12 @@ import {
 } from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
 import { red, green } from '@radix-ui/colors';
-import { deleteImagesTask, fetchTask, selectDeleteImagesLoading } from '../tasks/tasksSlice.js';
+import {
+  clearDeleteImagesTask,
+  deleteImagesTask,
+  fetchTask,
+  selectDeleteImagesLoading,
+} from '../tasks/tasksSlice.js';
 import {
   SYNC_IMAGE_DELETE_LIMIT,
   ASYNC_IMAGE_DELETE_BY_ID_LIMIT,
@@ -91,7 +96,10 @@ const DeleteImagesAlert = () => {
         dispatch(deleteImages(selectedImageIds));
       }
     }
-    if (selectedImages.length > 3000 || imageCount > 3000) {
+    if (
+      selectedImages.length > ASYNC_IMAGE_DELETE_BY_ID_LIMIT ||
+      imageCount > ASYNC_IMAGE_DELETE_BY_ID_LIMIT
+    ) {
       // show progress bar if deleting more than 3000 images (approx wait time will be > 10 seconds)
       const count = !alertState.deleteImagesAlertByFilter ? selectedImages.length : imageCount;
       setEstimatedTotalTime(count * 0.0055); // estimated deletion time per image in seconds
@@ -118,6 +126,7 @@ const DeleteImagesAlert = () => {
 
   const handleCancelDelete = () => {
     dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
+    dispatch(clearDeleteImagesTask());
   };
 
   const deleteByIdLimitExceeded =

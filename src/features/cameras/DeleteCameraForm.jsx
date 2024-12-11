@@ -13,6 +13,7 @@ import {
   selectCameraImageCount,
   selectCameraImageCountLoading,
 } from '../cameras/wirelessCamerasSlice.js';
+import { ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT } from '../../config.js';
 
 const BoldText = styled('span', {
   fontWeight: '$5',
@@ -70,26 +71,44 @@ const DeleteCameraForm = ({ handleClose }) => {
             handleDeleteCameraSubmit(values);
           }}
         >
-          {() => (
-            <Form>
-              <HelperText>
-                Are you sure you&apos;d like to delete Camera <BoldText>{selectedCamera}</BoldText>?
-                This will remove the camera from the project, remove all deployments associated with
-                it, and <BoldText>{imagesText}</BoldText> will be deleted.{' '}
-                <BoldText>This action cannot be undone.</BoldText>
-              </HelperText>
-              <Field name="cameraId" type="hidden" />
-              <Field name="deploymentId" type="hidden" />
-              <ButtonRow>
-                <Button type="button" size="large" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="large">
-                  Delete Camera
-                </Button>
-              </ButtonRow>
-            </Form>
-          )}
+          {() =>
+            imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ? (
+              <Form>
+                <HelperText>
+                  Due to the large number of images associated with this camera, we are unable to
+                  delete Camera <BoldText>{selectedCamera}</BoldText> at this time. Please ensure
+                  that the number of images associated with this camera do not exceed{' '}
+                  {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
+                  inconvenience.
+                </HelperText>
+                <ButtonRow>
+                  <Button type="button" size="large" onClick={handleClose}>
+                    Cancel
+                  </Button>
+                </ButtonRow>
+              </Form>
+            ) : (
+              <Form>
+                <HelperText>
+                  Are you sure you&apos;d like to delete Camera{' '}
+                  <BoldText>{selectedCamera}</BoldText>? This will remove the camera from the
+                  project, remove all deployments associated with it, and{' '}
+                  <BoldText>{imagesText}</BoldText> will be deleted.{' '}
+                  <BoldText>This action cannot be undone.</BoldText>
+                </HelperText>
+                <Field name="cameraId" type="hidden" />
+                <Field name="deploymentId" type="hidden" />
+                <ButtonRow>
+                  <Button type="button" size="large" onClick={handleClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" size="large">
+                    Delete Camera
+                  </Button>
+                </ButtonRow>
+              </Form>
+            )
+          }
         </Formik>
       </FormWrapper>
     </div>

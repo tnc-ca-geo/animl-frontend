@@ -24,6 +24,7 @@ import {
   selectCameraSerialNumberLoading,
   clearCameraSerialNumberTask,
   selectDeleteImagesLoading,
+  clearDeleteCameraTask,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -130,6 +131,7 @@ const HydratedModal = () => {
       content: <DeleteCameraForm />,
       callBackOnClose: () => {
         dispatch(setSelectedCamera(null));
+        dispatch(clearDeleteCameraTask());
       },
     },
     'manage-tags-and-labels-form': {
