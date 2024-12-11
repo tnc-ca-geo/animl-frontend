@@ -8,8 +8,13 @@ import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import { deleteCamera, fetchTask, selectDeleteCameraLoading } from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { selectSelectedCamera } from '../projects/projectsSlice.js';
+import {
+  fetchCameraImageCount,
+  selectCameraImageCount,
+  selectCameraImageCountLoading,
+} from '../cameras/wirelessCamerasSlice.js';
 
-const CameraId = styled('span', {
+const BoldText = styled('span', {
   fontWeight: '$5',
 });
 
@@ -21,12 +26,19 @@ const DeleteCameraForm = ({ handleClose }) => {
   const [queuedForClose, setQueuedForClose] = useState(false);
   const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
   const selectedCamera = useSelector(selectSelectedCamera);
+  const imageCount = useSelector(selectCameraImageCount);
+  const imageCountLoading = useSelector(selectCameraImageCountLoading);
   const dispatch = useDispatch();
 
-  // TODO: extract into hook?
   useEffect(() => {
-    if (queuedForClose) handleClose();
-  }, [queuedForClose, handleClose]);
+    if (imageCount === null && selectedCamera !== null && !imageCountLoading) {
+      dispatch(fetchCameraImageCount({ cameraId: selectedCamera }));
+    }
+  }, [imageCount, selectedCamera, dispatch]);
+
+  useEffect(() => {
+    if (queuedForClose && !deleteCameraLoading.isLoading) handleClose();
+  }, [deleteCameraLoading, queuedForClose, handleClose]);
 
   const handleDeleteCameraSubmit = (formVals) => {
     dispatch(deleteCamera(formVals));
@@ -41,9 +53,11 @@ const DeleteCameraForm = ({ handleClose }) => {
     }
   }, [deleteCameraLoading, dispatch]);
 
+  const imagesText = `${imageCount} ${imageCount === 1 ? ' image' : ' images'}`;
+
   return (
     <div>
-      {deleteCameraLoading.isLoading && (
+      {(deleteCameraLoading.isLoading || imageCountLoading) && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
@@ -59,9 +73,10 @@ const DeleteCameraForm = ({ handleClose }) => {
           {() => (
             <Form>
               <HelperText>
-                Are you sure you&apos;d like to delete Camera <CameraId>{selectedCamera}</CameraId>?
+                Are you sure you&apos;d like to delete Camera <BoldText>{selectedCamera}</BoldText>?
                 This will remove the camera from the project, remove all deployments associated with
-                it, and delete all images. This action cannot be undone.
+                it, and <BoldText>{imagesText}</BoldText> will be deleted.{' '}
+                <BoldText>This action cannot be undone.</BoldText>
               </HelperText>
               <Field name="cameraId" type="hidden" />
               <Field name="deploymentId" type="hidden" />

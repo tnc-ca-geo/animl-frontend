@@ -130,8 +130,14 @@ const DeleteImagesAlert = () => {
     (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading) ||
     imagesLoading.isLoading;
 
-  const filterTitle = `Are you sure you'd like to delete ${imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`}?`;
-  const selectionTitle = `Are you sure you'd like to delete ${selectedImages.length === 1 ? 'this image' : `these ${selectedImages && selectedImages.length.toLocaleString()} images`}?`;
+  const filterTitle = `Are you sure you'd like to delete ${
+    imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`
+  }?`;
+  const selectionTitle = `Are you sure you'd like to delete ${
+    selectedImages.length === 1
+      ? 'this image'
+      : `these ${selectedImages && selectedImages.length.toLocaleString()} images`
+  }?`;
   const filterText = (
     <div>
       <p>

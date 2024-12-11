@@ -656,7 +656,7 @@ export const deleteCamera = (payload) => {
           input: payload,
         });
         console.log('deleteCamera - res: ', res);
-        dispatch(updateDeleteCameraUpdate({ taskId: res.deleteCamera._id }));
+        dispatch(updateDeleteCameraUpdate({ taskId: res.deleteCameraConfig._id }));
       }
     } catch (err) {
       console.log('error attempting to delete camera: ', err);
