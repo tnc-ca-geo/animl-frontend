@@ -461,6 +461,12 @@ export const fetchTask = (taskId) => {
               },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
+            DeleteCamera: {
+              COMPLETE: () => {
+                dispatch(updateDeleteCameraSuccess());
+              },
+              FAIL: (res) => dispatch(updateDeleteCameraFailure(res)),
+            },
             DeleteImages: {
               COMPLETE: (res) => {
                 const filters = getState().filters.activeFilters;
