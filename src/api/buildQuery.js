@@ -767,6 +767,17 @@ const queries = {
     variables: { input: input },
   }),
 
+  deleteCameraConfig: (input) => ({
+    template: `
+      mutation deleteCameraConfig($input: DeleteCameraInput!) {
+        deleteCameraConfig(input: $input) {
+          _id
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
   createUpload: (input) => ({
     template: `
       mutation CreateUpload($input: CreateUploadInput!) {
