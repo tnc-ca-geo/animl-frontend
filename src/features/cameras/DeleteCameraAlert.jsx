@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { red } from '@radix-ui/colors';
 import { styled } from '../../theme/stitches.config.js';
 import Button from '../../components/Button.jsx';
 import { ButtonRow } from '../../components/Form.jsx';
@@ -21,7 +22,7 @@ import {
   AlertContent,
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
-import { DeleteImagesProgressBar } from '../../components/DeleteImagesProgressBar.jsx';
+import { DeleteImagesProgressBar } from '../images/DeleteImagesProgressBar.jsx';
 
 const BoldText = styled('span', {
   fontWeight: '$5',
@@ -97,7 +98,17 @@ const DeleteCameraAlert = () => {
                 <Button type="button" size="large" onClick={setQueuedForClose(true)}>
                   Cancel
                 </Button>
-                <Button type="submit" size="large" onClick={handleDeleteCameraSubmit}>
+                <Button
+                  type="submit"
+                  size="large"
+                  onClick={handleDeleteCameraSubmit}
+                  css={{
+                    backgroundColor: red.red4,
+                    color: red.red11,
+                    border: 'none',
+                    '&:hover': { color: red.red11, backgroundColor: red.red5 },
+                  }}
+                >
                   Delete Camera
                 </Button>
               </ButtonRow>

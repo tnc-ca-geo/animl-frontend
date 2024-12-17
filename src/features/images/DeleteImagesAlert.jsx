@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { red } from '@radix-ui/colors';
+import {
+  SYNC_IMAGE_DELETE_LIMIT,
+  ASYNC_IMAGE_DELETE_BY_ID_LIMIT,
+  ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT,
+} from '../../config.js';
 import {
   deleteImages,
   selectImagesCountLoading,
@@ -18,20 +24,14 @@ import {
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
-import { red } from '@radix-ui/colors';
 import {
   clearDeleteImagesTask,
   deleteImagesTask,
   fetchTask,
   selectDeleteImagesLoading,
 } from '../tasks/tasksSlice.js';
-import {
-  SYNC_IMAGE_DELETE_LIMIT,
-  ASYNC_IMAGE_DELETE_BY_ID_LIMIT,
-  ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT,
-} from '../../config.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { DeleteImagesProgressBar } from '../../components/DeleteImagesProgressBar.jsx';
+import { DeleteImagesProgressBar } from './DeleteImagesProgressBar.jsx';
 
 const DeleteImagesAlert = () => {
   const dispatch = useDispatch();
