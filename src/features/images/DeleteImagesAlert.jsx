@@ -152,7 +152,11 @@ const DeleteImagesAlert = () => {
           {isSpinnerActive && (
             <SpinnerOverlay>
               <SimpleSpinner />
-              <DeleteImagesProgressBar imageCount={imageCount} />
+              <DeleteImagesProgressBar
+                imageCount={
+                  !alertState.deleteImagesAlertByFilter ? selectedImages.length : imageCount
+                }
+              />
             </SpinnerOverlay>
           )}
           <AlertTitle>{title}</AlertTitle>
