@@ -16,6 +16,7 @@ const initialState = {
     errors: null,
     noneFound: false,
   },
+  isDeleteCameraAlertOpen: false,
 };
 
 export const wirelessCamerasSlice = createSlice({
@@ -119,6 +120,10 @@ export const wirelessCamerasSlice = createSlice({
       state.cameraImageCount.currentCameraId = null;
       state.cameraImageCount.count = null;
     },
+
+    setDeleteCameraAlertStatus: (state, { payload }) => {
+      state.isDeleteCameraAlertOpen = payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -155,6 +160,8 @@ export const {
   cameraImageCountStart,
   cameraImageCountSuccess,
   cameraImageCountError,
+
+  setDeleteCameraAlertStatus,
 } = wirelessCamerasSlice.actions;
 
 // fetchWirelessCameras thunk
@@ -254,5 +261,7 @@ export const selectWirelessCamerasErrors = (state) => state.wirelessCameras.load
 export const selectCameraImageCount = (state) => state.wirelessCameras.cameraImageCount.count;
 export const selectCameraImageCountLoading = (state) =>
   state.wirelessCameras.cameraImageCount.isLoading;
+export const selectDeleteCameraAlertStatus = (state) =>
+  state.wirelessCameras.isDeleteCameraAlertOpen;
 
 export default wirelessCamerasSlice.reducer;

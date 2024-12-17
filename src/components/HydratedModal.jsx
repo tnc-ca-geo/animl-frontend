@@ -11,7 +11,6 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
-import DeleteCameraForm from '../features/cameras/DeleteCameraForm.jsx';
 import {
   clearStats,
   clearExport,
@@ -24,7 +23,6 @@ import {
   selectCameraSerialNumberLoading,
   clearCameraSerialNumberTask,
   selectDeleteImagesLoading,
-  clearDeleteCameraTask,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -123,15 +121,6 @@ const HydratedModal = () => {
       callBackOnClose: () => {
         dispatch(setSelectedCamera(null));
         dispatch(clearCameraSerialNumberTask());
-      },
-    },
-    'delete-camera-form': {
-      title: 'Delete Camera',
-      size: 'md',
-      content: <DeleteCameraForm />,
-      callBackOnClose: () => {
-        dispatch(setSelectedCamera(null));
-        dispatch(clearDeleteCameraTask());
       },
     },
     'manage-tags-and-labels-form': {

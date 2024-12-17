@@ -16,7 +16,11 @@ import {
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice';
-import { unregisterCamera, registerCamera } from './wirelessCamerasSlice';
+import {
+  unregisterCamera,
+  registerCamera,
+  setDeleteCameraAlertStatus,
+} from './wirelessCamerasSlice';
 import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
 import {
@@ -36,6 +40,7 @@ import {
   WRITE_CAMERA_SERIAL_NUMBER_ROLES,
   WRITE_DEPLOYMENTS_ROLES,
 } from '../auth/roles';
+import DeleteCameraAlert from './DeleteCameraAlert.jsx';
 
 const StyledCameraList = styled('div', {
   border: '1px solid $border',
@@ -177,7 +182,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   };
 
   const handleDeleteCameraClick = ({ cameraId }) => {
-    dispatch(setModalContent('delete-camera-form'));
+    dispatch(setDeleteCameraAlertStatus(true));
     dispatch(setSelectedCamera(cameraId));
   };
 
@@ -370,6 +375,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               Deployment
             </a>
           </IconKey>
+          <DeleteCameraAlert />
         </>
       )}
     </>
