@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as Progress from '@radix-ui/react-progress';
 import { green } from '@radix-ui/colors';
-import { styled } from '../theme/stitches.config.js';
+import { styled } from '../../theme/stitches.config.js';
 
 const ProgressBar = styled('div', {
   display: 'flex',
@@ -31,15 +31,18 @@ const ProgressIndicator = styled(Progress.Indicator, {
   transition: 'transform 660ms cubic-bezier(0.65, 0, 0.35, 1)',
 });
 
-export const DeleteImagesProgressBar = ({ imageCount }) => {
-  const [estimatedTotalTime, setEstimatedTotalTime] = useState(null); // in seconds
-  const [elapsedTime, setElapsedTime] = useState(null);
+// show progress bar if deleting more than 3000 images (approx wait time will be > 10 seconds)
+const PROGRESS_BAR_IMAGE_COUNT_BREAKPOINT = 3000;
 
-  if (imageCount > 3000) {
-    // show progress bar if deleting more than 3000 images (approx wait time will be > 10 seconds)
-    setEstimatedTotalTime(imageCount * 0.0055); // estimated deletion time per image in seconds
-    setElapsedTime(0);
-  }
+export const DeleteImagesProgressBar = ({ imageCount }) => {
+  const [estimatedTotalTime, setEstimatedTotalTime] = useState(
+    imageCount > PROGRESS_BAR_IMAGE_COUNT_BREAKPOINT
+      ? imageCount * 0.0055 // estimated deletion time per image in seconds
+      : null,
+  ); // in seconds
+  const [elapsedTime, setElapsedTime] = useState(
+    imageCount > PROGRESS_BAR_IMAGE_COUNT_BREAKPOINT ? 0 : null,
+  );
 
   useEffect(() => {
     if (estimatedTotalTime) {
@@ -70,5 +73,3 @@ export const DeleteImagesProgressBar = ({ imageCount }) => {
     </ProgressBar>
   );
 };
-
-// export default DeleteImagesProgressBar;

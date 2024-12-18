@@ -15,6 +15,7 @@ import {
   fetchImagesCount,
   setDeleteImagesAlertStatus,
 } from '../images/imagesSlice.js';
+import { setDeleteCameraAlertStatus } from '../cameras/wirelessCamerasSlice.js';
 
 const initialState = {
   loadingStates: {
@@ -464,6 +465,7 @@ export const fetchTask = (taskId) => {
             DeleteCamera: {
               COMPLETE: () => {
                 dispatch(updateDeleteCameraSuccess());
+                dispatch(setDeleteCameraAlertStatus(false));
               },
               FAIL: (res) => dispatch(updateDeleteCameraFailure(res)),
             },

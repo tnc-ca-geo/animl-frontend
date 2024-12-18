@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { red } from '@radix-ui/colors';
 import { styled } from '../../theme/stitches.config.js';
 import Button from '../../components/Button.jsx';
 import { ButtonRow } from '../../components/Form.jsx';
-import { deleteCamera, fetchTask, selectDeleteCameraLoading } from '../tasks/tasksSlice.js';
+import {
+  clearDeleteCameraTask,
+  deleteCamera,
+  fetchTask,
+  selectDeleteCameraLoading,
+} from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { selectSelectedCamera } from '../projects/projectsSlice.js';
 import {
@@ -29,7 +34,6 @@ const BoldText = styled('span', {
 });
 
 const DeleteCameraAlert = () => {
-  const [queuedForClose, setQueuedForClose] = useState(false);
   const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
   const selectedCamera = useSelector(selectSelectedCamera);
   const imageCount = useSelector(selectCameraImageCount);
@@ -44,13 +48,16 @@ const DeleteCameraAlert = () => {
   }, [imageCount, selectedCamera, dispatch]);
 
   useEffect(() => {
-    if (queuedForClose && !deleteCameraLoading.isLoading)
-      dispatch(setDeleteCameraAlertStatus(false));
-  }, [deleteCameraLoading, queuedForClose]);
+    if (!deleteCameraLoading.isLoading) dispatch(setDeleteCameraAlertStatus(false));
+  }, [deleteCameraLoading]);
 
   const handleDeleteCameraSubmit = () => {
     dispatch(deleteCamera({ cameraId: selectedCamera }));
-    setQueuedForClose(true);
+  };
+
+  const handleCancelDelete = () => {
+    dispatch(setDeleteCameraAlertStatus(false));
+    dispatch(clearDeleteCameraTask());
   };
 
   // handle polling for task completion
@@ -83,7 +90,7 @@ const DeleteCameraAlert = () => {
               {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
               inconvenience.
               <ButtonRow>
-                <Button type="button" size="large" onClick={setQueuedForClose(true)}>
+                <Button type="button" size="large" onClick={handleCancelDelete}>
                   Cancel
                 </Button>
               </ButtonRow>
@@ -95,7 +102,7 @@ const DeleteCameraAlert = () => {
               it, and <BoldText>{imagesText}</BoldText> will be deleted.{' '}
               <BoldText>This action cannot be undone.</BoldText>
               <ButtonRow>
-                <Button type="button" size="large" onClick={setQueuedForClose(true)}>
+                <Button type="button" size="large" onClick={handleCancelDelete}>
                   Cancel
                 </Button>
                 <Button
