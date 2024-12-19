@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { styled } from '../../theme/stitches.config';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { red } from '@radix-ui/colors';
+import {
+  SYNC_IMAGE_DELETE_LIMIT,
+  ASYNC_IMAGE_DELETE_BY_ID_LIMIT,
+  ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT,
+} from '../../config.js';
 import {
   deleteImages,
   selectImagesCountLoading,
@@ -19,43 +24,14 @@ import {
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
-import { red, green } from '@radix-ui/colors';
-import { deleteImagesTask, fetchTask, selectDeleteImagesLoading } from '../tasks/tasksSlice.js';
 import {
-  SYNC_IMAGE_DELETE_LIMIT,
-  ASYNC_IMAGE_DELETE_BY_ID_LIMIT,
-  ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT,
-} from '../../config.js';
+  clearDeleteImagesTask,
+  deleteImagesTask,
+  fetchTask,
+  selectDeleteImagesLoading,
+} from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import * as Progress from '@radix-ui/react-progress';
-
-const ProgressBar = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  position: 'absolute',
-  bottom: 0,
-  width: '100%',
-});
-
-const ProgressRoot = styled(Progress.Root, {
-  overflow: 'hidden',
-  background: '$backgroundDark',
-  // borderRadius: '99999px',
-  width: '100%',
-  height: '8px',
-
-  /* Fix overflow clipping in Safari */
-  /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
-  transform: 'translateZ(0)',
-});
-
-const ProgressIndicator = styled(Progress.Indicator, {
-  backgroundColor: green.green9, //sky.sky4, //'$blue600',
-  width: '100%',
-  height: '100%',
-  transition: 'transform 660ms cubic-bezier(0.65, 0, 0.35, 1)',
-});
+import { DeleteImagesProgressBar } from './DeleteImagesProgressBar.jsx';
 
 const DeleteImagesAlert = () => {
   const dispatch = useDispatch();
@@ -76,9 +52,6 @@ const DeleteImagesAlert = () => {
     }
   }, [deleteImagesTaskLoading, dispatch]);
 
-  const [estimatedTotalTime, setEstimatedTotalTime] = useState(null); // in seconds
-  const [elapsedTime, setElapsedTime] = useState(null);
-
   const handleConfirmDelete = () => {
     if (alertState.deleteImagesAlertByFilter) {
       // if deleting by filter, always delete using task handler
@@ -91,33 +64,11 @@ const DeleteImagesAlert = () => {
         dispatch(deleteImages(selectedImageIds));
       }
     }
-    if (selectedImages.length > 3000 || imageCount > 3000) {
-      // show progress bar if deleting more than 3000 images (approx wait time will be > 10 seconds)
-      const count = !alertState.deleteImagesAlertByFilter ? selectedImages.length : imageCount;
-      setEstimatedTotalTime(count * 0.0055); // estimated deletion time per image in seconds
-      setElapsedTime(0);
-    }
   };
-
-  useEffect(() => {
-    if (estimatedTotalTime) {
-      const interval = setInterval(() => {
-        setElapsedTime((prevElapsedTime) => {
-          if (prevElapsedTime >= estimatedTotalTime) {
-            clearInterval(interval);
-            setEstimatedTotalTime(null);
-            setElapsedTime(null);
-            return estimatedTotalTime;
-          }
-          return prevElapsedTime + 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [estimatedTotalTime, elapsedTime]);
 
   const handleCancelDelete = () => {
     dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
+    dispatch(clearDeleteImagesTask());
   };
 
   const deleteByIdLimitExceeded =
@@ -130,8 +81,14 @@ const DeleteImagesAlert = () => {
     (alertState.deleteImagesAlertByFilter && imageCountIsLoading.isLoading) ||
     imagesLoading.isLoading;
 
-  const filterTitle = `Are you sure you'd like to delete ${imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`}?`;
-  const selectionTitle = `Are you sure you'd like to delete ${selectedImages.length === 1 ? 'this image' : `these ${selectedImages && selectedImages.length.toLocaleString()} images`}?`;
+  const filterTitle = `Are you sure you'd like to delete ${
+    imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`
+  }?`;
+  const selectionTitle = `Are you sure you'd like to delete ${
+    selectedImages.length === 1
+      ? 'this image'
+      : `these ${selectedImages && selectedImages.length.toLocaleString()} images`
+  }?`;
   const filterText = (
     <div>
       <p>
@@ -195,17 +152,11 @@ const DeleteImagesAlert = () => {
           {isSpinnerActive && (
             <SpinnerOverlay>
               <SimpleSpinner />
-              <ProgressBar
-                css={{ opacity: estimatedTotalTime !== null && elapsedTime !== null ? 1 : 0 }}
-              >
-                <ProgressRoot>
-                  <ProgressIndicator
-                    css={{
-                      transform: `translateX(-${100 - (elapsedTime / estimatedTotalTime) * 100}%)`,
-                    }}
-                  />
-                </ProgressRoot>
-              </ProgressBar>
+              <DeleteImagesProgressBar
+                imageCount={
+                  !alertState.deleteImagesAlertByFilter ? selectedImages.length : imageCount
+                }
+              />
             </SpinnerOverlay>
           )}
           <AlertTitle>{title}</AlertTitle>

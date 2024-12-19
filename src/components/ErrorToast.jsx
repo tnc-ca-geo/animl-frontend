@@ -23,7 +23,7 @@ import {
   selectManageLabelsErrors,
   dismissManageLabelsError,
   selectProjectTagErrors,
-  dismissProjectTagErrors
+  dismissProjectTagErrors,
 } from '../features/projects/projectsSlice';
 import {
   selectWirelessCamerasErrors,
@@ -46,6 +46,8 @@ import {
   dismissDeploymentsError,
   selectCameraSerialNumberErrors,
   dismissCameraSerialNumberError,
+  selectDeleteCameraErrors,
+  dismissDeleteCameraError,
   selectDeleteImagesErrors,
   dismissDeleteImagesError,
 } from '../features/tasks/tasksSlice';
@@ -81,6 +83,7 @@ const ErrorToast = () => {
   const manageLabelsErrors = useSelector(selectManageLabelsErrors);
   const uploadErrors = useSelector(selectUploadErrors);
   const cameraSerialNumberErrors = useSelector(selectCameraSerialNumberErrors);
+  const deleteCameraErrors = useSelector(selectDeleteCameraErrors);
   const projectTagErrors = useSelector(selectProjectTagErrors);
   const deleteImagesErrors = useSelector(selectDeleteImagesErrors);
 
@@ -109,6 +112,7 @@ const ErrorToast = () => {
       'Error Updating Camera Serial Number',
       'cameraSerialNumber',
     ),
+    enrichErrors(deleteCameraErrors, 'Error Deleting Camera', 'deleteCamera'),
     enrichErrors(deleteImagesErrors, 'Error Deleting Images', 'deleteImages'),
   ];
 
@@ -175,6 +179,7 @@ const dismissErrorActions = {
   manageLabels: (i) => dismissManageLabelsError(i),
   upload: (i) => dismissUploadError(i),
   cameraSerialNumber: (i) => dismissCameraSerialNumberError(i),
+  deleteCamera: (i) => dismissDeleteCameraError(i),
   deleteImagesError: (i) => dismissDeleteImagesError(i),
 };
 
