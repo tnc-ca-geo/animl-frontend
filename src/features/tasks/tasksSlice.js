@@ -465,6 +465,7 @@ export const fetchTask = (taskId) => {
             DeleteCamera: {
               COMPLETE: () => {
                 dispatch(updateDeleteCameraSuccess());
+                dispatch(setSelectedCamera(null));
                 dispatch(setDeleteCameraAlertStatus(false));
               },
               FAIL: (res) => dispatch(updateDeleteCameraFailure(res)),

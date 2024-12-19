@@ -115,6 +115,12 @@ export const wirelessCamerasSlice = createSlice({
       state.cameraImageCount.count = payload.imagesCount.count;
     },
 
+    clearCameraImageCount(state) {
+      state.cameraImageCount.isLoading = false;
+      state.cameraImageCount.currentCameraId = null;
+      state.cameraImageCount.count = null;
+    },
+
     cameraImageCountError(state) {
       state.cameraImageCount.isLoading = false;
       state.cameraImageCount.currentCameraId = null;
@@ -159,6 +165,7 @@ export const {
 
   cameraImageCountStart,
   cameraImageCountSuccess,
+  clearCameraImageCount,
   cameraImageCountError,
 
   setDeleteCameraAlertStatus,

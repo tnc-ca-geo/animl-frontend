@@ -11,11 +11,12 @@ import {
   selectDeleteCameraLoading,
 } from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { selectSelectedCamera } from '../projects/projectsSlice.js';
+import { selectSelectedCamera, setSelectedCamera } from '../projects/projectsSlice.js';
 import {
   fetchCameraImageCount,
   selectCameraImageCount,
   selectCameraImageCountLoading,
+  clearCameraImageCount,
   selectDeleteCameraAlertStatus,
   setDeleteCameraAlertStatus,
 } from './wirelessCamerasSlice.js';
@@ -53,11 +54,14 @@ const DeleteCameraAlert = () => {
 
   const handleDeleteCameraSubmit = () => {
     dispatch(deleteCamera({ cameraId: selectedCamera }));
+    dispatch(clearCameraImageCount());
   };
 
   const handleCancelDelete = () => {
     dispatch(setDeleteCameraAlertStatus(false));
+    dispatch(setSelectedCamera(null));
     dispatch(clearDeleteCameraTask());
+    dispatch(clearCameraImageCount());
   };
 
   // handle polling for task completion
