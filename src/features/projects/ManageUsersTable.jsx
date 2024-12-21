@@ -1,17 +1,31 @@
 import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@stitches/react';
-import { Pencil1Icon } from '@radix-ui/react-icons';
-
+import { Pencil1Icon, ResetIcon } from '@radix-ui/react-icons';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
-import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
 import { ButtonRow } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './usersSlice.js';
+import { selectUserCurrentRoles } from '../auth/authSlice';
+import {
+  addUser,
+  editUser,
+  fetchUsers,
+  selectUsers,
+  selectUsersLoading,
+  resetUserPassword,
+} from './usersSlice.js';
+import { hasRole, MANAGE_USERS_ROLES } from '../auth/roles';
 
 const ManageUsersTable = () => {
   const dispatch = useDispatch();
+  const currentUserRoles = useSelector(selectUserCurrentRoles);
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
 
@@ -45,19 +59,43 @@ const ManageUsersTable = () => {
               <TableRow key={email}>
                 <TableCell>{email}</TableCell>
                 <TableCell>{roles.join(', ')}</TableCell>
-                <TableCell>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <IconButton variant="ghost" size="large" onClick={() => dispatch(editUser(email))}>
-                        <Pencil1Icon />
-                      </IconButton>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5}>
-                      Edit user roles
-                      <TooltipArrow />
-                    </TooltipContent>
-                  </Tooltip>
-                </TableCell>
+                {hasRole(currentUserRoles, MANAGE_USERS_ROLES) && (
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <IconButton
+                          variant="ghost"
+                          size="med"
+                          onClick={() => dispatch(editUser(email))}
+                        >
+                          <Pencil1Icon />
+                        </IconButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={5}>
+                        Edit user roles
+                        <TooltipArrow />
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <IconButton
+                          variant="ghost"
+                          size="med"
+                          onClick={() => {
+                            dispatch(editUser(email));
+                            dispatch(resetUserPassword());
+                          }}
+                        >
+                          <ResetIcon />
+                        </IconButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={5}>
+                        Reset Password
+                        <TooltipArrow />
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </tbody>
