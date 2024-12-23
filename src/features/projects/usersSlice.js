@@ -205,6 +205,17 @@ export const createUser = (values) => {
   };
 };
 
+export const resetUserPassword = () => {
+  return async (dispatch, getState) => {
+    try {
+      const selectedUser = getState().users.selectedUser;
+      Auth.resetUserPassword(selectedUser.username);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+};
+
 export const selectUsers = (state) => state.users.users;
 export const selectMode = (state) => state.users.mode;
 export const selectSelectedUser = (state) => state.users.selectedUser;
