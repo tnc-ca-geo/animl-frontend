@@ -182,7 +182,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
   };
 
   const handleDeleteCameraClick = ({ cameraId }) => {
-    dispatch(setDeleteCameraAlertStatus(true));
+    dispatch(setDeleteCameraAlertStatus({ isOpen: true }));
     dispatch(setSelectedCamera(cameraId));
   };
 

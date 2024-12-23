@@ -128,7 +128,7 @@ export const wirelessCamerasSlice = createSlice({
     },
 
     setDeleteCameraAlertStatus: (state, { payload }) => {
-      state.isDeleteCameraAlertOpen = payload;
+      state.isDeleteCameraAlertOpen = payload.isOpen;
     },
   },
 

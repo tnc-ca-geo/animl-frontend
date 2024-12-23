@@ -39,7 +39,7 @@ const DeleteCameraAlert = () => {
   const selectedCamera = useSelector(selectSelectedCamera);
   const imageCount = useSelector(selectCameraImageCount);
   const imageCountLoading = useSelector(selectCameraImageCountLoading);
-  const alertState = useSelector(selectDeleteCameraAlertStatus);
+  const isAlertOpen = useSelector(selectDeleteCameraAlertStatus);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,17 +48,13 @@ const DeleteCameraAlert = () => {
     }
   }, [imageCount, selectedCamera, dispatch]);
 
-  useEffect(() => {
-    if (!deleteCameraLoading.isLoading) dispatch(setDeleteCameraAlertStatus(false));
-  }, [deleteCameraLoading]);
-
   const handleDeleteCameraSubmit = () => {
     dispatch(deleteCamera({ cameraId: selectedCamera }));
     dispatch(clearCameraImageCount());
   };
 
   const handleCancelDelete = () => {
-    dispatch(setDeleteCameraAlertStatus(false));
+    dispatch(setDeleteCameraAlertStatus({ isOpen: false }));
     dispatch(setSelectedCamera(null));
     dispatch(clearDeleteCameraTask());
     dispatch(clearCameraImageCount());
@@ -75,7 +71,7 @@ const DeleteCameraAlert = () => {
   const imagesText = `${imageCount} ${imageCount === 1 ? ' image' : ' images'}`;
 
   return (
-    <Alert open={alertState}>
+    <Alert open={isAlertOpen}>
       <AlertPortal>
         <AlertOverlay />
         <AlertContent>

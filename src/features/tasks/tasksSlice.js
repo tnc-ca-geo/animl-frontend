@@ -299,7 +299,7 @@ export const tasksSlice = createSlice({
     },
 
     clearDeleteCameraTask: (state) => {
-      state.loadingStates.cameraSerialNumber = initialState.loadingStates.cameraSerialNumber;
+      state.loadingStates.deleteCamera = initialState.loadingStates.deleteCamera;
     },
 
     dismissDeleteCameraError: (state, { payload }) => {
@@ -465,8 +465,12 @@ export const fetchTask = (taskId) => {
             DeleteCamera: {
               COMPLETE: () => {
                 dispatch(updateDeleteCameraSuccess());
+                dispatch(toggleOpenLoupe(false));
+                dispatch(setModalOpen(false));
+                dispatch(setModalContent(null));
                 dispatch(setSelectedCamera(null));
-                dispatch(setDeleteCameraAlertStatus(false));
+                dispatch(setDeleteCameraAlertStatus({ isOpen: false }));
+                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
               },
               FAIL: (res) => dispatch(updateDeleteCameraFailure(res)),
             },

@@ -189,8 +189,7 @@ export const imagesSlice = createSlice({
       if (openStatus) {
         state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
         state.deleteImagesAlertState.deleteImagesAlertByFilter = deleteImagesByFilter;
-      }
-      else {
+      } else {
         state.deleteImagesAlertState.deleteImagesAlertOpen = openStatus;
         state.deleteImagesAlertState.deleteImagesAlertByFilter = null;
       }
@@ -350,10 +349,10 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
     );
     dispatch(setSelectedImageIndices([]));
     dispatch(deleteImagesSuccess(imageIds));
-    dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   } catch (err) {
     console.log(`error attempting to delete image: `, err);
     dispatch(deleteImagesError(err));
+  } finally {
     dispatch(setDeleteImagesAlertStatus({ openStatus: false }));
   }
 };
