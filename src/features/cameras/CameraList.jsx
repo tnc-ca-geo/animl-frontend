@@ -16,7 +16,11 @@ import {
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice';
-import { unregisterCamera, registerCamera } from './wirelessCamerasSlice';
+import {
+  unregisterCamera,
+  registerCamera,
+  setDeleteCameraAlertStatus,
+} from './wirelessCamerasSlice';
 import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
 import {
@@ -36,6 +40,7 @@ import {
   WRITE_CAMERA_SERIAL_NUMBER_ROLES,
   WRITE_DEPLOYMENTS_ROLES,
 } from '../auth/roles';
+import DeleteCameraAlert from './DeleteCameraAlert.jsx';
 
 const StyledCameraList = styled('div', {
   border: '1px solid $border',
@@ -176,6 +181,11 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(setSelectedCamera(cameraId));
   };
 
+  const handleDeleteCameraClick = ({ cameraId }) => {
+    dispatch(setDeleteCameraAlertStatus({ isOpen: true }));
+    dispatch(setSelectedCamera(cameraId));
+  };
+
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
 
@@ -271,6 +281,19 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                               Re-register camera
                             </DropdownMenuItem>
                           )}
+                        {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && (
+                          <DropdownMenuItem
+                            className=""
+                            onClick={(e) => {
+                              e.stopPropagation;
+                              handleDeleteCameraClick({
+                                cameraId: cam._id,
+                              });
+                            }}
+                          >
+                            Delete camera
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuArrow offset={12} />
                       </StyledDropdownMenuContent>
                     </DropdownMenu>
@@ -352,6 +375,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               Deployment
             </a>
           </IconKey>
+          <DeleteCameraAlert />
         </>
       )}
     </>
