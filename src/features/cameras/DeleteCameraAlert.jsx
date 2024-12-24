@@ -50,7 +50,6 @@ const DeleteCameraAlert = () => {
 
   const handleDeleteCameraSubmit = () => {
     dispatch(deleteCamera({ cameraId: selectedCamera }));
-    dispatch(clearCameraImageCount());
   };
 
   const handleCancelDelete = () => {
@@ -68,8 +67,6 @@ const DeleteCameraAlert = () => {
     }
   }, [deleteCameraLoading, dispatch]);
 
-  const imagesText = `${imageCount} ${imageCount === 1 ? ' image' : ' images'}`;
-
   return (
     <Alert open={isAlertOpen}>
       <AlertPortal>
@@ -82,6 +79,7 @@ const DeleteCameraAlert = () => {
             </SpinnerOverlay>
           )}
           <AlertTitle>Delete Camera</AlertTitle>
+          {/*TODO: Add a link to the documentation for more information on how to delete images.*/}
           {imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ? (
             <>
               Due to the large number of images associated with this camera, we are unable to delete
@@ -89,25 +87,43 @@ const DeleteCameraAlert = () => {
               number of images associated with this camera do not exceed{' '}
               {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
               inconvenience.
-              <ButtonRow>
-                <Button type="button" size="large" onClick={handleCancelDelete}>
-                  Cancel
-                </Button>
-              </ButtonRow>
             </>
           ) : (
             <>
-              Are you sure you&apos;d like to delete Camera <BoldText>{selectedCamera}</BoldText>?
-              This will remove the camera from the project, remove all deployments associated with
-              it, and <BoldText>{imagesText}</BoldText> will be deleted.{' '}
-              <BoldText>This action cannot be undone.</BoldText>
+              <p>
+                Are you sure you&apos;d like to delete Camera <BoldText>{selectedCamera}</BoldText>?{' '}
+                {imageCount === 0 && 'This will remove the Camera and the Deployments '}
+                {imageCount > 0 && (
+                  <>
+                    This will remove the Camera, its Deployments, and{' '}
+                    {imageCount > 1 ? 'all' : 'the'}{' '}
+                    <BoldText>
+                      {imageCount} image{imageCount > 1 && 's'}
+                    </BoldText>{' '}
+                  </>
+                )}
+                associated with it from the Project.
+              </p>
+              <p>
+                <BoldText>This action cannot be undone.</BoldText>
+              </p>
               <ButtonRow>
-                <Button type="button" size="large" onClick={handleCancelDelete}>
+                <Button
+                  type="button"
+                  size="large"
+                  disabled={deleteCameraLoading.isLoading}
+                  onClick={handleCancelDelete}
+                >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="large"
+                  disabled={
+                    deleteCameraLoading.isLoading ||
+                    imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ||
+                    imageCountLoading
+                  }
                   onClick={handleDeleteCameraSubmit}
                   css={{
                     backgroundColor: red.red4,
