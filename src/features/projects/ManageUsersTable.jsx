@@ -81,10 +81,7 @@ const ManageUsersTable = () => {
                         <IconButton
                           variant="ghost"
                           size="med"
-                          onClick={() => {
-                            dispatch(editUser(email));
-                            dispatch(resetUserPassword());
-                          }}
+                          onClick={() => dispatch(resetUserPassword(email))}
                         >
                           <ResetIcon />
                         </IconButton>
