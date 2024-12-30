@@ -19,7 +19,7 @@ import {
   fetchUsers,
   selectUsers,
   selectUsersLoading,
-  resetUserPassword,
+  resendTempPassword,
 } from './usersSlice.js';
 import { hasRole, MANAGE_USERS_ROLES } from '../auth/roles';
 
@@ -81,13 +81,13 @@ const ManageUsersTable = () => {
                         <IconButton
                           variant="ghost"
                           size="med"
-                          onClick={() => dispatch(resetUserPassword(email))}
+                          onClick={() => dispatch(resendTempPassword({ username: email }))}
                         >
                           <ResetIcon />
                         </IconButton>
                       </TooltipTrigger>
                       <TooltipContent side="top" sideOffset={5}>
-                        Reset Password
+                        Resend Temp Password
                         <TooltipArrow />
                       </TooltipContent>
                     </Tooltip>

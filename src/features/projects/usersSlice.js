@@ -205,13 +205,24 @@ export const createUser = (values) => {
   };
 };
 
-export const resetUserPassword = () => {
+export const resendTempPassword = (values) => {
   return async (dispatch, getState) => {
     try {
-      const selectedUser = getState().users.selectedUser;
-      Auth.resetUserPassword(selectedUser.username);
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        await call({
+          projId,
+          request: 'resendTempPassword',
+          input: values,
+        });
+      }
     } catch (err) {
-      console.error(err);
+      dispatch(addUserError(err));
     }
   };
 };
