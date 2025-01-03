@@ -95,6 +95,21 @@ export const usersSlice = createSlice({
       state.loadingStates.users = ls;
     },
 
+    resendTempPasswordStart: (state) => {
+      const ls = { isLoading: true, operation: 'resendTempPassword', errors: null };
+      state.loadingStates.users = ls;
+    },
+
+    resendTempPasswordSuccess: (state) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.users = ls;
+    },
+
+    resendTempPasswordError: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.users = ls;
+    },
+
     cancel: (state) => {
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.users = ls;
@@ -126,6 +141,9 @@ export const {
   addUserSuccess,
   addUserStart,
   addUserError,
+  resendTempPasswordStart,
+  resendTempPasswordSuccess,
+  resendTempPasswordError,
   cancel,
   clearUsers,
   dismissManageUsersError,
@@ -208,6 +226,8 @@ export const createUser = (values) => {
 export const resendTempPassword = (values) => {
   return async (dispatch, getState) => {
     try {
+      dispatch(resendTempPasswordStart());
+
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
@@ -220,9 +240,10 @@ export const resendTempPassword = (values) => {
           request: 'resendTempPassword',
           input: values,
         });
+        dispatch(resendTempPasswordSuccess());
       }
     } catch (err) {
-      dispatch(addUserError(err));
+      dispatch(resendTempPasswordError(err));
     }
   };
 };

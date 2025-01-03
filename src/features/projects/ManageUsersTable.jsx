@@ -19,6 +19,7 @@ import {
   fetchUsers,
   selectUsers,
   selectUsersLoading,
+  selectManageUserErrors,
   resendTempPassword,
 } from './usersSlice.js';
 import { hasRole, MANAGE_USERS_ROLES } from '../auth/roles';
@@ -28,6 +29,8 @@ const ManageUsersTable = () => {
   const currentUserRoles = useSelector(selectUserCurrentRoles);
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
+  const errors = useSelector(selectManageUserErrors);
+  const hasErrors = !isLoading && errors;
 
   const [usersClicked, setUsersClicked] = useState([]);
 
@@ -39,6 +42,11 @@ const ManageUsersTable = () => {
     () => [...users].sort((u1, u2) => (u1.email.toLowerCase() > u2.email.toLowerCase() ? 1 : -1)),
     [users],
   );
+
+  const handleResendTempPassword = (email) => {
+    dispatch(resendTempPassword({ username: email }));
+    setUsersClicked([...usersClicked, email]);
+  };
 
   return (
     <Content>
@@ -84,13 +92,14 @@ const ManageUsersTable = () => {
                           <IconButton
                             variant="ghost"
                             size="med"
-                            onClick={() => {
-                              dispatch(resendTempPassword({ username: email }));
-                              setUsersClicked([...usersClicked, email]);
-                            }}
-                            disabled={usersClicked.includes(email)}
+                            onClick={() => handleResendTempPassword(email)}
+                            disabled={usersClicked.includes(email) && !hasErrors}
                           >
-                            {usersClicked.includes(email) ? <CheckIcon /> : <ResetIcon />}
+                            {usersClicked.includes(email) && !hasErrors ? (
+                              <CheckIcon />
+                            ) : (
+                              <ResetIcon />
+                            )}
                           </IconButton>
                         </TooltipTrigger>
                         <TooltipContent side="top" sideOffset={5}>
