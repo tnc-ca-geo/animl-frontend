@@ -196,8 +196,10 @@ export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
                 </IconButton>
               </StyledDropdownMenuTrigger>
               <StyledDropdownMenuContent sideOffset={5}>
-                <DropdownMenuItem onClick={() => setIsDeleteConfirm(true)}>Delete</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsEdit(true)}>Edit</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setIsDeleteConfirm(true)}>
+                  Delete
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setIsEdit(true)}>Edit</DropdownMenuItem>
                 <DropdownMenuArrow offset={12} />
               </StyledDropdownMenuContent>
             </DropdownMenu>

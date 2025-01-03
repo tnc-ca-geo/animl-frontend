@@ -37,7 +37,7 @@ const LoupeDropdown = ({ image }) => {
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
-        <DropdownMenuItem onClick={handleDeleteImageItemClick}>Delete Image</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDeleteImageItemClick}>Delete Image</DropdownMenuItem>
         <DropdownMenuArrow offset={12} />
       </DropdownMenuContent>
 
