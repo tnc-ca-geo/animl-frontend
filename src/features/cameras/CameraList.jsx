@@ -21,7 +21,11 @@ import {
   registerCamera,
   setDeleteCameraAlertStatus,
 } from './wirelessCamerasSlice';
-import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
+import {
+  selectSelectedProjectId,
+  setModalContent,
+  setSelectedCamera,
+} from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
 import {
   Cross2Icon,
@@ -165,6 +169,7 @@ const ActiveState = ({ active }) => (
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
+  const selectedProjectId = useSelector(selectSelectedProjectId);
   const userRoles = useSelector(selectUserCurrentRoles);
   const dispatch = useDispatch();
 
@@ -231,7 +236,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                       >
                         {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
                           <DropdownMenuItem
-                            onClick={() => handleSaveDepClick({ cameraId: cam._id })}
+                            onSelect={() => handleSaveDepClick({ cameraId: cam._id })}
                           >
                             Add Deployment
                           </DropdownMenuItem>
@@ -256,7 +261,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
                           <DropdownMenuItem
-                            onClick={(e) => {
+                            onSelect={(e) => {
                               e.stopPropagation;
                               handleUnregisterClick({
                                 cameraId: cam._id,
@@ -270,7 +275,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           cam.isWireless &&
                           !cam.active && (
                             <DropdownMenuItem
-                              onClick={(e) => {
+                              onSelect={(e) => {
                                 e.stopPropagation;
                                 handleReRegisterCameraClick({
                                   cameraId: cam._id,
@@ -283,8 +288,8 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && (
                           <DropdownMenuItem
-                            className=""
-                            onClick={(e) => {
+                            disabled={cam.isWireless && selectedProjectId === 'default_project'}
+                            onSelect={(e) => {
                               e.stopPropagation;
                               handleDeleteCameraClick({
                                 cameraId: cam._id,
