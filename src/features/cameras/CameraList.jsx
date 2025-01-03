@@ -191,8 +191,11 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(setSelectedCamera(cameraId));
   };
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
+
+  const [editSnTooltipOpen, setEditSnTooltipOpen] = useState(false);
+  const [deleteCamTooltipOpen, setDeleteCamTooltipOpen] = useState(false);
+  const [releaseCamTooltipOpen, setReleaseCamTooltipOpen] = useState(false);
 
   const [cameraFilter, setCameraFilter] = useState('');
   const filteredCameras = cameras.filter(
@@ -242,12 +245,12 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           </DropdownMenuItem>
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_SERIAL_NUMBER_ROLES) && (
-                          <Tooltip open={tooltipOpen}>
+                          <Tooltip open={editSnTooltipOpen}>
                             <TooltipTrigger asChild>
                               <DropdownMenuItem
                                 onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
-                                onClick={() => cam.isWireless && setTooltipOpen(true)}
-                                onMouseLeave={() => setTooltipOpen(false)}
+                                onClick={() => cam.isWireless && setEditSnTooltipOpen(true)}
+                                onMouseLeave={() => setEditSnTooltipOpen(false)}
                                 disabled={cam.isWireless}
                               >
                                 Edit camera serial number
@@ -260,16 +263,31 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           </Tooltip>
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
-                          <DropdownMenuItem
-                            onSelect={(e) => {
-                              e.stopPropagation;
-                              handleUnregisterClick({
-                                cameraId: cam._id,
-                              });
-                            }}
-                          >
-                            Release camera
-                          </DropdownMenuItem>
+                          <Tooltip open={releaseCamTooltipOpen}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuItem
+                                disabled={cam.isWireless && selectedProjectId === 'default_project'}
+                                onClick={() => {
+                                  if (cam.isWireless && selectedProjectId === 'default_project') {
+                                    setReleaseCamTooltipOpen(true);
+                                  }
+                                }}
+                                onMouseLeave={() => setReleaseCamTooltipOpen(false)}
+                                onSelect={(e) => {
+                                  e.stopPropagation;
+                                  handleUnregisterClick({
+                                    cameraId: cam._id,
+                                  });
+                                }}
+                              >
+                                Release camera
+                              </DropdownMenuItem>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" sideOffset={5}>
+                              You cannot release wireless cameras from the Default Project
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) &&
                           cam.isWireless &&
@@ -287,17 +305,31 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                             </DropdownMenuItem>
                           )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && (
-                          <DropdownMenuItem
-                            disabled={cam.isWireless && selectedProjectId === 'default_project'}
-                            onSelect={(e) => {
-                              e.stopPropagation;
-                              handleDeleteCameraClick({
-                                cameraId: cam._id,
-                              });
-                            }}
-                          >
-                            Delete camera
-                          </DropdownMenuItem>
+                          <Tooltip open={deleteCamTooltipOpen}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuItem
+                                disabled={cam.isWireless && selectedProjectId === 'default_project'}
+                                onClick={() => {
+                                  if (cam.isWireless && selectedProjectId === 'default_project') {
+                                    setDeleteCamTooltipOpen(true);
+                                  }
+                                }}
+                                onMouseLeave={() => setDeleteCamTooltipOpen(false)}
+                                onSelect={(e) => {
+                                  e.stopPropagation;
+                                  handleDeleteCameraClick({
+                                    cameraId: cam._id,
+                                  });
+                                }}
+                              >
+                                Delete camera
+                              </DropdownMenuItem>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" sideOffset={5}>
+                              You cannot delete wireless cameras from the Default Project
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
                         )}
                         <DropdownMenuArrow offset={12} />
                       </StyledDropdownMenuContent>
