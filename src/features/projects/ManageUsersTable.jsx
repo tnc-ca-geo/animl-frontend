@@ -57,7 +57,7 @@ const ManageUsersTable = () => {
             </tr>
           </thead>
           <tbody>
-            {userSorted.map(({ email, roles }) => (
+            {userSorted.map(({ email, roles, status }) => (
               <TableRow key={email}>
                 <TableCell>{email}</TableCell>
                 <TableCell>{roles.join(', ')}</TableCell>
@@ -78,25 +78,27 @@ const ManageUsersTable = () => {
                         <TooltipArrow />
                       </TooltipContent>
                     </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <IconButton
-                          variant="ghost"
-                          size="med"
-                          onClick={() => {
-                            dispatch(resendTempPassword({ username: email }));
-                            setUsersClicked([...usersClicked, email]);
-                          }}
-                          disabled={usersClicked.includes(email)}
-                        >
-                          {usersClicked.includes(email) ? <CheckIcon /> : <ResetIcon />}
-                        </IconButton>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" sideOffset={5}>
-                        Resend Temp Password
-                        <TooltipArrow />
-                      </TooltipContent>
-                    </Tooltip>
+                    {status === 'FORCE_CHANGE_PASSWORD' && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <IconButton
+                            variant="ghost"
+                            size="med"
+                            onClick={() => {
+                              dispatch(resendTempPassword({ username: email }));
+                              setUsersClicked([...usersClicked, email]);
+                            }}
+                            disabled={usersClicked.includes(email)}
+                          >
+                            {usersClicked.includes(email) ? <CheckIcon /> : <ResetIcon />}
+                          </IconButton>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" sideOffset={5}>
+                          Resend Temp Password
+                          <TooltipArrow />
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                   </TableCell>
                 )}
               </TableRow>
