@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@stitches/react';
-import { Pencil1Icon, ResetIcon } from '@radix-ui/react-icons';
+import { CheckIcon, Pencil1Icon, ResetIcon } from '@radix-ui/react-icons';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
 import {
@@ -28,6 +28,8 @@ const ManageUsersTable = () => {
   const currentUserRoles = useSelector(selectUserCurrentRoles);
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
+
+  const [usersClicked, setUsersClicked] = useState([]);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -81,9 +83,13 @@ const ManageUsersTable = () => {
                         <IconButton
                           variant="ghost"
                           size="med"
-                          onClick={() => dispatch(resendTempPassword({ username: email }))}
+                          onClick={() => {
+                            dispatch(resendTempPassword({ username: email }));
+                            setUsersClicked([...usersClicked, email]);
+                          }}
+                          disabled={usersClicked.includes(email)}
                         >
-                          <ResetIcon />
+                          {usersClicked.includes(email) ? <CheckIcon /> : <ResetIcon />}
                         </IconButton>
                       </TooltipTrigger>
                       <TooltipContent side="top" sideOffset={5}>
