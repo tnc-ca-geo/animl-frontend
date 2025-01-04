@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuItemIconLeft,
   DropdownMenuArrow,
 } from '../../components/Dropdown.jsx';
 import IconButton from '../../components/IconButton.jsx';
@@ -13,6 +14,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import DeleteImagesAlert from '../images/DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 import { selectFocusIndex, setSelectedImageIndices } from '../review/reviewSlice.js';
+import { Trash2 } from 'lucide-react';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -37,7 +39,12 @@ const LoupeDropdown = ({ image }) => {
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
-        <DropdownMenuItem onClick={handleDeleteImageItemClick}>Delete Image</DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDeleteImageItemClick}>
+          <DropdownMenuItemIconLeft>
+            <Trash2 size={15} />
+          </DropdownMenuItemIconLeft>
+          Delete Image
+        </DropdownMenuItem>
         <DropdownMenuArrow offset={12} />
       </DropdownMenuContent>
 
