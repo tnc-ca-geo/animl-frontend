@@ -103,7 +103,7 @@ const ManageUsersTable = () => {
                           </IconButton>
                         </TooltipTrigger>
                         <TooltipContent side="top" sideOffset={5}>
-                          Resend Temp Password
+                          Resend Temporary Password
                           <TooltipArrow />
                         </TooltipContent>
                       </Tooltip>
