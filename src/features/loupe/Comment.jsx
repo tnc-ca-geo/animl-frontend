@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuItemIconLeft,
   DropdownMenuArrow,
 } from '../../components/Dropdown.jsx';
 import Button from '../../components/Button.jsx';
@@ -17,6 +18,7 @@ import { selectUserUsername } from '../auth/authSlice.js';
 import { DateTime } from 'luxon';
 import { editComment } from '../review/reviewSlice.js';
 import { indigo } from '@radix-ui/colors';
+import { Trash2, Pencil } from 'lucide-react';
 
 const StyledFieldRow = styled(FieldRow, {
   display: 'block',
@@ -197,9 +199,17 @@ export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
               </StyledDropdownMenuTrigger>
               <StyledDropdownMenuContent sideOffset={5}>
                 <DropdownMenuItem onSelect={() => setIsDeleteConfirm(true)}>
+                  <DropdownMenuItemIconLeft>
+                    <Trash2 size={15} />
+                  </DropdownMenuItemIconLeft>
                   Delete
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setIsEdit(true)}>Edit</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setIsEdit(true)}>
+                  <DropdownMenuItemIconLeft>
+                    <Pencil size={15} />
+                  </DropdownMenuItemIconLeft>
+                  Edit
+                </DropdownMenuItem>
                 <DropdownMenuArrow offset={12} />
               </StyledDropdownMenuContent>
             </DropdownMenu>

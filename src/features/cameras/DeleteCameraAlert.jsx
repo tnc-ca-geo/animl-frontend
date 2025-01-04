@@ -93,7 +93,7 @@ const DeleteCameraAlert = () => {
               <p>
                 Are you sure you&apos;d like to delete Camera <BoldText>{selectedCamera}</BoldText>?{' '}
                 {imageCount === 0 && 'This will remove the Camera and the Deployments '}
-                {imageCount > 0 && (
+                {!imageCountLoading && imageCount > 0 && (
                   <>
                     This will remove the Camera, its Deployments, and{' '}
                     {imageCount > 1 ? 'all' : 'the'}{' '}

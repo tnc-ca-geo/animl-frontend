@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuItemIconLeft,
   DropdownMenuArrow,
 } from '../../components/Dropdown.jsx';
 import {
@@ -35,7 +36,7 @@ import {
   ChevronDownIcon,
 } from '@radix-ui/react-icons';
 import { StandAloneInput as Input } from '../../components/Form';
-import { Camera, MapPin } from 'lucide-react';
+import { Camera, MapPin, IdCard, Trash2, Unlink, Link } from 'lucide-react';
 import { indigo } from '@radix-ui/colors';
 
 import {
@@ -241,6 +242,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           <DropdownMenuItem
                             onSelect={() => handleSaveDepClick({ cameraId: cam._id })}
                           >
+                            <DropdownMenuItemIconLeft>
+                              <MapPin size={15} />
+                            </DropdownMenuItemIconLeft>
                             Add Deployment
                           </DropdownMenuItem>
                         )}
@@ -253,6 +257,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                                 onMouseLeave={() => setEditSnTooltipOpen(false)}
                                 disabled={cam.isWireless}
                               >
+                                <DropdownMenuItemIconLeft>
+                                  <IdCard size={15} />
+                                </DropdownMenuItemIconLeft>
                                 Edit camera serial number
                               </DropdownMenuItem>
                             </TooltipTrigger>
@@ -280,6 +287,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                                   });
                                 }}
                               >
+                                <DropdownMenuItemIconLeft>
+                                  <Unlink size={15} />
+                                </DropdownMenuItemIconLeft>
                                 Release camera
                               </DropdownMenuItem>
                             </TooltipTrigger>
@@ -301,6 +311,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                                 });
                               }}
                             >
+                              <DropdownMenuItemIconLeft>
+                                <Link size={15} />
+                              </DropdownMenuItemIconLeft>
                               Re-register camera
                             </DropdownMenuItem>
                           )}
@@ -322,6 +335,9 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                                   });
                                 }}
                               >
+                                <DropdownMenuItemIconLeft>
+                                  <Trash2 size={15} />
+                                </DropdownMenuItemIconLeft>
                                 Delete camera
                               </DropdownMenuItem>
                             </TooltipTrigger>
