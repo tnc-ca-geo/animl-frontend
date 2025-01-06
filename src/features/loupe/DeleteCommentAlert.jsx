@@ -1,28 +1,22 @@
 import React from 'react';
-import { 
-  Alert, 
-  AlertContent, 
-  AlertOverlay, 
-  AlertPortal, 
-  AlertTitle 
-} from "../../components/AlertDialog";
+import {
+  Alert,
+  AlertContent,
+  AlertOverlay,
+  AlertPortal,
+  AlertTitle,
+} from '../../components/AlertDialog';
 import Button from '../../components/Button.jsx';
 import { red } from '@radix-ui/colors';
 
-export const DeleteCommentAlert = ({
-  isOpen,
-  onDeleteConfirm,
-  onDeleteCancel
-}) => {
+export const DeleteCommentAlert = ({ isOpen, onDeleteConfirm, onDeleteCancel }) => {
   return (
     <Alert open={isOpen}>
       <AlertPortal>
-        <AlertOverlay /> 
+        <AlertOverlay />
         <AlertContent>
-          <AlertTitle>
-            Are you sure you&apos;d like to delete this comment?
-          </AlertTitle>
-          <p>This action can not be undone.</p>
+          <AlertTitle>Are you sure you&apos;d like to delete this comment?</AlertTitle>
+          <p>This action cannot be undone.</p>
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
             <Button size="small" css={{ border: 'none' }} onClick={() => onDeleteCancel()}>
               Cancel
@@ -44,4 +38,4 @@ export const DeleteCommentAlert = ({
       </AlertPortal>
     </Alert>
   );
-}
+};

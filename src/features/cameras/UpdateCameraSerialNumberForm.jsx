@@ -128,7 +128,7 @@ const UpdateCameraSerialNumberForm = () => {
                     A camera with the serial number you entered already exists. By updating camera{' '}
                     <strong>{selectedCamera}</strong> with this serial number, you will be{' '}
                     <strong>merging</strong> images from the selected camera to the target camera,
-                    which can not be undone.
+                    which cannot be undone.
                   </p>
                   {affectedViews.length > 0 && (
                     <p>
