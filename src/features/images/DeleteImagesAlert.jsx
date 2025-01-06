@@ -24,6 +24,7 @@ import {
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
+import Callout from '../../components/Callout.jsx';
 import {
   clearDeleteImagesTask,
   deleteImagesTask,
@@ -164,7 +165,7 @@ const DeleteImagesAlert = () => {
           )}
           <AlertTitle>{title}</AlertTitle>
           <div>
-            {text}
+            <Callout type="warning">{text}</Callout>
             <PermanentActionConfirmation
               text="permanently delete"
               setConfirmed={setConfirmedDelete}
