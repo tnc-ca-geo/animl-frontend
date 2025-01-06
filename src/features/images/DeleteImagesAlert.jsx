@@ -88,22 +88,28 @@ const DeleteImagesAlert = () => {
   const filterTitle = `Are you sure you'd like to delete ${
     imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`
   }?`;
+
   const selectionTitle = `Are you sure you'd like to delete ${
     selectedImages.length === 1
       ? 'this image'
       : `these ${selectedImages && selectedImages.length.toLocaleString()} images`
   }?`;
+
   const filterText = (
     <div>
       <p>
-        This will delete all images that match the currently applied filters. This action can not be
-        undone.
+        This will delete all images that match the currently applied filters.{' '}
+        <strong>This action can not be undone.</strong>
       </p>
     </div>
   );
+
   const selectionText = (
     <div>
-      <p>This will delete all currently selected images. This action cannot be undone.</p>
+      <p>
+        This will delete all currently selected images.{' '}
+        <strong>This action cannot be undone.</strong>
+      </p>
     </div>
   );
 

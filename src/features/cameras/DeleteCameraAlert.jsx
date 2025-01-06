@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { red } from '@radix-ui/colors';
-import { styled } from '../../theme/stitches.config.js';
 import Button from '../../components/Button.jsx';
-import { ButtonRow } from '../../components/Form.jsx';
 import {
   clearDeleteCameraTask,
   deleteCamera,
@@ -29,10 +27,8 @@ import {
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
 import { DeleteImagesProgressBar } from '../images/DeleteImagesProgressBar.jsx';
-
-const BoldText = styled('span', {
-  fontWeight: '$5',
-});
+import PermanentActionConfirmation from '../../components/PermanentActionConfirmation.jsx';
+import Callout from '../../components/Callout.jsx';
 
 const DeleteCameraAlert = () => {
   const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
@@ -47,6 +43,8 @@ const DeleteCameraAlert = () => {
       dispatch(fetchCameraImageCount({ cameraId: selectedCamera }));
     }
   }, [imageCount, selectedCamera, dispatch]);
+
+  const [confirmedDelete, setConfirmedDelete] = useState(false);
 
   const handleDeleteCameraSubmit = () => {
     dispatch(deleteCamera({ cameraId: selectedCamera }));
@@ -80,63 +78,72 @@ const DeleteCameraAlert = () => {
           )}
           <AlertTitle>Delete Camera</AlertTitle>
           {/*TODO: Add a link to the documentation for more information on how to delete images.*/}
-          {imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ? (
-            <>
-              Due to the large number of images associated with this camera, we are unable to delete
-              Camera <BoldText>{selectedCamera}</BoldText> at this time. Please ensure that the
-              number of images associated with this camera do not exceed{' '}
-              {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
-              inconvenience.
-            </>
-          ) : (
-            <>
-              <p>
-                Are you sure you&apos;d like to delete Camera <BoldText>{selectedCamera}</BoldText>?{' '}
-                {imageCount === 0 && 'This will remove the Camera and the Deployments '}
-                {!imageCountLoading && imageCount > 0 && (
-                  <>
-                    This will remove the Camera, its Deployments, and{' '}
-                    {imageCount > 1 ? 'all' : 'the'}{' '}
-                    <BoldText>
-                      {imageCount} image{imageCount > 1 && 's'}
-                    </BoldText>{' '}
-                  </>
-                )}
-                associated with it from the Project.
-              </p>
-              <p>
-                <BoldText>This action cannot be undone.</BoldText>
-              </p>
-              <ButtonRow>
-                <Button
-                  type="button"
-                  size="large"
-                  disabled={deleteCameraLoading.isLoading}
-                  onClick={handleCancelDelete}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="large"
-                  disabled={
-                    deleteCameraLoading.isLoading ||
-                    imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ||
-                    imageCountLoading
-                  }
-                  onClick={handleDeleteCameraSubmit}
-                  css={{
-                    backgroundColor: red.red4,
-                    color: red.red11,
-                    border: 'none',
-                    '&:hover': { color: red.red11, backgroundColor: red.red5 },
-                  }}
-                >
-                  Delete Camera
-                </Button>
-              </ButtonRow>
-            </>
-          )}
+          <div>
+            <Callout type="warning">
+              {imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ? (
+                <>
+                  Due to the large number of images associated with this camera, we are unable to
+                  delete Camera <strong>{selectedCamera}</strong> at this time. Please ensure that
+                  the number of images associated with this camera do not exceed{' '}
+                  {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
+                  inconvenience.
+                </>
+              ) : (
+                <>
+                  <p>
+                    Are you sure you&apos;d like to delete Camera <strong>{selectedCamera}</strong>?{' '}
+                    {imageCount === 0 && 'This will remove the Camera and the Deployments '}
+                    {!imageCountLoading && imageCount > 0 && (
+                      <>
+                        This will remove the Camera, its Deployments, and{' '}
+                        {imageCount > 1 ? 'all' : 'the'}{' '}
+                        <strong>
+                          {imageCount} image{imageCount > 1 && 's'}
+                        </strong>{' '}
+                      </>
+                    )}
+                    associated with it from the Project.
+                  </p>
+                  <p>
+                    <strong>This action cannot be undone.</strong>
+                  </p>
+                </>
+              )}
+            </Callout>
+            <PermanentActionConfirmation
+              text="permanently delete"
+              setConfirmed={setConfirmedDelete}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
+            <Button
+              type="button"
+              size="small"
+              disabled={deleteCameraLoading.isLoading}
+              onClick={handleCancelDelete}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              size="small"
+              disabled={
+                deleteCameraLoading.isLoading ||
+                imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ||
+                imageCountLoading ||
+                !confirmedDelete
+              }
+              onClick={handleDeleteCameraSubmit}
+              css={{
+                backgroundColor: red.red4,
+                color: red.red11,
+                border: 'none',
+                '&:hover': { color: red.red11, backgroundColor: red.red5 },
+              }}
+            >
+              Delete Camera
+            </Button>
+          </div>
         </AlertContent>
       </AlertPortal>
     </Alert>
