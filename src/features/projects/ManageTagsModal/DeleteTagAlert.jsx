@@ -53,7 +53,7 @@ export const DeleteTagAlert = ({ open, tag, onConfirm, onCancel }) => {
           <div>
             <Callout type="warning">
               <p>
-                Deleting this tag will:
+                Deleting this Tag will:
                 <ul>
                   <li>remove it as an option to apply to your images</li>
                   <li>remove all instances of it from your existing images</li>

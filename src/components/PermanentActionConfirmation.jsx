@@ -8,8 +8,8 @@ const PermanentActionConfirmation = ({ text, setConfirmed }) => {
   return (
     <div>
       <p>
-        To confirm, type <strong style={{ 'font-style': 'italic' }}>{text}</strong> in the text
-        input field:
+        To confirm, type <strong style={{ fontStyle: 'italic' }}>{text}</strong> in the text input
+        field:
       </p>
       <FieldRow>
         <StandAloneInput
