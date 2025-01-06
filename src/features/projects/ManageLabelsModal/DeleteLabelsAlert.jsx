@@ -41,8 +41,8 @@ const DeleteLabelsAlert = ({ open, setAlertOpen, label }) => {
             label?
           </AlertTitle>
           <Callout type="warning">
-            <p>
-              Deleting this Label will:
+            <div>
+              <p>Deleting this Label will:</p>
               <ul>
                 <li>
                   remove it as an option to apply to your images (
@@ -59,8 +59,10 @@ const DeleteLabelsAlert = ({ open, setAlertOpen, label }) => {
                   affected images to a &quot;not-reviewed&quot; state
                 </li>
               </ul>
-              <strong>This action can not be undone.</strong>
-            </p>
+              <p>
+                <strong>This action can not be undone.</strong>
+              </p>
+            </div>
           </Callout>
           <PermanentActionConfirmation
             text="permanently delete"

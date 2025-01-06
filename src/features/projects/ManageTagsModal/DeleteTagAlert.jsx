@@ -52,14 +52,16 @@ export const DeleteTagAlert = ({ open, tag, onConfirm, onCancel }) => {
           </AlertTitle>
           <div>
             <Callout type="warning">
-              <p>
-                Deleting this Tag will:
+              <div>
+                <p> Deleting this Tag will:</p>
                 <ul>
                   <li>remove it as an option to apply to your images</li>
                   <li>remove all instances of it from your existing images</li>
                 </ul>
-                <strong>This action cannot be undone.</strong>
-              </p>
+                <p>
+                  <strong>This action cannot be undone.</strong>
+                </p>
+              </div>
             </Callout>
             <PermanentActionConfirmation
               text="permanently delete"

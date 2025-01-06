@@ -81,15 +81,15 @@ const DeleteCameraAlert = () => {
           <div>
             <Callout type="warning">
               {imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ? (
-                <>
+                <p>
                   Due to the large number of images associated with this camera, we are unable to
                   delete Camera <strong>{selectedCamera}</strong> at this time. Please ensure that
                   the number of images associated with this camera do not exceed{' '}
                   {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
                   inconvenience.
-                </>
+                </p>
               ) : (
-                <>
+                <div>
                   <p>
                     Are you sure you&apos;d like to delete Camera <strong>{selectedCamera}</strong>?{' '}
                     {imageCount === 0 && 'This will remove the Camera and the Deployments '}
@@ -107,7 +107,7 @@ const DeleteCameraAlert = () => {
                   <p>
                     <strong>This action cannot be undone.</strong>
                   </p>
-                </>
+                </div>
               )}
             </Callout>
             <PermanentActionConfirmation
