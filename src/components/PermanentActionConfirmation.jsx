@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FieldRow, StandAloneInput } from './Form.jsx';
 
 const PermanentActionConfirmation = ({ text, setConfirmed }) => {
   const [value, setValue] = useState('');
-  setConfirmed(value === text);
+
+  useEffect(() => {
+    setConfirmed(value === text);
+  }, [value, text, setConfirmed]);
 
   return (
     <div>

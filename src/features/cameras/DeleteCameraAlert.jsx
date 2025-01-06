@@ -141,7 +141,7 @@ const DeleteCameraAlert = () => {
                 '&:hover': { color: red.red11, backgroundColor: red.red5 },
               }}
             >
-              Delete Camera
+              Yes, delete
             </Button>
           </div>
         </AlertContent>
