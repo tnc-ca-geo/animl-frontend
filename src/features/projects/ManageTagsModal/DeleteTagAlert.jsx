@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   AlertPortal,
@@ -9,6 +9,8 @@ import {
 import Button from '../../../components/Button.jsx';
 import { red } from '@radix-ui/colors';
 import { styled } from '../../../theme/stitches.config.js';
+import Callout from '../../../components/Callout.jsx';
+import PermanentActionConfirmation from '../../../components/PermanentActionConfirmation.jsx';
 
 const PreviewTag = styled('div', {
   padding: '$1 $3',
@@ -25,6 +27,8 @@ const PreviewTag = styled('div', {
 });
 
 export const DeleteTagAlert = ({ open, tag, onConfirm, onCancel }) => {
+  const [confirmedDelete, setConfirmedDelete] = useState(false);
+
   return (
     <Alert open={open}>
       <AlertPortal>
@@ -47,21 +51,23 @@ export const DeleteTagAlert = ({ open, tag, onConfirm, onCancel }) => {
             tag?
           </AlertTitle>
           <div>
-            Deleting this tag will:
-            <ul>
-              <li>remove it as an option to apply to your images</li>
-              <li>remove all instances of it from your existing images</li>
-            </ul>
-            This action cannot be undone.
+            <Callout type="warning">
+              <p>
+                Deleting this tag will:
+                <ul>
+                  <li>remove it as an option to apply to your images</li>
+                  <li>remove all instances of it from your existing images</li>
+                </ul>
+                <strong>This action cannot be undone.</strong>
+              </p>
+            </Callout>
+            <PermanentActionConfirmation
+              text="permanently delete"
+              setConfirmed={setConfirmedDelete}
+            />
           </div>
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
-            <Button
-              size="small"
-              css={{
-                border: 'none',
-              }}
-              onClick={() => onCancel()}
-            >
+            <Button size="small" css={{ border: 'none' }} onClick={() => onCancel()}>
               Cancel
             </Button>
             <Button
@@ -72,6 +78,7 @@ export const DeleteTagAlert = ({ open, tag, onConfirm, onCancel }) => {
                 border: 'none',
                 '&:hover': { color: red.red11, backgroundColor: red.red5 },
               }}
+              disabled={!confirmedDelete}
               onClick={() => onConfirm(tag._id)}
             >
               Yes, delete
