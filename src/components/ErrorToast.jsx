@@ -23,7 +23,7 @@ import {
   selectManageLabelsErrors,
   dismissManageLabelsError,
   selectProjectTagErrors,
-  dismissProjectTagErrors
+  dismissProjectTagErrors,
 } from '../features/projects/projectsSlice';
 import {
   selectWirelessCamerasErrors,
