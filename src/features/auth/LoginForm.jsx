@@ -150,10 +150,6 @@ const StyledButton = styled(Button, {
   },
 });
 
-const StyledCallout = styled(Callout, {
-  margin: 'auto $3',
-});
-
 const LoginForm = () => {
   const { route, toSignIn } = useAuthenticator((context) => [context.route]);
   const userName = useSelector(selectUserUsername);
@@ -170,14 +166,14 @@ const LoginForm = () => {
       <Subheader>{helperText[route] || userName || ''}</Subheader>
       <StyledAuthenticator loginMechanisms={['email']} hideDefault={true} hideSignUp={true} />
       {route === 'resetPassword' && (
-        <StyledCallout type="info" title="Password reset">
+        <Callout type="info" title="Password reset">
           <p>
             Note: if you never logged into Animl and didn{"'"}t reset your temporary password before
-            it expired, we are unable to deliver password reset emails via the form below. Instead,
+            it expired, we are unable to deliver password reset emails via the form above. Instead,
             you must reach out to one of your Project Managers and have them send you a new
             temporary password.
           </p>
-        </StyledCallout>
+        </Callout>
       )}
       {route === 'confirmResetPassword' && (
         <StyledButton onClick={toSignIn}>Return to Sign In</StyledButton>
