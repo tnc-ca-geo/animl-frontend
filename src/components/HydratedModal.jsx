@@ -79,7 +79,6 @@ const HydratedModal = () => {
       fullHeight: true,
       content: <CameraAdminModal />,
       callBackOnClose: () => {
-        console.log('callBackOnClose() - reverting moment global timezone to local timezone');
         moment.tz.setDefault();
         dispatch(clearDeployments());
       },

@@ -1,8 +1,16 @@
-import React from 'react';
-import { Alert, AlertPortal, AlertOverlay, AlertContent, AlertTitle } from '../../../components/AlertDialog.jsx';
+import React, { useState } from 'react';
+import {
+  Alert,
+  AlertPortal,
+  AlertOverlay,
+  AlertContent,
+  AlertTitle,
+} from '../../../components/AlertDialog.jsx';
 import Button from '../../../components/Button.jsx';
 import { red } from '@radix-ui/colors';
 import { styled } from '../../../theme/stitches.config.js';
+import Callout from '../../../components/Callout.jsx';
+import PermanentActionConfirmation from '../../../components/PermanentActionConfirmation.jsx';
 
 const PreviewTag = styled('div', {
   padding: '$1 $3',
@@ -15,15 +23,12 @@ const PreviewTag = styled('div', {
   display: 'grid',
   placeItems: 'center',
   margin: 'auto $1',
-  height: '$5'
+  height: '$5',
 });
 
-export const DeleteTagAlert = ({ 
-  open, 
-  tag,
-  onConfirm,
-  onCancel
-}) => {
+export const DeleteTagAlert = ({ open, tag, onConfirm, onCancel }) => {
+  const [confirmedDelete, setConfirmedDelete] = useState(false);
+
   return (
     <Alert open={open}>
       <AlertPortal>
@@ -31,37 +36,40 @@ export const DeleteTagAlert = ({
         <AlertContent>
           <AlertTitle>
             Are you sure you&apos;d like to delete the{' '}
-            {tag && 
-              <PreviewTag 
-                css={{ 
-                  display: 'inline', 
+            {tag && (
+              <PreviewTag
+                css={{
+                  display: 'inline',
                   borderColor: tag.color,
                   backgroundColor: `${tag.color}1A`,
-                }} 
-                color={tag.color} 
+                }}
+                color={tag.color}
               >
-                { tag.name }
+                {tag.name}
               </PreviewTag>
-            } tag?
+            )}{' '}
+            tag?
           </AlertTitle>
           <div>
-            Deleting this tag will:
-            <ul>
-              <li>
-                remove it as an option to apply to your images
-              </li>
-              <li>remove all instances of it from your existing images</li>
-            </ul>
-            This action can not be undone.
+            <Callout type="warning">
+              <div>
+                <p> Deleting this Tag will:</p>
+                <ul>
+                  <li>remove it as an option to apply to your images</li>
+                  <li>remove all instances of it from your existing images</li>
+                </ul>
+                <p>
+                  <strong>This action cannot be undone.</strong>
+                </p>
+              </div>
+            </Callout>
+            <PermanentActionConfirmation
+              text="permanently delete"
+              setConfirmed={setConfirmedDelete}
+            />
           </div>
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
-            <Button 
-              size="small" 
-              css={{ 
-                border: 'none' 
-              }} 
-              onClick={() => onCancel()}
-            >
+            <Button size="small" css={{ border: 'none' }} onClick={() => onCancel()}>
               Cancel
             </Button>
             <Button
@@ -72,6 +80,7 @@ export const DeleteTagAlert = ({
                 border: 'none',
                 '&:hover': { color: red.red11, backgroundColor: red.red5 },
               }}
+              disabled={!confirmedDelete}
               onClick={() => onConfirm(tag._id)}
             >
               Yes, delete

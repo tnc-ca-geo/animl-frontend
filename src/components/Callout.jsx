@@ -19,7 +19,12 @@ const StyledCallout = styled('div', {
   p: {
     marginTop: '$3',
     color: '$textMedium',
-    fontSize: '$3',
+    fontSize: '$4',
+  },
+  ul: {
+    marginTop: '$3',
+    color: '$textMedium',
+    fontSize: '$4',
   },
   variants: {
     type: {

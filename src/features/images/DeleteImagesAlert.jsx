@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { red } from '@radix-ui/colors';
 import {
@@ -24,6 +24,7 @@ import {
   AlertTitle,
 } from '../../components/AlertDialog.jsx';
 import Button from '../../components/Button.jsx';
+import Callout from '../../components/Callout.jsx';
 import {
   clearDeleteImagesTask,
   deleteImagesTask,
@@ -32,6 +33,7 @@ import {
 } from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { DeleteImagesProgressBar } from './DeleteImagesProgressBar.jsx';
+import PermanentActionConfirmation from '../../components/PermanentActionConfirmation.jsx';
 
 const DeleteImagesAlert = () => {
   const dispatch = useDispatch();
@@ -52,7 +54,7 @@ const DeleteImagesAlert = () => {
     }
   }, [deleteImagesTaskLoading, dispatch]);
 
-  const handleConfirmDelete = () => {
+  const handleDeleteClick = () => {
     if (alertState.deleteImagesAlertByFilter) {
       // if deleting by filter, always delete using task handler
       dispatch(deleteImagesTask({ imageIds: [], filters: filters }));
@@ -71,6 +73,8 @@ const DeleteImagesAlert = () => {
     dispatch(clearDeleteImagesTask());
   };
 
+  const [confirmedDelete, setConfirmedDelete] = useState(false);
+
   const deleteByIdLimitExceeded =
     !alertState.deleteImagesAlertByFilter && selectedImages.length > ASYNC_IMAGE_DELETE_BY_ID_LIMIT;
   const byFilterLimitExceeded =
@@ -84,22 +88,28 @@ const DeleteImagesAlert = () => {
   const filterTitle = `Are you sure you'd like to delete ${
     imageCount === 1 ? 'this image' : `these ${imageCount && imageCount.toLocaleString()} images`
   }?`;
+
   const selectionTitle = `Are you sure you'd like to delete ${
     selectedImages.length === 1
       ? 'this image'
       : `these ${selectedImages && selectedImages.length.toLocaleString()} images`
   }?`;
+
   const filterText = (
     <div>
       <p>
-        This will delete all images that match the currently applied filters. This action can not be
-        undone.
+        This will delete all images that match the currently applied filters.{' '}
+        <strong>This action can not be undone.</strong>
       </p>
     </div>
   );
+
   const selectionText = (
     <div>
-      <p>This will delete all currently selected images. This action can not be undone.</p>
+      <p>
+        This will delete all currently selected images.{' '}
+        <strong>This action cannot be undone.</strong>
+      </p>
     </div>
   );
 
@@ -160,21 +170,27 @@ const DeleteImagesAlert = () => {
             </SpinnerOverlay>
           )}
           <AlertTitle>{title}</AlertTitle>
-          {text}
+          <div>
+            <Callout type="warning">{text}</Callout>
+            <PermanentActionConfirmation
+              text="permanently delete"
+              setConfirmed={setConfirmedDelete}
+            />
+          </div>
           <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
             <Button size="small" css={{ border: 'none' }} onClick={handleCancelDelete}>
               Cancel
             </Button>
             <Button
               size="small"
-              disabled={deleteByIdLimitExceeded || byFilterLimitExceeded}
+              disabled={deleteByIdLimitExceeded || byFilterLimitExceeded || !confirmedDelete}
               css={{
                 backgroundColor: red.red4,
                 color: red.red11,
                 border: 'none',
                 '&:hover': { color: red.red11, backgroundColor: red.red5 },
               }}
-              onClick={handleConfirmDelete}
+              onClick={handleDeleteClick}
             >
               Yes, delete
             </Button>
