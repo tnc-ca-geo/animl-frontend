@@ -15,14 +15,8 @@ import {
   incrementImage,
   incrementFocusIndex,
 } from '../review/reviewSlice.js';
-import { selectModalOpen, selectProjectTags } from '../projects/projectsSlice.js';
-import {
-  toggleOpenLoupe,
-  selectReviewMode,
-  selectIsAddingLabel,
-  drawBboxStart,
-  addLabelStart,
-} from './loupeSlice.js';
+import { selectProjectTags } from '../projects/projectsSlice.js';
+import { toggleOpenLoupe, selectReviewMode, drawBboxStart, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
@@ -240,11 +234,12 @@ const Loupe = () => {
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
-  const isAddingLabel = useSelector(selectIsAddingLabel);
-  const modalOpen = useSelector(selectModalOpen);
   const handleKeyDown = useCallback(
     (e) => {
-      if (!image || isAddingLabel || modalOpen) return;
+      // ignore if keydown event is from focused input or textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || !image) {
+        return;
+      }
       let charCode = String.fromCharCode(e.which).toLowerCase();
 
       // arrows or WASD (increment/decrement)
@@ -286,7 +281,7 @@ const Loupe = () => {
       //   }
       // }
     },
-    [dispatch, image, isAddingLabel, modalOpen, reviewMode],
+    [dispatch, image, reviewMode],
   );
 
   useEffect(() => {
