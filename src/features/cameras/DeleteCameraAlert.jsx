@@ -77,17 +77,29 @@ const DeleteCameraAlert = () => {
             </SpinnerOverlay>
           )}
           <AlertTitle>Delete Camera</AlertTitle>
-          {/*TODO: Add a link to the documentation for more information on how to delete images.*/}
           <div>
             <Callout type="warning">
               {imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ? (
-                <p>
-                  Due to the large number of images associated with this camera, we are unable to
-                  delete Camera <strong>{selectedCamera}</strong> at this time. Please ensure that
-                  the number of images associated with this camera do not exceed{' '}
-                  {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT} before trying again. We apologize for the
-                  inconvenience.
-                </p>
+                <>
+                  <p>
+                    Due to the large number of images associated with this camera, we are unable to
+                    delete Camera <strong>{selectedCamera}</strong> at this time. Please ensure that
+                    the number of images associated with this camera does not exceed{' '}
+                    {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT.toLocaleString()} before trying again.
+                  </p>
+                  <p>
+                    You can reduce the number images associated with this camera by using the{' '}
+                    <a
+                      href="https://docs.animl.camera/fundamentals/deleting-images#deleting-all-currently-filtered-images"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      delete-images-by-filter
+                    </a>{' '}
+                    option to delete batches of images before fully deleting this Camera. We
+                    apologize for the inconvenience.
+                  </p>
+                </>
               ) : (
                 <div>
                   <p>
@@ -98,7 +110,7 @@ const DeleteCameraAlert = () => {
                         This will remove the Camera, its Deployments, and{' '}
                         {imageCount > 1 ? 'all' : 'the'}{' '}
                         <strong>
-                          {imageCount} image{imageCount > 1 && 's'}
+                          {imageCount.toLocaleString()} image{imageCount > 1 && 's'}
                         </strong>{' '}
                       </>
                     )}

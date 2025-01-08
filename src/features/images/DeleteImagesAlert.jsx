@@ -121,10 +121,17 @@ const DeleteImagesAlert = () => {
         {ASYNC_IMAGE_DELETE_BY_ID_LIMIT.toLocaleString()} image limit Animl supports when deleting
         individually-selected images.
       </p>
-      {/*TODO: Add a link to the documentation for more information on how to delete images.*/}
       <p>
-        Please select fewer images, or use the delete-by-filter option, which can accommodate
-        deleting up to {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT.toLocaleString()} images at a time.
+        Please select fewer images, or use the{' '}
+        <a
+          href="https://docs.animl.camera/fundamentals/deleting-images#deleting-all-currently-filtered-images"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          delete-images-by-filter
+        </a>{' '}
+        option, which can accommodate deleting up to{' '}
+        {ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT.toLocaleString()} images at a time.
       </p>
     </div>
   );
