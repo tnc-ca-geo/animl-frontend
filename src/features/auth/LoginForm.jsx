@@ -32,6 +32,8 @@ const Subheader = styled('div', {
   paddingTop: '$3',
   maxWidth: 700,
   margin: '0 auto',
+  paddingRight: '$4',
+  paddingLeft: '$4',
   a: {
     textDecoration: 'none',
     color: '$textDark',
@@ -136,7 +138,10 @@ const StyledAuthenticator = styled(Authenticator, {
 });
 
 const StyledLoginCallout = styled('div', {
-  margin: '$3',
+  maxWidth: 700,
+  margin: '0 auto',
+  paddingRight: '$4',
+  paddingLeft: '$4',
 });
 
 const StyledButton = styled(Button, {
@@ -171,12 +176,23 @@ const LoginForm = () => {
       <StyledAuthenticator loginMechanisms={['email']} hideDefault={true} hideSignUp={true} />
       {route === 'resetPassword' && (
         <StyledLoginCallout>
-          <Callout type="info" title="Password reset">
+          <Callout type="info" title="Note about temporary passwords">
             <p>
-              Note: if you never logged into Animl and didn{"'"}t reset your temporary password
-              before it expired, we are unable to deliver password reset emails via the form above.
-              Instead, you must reach out to one of your Project Managers and have them send you a
-              new temporary password.
+              If you never logged into Animl and didn{"'"}t reset the temporary password that was
+              sent in your invitation email before it expired, we are unable to deliver password
+              reset emails via the form above.
+            </p>
+            <p>
+              {' '}
+              Instead, you must reach out to one of your Project Managers and have them{' '}
+              <a
+                href="https://docs.animl.camera/fundamentals/user-management#re-sending-users-temporary-passwords"
+                target="_blank"
+                rel="noreferrer"
+              >
+                send you a new temporary password
+              </a>
+              .
             </p>
           </Callout>
         </StyledLoginCallout>
