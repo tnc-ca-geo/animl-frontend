@@ -30,7 +30,7 @@ export const usersSlice = createSlice({
       state.users = payload.users;
     },
 
-    fetchUsersError: (state, { payload }) => {
+    fetchUsersFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -62,7 +62,7 @@ export const usersSlice = createSlice({
       state.users = updatedUsers;
     },
 
-    updateUserError: (state, { payload }) => {
+    updateUserFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -90,7 +90,7 @@ export const usersSlice = createSlice({
       ];
     },
 
-    addUserError: (state, { payload }) => {
+    addUserFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -105,7 +105,7 @@ export const usersSlice = createSlice({
       state.loadingStates.users = ls;
     },
 
-    resendTempPasswordError: (state, { payload }) => {
+    resendTempPasswordFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -132,18 +132,18 @@ export const usersSlice = createSlice({
 export const {
   fetchUsersStart,
   fetchUsersSuccess,
-  fetchUsersError,
+  fetchUsersFailure,
   editUser,
   updateUserSuccess,
   updateUserStart,
-  updateUserError,
+  updateUserFailure,
   addUser,
   addUserSuccess,
   addUserStart,
-  addUserError,
+  addUserFailure,
   resendTempPasswordStart,
   resendTempPasswordSuccess,
-  resendTempPasswordError,
+  resendTempPasswordFailure,
   cancel,
   clearUsers,
   dismissManageUsersError,
@@ -168,7 +168,7 @@ export const fetchUsers = () => {
         dispatch(fetchUsersSuccess({ users: res.users.users }));
       }
     } catch (err) {
-      dispatch(fetchUsersError(err));
+      dispatch(fetchUsersFailure(err));
     }
   };
 };
@@ -193,7 +193,7 @@ export const updateUser = (values) => {
         dispatch(updateUserSuccess(values));
       }
     } catch (err) {
-      dispatch(updateUserError(err));
+      dispatch(updateUserFailure(err));
     }
   };
 };
@@ -218,7 +218,7 @@ export const createUser = (values) => {
         dispatch(addUserSuccess(values));
       }
     } catch (err) {
-      dispatch(addUserError(err));
+      dispatch(addUserFailure(err));
     }
   };
 };
@@ -243,7 +243,7 @@ export const resendTempPassword = (values) => {
         dispatch(resendTempPasswordSuccess());
       }
     } catch (err) {
-      dispatch(resendTempPasswordError(err));
+      dispatch(resendTempPasswordFailure(err));
     }
   };
 };
