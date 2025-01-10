@@ -189,6 +189,11 @@ const ImageReviewToolbar = ({
     }
   };
 
+  // Close popover when changing images using keyboard
+  useEffect(() => {
+    setIsCommentsPopoverOpen(false);
+  }, [image._id]);
+
   return (
     <Toolbar>
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
