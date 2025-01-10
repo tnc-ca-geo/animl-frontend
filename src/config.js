@@ -17,7 +17,7 @@ export const API_URL = API_URLS[stage];
 export const IMAGES_URL = IMAGES_URLS[stage];
 export const IMAGE_QUERY_LIMITS = [10, 50, 100];
 export const SYNC_IMAGE_DELETE_LIMIT = 300; // when deleting w/o using task handler
-export const ASYNC_IMAGE_DELETE_BY_ID_LIMIT = 4000; // when deleting using task handler (by _id). Constrained by POST request size limits
+export const ASYNC_IMAGE_DELETE_BY_ID_LIMIT = 3000; // when deleting using task handler (by _id). Constrained by POST request size limits
 export const ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT = 200000; // when deleting using task handler (by filter). Constrained by task Lambda timeout
 
 export const SUPPORTED_WIRELESS_CAMS = ['BuckEyeCam', 'RidgeTec', 'CUDDEBACK', 'RECONYX'];

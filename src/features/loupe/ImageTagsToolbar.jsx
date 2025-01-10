@@ -64,16 +64,16 @@ const orderUnaddedTags = (unaddedTags) => {
 export const ImageTagsToolbar = ({ image, projectTags }) => {
   const dispatch = useDispatch();
 
-  const [imageTags, setImageTags] = useState(getImageTagInfo(image.tags, projectTags));
+  const [imageTags, setImageTags] = useState(getImageTagInfo(image.tags ?? [], projectTags));
   const [unaddedTags, setUnaddedTags] = useState(
-    orderUnaddedTags(getUnaddedTags(image.tags, projectTags)),
+    orderUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags)),
   );
 
   // image._id -> when the enlarged image changes
   // projectTags -> so that newly added project tags show up without refreshing
   useEffect(() => {
-    setImageTags(getImageTagInfo(image.tags, projectTags));
-    setUnaddedTags(orderUnaddedTags(getUnaddedTags(image.tags, projectTags)));
+    setImageTags(getImageTagInfo(image.tags ?? [], projectTags));
+    setUnaddedTags(orderUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags)));
   }, [image._id, projectTags]);
 
   const onDeleteTag = (tagId) => {

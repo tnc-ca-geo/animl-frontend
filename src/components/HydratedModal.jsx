@@ -32,7 +32,10 @@ import {
   setSelectedCamera,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
-import { ManageLabelsAndTagsModal, ManageLabelsAndTagsModalTitle } from '../features/projects/ManageTagsAndLabelsModal.jsx';
+import {
+  ManageLabelsAndTagsModal,
+  ManageLabelsAndTagsModalTitle,
+} from '../features/projects/ManageTagsAndLabelsModal.jsx';
 
 // Modal populated with content
 const HydratedModal = () => {
@@ -55,7 +58,7 @@ const HydratedModal = () => {
     cameraSerialNumberLoading.isLoading ||
     deleteImagesLoading.isLoading;
 
-  const [manageTagsAndLabelsTab, setManageTagsAndLabelsTab] = useState("labels");
+  const [manageTagsAndLabelsTab, setManageTagsAndLabelsTab] = useState('labels');
 
   const modalContentMap = {
     'stats-modal': {
@@ -76,7 +79,6 @@ const HydratedModal = () => {
       fullHeight: true,
       content: <CameraAdminModal />,
       callBackOnClose: () => {
-        console.log('callBackOnClose() - reverting moment global timezone to local timezone');
         moment.tz.setDefault();
         dispatch(clearDeployments());
       },
@@ -121,14 +123,19 @@ const HydratedModal = () => {
       },
     },
     'manage-tags-and-labels-form': {
-      title: <ManageLabelsAndTagsModalTitle tab={manageTagsAndLabelsTab} setTab={setManageTagsAndLabelsTab} />,
+      title: (
+        <ManageLabelsAndTagsModalTitle
+          tab={manageTagsAndLabelsTab}
+          setTab={setManageTagsAndLabelsTab}
+        />
+      ),
       size: 'md',
-      content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab}/>,
+      content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab} />,
       callBackOnClose: () => {
-        setManageTagsAndLabelsTab("labels");
+        setManageTagsAndLabelsTab('labels');
         return true;
       },
-    }
+    },
   };
 
   const handleModalToggle = (content) => {

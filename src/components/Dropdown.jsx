@@ -49,19 +49,19 @@ const itemStyles = {
   fontSize: '$3',
   fontWeight: '$2',
   lineHeight: 1,
-  color: '$hiContrast',
+  color: '$textDark',
   borderRadius: 3,
   display: 'flex',
   alignItems: 'center',
   height: 27,
   padding: '0 5px',
   position: 'relative',
-  paddingLeft: '$2',
+  paddingLeft: 28,
   userSelect: 'none',
 
   '&[data-disabled]': {
     color: mauve.mauve8,
-    // pointerEvents: 'none',
+    pointerEvents: 'none',
   },
 
   '&[data-state="checked"]': {

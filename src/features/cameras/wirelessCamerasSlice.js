@@ -5,19 +5,24 @@ import { setSelectedProjAndView } from '../projects/projectsSlice';
 
 const initialState = {
   wirelessCameras: [],
+  cameraImageCount: {
+    isLoading: false,
+    currentCameraId: null,
+    count: null,
+  },
   loadingState: {
     isLoading: false,
-    operation: null, /* 'fetching', 'updating', 'deleting' */
+    operation: null /* 'fetching', 'updating', 'deleting' */,
     errors: null,
     noneFound: false,
   },
+  isDeleteCameraAlertOpen: false,
 };
 
 export const wirelessCamerasSlice = createSlice({
   name: 'wirelessCameras',
   initialState,
   reducers: {
-
     getWirelessCamerasStart: (state) => {
       state.loadingState.isLoading = true;
       state.loadingState.operation = 'fetching';
@@ -35,7 +40,7 @@ export const wirelessCamerasSlice = createSlice({
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound: (payload.length === 0),
+        noneFound: payload.length === 0,
       };
     },
 
@@ -58,13 +63,13 @@ export const wirelessCamerasSlice = createSlice({
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound: (payload.wirelessCameras.length === 0),
+        noneFound: payload.wirelessCameras.length === 0,
       };
       // TODO: make the cameras update update more surgical?
-      // i.e. ONLY return the new/updated Camera source record and merge it 
-      // into existing cameras (like we do with Views), and only return the 
-      // new cameraConfig & merge that with Project.cameras array. 
-      // Advantages: don't have to do getCameras() on backend before returning, 
+      // i.e. ONLY return the new/updated Camera source record and merge it
+      // into existing cameras (like we do with Views), and only return the
+      // new cameraConfig & merge that with Project.cameras array.
+      // Advantages: don't have to do getCameras() on backend before returning,
       // less data in payload
     },
 
@@ -87,7 +92,7 @@ export const wirelessCamerasSlice = createSlice({
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound: (payload.wirelessCameras.length === 0),
+        noneFound: payload.wirelessCameras.length === 0,
       };
     },
 
@@ -95,28 +100,54 @@ export const wirelessCamerasSlice = createSlice({
       const index = payload;
       state.loadingState.errors.splice(index, 1);
     },
-    
+
+    /* Fetch image count for specific camera, so as to not clash with imageCount in imagesSlice */
+
+    cameraImageCountStart: (state, { payload }) => {
+      state.cameraImageCount.isLoading = true;
+      state.cameraImageCount.currentCameraId = payload.cameraId;
+      state.cameraImageCount.count = null;
+    },
+
+    cameraImageCountSuccess(state, { payload }) {
+      state.cameraImageCount.isLoading = false;
+      state.cameraImageCount.count = payload.imagesCount.count;
+    },
+
+    clearCameraImageCount(state) {
+      state.cameraImageCount.isLoading = false;
+      state.cameraImageCount.currentCameraId = null;
+      state.cameraImageCount.count = null;
+    },
+
+    cameraImageCountError(state) {
+      state.cameraImageCount.isLoading = false;
+      state.cameraImageCount.currentCameraId = null;
+      state.cameraImageCount.count = null;
+    },
+
+    setDeleteCameraAlertStatus: (state, { payload }) => {
+      state.isDeleteCameraAlertOpen = payload.isOpen;
+    },
   },
 
   extraReducers: (builder) => {
-    builder
-      .addCase(setSelectedProjAndView, (state, { payload }) => {
-        if (payload.newProjSelected) {
-          state.wirelessCameras = [];
-          state.loadingState = {
-            isLoading: false,
-            operation: null,
-            errors: null,
-            noneFound: null,
-          };
-        }
-      })
+    builder.addCase(setSelectedProjAndView, (state, { payload }) => {
+      if (payload.newProjSelected) {
+        state.wirelessCameras = [];
+        state.loadingState = {
+          isLoading: false,
+          operation: null,
+          errors: null,
+          noneFound: null,
+        };
+      }
+    });
   },
 });
 
 // export actions from slice
 export const {
-
   getWirelessCamerasStart,
   getWirelessCamerasFailure,
   getWirelessCamerasSuccess,
@@ -131,6 +162,12 @@ export const {
 
   dismissWirelessCamerasError,
 
+  cameraImageCountStart,
+  cameraImageCountSuccess,
+  clearCameraImageCount,
+  cameraImageCountError,
+
+  setDeleteCameraAlertStatus,
 } = wirelessCamerasSlice.actions;
 
 // fetchWirelessCameras thunk
@@ -169,9 +206,8 @@ export const registerCamera = (payload) => {
           request: 'registerCamera',
           input: payload,
         });
-        dispatch(registerCameraSuccess(res.registerCamera))
+        dispatch(registerCameraSuccess(res.registerCamera));
       }
-
     } catch (err) {
       console.log(`error(s) attempting to register camera: `, err);
       dispatch(registerCameraFailure(err));
@@ -179,7 +215,7 @@ export const registerCamera = (payload) => {
   };
 };
 
-// unregisger camera thunk
+// unregister camera thunk
 export const unregisterCamera = (payload) => async (dispatch, getState) => {
   try {
     dispatch(unregisterCameraStart());
@@ -192,7 +228,7 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
       const res = await call({
         projId: selectedProj._id,
         request: 'unregisterCamera',
-        input: payload
+        input: payload,
       });
       dispatch(unregisterCameraSuccess(res.unregisterCamera));
     }
@@ -201,10 +237,37 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
   }
 };
 
+// fetchCameraImageCount thunk
+export const fetchCameraImageCount = (payload) => async (dispatch, getState) => {
+  try {
+    dispatch(cameraImageCountStart(payload));
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    const projects = getState().projects.projects;
+    const selectedProj = projects.find((proj) => proj.selected);
+
+    if (token && selectedProj) {
+      const res = await call({
+        projId: selectedProj._id,
+        request: 'getImagesCount',
+        input: { filters: { cameras: [payload.cameraId] } },
+      });
+      dispatch(cameraImageCountSuccess(res));
+    }
+  } catch (err) {
+    console.log(`error(s) attempting to fetch image count for camera ${payload.cameraId}: `, err);
+    dispatch(cameraImageCountError(err));
+  }
+};
 
 // Selectors
-export const selectWirelessCameras = state => state.wirelessCameras.wirelessCameras;
-export const selectWirelessCamerasLoading = state => state.wirelessCameras.loadingState;
-export const selectWirelessCamerasErrors = state => state.wirelessCameras.loadingState.errors;
+export const selectWirelessCameras = (state) => state.wirelessCameras.wirelessCameras;
+export const selectWirelessCamerasLoading = (state) => state.wirelessCameras.loadingState;
+export const selectWirelessCamerasErrors = (state) => state.wirelessCameras.loadingState.errors;
+export const selectCameraImageCount = (state) => state.wirelessCameras.cameraImageCount.count;
+export const selectCameraImageCountLoading = (state) =>
+  state.wirelessCameras.cameraImageCount.isLoading;
+export const selectDeleteCameraAlertStatus = (state) =>
+  state.wirelessCameras.isDeleteCameraAlertOpen;
 
 export default wirelessCamerasSlice.reducer;

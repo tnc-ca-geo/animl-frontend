@@ -15,8 +15,8 @@ import {
   incrementImage,
   incrementFocusIndex,
 } from '../review/reviewSlice.js';
-import { selectModalOpen, selectProjectTags } from '../projects/projectsSlice.js';
-import { toggleOpenLoupe, selectReviewMode, selectIsAddingLabel, drawBboxStart, addLabelStart } from './loupeSlice.js';
+import { selectProjectTags } from '../projects/projectsSlice.js';
+import { toggleOpenLoupe, selectReviewMode, drawBboxStart, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
@@ -139,7 +139,9 @@ const Loupe = () => {
     image.objects.forEach((object) => {
       if (object.locked) return;
       // find first non-invalidated label in array
-      const label = object.labels.find((lbl) => lbl.validation === null || lbl.validation.validated);
+      const label = object.labels.find(
+        (lbl) => lbl.validation === null || lbl.validation.validated,
+      );
       labelsToValidate.push({
         imgId: image._id,
         objId: object._id,
@@ -172,7 +174,9 @@ const Loupe = () => {
         dispatch(labelsAdded({ labels: newLabels }));
       },
     };
-    actionMap[lastAction]();
+    if (lastAction in actionMap) {
+      actionMap[lastAction]();
+    }
   };
 
   const handleValidateAllButtonClick = (e, validated) => {
@@ -208,7 +212,11 @@ const Loupe = () => {
 
   const handleUnlockAllButtonClick = () => {
     const objects = image.objects
-      .filter((obj) => obj.locked && obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated))
+      .filter(
+        (obj) =>
+          obj.locked &&
+          obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
+      )
       .map((obj) => ({ imgId: image._id, objId: obj._id }));
     dispatch(objectsManuallyUnlocked({ objects }));
   };
@@ -219,17 +227,19 @@ const Loupe = () => {
 
   // format date created
   const dtCreated =
-    image && DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
+    image &&
+    DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 
   // Listen for hotkeys
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
   const reviewMode = useSelector(selectReviewMode);
-  const isAddingLabel = useSelector(selectIsAddingLabel);
-  const modalOpen = useSelector(selectModalOpen);
   const handleKeyDown = useCallback(
     (e) => {
-      if (!image || isAddingLabel || modalOpen) return;
+      // ignore if keydown event is from focused input or textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || !image) {
+        return;
+      }
       let charCode = String.fromCharCode(e.which).toLowerCase();
 
       // arrows or WASD (increment/decrement)
@@ -271,7 +281,7 @@ const Loupe = () => {
       //   }
       // }
     },
-    [dispatch, image, isAddingLabel, modalOpen, reviewMode],
+    [dispatch, image, reviewMode],
   );
 
   useEffect(() => {
@@ -351,10 +361,7 @@ const Loupe = () => {
               handleUnlockAllButtonClick={handleUnlockAllButtonClick}
               handleIncrementClick={handleIncrementClick}
             />
-            <ImageTagsToolbar 
-              image={image}
-              projectTags={projectTags}
-            />
+            <ImageTagsToolbar image={image} projectTags={projectTags} />
           </>
         )}
         <ShareImage>

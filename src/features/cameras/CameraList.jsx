@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuItemIconLeft,
   DropdownMenuArrow,
 } from '../../components/Dropdown.jsx';
 import {
@@ -16,8 +17,16 @@ import {
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice';
-import { unregisterCamera, registerCamera } from './wirelessCamerasSlice';
-import { setModalContent, setSelectedCamera } from '../projects/projectsSlice.js';
+import {
+  unregisterCamera,
+  registerCamera,
+  setDeleteCameraAlertStatus,
+} from './wirelessCamerasSlice';
+import {
+  selectSelectedProjectId,
+  setModalContent,
+  setSelectedCamera,
+} from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
 import {
   Cross2Icon,
@@ -27,7 +36,7 @@ import {
   ChevronDownIcon,
 } from '@radix-ui/react-icons';
 import { StandAloneInput as Input } from '../../components/Form';
-import { Camera, MapPin } from 'lucide-react';
+import { Camera, MapPin, IdCard, Trash2, Unlink, Link } from 'lucide-react';
 import { indigo } from '@radix-ui/colors';
 
 import {
@@ -36,6 +45,7 @@ import {
   WRITE_CAMERA_SERIAL_NUMBER_ROLES,
   WRITE_DEPLOYMENTS_ROLES,
 } from '../auth/roles';
+import DeleteCameraAlert from './DeleteCameraAlert.jsx';
 
 const StyledCameraList = styled('div', {
   border: '1px solid $border',
@@ -160,6 +170,7 @@ const ActiveState = ({ active }) => (
 );
 
 const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
+  const selectedProjectId = useSelector(selectSelectedProjectId);
   const userRoles = useSelector(selectUserCurrentRoles);
   const dispatch = useDispatch();
 
@@ -176,8 +187,16 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
     dispatch(setSelectedCamera(cameraId));
   };
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const handleDeleteCameraClick = ({ cameraId }) => {
+    dispatch(setDeleteCameraAlertStatus({ isOpen: true }));
+    dispatch(setSelectedCamera(cameraId));
+  };
+
   const [dropdownOpen, setDropdownOpen] = useState(null);
+
+  const [editSnTooltipOpen, setEditSnTooltipOpen] = useState(false);
+  const [deleteCamTooltipOpen, setDeleteCamTooltipOpen] = useState(false);
+  const [releaseCamTooltipOpen, setReleaseCamTooltipOpen] = useState(false);
 
   const [cameraFilter, setCameraFilter] = useState('');
   const filteredCameras = cameras.filter(
@@ -221,20 +240,26 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                       >
                         {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
                           <DropdownMenuItem
-                            onClick={() => handleSaveDepClick({ cameraId: cam._id })}
+                            onSelect={() => handleSaveDepClick({ cameraId: cam._id })}
                           >
+                            <DropdownMenuItemIconLeft>
+                              <MapPin size={15} />
+                            </DropdownMenuItemIconLeft>
                             Add Deployment
                           </DropdownMenuItem>
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_SERIAL_NUMBER_ROLES) && (
-                          <Tooltip open={tooltipOpen}>
+                          <Tooltip open={editSnTooltipOpen}>
                             <TooltipTrigger asChild>
                               <DropdownMenuItem
                                 onSelect={() => handleEditSerialNumberClick({ cameraId: cam._id })}
-                                onClick={() => cam.isWireless && setTooltipOpen(true)}
-                                onMouseLeave={() => setTooltipOpen(false)}
+                                onClick={() => cam.isWireless && setEditSnTooltipOpen(true)}
+                                onMouseLeave={() => setEditSnTooltipOpen(false)}
                                 disabled={cam.isWireless}
                               >
+                                <DropdownMenuItemIconLeft>
+                                  <IdCard size={15} />
+                                </DropdownMenuItemIconLeft>
                                 Edit camera serial number
                               </DropdownMenuItem>
                             </TooltipTrigger>
@@ -245,22 +270,40 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                           </Tooltip>
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && cam.active && (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation;
-                              handleUnregisterClick({
-                                cameraId: cam._id,
-                              });
-                            }}
-                          >
-                            Release camera
-                          </DropdownMenuItem>
+                          <Tooltip open={releaseCamTooltipOpen}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuItem
+                                disabled={cam.isWireless && selectedProjectId === 'default_project'}
+                                onClick={() => {
+                                  if (cam.isWireless && selectedProjectId === 'default_project') {
+                                    setReleaseCamTooltipOpen(true);
+                                  }
+                                }}
+                                onMouseLeave={() => setReleaseCamTooltipOpen(false)}
+                                onSelect={(e) => {
+                                  e.stopPropagation;
+                                  handleUnregisterClick({
+                                    cameraId: cam._id,
+                                  });
+                                }}
+                              >
+                                <DropdownMenuItemIconLeft>
+                                  <Unlink size={15} />
+                                </DropdownMenuItemIconLeft>
+                                Release camera
+                              </DropdownMenuItem>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" sideOffset={5}>
+                              You cannot release wireless cameras from the Default Project
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
                         )}
                         {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) &&
                           cam.isWireless &&
                           !cam.active && (
                             <DropdownMenuItem
-                              onClick={(e) => {
+                              onSelect={(e) => {
                                 e.stopPropagation;
                                 handleReRegisterCameraClick({
                                   cameraId: cam._id,
@@ -268,9 +311,42 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                                 });
                               }}
                             >
+                              <DropdownMenuItemIconLeft>
+                                <Link size={15} />
+                              </DropdownMenuItemIconLeft>
                               Re-register camera
                             </DropdownMenuItem>
                           )}
+                        {hasRole(userRoles, WRITE_CAMERA_REGISTRATION_ROLES) && (
+                          <Tooltip open={deleteCamTooltipOpen}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuItem
+                                disabled={cam.isWireless && selectedProjectId === 'default_project'}
+                                onClick={() => {
+                                  if (cam.isWireless && selectedProjectId === 'default_project') {
+                                    setDeleteCamTooltipOpen(true);
+                                  }
+                                }}
+                                onMouseLeave={() => setDeleteCamTooltipOpen(false)}
+                                onSelect={(e) => {
+                                  e.stopPropagation;
+                                  handleDeleteCameraClick({
+                                    cameraId: cam._id,
+                                  });
+                                }}
+                              >
+                                <DropdownMenuItemIconLeft>
+                                  <Trash2 size={15} />
+                                </DropdownMenuItemIconLeft>
+                                Delete camera
+                              </DropdownMenuItem>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" sideOffset={5}>
+                              You cannot delete wireless cameras from the Default Project
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                         <DropdownMenuArrow offset={12} />
                       </StyledDropdownMenuContent>
                     </DropdownMenu>
@@ -352,6 +428,7 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
               Deployment
             </a>
           </IconKey>
+          <DeleteCameraAlert />
         </>
       )}
     </>
