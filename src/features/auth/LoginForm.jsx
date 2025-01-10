@@ -7,6 +7,7 @@ import Button from '../../components/Button.jsx';
 import '@aws-amplify/ui-react/styles.css';
 import { useSelector } from 'react-redux';
 import { selectUserUsername } from './authSlice.js';
+import Callout from '../../components/Callout.jsx';
 
 const LoginScreen = styled('div', {
   display: 'flex',
@@ -31,6 +32,8 @@ const Subheader = styled('div', {
   paddingTop: '$3',
   maxWidth: 700,
   margin: '0 auto',
+  paddingRight: '$4',
+  paddingLeft: '$4',
   a: {
     textDecoration: 'none',
     color: '$textDark',
@@ -95,12 +98,11 @@ const StyledAuthenticator = styled(Authenticator, {
     },
   },
 
-  '&[data-amplify-authenticator] [data-amplify-authenticator-confirmresetpassword]':
-    {
-      '.amplify-heading': {
-        display: 'none',
-      },
+  '&[data-amplify-authenticator] [data-amplify-authenticator-confirmresetpassword]': {
+    '.amplify-heading': {
+      display: 'none',
     },
+  },
 
   '.amplify-input': {
     display: 'inherit',
@@ -135,6 +137,13 @@ const StyledAuthenticator = styled(Authenticator, {
   },
 });
 
+const StyledLoginCallout = styled('div', {
+  maxWidth: 700,
+  margin: '0 auto',
+  paddingRight: '$4',
+  paddingLeft: '$4',
+});
+
 const StyledButton = styled(Button, {
   fontSize: '$3',
   fontWeight: '$2',
@@ -164,11 +173,30 @@ const LoginForm = () => {
     <LoginScreen>
       <Header css={{ '@bp3': { fontSize: '64px' } }}>Welcome back</Header>
       <Subheader>{helperText[route] || userName || ''}</Subheader>
-      <StyledAuthenticator
-        loginMechanisms={['email']}
-        hideDefault={true}
-        hideSignUp={true}
-      />
+      <StyledAuthenticator loginMechanisms={['email']} hideDefault={true} hideSignUp={true} />
+      {route === 'resetPassword' && (
+        <StyledLoginCallout>
+          <Callout type="info" title="Note about temporary passwords">
+            <p>
+              If you never logged into Animl and didn{"'"}t reset the temporary password that was
+              sent in your invitation email before it expired, we are unable to deliver password
+              reset emails via the form above.
+            </p>
+            <p>
+              {' '}
+              Instead, you must reach out to one of your Project Managers and have them{' '}
+              <a
+                href="https://docs.animl.camera/fundamentals/user-management#re-sending-users-temporary-passwords"
+                target="_blank"
+                rel="noreferrer"
+              >
+                send you a new temporary password
+              </a>
+              .
+            </p>
+          </Callout>
+        </StyledLoginCallout>
+      )}
       {route === 'confirmResetPassword' && (
         <StyledButton onClick={toSignIn}>Return to Sign In</StyledButton>
       )}

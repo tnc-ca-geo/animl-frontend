@@ -1,19 +1,38 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@stitches/react';
-import { Pencil1Icon } from '@radix-ui/react-icons';
-
+import { CheckIcon, Pencil1Icon, ResetIcon } from '@radix-ui/react-icons';
 import Button from '../../components/Button';
 import IconButton from '../../components/IconButton.jsx';
-import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
 import { ButtonRow } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { addUser, editUser, fetchUsers, selectUsers, selectUsersLoading } from './usersSlice.js';
+import { selectUserCurrentRoles } from '../auth/authSlice';
+import {
+  addUser,
+  editUser,
+  fetchUsers,
+  selectUsers,
+  selectUsersLoading,
+  selectManageUserErrors,
+  resendTempPassword,
+} from './usersSlice.js';
+import { hasRole, MANAGE_USERS_ROLES } from '../auth/roles';
 
 const ManageUsersTable = () => {
   const dispatch = useDispatch();
+  const currentUserRoles = useSelector(selectUserCurrentRoles);
   const users = useSelector(selectUsers);
   const isLoading = useSelector(selectUsersLoading);
+  const errors = useSelector(selectManageUserErrors);
+  const hasErrors = !isLoading && errors;
+
+  const [usersClicked, setUsersClicked] = useState([]);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -23,6 +42,11 @@ const ManageUsersTable = () => {
     () => [...users].sort((u1, u2) => (u1.email.toLowerCase() > u2.email.toLowerCase() ? 1 : -1)),
     [users],
   );
+
+  const handleResendTempPassword = (email) => {
+    dispatch(resendTempPassword({ username: email }));
+    setUsersClicked([...usersClicked, email]);
+  };
 
   return (
     <Content>
@@ -41,23 +65,51 @@ const ManageUsersTable = () => {
             </tr>
           </thead>
           <tbody>
-            {userSorted.map(({ email, roles }) => (
+            {userSorted.map(({ email, roles, status }) => (
               <TableRow key={email}>
                 <TableCell>{email}</TableCell>
                 <TableCell>{roles.join(', ')}</TableCell>
-                <TableCell>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <IconButton variant="ghost" size="large" onClick={() => dispatch(editUser(email))}>
-                        <Pencil1Icon />
-                      </IconButton>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={5}>
-                      Edit user roles
-                      <TooltipArrow />
-                    </TooltipContent>
-                  </Tooltip>
-                </TableCell>
+                {hasRole(currentUserRoles, MANAGE_USERS_ROLES) && (
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <IconButton
+                          variant="ghost"
+                          size="med"
+                          onClick={() => dispatch(editUser(email))}
+                        >
+                          <Pencil1Icon />
+                        </IconButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={5}>
+                        Edit user roles
+                        <TooltipArrow />
+                      </TooltipContent>
+                    </Tooltip>
+                    {status === 'FORCE_CHANGE_PASSWORD' && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <IconButton
+                            variant="ghost"
+                            size="med"
+                            onClick={() => handleResendTempPassword(email)}
+                            disabled={usersClicked.includes(email) && !hasErrors}
+                          >
+                            {usersClicked.includes(email) && !hasErrors ? (
+                              <CheckIcon />
+                            ) : (
+                              <ResetIcon />
+                            )}
+                          </IconButton>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" sideOffset={5}>
+                          Resend Temporary Password
+                          <TooltipArrow />
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </tbody>

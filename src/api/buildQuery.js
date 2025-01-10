@@ -273,7 +273,7 @@ const queries = {
       `,
       variables: {
         input: {
-          filters: filters
+          filters: filters,
         },
       },
     };
@@ -668,7 +668,7 @@ const queries = {
     `,
     variables: { input: input },
   }),
-  
+
   createImageTag: (input) => ({
     template: `
       mutation CreateImageTag($input: CreateImageTagInput!) {
@@ -917,6 +917,17 @@ const queries = {
     template: `
       mutation createUser($input: CreateUserInput!){
         createUser(input: $input) {
+          isOk
+        }
+      }
+    `,
+    variables: { input },
+  }),
+
+  resendTempPassword: (input) => ({
+    template: `
+      mutation resendTempPassword($input: ResendTempPasswordInput!){
+        resendTempPassword(input: $input) {
           isOk
         }
       }

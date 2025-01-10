@@ -30,7 +30,7 @@ export const usersSlice = createSlice({
       state.users = payload.users;
     },
 
-    fetchUsersError: (state, { payload }) => {
+    fetchUsersFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -62,7 +62,7 @@ export const usersSlice = createSlice({
       state.users = updatedUsers;
     },
 
-    updateUserError: (state, { payload }) => {
+    updateUserFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -90,7 +90,22 @@ export const usersSlice = createSlice({
       ];
     },
 
-    addUserError: (state, { payload }) => {
+    addUserFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.users = ls;
+    },
+
+    resendTempPasswordStart: (state) => {
+      const ls = { isLoading: true, operation: 'resendTempPassword', errors: null };
+      state.loadingStates.users = ls;
+    },
+
+    resendTempPasswordSuccess: (state) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.users = ls;
+    },
+
+    resendTempPasswordFailure: (state, { payload }) => {
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.users = ls;
     },
@@ -117,15 +132,18 @@ export const usersSlice = createSlice({
 export const {
   fetchUsersStart,
   fetchUsersSuccess,
-  fetchUsersError,
+  fetchUsersFailure,
   editUser,
   updateUserSuccess,
   updateUserStart,
-  updateUserError,
+  updateUserFailure,
   addUser,
   addUserSuccess,
   addUserStart,
-  addUserError,
+  addUserFailure,
+  resendTempPasswordStart,
+  resendTempPasswordSuccess,
+  resendTempPasswordFailure,
   cancel,
   clearUsers,
   dismissManageUsersError,
@@ -150,7 +168,7 @@ export const fetchUsers = () => {
         dispatch(fetchUsersSuccess({ users: res.users.users }));
       }
     } catch (err) {
-      dispatch(fetchUsersError(err));
+      dispatch(fetchUsersFailure(err));
     }
   };
 };
@@ -175,7 +193,7 @@ export const updateUser = (values) => {
         dispatch(updateUserSuccess(values));
       }
     } catch (err) {
-      dispatch(updateUserError(err));
+      dispatch(updateUserFailure(err));
     }
   };
 };
@@ -200,7 +218,32 @@ export const createUser = (values) => {
         dispatch(addUserSuccess(values));
       }
     } catch (err) {
-      dispatch(addUserError(err));
+      dispatch(addUserFailure(err));
+    }
+  };
+};
+
+export const resendTempPassword = (values) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(resendTempPasswordStart());
+
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        await call({
+          projId,
+          request: 'resendTempPassword',
+          input: values,
+        });
+        dispatch(resendTempPasswordSuccess());
+      }
+    } catch (err) {
+      dispatch(resendTempPasswordFailure(err));
     }
   };
 };
