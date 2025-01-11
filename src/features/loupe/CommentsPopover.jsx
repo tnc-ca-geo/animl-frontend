@@ -109,6 +109,7 @@ export const CommentsPopover = ({ onClose, comments, imageId, onChangeActionMenu
     dispatch(editComment('create', addCommentDto));
     setAddCommentText('');
   };
+
   // Add comment using enter
   // Shift + Enter makes a new line
   const [isShiftDown, setIsShiftDown] = useState(false);

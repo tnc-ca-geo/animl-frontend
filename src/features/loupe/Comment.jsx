@@ -167,6 +167,12 @@ export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
   };
 
   const onEditConfirm = () => {
+    // If all the comment's content is removed
+    // show the delete comment flow
+    if (editCommentText === "") {
+      setIsDeleteConfirm(true);
+      return;
+    }
     const editCommentDto = {
       id: comment._id,
       imageId: imageId,
@@ -174,6 +180,25 @@ export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
     };
     dispatch(editComment('update', editCommentDto));
     setIsEdit(false);
+  };
+
+  // Confirm edit comment using enter
+  // Shift + Enter makes a new line
+  const [isShiftDown, setIsShiftDown] = useState(false);
+  const handleKeyDown = (event) => {
+    event.stopPropagation();
+    if (event.key === 'Shift') {
+      setIsShiftDown(true);
+    }
+    if (event.key === 'Enter' && !isShiftDown) {
+      onEditConfirm();
+      event.preventDefault();
+    }
+  };
+  const handleKeyUp = (event) => {
+    if (event.key === 'Shift') {
+      setIsShiftDown(false);
+    }
   };
 
   return (
@@ -220,8 +245,8 @@ export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
             <StyledTextArea
               value={editCommentText}
               onChange={(e) => setEditCommentText(e.target.value)}
-              onKeyDown={(e) => e.stopPropagation()}
-              onKeyDownCapture={(e) => e.stopPropagation()}
+              onKeyDown={(e) => handleKeyDown(e)}
+              onKeyUp={(e) => handleKeyUp(e)}
             />
             <StyledButtonContainer>
               <Button size="small" onClick={() => setIsEdit(false)}>
