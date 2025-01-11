@@ -29,7 +29,7 @@ const CameraAdminModal = () => {
   const project = useSelector(selectSelectedProject);
   const userRoles = useSelector(selectUserCurrentRoles);
   const [showSaveDepForm, setShowSaveDepForm] = useState(false);
-  const [showDeleteDeptForm, setShowDeleteDepForm] = useState(false);
+  const [showDeleteDepForm, setShowDeleteDepForm] = useState(false);
   const [cameraSelected, setCameraSelected] = useState();
   const [deploymentSelected, setDeploymentSelected] = useState();
   const dispatch = useDispatch();
@@ -92,7 +92,7 @@ const CameraAdminModal = () => {
           deployment={deploymentSelected}
           handleClose={handleCancelEditClick}
         />
-      ) : showDeleteDeptForm ? (
+      ) : showDeleteDepForm ? (
         <DeleteDeploymentForm
           cameraId={cameraSelected}
           deployment={deploymentSelected}
