@@ -256,13 +256,21 @@ const BulkUploadForm = () => {
 const alertContent = {
   'override-serial-set': {
     title: 'Serial Number Override Set',
+    type: 'info',
     body: (
       <p>
-        You&apos;ve included a camera Serial Number Override in your upload. Setting the Serial
-        Number Override will override the serial number for all images in this ZIP file, so proceed
-        with caution. For more information on the implications of using this feature, please refer
-        to the{' '}
-        <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+        You&apos;ve included a camera Serial Number Override in your upload.{' '}
+        <strong>
+          Setting the Serial Number Override will override the serial number for ALL images in this
+          ZIP file
+        </strong>
+        , so proceed with caution. For more information on the implications of using this feature,
+        please refer to the{' '}
+        <a
+          href="https://docs.animl.camera/fundamentals/uploading-images#overriding-serial-numbers"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Animl Documentation
         </a>
         .
@@ -271,13 +279,18 @@ const alertContent = {
   },
   'no-automation-rule': {
     title: 'No Automation Rules Configured',
+    type: 'warning',
     body: (
       <p>
         There are currently no machine learning automation rules configured to trigger when new
         images are added to this Project, so if you proceed, images in this ZIP will be saved, but
         the upload will not trigger any machine learning predictions. To learn more about how to
         configure machine learning pipelines using Automation Rules, please refer to the{' '}
-        <a href="https://docs.animl.camera" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://docs.animl.camera/fundamentals/automation-rules"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Animl Documentation
         </a>
         .
@@ -306,7 +319,7 @@ const UploadAlert = ({ open, setAlertOpen, upload, formValues, warnings }) => {
           {warnings &&
             warnings.map((warn) => {
               return (
-                <Callout key={warn} type="warning" title={alertContent[warn].title}>
+                <Callout key={warn} type={alertContent[warn].type} title={alertContent[warn].title}>
                   {alertContent[warn].body}
                 </Callout>
               );
