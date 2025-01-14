@@ -29,6 +29,7 @@ const initialState = {
     addedEnd: null,
     reviewed: null,
     custom: null,
+    comments: null,
   },
 };
 
@@ -64,6 +65,10 @@ export const filtersSlice = createSlice({
 
     customFilterChanged: (state, { payload }) => {
       state.activeFilters.custom = payload;
+    },
+
+    commentsFilterChanged: (state, { payload }) => {
+      state.activeFilters.comments = payload;
     },
 
     dateFilterChanged: (state, { payload }) => {
@@ -188,6 +193,7 @@ export const {
   setActiveFilters,
   bulkSelectToggled,
   checkboxOnlyButtonClicked,
+  commentsFilterChanged,
 } = filtersSlice.actions;
 
 // Selectors
@@ -206,5 +212,6 @@ export const selectDateCreatedFilter = (state) => ({
   start: state.filters.activeFilters.createdStart,
   end: state.filters.activeFilters.createdEnd,
 });
+export const selectCommentsFilter = (state) => state.filters.activeFilters.comments;
 
 export default filtersSlice.reducer;

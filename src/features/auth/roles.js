@@ -18,6 +18,7 @@ export const MANAGE_USERS_ROLES = [MANAGER];
 export const WRITE_PROJECT_ROLES = [MANAGER];
 export const READ_COMMENT_ROLES = [MANAGER, MEMBER];
 export const WRITE_COMMENT_ROLES = [MANAGER, MEMBER];
+export const QUERY_COMMENTS_ROLES = [MANAGER, MEMBER];
 
 export const hasRole = (currRoles, targetRoles = []) =>
   currRoles &&

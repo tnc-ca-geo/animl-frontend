@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, QUERY_WITH_CUSTOM_FILTER } from '../auth/roles.js';
+import { hasRole, QUERY_COMMENTS_ROLES, QUERY_WITH_CUSTOM_FILTER } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
 import StyledScrollArea from '../../components/ScrollArea.jsx';
 import DeploymentFilter from './DeploymentFilter.jsx';
@@ -11,6 +11,7 @@ import DateFilter from './DateFilter.jsx';
 import LabelFilter from './LabelFilter.jsx';
 import CustomFilter from './CustomFilter.jsx';
 import FiltersPanelFooter from './FiltersPanelFooter.jsx';
+import { CommentsFilter } from './CommentsFilter.jsx';
 
 
 const PanelBody = styled('div', {
@@ -49,6 +50,9 @@ const FiltersPanel = ({ toggleFiltersPanel }) => {
           <ReviewFilter/>
           <DateFilter type='created'/>
           <DateFilter type='added'/>
+          {hasRole(userRoles, QUERY_COMMENTS_ROLES) &&
+            <CommentsFilter />
+          }
           {hasRole(userRoles, QUERY_WITH_CUSTOM_FILTER) &&
             <CustomFilter />
           }
