@@ -131,7 +131,12 @@ const StyledAuthenticator = styled(Authenticator, {
   '.amplify-alert--error': {
     backgroundColor: '$errorBg',
     color: '$errorText',
+    div: {
+      maxWidth: 300,
+    },
     button: {
+      border: 'none',
+      padding: '0',
       backgroundColor: '$errorBg',
       color: '$errorText',
     },
