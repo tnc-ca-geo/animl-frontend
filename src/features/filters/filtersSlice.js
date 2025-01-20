@@ -11,6 +11,7 @@ import {
   updateAvailCamFilters,
   updateAvailDepFilters,
   updateAvailLabelFilters,
+  updateAvailTagFilters,
 } from './utils';
 
 const initialState = {
@@ -18,11 +19,13 @@ const initialState = {
     cameras: { options: [] },
     deployments: { options: [] },
     labels: { options: [] },
+    tags: { options: [] },
   },
   activeFilters: {
     cameras: null,
     deployments: null,
     labels: null,
+    tags: null,
     createdStart: null,
     createdEnd: null,
     addedStart: null,
@@ -73,6 +76,7 @@ export const filtersSlice = createSlice({
 
     setActiveFilters: (state, { payload }) => {
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
+      console.log('normalizedFilters', normalizedFilters);
       state.activeFilters = normalizedFilters;
     },
 
@@ -109,10 +113,11 @@ export const filtersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setSelectedProjAndView, (state, { payload }) => {
-        const { cameraConfigs, labels } = payload.project;
+        const { cameraConfigs, labels, tags } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);
         updateAvailLabelFilters(state, labels);
+        updateAvailTagFilters(state, tags);
         // set all filters to new selected view? We're currently handling this
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
@@ -130,6 +135,7 @@ export const filtersSlice = createSlice({
         });
         updateAvailLabelFilters(state, labels);
       })
+      // TODO: add create/update/delete tags success cases
       .addCase(registerCameraSuccess, (state, { payload }) => {
         const { cameraConfigs } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
@@ -196,6 +202,7 @@ export const selectAvailFilters = (state) => state.filters.availFilters;
 export const selectAvailCameraFilters = (state) => state.filters.availFilters.cameras;
 export const selectAvailDeploymentFilters = (state) => state.filters.availFilters.deployments;
 export const selectAvailLabelFilters = (state) => state.filters.availFilters.labels;
+export const selectAvailTagFilters = (state) => state.filters.availFilters.tags;
 export const selectReviewed = (state) => state.filters.activeFilters.reviewed;
 export const selectCustomFilter = (state) => state.filters.activeFilters.custom;
 export const selectDateAddedFilter = (state) => ({

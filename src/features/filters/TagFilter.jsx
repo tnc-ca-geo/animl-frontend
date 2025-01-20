@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
-  selectAvailLabelFilters,
+  selectAvailTagFilters,
   selectActiveFilters,
   checkboxFilterToggled,
   checkboxOnlyButtonClicked,
@@ -14,43 +14,41 @@ import NoneFoundAlert from '../../components/NoneFoundAlert.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 
-const LabelFilter = () => {
-  const availLabels = useSelector(selectAvailLabelFilters);
+const TagFIlter = () => {
+  const availTags = useSelector(selectAvailTagFilters);
   const activeFilters = useSelector(selectActiveFilters);
-  const activeLabels = activeFilters.labels;
-
-  console.log('activeLabels', activeLabels);
+  const activeTags = activeFilters.tags;
   const dispatch = useDispatch();
 
   const handleCheckboxChange = (e) => {
     const payload = {
-      filterCat: 'labels',
+      filterCat: 'tags',
       val: e.target.dataset.category,
     };
     dispatch(checkboxFilterToggled(payload));
   };
 
-  const managedIds = useMemo(
-    () => availLabels.options.map(({ _id }) => _id),
-    [availLabels.options],
+  const managedIds = useMemo(() => availTags.options.map(({ _id }) => _id), [availTags.options]);
+  const sortedTags = [...availTags.options].sort((tagA, tagB) =>
+    tagA.name.toLowerCase() > tagB.name.toLowerCase() ? 1 : -1,
   );
-  const sortedLabels = [...availLabels.options].sort((labelA, labelB) =>
-    labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1,
-  );
+
+  console.log('availTags', availTags);
+  console.log('activeTags', activeTags);
 
   return (
     <Accordion
-      label="Labels"
-      selectedCount={activeLabels ? activeLabels.length : availLabels.options.length}
+      label="Tags"
+      selectedCount={activeTags ? activeTags.length : availTags.options.length}
       expandedDefault={false}
       expandOnHeaderClick={true}
     >
-      {availLabels.options.length === 0 && <NoneFoundAlert>no labels found</NoneFoundAlert>}
-      {availLabels.options.length > 0 && (
+      {availTags.options.length === 0 && <NoneFoundAlert>no tags found</NoneFoundAlert>}
+      {availTags.options.length > 0 && (
         <>
-          <BulkSelectCheckbox filterCat="labels" managedIds={managedIds} isHeader={true} />
-          {sortedLabels.map(({ _id, name }) => {
-            const checked = activeLabels === null || activeLabels.includes(_id);
+          <BulkSelectCheckbox filterCat="tags" managedIds={managedIds} isHeader={true} />
+          {sortedTags.map(({ _id, name }) => {
+            const checked = activeTags === null || activeTags.includes(_id);
             return (
               <CheckboxWrapper key={_id}>
                 <label>
@@ -63,7 +61,7 @@ const LabelFilter = () => {
                   <LabelCheckboxLabel
                     checked={checked}
                     active={checked}
-                    filterCat="labels"
+                    filterCat="tags"
                     id={_id}
                     name={name}
                   />
@@ -114,4 +112,4 @@ const LabelCheckboxLabel = ({ id, name, checked, active, filterCat }) => {
   );
 };
 
-export default LabelFilter;
+export default TagFIlter;

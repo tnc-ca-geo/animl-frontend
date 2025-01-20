@@ -24,6 +24,9 @@ import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 export const enrichProjAndViewPayload = (store) => (next) => (action) => {
   if (setSelectedProjAndView.match(action)) {
     let { projId, viewId } = action.payload;
+    console.log('enriching proj and view payload');
+    console.log('projId', projId);
+    console.log('viewId', viewId);
 
     // add project to payload (used in filtersSlice extraReducers)
     const projects = selectProjects(store.getState());
@@ -43,6 +46,7 @@ export const enrichProjAndViewPayload = (store) => (next) => (action) => {
         if (v._id === viewId) action.payload.view = v;
       });
     });
+    console.log('action.payload.view', action.payload.view);
 
     // indicate whether there will be a view and/or project change
     const currSelectedProj = projects.find((p) => p.selected);
@@ -98,6 +102,7 @@ export const setActiveFiltersToSelectedView = (store) => (next) => (action) => {
 
     next(action);
     const newFilters = action.payload.view.filters;
+    console.log('newFilters', newFilters);
     store.dispatch(setActiveFilters(newFilters));
   } else {
     next(action);

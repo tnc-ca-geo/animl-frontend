@@ -9,9 +9,9 @@ import DeploymentFilter from './DeploymentFilter.jsx';
 import ReviewFilter from './ReviewFilter.jsx';
 import DateFilter from './DateFilter.jsx';
 import LabelFilter from './LabelFilter.jsx';
+import TagFilter from './TagFilter.jsx';
 import CustomFilter from './CustomFilter.jsx';
 import FiltersPanelFooter from './FiltersPanelFooter.jsx';
-
 
 const PanelBody = styled('div', {
   backgroundColor: '$backgroundLight',
@@ -31,32 +31,26 @@ const StyledFiltersPanel = styled('div', {
   overflowY: 'hidden',
 });
 
-
 const FiltersPanel = ({ toggleFiltersPanel }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
 
   return (
     <StyledFiltersPanel>
-      <PanelHeader 
-        title='Filters'
-        handlePanelClose={toggleFiltersPanel}
-      >
-      </PanelHeader>
+      <PanelHeader title="Filters" handlePanelClose={toggleFiltersPanel}></PanelHeader>
       <PanelBody>
         <StyledScrollArea>
-          <DeploymentFilter/>
-          <LabelFilter/>
-          <ReviewFilter/>
-          <DateFilter type='created'/>
-          <DateFilter type='added'/>
-          {hasRole(userRoles, QUERY_WITH_CUSTOM_FILTER) &&
-            <CustomFilter />
-          }
+          <DeploymentFilter />
+          <LabelFilter />
+          <TagFilter />
+          <ReviewFilter />
+          <DateFilter type="created" />
+          <DateFilter type="added" />
+          {hasRole(userRoles, QUERY_WITH_CUSTOM_FILTER) && <CustomFilter />}
         </StyledScrollArea>
       </PanelBody>
       <FiltersPanelFooter />
     </StyledFiltersPanel>
   );
-}
+};
 
 export default FiltersPanel;

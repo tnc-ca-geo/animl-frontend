@@ -311,6 +311,7 @@ export const fetchImageContext = (imgId) => {
           createdStart: startDate,
           deployments: [res.image.deploymentId],
           labels: null,
+          tags: null,
           reviewed: null,
           custom: null,
         };

@@ -120,6 +120,7 @@ const viewFields = `
     cameras
     deployments
     labels
+    tags
     createdStart
     createdEnd
     addedStart
