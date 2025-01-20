@@ -56,7 +56,7 @@ const initialState = {
     projectTags: {
       isLoading: false,
       operation: null,
-      errors: null
+      errors: null,
     },
   },
   unsavedViewChanges: false,
@@ -345,15 +345,6 @@ export const projectsSlice = createSlice({
     deleteProjectLabelSuccess: (state) => {
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.projectLabels = ls;
-
-      // const proj = state.projects.find((p) => p._id === payload.projId);
-      // proj.labels = proj.labels.map((label) => {
-      //   if (label._id === payload.label._id) {
-      //     return payload.label;
-      //   } else {
-      //     return label;
-      //   }
-      // });
     },
 
     deleteProjectLabelFailure: (state, { payload }) => {
@@ -402,7 +393,7 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags
+      proj.tags = payload.tags;
     },
 
     deleteProjectTagFailure: (state, { payload }) => {
@@ -424,7 +415,7 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags
+      proj.tags = payload.tags;
     },
 
     updateProjectTagFailure: (state, { payload }) => {
@@ -895,7 +886,7 @@ export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
 export const selectLabels = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.labels : [],
 );
-export const selectProjectTags = createSelector([selectSelectedProject], (proj) => 
+export const selectProjectTags = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.tags : [],
 );
 export const selectTagsLoading = (state) => state.projects.loadingStates.projectTags.isLoading;

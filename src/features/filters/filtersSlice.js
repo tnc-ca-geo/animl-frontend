@@ -4,6 +4,7 @@ import {
   setSelectedProjAndView,
   createProjectLabelSuccess,
   updateProjectLabelSuccess,
+  createProjectTagSuccess,
 } from '../projects/projectsSlice';
 import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 import {
@@ -134,6 +135,14 @@ export const filtersSlice = createSlice({
           }
         });
         updateAvailLabelFilters(state, labels);
+      })
+      .addCase(createProjectTagSuccess, (state, { payload }) => {
+        // TODO: createProjectLabel returns just the newly created label,
+        // but createProjectTag returns all tags in the project.
+        // Make consistent and update this accordingly
+        // const tags = [...state.availFilters.tags.options, ...payload.tags];
+
+        updateAvailTagFilters(state, payload.tags);
       })
       // TODO: add create/update/delete tags success cases
       .addCase(registerCameraSuccess, (state, { payload }) => {
