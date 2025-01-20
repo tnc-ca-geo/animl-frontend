@@ -752,9 +752,8 @@ export const deleteProjectTag = (payload) => {
           input: payload,
         });
         dispatch(deleteProjectTagSuccess({ projId, tags: res.deleteProjectTag.tags }));
-        // TODO waterfall delete
-        // dispatch(clearImages());
-        // dispatch(fetchProjects({ _ids: [projId] }));
+        dispatch(clearImages());
+        dispatch(fetchProjects({ _ids: [projId] }));
       }
     } catch (err) {
       console.log(`error attempting to delete tag: `, err);

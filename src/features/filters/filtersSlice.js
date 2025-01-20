@@ -5,6 +5,7 @@ import {
   createProjectLabelSuccess,
   updateProjectLabelSuccess,
   createProjectTagSuccess,
+  updateProjectTagSuccess,
 } from '../projects/projectsSlice';
 import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 import {
@@ -142,6 +143,10 @@ export const filtersSlice = createSlice({
         // Make consistent and update this accordingly
         // const tags = [...state.availFilters.tags.options, ...payload.tags];
 
+        updateAvailTagFilters(state, payload.tags);
+      })
+      .addCase(updateProjectTagSuccess, (state, { payload }) => {
+        // TODO: same as createProjectTagSuccess note above.
         updateAvailTagFilters(state, payload.tags);
       })
       // TODO: add create/update/delete tags success cases
