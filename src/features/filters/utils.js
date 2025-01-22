@@ -36,11 +36,7 @@ const updateAvailLabelFilters = (state, labels) => {
       color: '#AFE790',
     },
   ];
-  // is this to dedupe the default labels?
-  const defaults = defaultLabelFilters.filter(
-    (defaultLabel) => !labels.find((lbl) => lbl._id.toString() === defaultLabel._id.toString()),
-  );
-  state.availFilters.labels.options = [...defaults, ...labels];
+  state.availFilters.labels.options = [...defaultLabelFilters, ...labels];
 };
 
 const updateAvailTagFilters = (state, tags) => {
@@ -51,10 +47,7 @@ const updateAvailTagFilters = (state, tags) => {
       color: '#AFE790',
     },
   ];
-  const defaults = defaultTagFilters.filter(
-    (defaultTag) => !tags.find((tag) => tag._id.toString() === defaultTag._id.toString()),
-  );
-  state.availFilters.tags.options = [...defaults, ...tags];
+  state.availFilters.tags.options = [...defaultTagFilters, ...tags];
 };
 
 export {

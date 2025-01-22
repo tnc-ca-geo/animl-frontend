@@ -134,7 +134,6 @@ export const filtersSlice = createSlice({
       .addCase(updateProjectTagSuccess, (state, { payload }) => {
         updateAvailTagFilters(state, payload.tags);
       })
-      // TODO: add create/update/delete tags success cases
       .addCase(registerCameraSuccess, (state, { payload }) => {
         const { cameraConfigs } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
