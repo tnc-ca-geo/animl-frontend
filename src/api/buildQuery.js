@@ -598,7 +598,7 @@ const queries = {
     template: `
       mutation CreateProjectLabel($input: CreateProjectLabelInput!) {
         createProjectLabel(input: $input) {
-          label {
+          labels {
             ${projectLabelFields}
           }
         }
@@ -611,7 +611,7 @@ const queries = {
     template: `
       mutation UpdateProjectLabel($input: UpdateProjectLabelInput!) {
         updateProjectLabel(input: $input) {
-          label {
+          labels {
             ${projectLabelFields}
           }
         }

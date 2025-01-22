@@ -298,9 +298,8 @@ export const projectsSlice = createSlice({
         errors: null,
       };
       state.loadingStates.projectLabels = ls;
-
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = [...proj.labels, payload.label];
+      proj.labels = payload.labels;
     },
 
     createProjectLabelFailure: (state, { payload }) => {
@@ -320,15 +319,8 @@ export const projectsSlice = createSlice({
         errors: null,
       };
       state.loadingStates.projectLabels = ls;
-
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = proj.labels.map((label) => {
-        if (label._id === payload.label._id) {
-          return payload.label;
-        } else {
-          return label;
-        }
-      });
+      proj.labels = payload.labels;
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
@@ -804,7 +796,7 @@ export const createProjectLabel = (payload) => {
           request: 'createProjectLabel',
           input: payload,
         });
-        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label }));
+        dispatch(createProjectLabelSuccess({ projId, labels: res.createProjectLabel.labels }));
       }
     } catch (err) {
       console.log(`error attempting to create label: `, err);
@@ -829,7 +821,7 @@ export const updateProjectLabel = (payload) => {
           request: 'updateProjectLabel',
           input: payload,
         });
-        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
+        dispatch(updateProjectLabelSuccess({ projId, labels: res.updateProjectLabel.labels }));
       }
     } catch (err) {
       const errs = normalizeErrors(err, 'UPDATE_PROJECT_LABEL_ERROR');

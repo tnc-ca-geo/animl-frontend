@@ -33,9 +33,6 @@ const TagFIlter = () => {
     tagA.name.toLowerCase() > tagB.name.toLowerCase() ? 1 : -1,
   );
 
-  console.log('availTags', availTags);
-  console.log('activeTags', activeTags);
-
   return (
     <Accordion
       label="Tags"

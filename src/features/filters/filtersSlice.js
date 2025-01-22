@@ -78,7 +78,6 @@ export const filtersSlice = createSlice({
 
     setActiveFilters: (state, { payload }) => {
       const normalizedFilters = normalizeFilters(payload, state.availFilters);
-      console.log('normalizedFilters', normalizedFilters);
       state.activeFilters = normalizedFilters;
     },
 
@@ -124,29 +123,15 @@ export const filtersSlice = createSlice({
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
       .addCase(createProjectLabelSuccess, (state, { payload }) => {
-        const labels = [...state.availFilters.labels.options, payload.label];
-        updateAvailLabelFilters(state, labels);
+        updateAvailLabelFilters(state, payload.labels);
       })
       .addCase(updateProjectLabelSuccess, (state, { payload }) => {
-        const labels = state.availFilters.labels.options.map((label) => {
-          if (label._id === payload.label._id) {
-            return payload.label;
-          } else {
-            return label;
-          }
-        });
-        updateAvailLabelFilters(state, labels);
+        updateAvailLabelFilters(state, payload.labels);
       })
       .addCase(createProjectTagSuccess, (state, { payload }) => {
-        // TODO: createProjectLabel returns just the newly created label,
-        // but createProjectTag returns all tags in the project.
-        // Make consistent and update this accordingly
-        // const tags = [...state.availFilters.tags.options, ...payload.tags];
-
         updateAvailTagFilters(state, payload.tags);
       })
       .addCase(updateProjectTagSuccess, (state, { payload }) => {
-        // TODO: same as createProjectTagSuccess note above.
         updateAvailTagFilters(state, payload.tags);
       })
       // TODO: add create/update/delete tags success cases

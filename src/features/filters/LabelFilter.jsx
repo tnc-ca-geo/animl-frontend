@@ -18,8 +18,6 @@ const LabelFilter = () => {
   const availLabels = useSelector(selectAvailLabelFilters);
   const activeFilters = useSelector(selectActiveFilters);
   const activeLabels = activeFilters.labels;
-
-  console.log('activeLabels', activeLabels);
   const dispatch = useDispatch();
 
   const handleCheckboxChange = (e) => {
