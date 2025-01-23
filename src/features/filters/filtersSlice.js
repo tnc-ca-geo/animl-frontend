@@ -4,6 +4,8 @@ import {
   setSelectedProjAndView,
   createProjectLabelSuccess,
   updateProjectLabelSuccess,
+  createProjectTagSuccess,
+  updateProjectTagSuccess,
 } from '../projects/projectsSlice';
 import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 import {
@@ -11,6 +13,7 @@ import {
   updateAvailCamFilters,
   updateAvailDepFilters,
   updateAvailLabelFilters,
+  updateAvailTagFilters,
 } from './utils';
 
 const initialState = {
@@ -18,11 +21,13 @@ const initialState = {
     cameras: { options: [] },
     deployments: { options: [] },
     labels: { options: [] },
+    tags: { options: [] },
   },
   activeFilters: {
     cameras: null,
     deployments: null,
     labels: null,
+    tags: null,
     createdStart: null,
     createdEnd: null,
     addedStart: null,
@@ -109,26 +114,25 @@ export const filtersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setSelectedProjAndView, (state, { payload }) => {
-        const { cameraConfigs, labels } = payload.project;
+        const { cameraConfigs, labels, tags } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);
         updateAvailLabelFilters(state, labels);
+        updateAvailTagFilters(state, tags);
         // set all filters to new selected view? We're currently handling this
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
       .addCase(createProjectLabelSuccess, (state, { payload }) => {
-        const labels = [...state.availFilters.labels.options, payload.label];
-        updateAvailLabelFilters(state, labels);
+        updateAvailLabelFilters(state, payload.labels);
       })
       .addCase(updateProjectLabelSuccess, (state, { payload }) => {
-        const labels = state.availFilters.labels.options.map((label) => {
-          if (label._id === payload.label._id) {
-            return payload.label;
-          } else {
-            return label;
-          }
-        });
-        updateAvailLabelFilters(state, labels);
+        updateAvailLabelFilters(state, payload.labels);
+      })
+      .addCase(createProjectTagSuccess, (state, { payload }) => {
+        updateAvailTagFilters(state, payload.tags);
+      })
+      .addCase(updateProjectTagSuccess, (state, { payload }) => {
+        updateAvailTagFilters(state, payload.tags);
       })
       .addCase(registerCameraSuccess, (state, { payload }) => {
         const { cameraConfigs } = payload.project;
@@ -196,6 +200,7 @@ export const selectAvailFilters = (state) => state.filters.availFilters;
 export const selectAvailCameraFilters = (state) => state.filters.availFilters.cameras;
 export const selectAvailDeploymentFilters = (state) => state.filters.availFilters.deployments;
 export const selectAvailLabelFilters = (state) => state.filters.availFilters.labels;
+export const selectAvailTagFilters = (state) => state.filters.availFilters.tags;
 export const selectReviewed = (state) => state.filters.activeFilters.reviewed;
 export const selectCustomFilter = (state) => state.filters.activeFilters.custom;
 export const selectDateAddedFilter = (state) => ({

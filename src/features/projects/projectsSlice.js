@@ -56,7 +56,7 @@ const initialState = {
     projectTags: {
       isLoading: false,
       operation: null,
-      errors: null
+      errors: null,
     },
   },
   unsavedViewChanges: false,
@@ -298,9 +298,8 @@ export const projectsSlice = createSlice({
         errors: null,
       };
       state.loadingStates.projectLabels = ls;
-
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = [...proj.labels, payload.label];
+      proj.labels = payload.labels;
     },
 
     createProjectLabelFailure: (state, { payload }) => {
@@ -320,15 +319,8 @@ export const projectsSlice = createSlice({
         errors: null,
       };
       state.loadingStates.projectLabels = ls;
-
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = proj.labels.map((label) => {
-        if (label._id === payload.label._id) {
-          return payload.label;
-        } else {
-          return label;
-        }
-      });
+      proj.labels = payload.labels;
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
@@ -345,15 +337,6 @@ export const projectsSlice = createSlice({
     deleteProjectLabelSuccess: (state) => {
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.projectLabels = ls;
-
-      // const proj = state.projects.find((p) => p._id === payload.projId);
-      // proj.labels = proj.labels.map((label) => {
-      //   if (label._id === payload.label._id) {
-      //     return payload.label;
-      //   } else {
-      //     return label;
-      //   }
-      // });
     },
 
     deleteProjectLabelFailure: (state, { payload }) => {
@@ -402,7 +385,7 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags
+      proj.tags = payload.tags;
     },
 
     deleteProjectTagFailure: (state, { payload }) => {
@@ -424,7 +407,7 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags = ls;
 
       const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags
+      proj.tags = payload.tags;
     },
 
     updateProjectTagFailure: (state, { payload }) => {
@@ -761,9 +744,8 @@ export const deleteProjectTag = (payload) => {
           input: payload,
         });
         dispatch(deleteProjectTagSuccess({ projId, tags: res.deleteProjectTag.tags }));
-        // TODO waterfall delete
-        // dispatch(clearImages());
-        // dispatch(fetchProjects({ _ids: [projId] }));
+        dispatch(clearImages());
+        dispatch(fetchProjects({ _ids: [projId] }));
       }
     } catch (err) {
       console.log(`error attempting to delete tag: `, err);
@@ -814,7 +796,7 @@ export const createProjectLabel = (payload) => {
           request: 'createProjectLabel',
           input: payload,
         });
-        dispatch(createProjectLabelSuccess({ projId, label: res.createProjectLabel.label }));
+        dispatch(createProjectLabelSuccess({ projId, labels: res.createProjectLabel.labels }));
       }
     } catch (err) {
       console.log(`error attempting to create label: `, err);
@@ -839,7 +821,7 @@ export const updateProjectLabel = (payload) => {
           request: 'updateProjectLabel',
           input: payload,
         });
-        dispatch(updateProjectLabelSuccess({ projId, label: res.updateProjectLabel.label }));
+        dispatch(updateProjectLabelSuccess({ projId, labels: res.updateProjectLabel.labels }));
       }
     } catch (err) {
       const errs = normalizeErrors(err, 'UPDATE_PROJECT_LABEL_ERROR');
@@ -895,7 +877,7 @@ export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
 export const selectLabels = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.labels : [],
 );
-export const selectProjectTags = createSelector([selectSelectedProject], (proj) => 
+export const selectProjectTags = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.tags : [],
 );
 export const selectTagsLoading = (state) => state.projects.loadingStates.projectTags.isLoading;
