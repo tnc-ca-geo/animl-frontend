@@ -299,7 +299,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
               {...cell.getCellProps()}
               key={cell.getCellProps().key}
               selected={selected}
-              scrollable={cell.column.Header === 'Labels' && cell.value.props.objects.length > 3}
+              scrollable={cell.column.Header === 'Labels' && cell.value.props.objects.length >= 3}
             >
               {cell.render('Cell')}
             </DataCell>
