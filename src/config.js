@@ -20,7 +20,13 @@ export const SYNC_IMAGE_DELETE_LIMIT = 300; // when deleting w/o using task hand
 export const ASYNC_IMAGE_DELETE_BY_ID_LIMIT = 3000; // when deleting using task handler (by _id). Constrained by POST request size limits
 export const ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT = 200000; // when deleting using task handler (by filter). Constrained by task Lambda timeout
 
-export const SUPPORTED_WIRELESS_CAMS = ['BuckEyeCam', 'RidgeTec', 'CUDDEBACK', 'RECONYX'];
+export const SUPPORTED_WIRELESS_CAMS = [
+  'BuckEyeCam',
+  'RidgeTec',
+  'CUDDEBACK',
+  'RECONYX',
+  'SPARTAN',
+];
 
 export const IN_MAINTENANCE_MODE = false;
 
