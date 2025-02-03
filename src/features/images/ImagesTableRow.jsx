@@ -294,16 +294,25 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           onClick={(e) => handleRowClick(e, row.id)}
           selected={selected}
         >
-          {row.cells.map((cell) => (
-            <DataCell
-              {...cell.getCellProps()}
-              key={cell.getCellProps().key}
-              selected={selected}
-              scrollable={cell.column.Header === 'Labels' && cell.value.props.objects.length > 3}
-            >
-              {cell.render('Cell')}
-            </DataCell>
-          ))}
+          {row.cells.map((cell) => {
+            let scrollable = false;
+            if (cell.column.Header === 'Labels') {
+              const nonInvalidatedObjects = cell.value.props.objects.filter((obj) =>
+                obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
+              );
+              scrollable = nonInvalidatedObjects.length >= 3;
+            }
+            return (
+              <DataCell
+                {...cell.getCellProps()}
+                key={cell.getCellProps().key}
+                selected={selected}
+                scrollable={scrollable}
+              >
+                {cell.render('Cell')}
+              </DataCell>
+            );
+          })}
         </TableRow>
       </ContextMenuTrigger>
       <ContextMenuContent
