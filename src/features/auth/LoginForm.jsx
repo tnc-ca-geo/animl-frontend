@@ -175,10 +175,14 @@ const LoginForm = () => {
         const { username, password } = input;
         return await Auth.signIn(username, password);
       } catch (error) {
-        console.log(error.code);
-        throw new Error(
-          'Temporary password has expired and must be reset by an Project Manager. For more information see: https://docs.animl.camera/fundamentals/user-management',
-        );
+        if (
+          error.message === 'Temporary password has expired and must be reset by an administrator.'
+        ) {
+          throw new Error(
+            'Temporary password has expired and must be reset by a Project Manager. For more information see: https://docs.animl.camera/fundamentals/user-management',
+          );
+        }
+        throw error;
       }
     },
   };
