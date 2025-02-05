@@ -1,5 +1,6 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config.js';
+import { Auth } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import { indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
@@ -130,7 +131,12 @@ const StyledAuthenticator = styled(Authenticator, {
   '.amplify-alert--error': {
     backgroundColor: '$errorBg',
     color: '$errorText',
+    div: {
+      maxWidth: 300,
+    },
     button: {
+      border: 'none',
+      padding: '0',
       backgroundColor: '$errorBg',
       color: '$errorText',
     },
@@ -163,6 +169,24 @@ const LoginForm = () => {
   const { route, toSignIn } = useAuthenticator((context) => [context.route]);
   const userName = useSelector(selectUserUsername);
 
+  const services = {
+    async handleSignIn(input) {
+      try {
+        const { username, password } = input;
+        return await Auth.signIn(username, password);
+      } catch (error) {
+        if (
+          error.message === 'Temporary password has expired and must be reset by an administrator.'
+        ) {
+          throw new Error(
+            'Temporary password has expired and must be reset by a Project Manager. For more information see: https://docs.animl.camera/fundamentals/user-management',
+          );
+        }
+        throw error;
+      }
+    },
+  };
+
   const helperText = {
     confirmResetPassword: 'Reset your password',
     resetPassword: 'Enter your email address to receive a password reset code',
@@ -173,7 +197,12 @@ const LoginForm = () => {
     <LoginScreen>
       <Header css={{ '@bp3': { fontSize: '64px' } }}>Welcome back</Header>
       <Subheader>{helperText[route] || userName || ''}</Subheader>
-      <StyledAuthenticator loginMechanisms={['email']} hideDefault={true} hideSignUp={true} />
+      <StyledAuthenticator
+        services={services}
+        loginMechanisms={['email']}
+        hideDefault={true}
+        hideSignUp={true}
+      />
       {route === 'resetPassword' && (
         <StyledLoginCallout>
           <Callout type="info" title="Note about temporary passwords">
