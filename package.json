@@ -71,6 +71,7 @@
     "recharts": "^2.12.3",
     "redux-undo-redo": "^2.1.1",
     "use-resize-observer": "^9.1.0",
+    "virtua": "^0.40.0",
     "yup": "^0.32.8"
   },
   "scripts": {
