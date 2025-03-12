@@ -87,7 +87,11 @@ const NavBar = () => {
     <StyledNav appActive={appActive}>
       <Logo to="/">
         <picture>
-          <source srcSet={logoFox} media="(max-width: 799px)" width="30" />
+          <source
+            srcSet={logoFox}
+            media={`(max-width: ${appActive ? '799' : '600'}px)`}
+            width="30"
+          />
           <img alt="Animl" src={logo} width="126" />
         </picture>
       </Logo>

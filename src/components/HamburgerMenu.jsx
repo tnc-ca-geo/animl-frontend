@@ -142,71 +142,69 @@ const LinkWithIcon = styled('span', {
 
 export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
   return (
-    <>
-      <MenuRoot onOpenChange={(dir) => console.log(dir)}>
-        <OpenTrigger asChild>
-          <OpenCloseButton variant="ghost">
-            <OpenIcon />
-          </OpenCloseButton>
-        </OpenTrigger>
-        <Dialog.Portal>
-          <Content>
-            <Overlay>
-              <Title>
-                <Dialog.Close asChild>
-                  <Logo to="/">
-                    <picture>
-                      <img alt="Animl" src={logo} width="30" />
-                    </picture>
-                  </Logo>
-                </Dialog.Close>
-                <Dialog.Close asChild>
-                  <OpenCloseButton variant="ghost">
-                    <CloseIcon />
-                  </OpenCloseButton>
-                </Dialog.Close>
-              </Title>
-              <Body>
-                {signedIn && appActive && (
-                  <>
-                    <Dialog.Close asChild>
-                      <A href="https://docs.animl.camera" target="_blank" rel="noreferrer">
-                        Documentation
-                      </A>
-                    </Dialog.Close>
-                    <Dialog.Close asChild>
-                      <SignOut onClick={signOut}>Sign out</SignOut>
-                    </Dialog.Close>
-                  </>
-                )}
-                {!appActive && (
-                  <>
-                    <Dialog.Close asChild>
-                      <NavLink to="/app">Application</NavLink>
-                    </Dialog.Close>
-                    <Dialog.Close asChild>
-                      <A href="https://docs.animl.camera" target="_blank" rel="noreferrer">
-                        Documentation
-                      </A>
-                    </Dialog.Close>
-                    <Dialog.Close asChild>
-                      <A
-                        href="https://github.com/tnc-ca-geo/animl-frontend/"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <LinkWithIcon>
-                          GitHub <ExternalLinkIcon />
-                        </LinkWithIcon>
-                      </A>
-                    </Dialog.Close>
-                  </>
-                )}
-              </Body>
-            </Overlay>
-          </Content>
-        </Dialog.Portal>
-      </MenuRoot>
-    </>
+    <MenuRoot>
+      <OpenTrigger asChild>
+        <OpenCloseButton variant="ghost">
+          <OpenIcon />
+        </OpenCloseButton>
+      </OpenTrigger>
+      <Dialog.Portal>
+        <Content>
+          <Overlay>
+            <Title>
+              <Dialog.Close asChild>
+                <Logo to="/">
+                  <picture>
+                    <img alt="Animl" src={logo} width="30" />
+                  </picture>
+                </Logo>
+              </Dialog.Close>
+              <Dialog.Close asChild>
+                <OpenCloseButton variant="ghost">
+                  <CloseIcon />
+                </OpenCloseButton>
+              </Dialog.Close>
+            </Title>
+            <Body>
+              {signedIn && appActive && (
+                <>
+                  <Dialog.Close asChild>
+                    <A href="https://docs.animl.camera" target="_blank" rel="noreferrer">
+                      Documentation
+                    </A>
+                  </Dialog.Close>
+                  <Dialog.Close asChild>
+                    <SignOut onClick={signOut}>Sign out</SignOut>
+                  </Dialog.Close>
+                </>
+              )}
+              {!appActive && (
+                <>
+                  <Dialog.Close asChild>
+                    <NavLink to="/app">Application</NavLink>
+                  </Dialog.Close>
+                  <Dialog.Close asChild>
+                    <A href="https://docs.animl.camera" target="_blank" rel="noreferrer">
+                      Documentation
+                    </A>
+                  </Dialog.Close>
+                  <Dialog.Close asChild>
+                    <A
+                      href="https://github.com/tnc-ca-geo/animl-frontend/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <LinkWithIcon>
+                        GitHub <ExternalLinkIcon />
+                      </LinkWithIcon>
+                    </A>
+                  </Dialog.Close>
+                </>
+              )}
+            </Body>
+          </Overlay>
+        </Content>
+      </Dialog.Portal>
+    </MenuRoot>
   );
 };
