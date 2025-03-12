@@ -7,8 +7,10 @@ import { selectRouterLocation } from '../features/images/imagesSlice.js';
 import ProjectAndViewNav from '../features/projects/ProjectAndViewNav.jsx';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import logo from '../assets/animl-logo.svg';
+import logoFox from '../assets/animl-logo-fox.svg';
 import Button from './Button.jsx';
 import { ExternalLinkIcon } from '@radix-ui/react-icons';
+import { HamburgerMenu } from './HamburgerMenu.jsx';
 
 const Logo = styled(Link, {
   display: 'flex',
@@ -18,18 +20,18 @@ const Logo = styled(Link, {
 
 const LinkWithIcon = styled('span', {
   position: 'relative',
-  'svg': {
+  svg: {
     marginLeft: '$2',
     position: 'absolute',
     top: '50%',
     '-ms-transform': 'translateY(-50%)',
     transform: 'translateY(-50%)',
-  }
+  },
 });
 
 const NavLinks = styled('div', {
   paddingRight: '$3',
-  'a': {
+  a: {
     marginLeft: '$3',
     marginRight: '$3',
     paddingBottom: '$1',
@@ -40,8 +42,17 @@ const NavLinks = styled('div', {
     '&:hover': {
       color: '$gray12',
       borderBottom: '1px solid $gray7',
-    }
-  }
+    },
+  },
+  '@media only screen and (max-width: 600px)': {
+    display: 'none',
+  },
+});
+
+const ResponsiveSignOut = styled(Button, {
+  '@media only screen and (max-width: 600px)': {
+    display: 'none',
+  },
 });
 
 const StyledNav = styled('nav', {
@@ -58,9 +69,9 @@ const StyledNav = styled('nav', {
     appActive: {
       true: {
         backgroundColor: '$backgroundLight',
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const NavBar = () => {
@@ -74,41 +85,40 @@ const NavBar = () => {
 
   return (
     <StyledNav appActive={appActive}>
-      <Logo to='/'>
-        <img
-          alt='Animl'
-          src={logo}
-          width='126'
-        />
+      <Logo to="/">
+        <picture>
+          <source srcSet={logoFox} media="(max-width: 799px)" width="30" />
+          <img alt="Animl" src={logo} width="126" />
+        </picture>
       </Logo>
-      {(signedIn && appActive) && (
+      {signedIn && appActive && (
         <>
           <ProjectAndViewNav />
           <NavLinks>
-            <a href='https://docs.animl.camera' target="_blank" rel="noreferrer">
+            <a href="https://docs.animl.camera" target="_blank" rel="noreferrer">
               Documentation
             </a>
           </NavLinks>
-          <Button
-            onClick={signOut}
-            size='small'
-          >
+          <ResponsiveSignOut onClick={signOut} size="small">
             Sign out
-          </Button>
+          </ResponsiveSignOut>
         </>
       )}
-      {!appActive && 
+      {!appActive && (
         <NavLinks>
-          <Link to='/app'>Application</Link>
+          <Link to="/app">Application</Link>
           {/*<Link to='/case-studies'>Case studies</Link>*/}
-          <a href='https://docs.animl.camera' target="_blank" rel="noreferrer">
+          <a href="https://docs.animl.camera" target="_blank" rel="noreferrer">
             Documentation
           </a>
-          <a href='https://github.com/tnc-ca-geo/animl-frontend/' target="_blank" rel="noreferrer">
-            <LinkWithIcon>GitHub <ExternalLinkIcon/></LinkWithIcon>
+          <a href="https://github.com/tnc-ca-geo/animl-frontend/" target="_blank" rel="noreferrer">
+            <LinkWithIcon>
+              GitHub <ExternalLinkIcon />
+            </LinkWithIcon>
           </a>
         </NavLinks>
-      }
+      )}
+      <HamburgerMenu appActive={appActive} signedIn={signedIn} signOut={signOut} />
     </StyledNav>
   );
 };
