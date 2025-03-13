@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { styled, keyframes } from '../theme/stitches.config.js';
-import { ExternalLinkIcon, HamburgerMenuIcon, Cross1Icon } from '@radix-ui/react-icons';
+import { Menu, X, ExternalLinkIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from './Button.jsx';
 import IconButton from './IconButton.jsx';
@@ -59,11 +59,11 @@ const OpenCloseButton = styled(IconButton, {
   borderRadius: '$2',
 });
 
-const OpenIcon = styled(HamburgerMenuIcon, {
+const OpenIcon = styled(Menu, {
   ...openCloseIconStyles,
 });
 
-const CloseIcon = styled(Cross1Icon, {
+const CloseIcon = styled(X, {
   ...openCloseIconStyles,
 });
 
