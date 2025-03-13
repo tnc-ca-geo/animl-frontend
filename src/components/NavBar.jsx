@@ -44,13 +44,13 @@ const NavLinks = styled('div', {
       borderBottom: '1px solid $gray7',
     },
   },
-  '@media only screen and (max-width: 600px)': {
+  '@media only screen and (max-width: 640px)': {
     display: 'none',
   },
 });
 
 const ResponsiveSignOut = styled(Button, {
-  '@media only screen and (max-width: 600px)': {
+  '@media only screen and (max-width: 640px)': {
     display: 'none',
   },
 });
@@ -89,7 +89,7 @@ const NavBar = () => {
         <picture>
           <source
             srcSet={logoFox}
-            media={`(max-width: ${appActive ? '799' : '600'}px)`}
+            media={`(max-width: ${appActive ? '768' : '640'}px)`}
             width="30"
           />
           <img alt="Animl" src={logo} width="126" />
