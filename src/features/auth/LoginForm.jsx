@@ -42,6 +42,20 @@ const Subheader = styled('div', {
 });
 
 const StyledAuthenticator = styled(Authenticator, {
+  '&[data-amplify-authenticator]': {
+    width: '100%',
+  },
+
+  '&[data-amplify-authenticator] [data-amplify-container]': {
+    width: '100%',
+  },
+
+  '@bp1': {
+    '&[data-amplify-authenticator]': {
+      width: '480px',
+    },
+  },
+
   '&[data-amplify-authenticator] [data-amplify-router]': {
     backgroundColor: '$backgroundLight',
     boxShadow: 'none',
