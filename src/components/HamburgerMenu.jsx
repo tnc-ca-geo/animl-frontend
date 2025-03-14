@@ -28,13 +28,13 @@ const animateOverlayOpenClose = {
 };
 
 const openMenuAnimation = keyframes({
-  from: { transform: 'translateY(80vh)' },
+  from: { transform: 'translateY(80dvh)' },
   to: { transform: 'translateY(0)' },
 });
 
 const closeMenuAnimation = keyframes({
   from: { transform: 'translateY(0)' },
-  to: { transform: 'translateY(80vh)' },
+  to: { transform: 'translateY(80dvh)' },
 });
 
 const animateMenuOpenClose = {
@@ -84,7 +84,7 @@ const OpenTrigger = styled(Dialog.Trigger, {
 const Overlay = styled(Dialog.Overlay, {
   zIndex: '$4',
   position: 'fixed',
-  height: '100vh',
+  height: '100dvh',
   width: '100vw',
   top: '0',
   left: '0',
@@ -96,7 +96,7 @@ const Overlay = styled(Dialog.Overlay, {
 const Content = styled(Dialog.Content, {
   zIndex: '$6',
   width: '100vw',
-  height: '80vh',
+  height: '80dvh',
   position: 'fixed',
   left: 0,
   top: '20vh',
@@ -109,7 +109,7 @@ const Content = styled(Dialog.Content, {
 
 const Body = styled('div', {
   width: '100%',
-  height: '80vh',
+  height: '80dvh',
   boxSizing: 'border-box',
   display: 'flex',
   flexDirection: 'column',
