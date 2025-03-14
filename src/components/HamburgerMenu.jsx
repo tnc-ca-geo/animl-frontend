@@ -99,7 +99,7 @@ const Content = styled(Dialog.Content, {
   height: '80dvh',
   position: 'fixed',
   left: 0,
-  top: '20vh',
+  top: '20dvh',
   borderRadius: '$3 $3 0 0',
   backgroundColor: '$backgroundLight',
   '&:focus': { outline: 'none' },
