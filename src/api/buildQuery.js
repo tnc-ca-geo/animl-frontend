@@ -625,6 +625,10 @@ const queries = {
       mutation DeleteProjectLabel($input: DeleteProjectLabelInput!) {
         deleteProjectLabel(input: $input) {
           isOk
+          movingToTask
+          task {
+            _id
+          }
         }
       }
     `,
