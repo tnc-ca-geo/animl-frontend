@@ -356,11 +356,10 @@ export const tasksSlice = createSlice({
     // delete project label
 
     deleteProjectLabelTaskStart: (state, { payload }) => {
-      console.log('deleteProjectLabelTaskStart payload: ', payload);
-      // Note: we don't need a deleteProjectLabelTaskUpdate action
+      // Note: we don't need a deleteProjectLabelTaskUpdate action in this case
       // because we already know the taskId when we start the task
       let ls = state.loadingStates.deleteProjectLabel;
-      ls.taskId = payload.taskId; // update with taskId
+      ls.taskId = payload.taskId;
       ls.isLoading = true;
       ls.errors = null;
     },
@@ -459,8 +458,6 @@ export const fetchTask = (taskId) => {
           request: 'getTask',
           input: { taskId },
         });
-
-        console.log('fetchTask - res: ', res);
 
         if (res.task.status === 'SUBMITTED' || res.task.status === 'RUNNING') {
           await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -592,7 +589,6 @@ export const fetchStats = (filters) => {
           request: 'getStats',
           input: { filters },
         });
-        console.log('tasksSlice - fetchStats() - res: ', res);
         dispatch(statsUpdate({ taskId: res.stats._id }));
       }
     } catch (err) {
@@ -617,7 +613,6 @@ export const exportAnnotations = ({ format, filters }) => {
           request: 'exportAnnotations',
           input: { format, filters },
         });
-        console.log('exportAnnotations - res: ', res);
         dispatch(exportAnnotationsUpdate({ taskId: res.exportAnnotations._id }));
       }
     } catch (err) {
@@ -672,7 +667,6 @@ export const editDeployments = (operation, payload) => {
           request: operation,
           input: payload,
         });
-        console.log('editDeployments - res: ', res);
         dispatch(editDeploymentsUpdate({ taskId: res[operation]._id }));
       }
     } catch (err) {
@@ -698,7 +692,6 @@ export const updateCameraSerialNumber = (payload) => {
           request: 'updateCameraSerialNumber',
           input: payload,
         });
-        console.log('updateCameraSerialNumber - res: ', res);
         dispatch(updateCameraSerialNumberUpdate({ taskId: res.updateCameraSerialNumber._id }));
       }
     } catch (err) {
@@ -721,7 +714,6 @@ export const deleteCamera = (payload) => {
           request: 'deleteCameraConfig',
           input: payload,
         });
-        console.log('deleteCamera - res: ', res);
         dispatch(updateDeleteCameraUpdate({ taskId: res.deleteCameraConfig._id }));
       }
     } catch (err) {

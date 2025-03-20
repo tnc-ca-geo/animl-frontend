@@ -324,7 +324,6 @@ export const projectsSlice = createSlice({
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
-      console.log('updateProjectLabelFailure resolver - payload: ', payload);
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.projectLabels = ls;
     },
@@ -449,10 +448,6 @@ export const projectsSlice = createSlice({
         }
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
-        console.log(
-          'editDeploymentsSuccess caught in projectsSlice extra reducer - payload: ',
-          payload,
-        );
         const editedCamConfig = payload.cameraConfig;
         const proj = state.projects.find((p) => p._id === payload.projId);
         for (const camConfig of proj.cameraConfigs) {
@@ -847,7 +842,9 @@ export const deleteProjectLabel = (payload) => {
           input: { ...payload, processAsTask: false },
         });
         if (res.deleteProjectLabel.movingToTask) {
-          // TODO: moving to task slice
+          // the synchronous label deletion limit has been reached,
+          // and an async task was created to complete the deletion.
+          // shifting status tracking to task slice
           dispatch(
             deleteProjectLabelTaskStart({
               projId,
