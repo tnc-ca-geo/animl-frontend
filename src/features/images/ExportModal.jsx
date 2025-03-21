@@ -7,6 +7,7 @@ import {
   fetchTask,
 } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
+import { selectSelectedProject } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { ButtonRow, HelperText } from '../../components/Form';
 import Button from '../../components/Button';
@@ -30,6 +31,8 @@ const ExportModal = () => {
   const filters = useSelector(selectActiveFilters);
   const annotationsExport = useSelector(selectAnnotationsExport);
   const exportLoading = useSelector(selectAnnotationsExportLoading);
+  const selectedProject = useSelector(selectSelectedProject);
+
   const dispatch = useDispatch();
 
   const exportReady =
@@ -54,7 +57,7 @@ const ExportModal = () => {
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportAnnotations({ format, filters }));
+      dispatch(exportAnnotations({ format, filters, timezone: selectedProject.timezone }));
     }
   };
 
