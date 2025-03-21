@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectAnnotationsExport,
@@ -7,11 +7,14 @@ import {
   fetchTask,
 } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
+import { selectSelectedProject } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { ButtonRow, HelperText } from '../../components/Form';
+import SelectField from '../../components/SelectField.jsx';
+import { ButtonRow, FormWrapper } from '../../components/Form';
 import Button from '../../components/Button';
 import Callout from '../../components/Callout';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
+import { timeZonesNames } from '@vvo/tzdb';
 
 const NotReviewedWarning = ({ reviewedCount }) => {
   const total = reviewedCount.notReviewed + reviewedCount.reviewed;
@@ -30,6 +33,10 @@ const ExportModal = () => {
   const filters = useSelector(selectActiveFilters);
   const annotationsExport = useSelector(selectAnnotationsExport);
   const exportLoading = useSelector(selectAnnotationsExportLoading);
+  const selectedProject = useSelector(selectSelectedProject);
+  const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
+  const [timezone, setTimezone] = useState(selectedProject.timezone);
+
   const dispatch = useDispatch();
 
   const exportReady =
@@ -54,7 +61,7 @@ const ExportModal = () => {
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportAnnotations({ format, filters }));
+      dispatch(exportAnnotations({ format, filters, timezone }));
     }
   };
 
@@ -70,8 +77,8 @@ const ExportModal = () => {
           We couldn&apos;t find any images that matched this set of filters.
         </NoneFoundAlert>
       )}
-      <HelperText>
-        <p>
+      <div>
+        <p style={{ marginTop: '0' }}>
           Annotations from images matching the current filters can be downloaded to CSV or{' '}
           <a
             href="https://github.com/microsoft/CameraTraps/blob/main/data_management/README.md"
@@ -83,12 +90,14 @@ const ExportModal = () => {
           format. Any images that have not been reviewed will be ignored.
         </p>
         {!exportReady && (
-          <p>
-            <em>
-              Note: if you are exporting 10&apos;s of thousands of image records, this may take a
-              few minutes.
-            </em>
-          </p>
+          <Callout type="info" title="Please bear with us!">
+            <p>
+              <em>
+                If you are exporting 10&apos;s of thousands of image records, this may take a few
+                minutes.
+              </em>
+            </p>
+          </Callout>
         )}
         {exportReady && (
           <Callout type="success" title="Export successsful">
@@ -109,7 +118,21 @@ const ExportModal = () => {
           annotationsExport.meta.reviewedCount.notReviewed > 0 && (
             <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
           )}
-      </HelperText>
+      </div>
+
+      <FormWrapper>
+        <br />
+        <SelectField
+          name="timezone"
+          label="Export to timezone"
+          options={tzOptions}
+          value={tzOptions.find(({ value }) => value === timezone)}
+          onChange={(_, { value }) => setTimezone(value)}
+          isMulti={false}
+          onBlur={() => {}}
+        />
+      </FormWrapper>
+
       <ButtonRow>
         <Button
           type="submit"
