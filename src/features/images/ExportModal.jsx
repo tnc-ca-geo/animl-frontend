@@ -10,7 +10,7 @@ import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { selectSelectedProject } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import SelectField from '../../components/SelectField.jsx';
-import { ButtonRow, HelperText } from '../../components/Form';
+import { ButtonRow, FormWrapper } from '../../components/Form';
 import Button from '../../components/Button';
 import Callout from '../../components/Callout';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
@@ -77,8 +77,8 @@ const ExportModal = () => {
           We couldn&apos;t find any images that matched this set of filters.
         </NoneFoundAlert>
       )}
-      <HelperText>
-        <p>
+      <div>
+        <p style={{ marginTop: '0' }}>
           Annotations from images matching the current filters can be downloaded to CSV or{' '}
           <a
             href="https://github.com/microsoft/CameraTraps/blob/main/data_management/README.md"
@@ -90,12 +90,14 @@ const ExportModal = () => {
           format. Any images that have not been reviewed will be ignored.
         </p>
         {!exportReady && (
-          <p>
-            <em>
-              Note: if you are exporting 10&apos;s of thousands of image records, this may take a
-              few minutes.
-            </em>
-          </p>
+          <Callout type="info" title="Please bear with us!">
+            <p>
+              <em>
+                If you are exporting 10&apos;s of thousands of image records, this may take a few
+                minutes.
+              </em>
+            </p>
+          </Callout>
         )}
         {exportReady && (
           <Callout type="success" title="Export successsful">
@@ -116,16 +118,20 @@ const ExportModal = () => {
           annotationsExport.meta.reviewedCount.notReviewed > 0 && (
             <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
           )}
-      </HelperText>
+      </div>
 
-      <SelectField
-        name="timezone"
-        options={tzOptions}
-        value={tzOptions.find(({ value }) => value === timezone)}
-        onChange={(_, { value }) => setTimezone(value)}
-        isMulti={false}
-        onBlur={() => {}}
-      />
+      <FormWrapper>
+        <br />
+        <SelectField
+          name="timezone"
+          label="Export to timezone"
+          options={tzOptions}
+          value={tzOptions.find(({ value }) => value === timezone)}
+          onChange={(_, { value }) => setTimezone(value)}
+          isMulti={false}
+          onBlur={() => {}}
+        />
+      </FormWrapper>
 
       <ButtonRow>
         <Button
