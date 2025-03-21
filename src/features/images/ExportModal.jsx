@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectAnnotationsExport,
@@ -9,10 +9,12 @@ import {
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { selectSelectedProject } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
+import SelectField from '../../components/SelectField.jsx';
 import { ButtonRow, HelperText } from '../../components/Form';
 import Button from '../../components/Button';
 import Callout from '../../components/Callout';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
+import { timeZonesNames } from '@vvo/tzdb';
 
 const NotReviewedWarning = ({ reviewedCount }) => {
   const total = reviewedCount.notReviewed + reviewedCount.reviewed;
@@ -32,6 +34,8 @@ const ExportModal = () => {
   const annotationsExport = useSelector(selectAnnotationsExport);
   const exportLoading = useSelector(selectAnnotationsExportLoading);
   const selectedProject = useSelector(selectSelectedProject);
+  const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
+  const [timezone, setTimezone] = useState(selectedProject.timezone);
 
   const dispatch = useDispatch();
 
@@ -57,7 +61,7 @@ const ExportModal = () => {
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportAnnotations({ format, filters, timezone: selectedProject.timezone }));
+      dispatch(exportAnnotations({ format, filters, timezone }));
     }
   };
 
@@ -113,6 +117,16 @@ const ExportModal = () => {
             <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
           )}
       </HelperText>
+
+      <SelectField
+        name="timezone"
+        options={tzOptions}
+        value={tzOptions.find(({ value }) => value === timezone)}
+        onChange={(_, { value }) => setTimezone(value)}
+        isMulti={false}
+        onBlur={() => {}}
+      />
+
       <ButtonRow>
         <Button
           type="submit"
