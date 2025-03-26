@@ -34,8 +34,10 @@ const ViewExplorer = () => {
 
   return (
     <ViewExplorerWrapper>
-      <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
-      {filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
+      { false &&
+        <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
+      }
+      {false && filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
       <ImagesPanel />
       {loupeOpen && <Loupe />}
       <HydratedModal />

@@ -14,6 +14,7 @@ import {
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import ImagesTable from './ImagesTable.jsx';
 import { selectSelectedProjectId } from '../projects/projectsSlice.js';
+import { ImagesGrid } from './ImagesGrid.jsx';
 
 // const ImagesTableLoadingOverlay = styled('div', {
 //   flexGrow: '1',
@@ -58,7 +59,10 @@ const ImagesPanel = () => {
 
   return (
     <StyledImagesPanel>
+      { false &&
       <ImagesTable workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
+      }
+      <ImagesGrid workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
     </StyledImagesPanel>
   );
 };
