@@ -2,7 +2,7 @@ import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { registerCameraSuccess, unregisterCameraSuccess } from '../cameras/wirelessCamerasSlice';
-import { editDeploymentsSuccess } from '../tasks/tasksSlice';
+import { deleteProjectLabelTaskStart, editDeploymentsSuccess } from '../tasks/tasksSlice';
 import { clearImages } from '../images/imagesSlice.js';
 import { normalizeErrors } from '../../app/utils.js';
 
@@ -324,7 +324,6 @@ export const projectsSlice = createSlice({
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
-      console.log('updateProjectLabelFailure resolver - payload: ', payload);
       const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.projectLabels = ls;
     },
@@ -449,10 +448,6 @@ export const projectsSlice = createSlice({
         }
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
-        console.log(
-          'editDeploymentsSuccess caught in projectsSlice extra reducer - payload: ',
-          payload,
-        );
         const editedCamConfig = payload.cameraConfig;
         const proj = state.projects.find((p) => p._id === payload.projId);
         for (const camConfig of proj.cameraConfigs) {
@@ -841,14 +836,27 @@ export const deleteProjectLabel = (payload) => {
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
-        await call({
+        const res = await call({
           projId,
           request: 'deleteProjectLabel',
-          input: payload,
+          input: { ...payload, processAsTask: false },
         });
-        dispatch(deleteProjectLabelSuccess({ projId }));
-        dispatch(clearImages());
-        dispatch(fetchProjects({ _ids: [projId] }));
+        if (res.deleteProjectLabel.movingToTask) {
+          // the synchronous label deletion limit has been reached,
+          // and an async task was created to complete the deletion.
+          // shifting status tracking to task slice
+          dispatch(
+            deleteProjectLabelTaskStart({
+              projId,
+              taskId: res.deleteProjectLabel.task._id,
+            }),
+          );
+          dispatch(deleteProjectLabelSuccess({ projId }));
+        } else {
+          dispatch(deleteProjectLabelSuccess({ projId }));
+          dispatch(clearImages());
+          dispatch(fetchProjects({ _ids: [projId] }));
+        }
       }
     } catch (err) {
       console.log(`error attempting to update label: `, err);

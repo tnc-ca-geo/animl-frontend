@@ -394,7 +394,7 @@ const queries = {
   }),
 
   // TODO: name this something more specific (like exportImageData)
-  exportAnnotations: ({ format, filters }) => ({
+  exportAnnotations: ({ format, filters, timezone }) => ({
     template: `
       query ExportAnnotations($input: ExportInput!) {
         exportAnnotations(input: $input) {
@@ -403,7 +403,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { format, filters },
+      input: { format, filters, timezone },
     },
   }),
 
@@ -627,6 +627,10 @@ const queries = {
       mutation DeleteProjectLabel($input: DeleteProjectLabelInput!) {
         deleteProjectLabel(input: $input) {
           isOk
+          movingToTask
+          task {
+            _id
+          }
         }
       }
     `,

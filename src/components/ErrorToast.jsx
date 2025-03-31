@@ -50,6 +50,8 @@ import {
   dismissDeleteCameraError,
   selectDeleteImagesErrors,
   dismissDeleteImagesError,
+  selectDeleteProjectLabelErrors,
+  dismissDeleteProjectLabelTaskError,
 } from '../features/tasks/tasksSlice';
 import {
   selectRedriveBatchErrors,
@@ -86,6 +88,7 @@ const ErrorToast = () => {
   const deleteCameraErrors = useSelector(selectDeleteCameraErrors);
   const projectTagErrors = useSelector(selectProjectTagErrors);
   const deleteImagesErrors = useSelector(selectDeleteImagesErrors);
+  const deleteProjectLabelErrors = useSelector(selectDeleteProjectLabelErrors);
 
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -114,6 +117,7 @@ const ErrorToast = () => {
     ),
     enrichErrors(deleteCameraErrors, 'Error Deleting Camera', 'deleteCamera'),
     enrichErrors(deleteImagesErrors, 'Error Deleting Images', 'deleteImages'),
+    enrichErrors(deleteProjectLabelErrors, 'Error Deleting Label', 'deleteProjectLabel'),
   ];
 
   const errors = enrichedErrors.reduce(
@@ -180,7 +184,8 @@ const dismissErrorActions = {
   upload: (i) => dismissUploadError(i),
   cameraSerialNumber: (i) => dismissCameraSerialNumberError(i),
   deleteCamera: (i) => dismissDeleteCameraError(i),
-  deleteImagesError: (i) => dismissDeleteImagesError(i),
+  deleteImages: (i) => dismissDeleteImagesError(i),
+  deleteProjectLabel: (i) => dismissDeleteProjectLabelTaskError(i),
 };
 
 function enrichErrors(errors, title, entity) {

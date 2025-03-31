@@ -11,6 +11,7 @@ import {
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice.js';
 import {
+  clearImages,
   fetchImages,
   fetchImagesCount,
   setDeleteImagesAlertStatus,
@@ -58,6 +59,11 @@ const initialState = {
       errors: null,
     },
     deleteImages: {
+      taskId: null,
+      isLoading: false,
+      errors: null,
+    },
+    deleteProjectLabel: {
       taskId: null,
       isLoading: false,
       errors: null,
@@ -346,6 +352,36 @@ export const tasksSlice = createSlice({
       state.loadingStates.deleteImages.taskId = null;
       state.loadingStates.deleteImages.errors.splice(index, 1);
     },
+
+    // delete project label
+
+    deleteProjectLabelTaskStart: (state, { payload }) => {
+      // Note: we don't need a deleteProjectLabelTaskUpdate action in this case
+      // because we already know the taskId when we start the task
+      let ls = state.loadingStates.deleteProjectLabel;
+      ls.taskId = payload.taskId;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    deleteProjectLabelTaskSuccess: (state) => {
+      let ls = state.loadingStates.deleteProjectLabel;
+      ls.taskId = null;
+      ls.isLoading = false;
+      ls.errors = null;
+    },
+
+    deleteProjectLabelTaskFailure: (state, { payload }) => {
+      let ls = state.loadingStates.deleteProjectLabel;
+      ls.isLoading = false;
+      ls.errors = [payload.task.output.error];
+    },
+
+    dismissDeleteProjectLabelTaskError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.deleteProjectLabel.taskId = null;
+      state.loadingStates.deleteProjectLabel.errors.splice(index, 1);
+    },
   },
 });
 
@@ -400,6 +436,11 @@ export const {
   deleteImagesFailure,
   clearDeleteImagesTask,
   dismissDeleteImagesError,
+
+  deleteProjectLabelTaskStart,
+  deleteProjectLabelTaskSuccess,
+  deleteProjectLabelTaskFailure,
+  dismissDeleteProjectLabelTaskError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -417,8 +458,6 @@ export const fetchTask = (taskId) => {
           request: 'getTask',
           input: { taskId },
         });
-
-        console.log('fetchTask - res: ', res);
 
         if (res.task.status === 'SUBMITTED' || res.task.status === 'RUNNING') {
           await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -509,8 +548,15 @@ export const fetchTask = (taskId) => {
                 dispatch(fetchImages(res.task.output.filters));
                 dispatch(fetchImagesCount(res.task.output.filters));
               },
-
               FAIL: (res) => dispatch(deleteImagesFailure(res)),
+            },
+            DeleteProjectLabel: {
+              COMPLETE: (res) => {
+                dispatch(deleteProjectLabelTaskSuccess(res));
+                dispatch(clearImages());
+                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+              },
+              FAIL: (res) => dispatch(deleteProjectLabelTaskFailure(res)),
             },
           };
 
@@ -543,7 +589,6 @@ export const fetchStats = (filters) => {
           request: 'getStats',
           input: { filters },
         });
-        console.log('tasksSlice - fetchStats() - res: ', res);
         dispatch(statsUpdate({ taskId: res.stats._id }));
       }
     } catch (err) {
@@ -553,7 +598,7 @@ export const fetchStats = (filters) => {
 };
 
 // export annotations thunk
-export const exportAnnotations = ({ format, filters }) => {
+export const exportAnnotations = ({ format, filters, timezone }) => {
   return async (dispatch, getState) => {
     try {
       dispatch(exportAnnotationsStart());
@@ -566,9 +611,8 @@ export const exportAnnotations = ({ format, filters }) => {
         const res = await call({
           projId: selectedProj._id,
           request: 'exportAnnotations',
-          input: { format, filters },
+          input: { format, filters, timezone },
         });
-        console.log('exportAnnotations - res: ', res);
         dispatch(exportAnnotationsUpdate({ taskId: res.exportAnnotations._id }));
       }
     } catch (err) {
@@ -623,7 +667,6 @@ export const editDeployments = (operation, payload) => {
           request: operation,
           input: payload,
         });
-        console.log('editDeployments - res: ', res);
         dispatch(editDeploymentsUpdate({ taskId: res[operation]._id }));
       }
     } catch (err) {
@@ -649,7 +692,6 @@ export const updateCameraSerialNumber = (payload) => {
           request: 'updateCameraSerialNumber',
           input: payload,
         });
-        console.log('updateCameraSerialNumber - res: ', res);
         dispatch(updateCameraSerialNumberUpdate({ taskId: res.updateCameraSerialNumber._id }));
       }
     } catch (err) {
@@ -672,7 +714,6 @@ export const deleteCamera = (payload) => {
           request: 'deleteCameraConfig',
           input: payload,
         });
-        console.log('deleteCamera - res: ', res);
         dispatch(updateDeleteCameraUpdate({ taskId: res.deleteCameraConfig._id }));
       }
     } catch (err) {
@@ -739,5 +780,9 @@ export const selectDeleteCameraLoading = (state) => state.tasks.loadingStates.de
 export const selectDeleteCameraErrors = (state) => state.tasks.loadingStates.deleteCamera.errors;
 export const selectDeleteImagesLoading = (state) => state.tasks.loadingStates.deleteImages;
 export const selectDeleteImagesErrors = (state) => state.tasks.loadingStates.deleteImages.errors;
+export const selectDeleteProjectLabelLoading = (state) =>
+  state.tasks.loadingStates.deleteProjectLabel;
+export const selectDeleteProjectLabelErrors = (state) =>
+  state.tasks.loadingStates.deleteProjectLabel.errors;
 
 export default tasksSlice.reducer;
