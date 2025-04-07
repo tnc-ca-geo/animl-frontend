@@ -46,6 +46,10 @@ const StyledAuthenticator = styled(Authenticator, {
     width: '100%',
   },
 
+  '&[data-amplify-authenticator] [data-amplify-form]': {
+    padding: '$4',
+  },
+
   '&[data-amplify-authenticator] [data-amplify-container]': {
     width: '100%',
   },
@@ -122,7 +126,7 @@ const StyledAuthenticator = styled(Authenticator, {
   '.amplify-input': {
     display: 'inherit',
     width: '100%',
-    fontSize: '$3',
+    fontSize: '16px',
     fontFamily: '$sourceSansPro',
     color: '$textMedium',
     padding: '$3',
