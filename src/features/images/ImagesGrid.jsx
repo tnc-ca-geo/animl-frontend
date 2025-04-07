@@ -4,121 +4,67 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeGrid } from 'react-window';
 import { Image } from '../../components/Image.jsx';
-import { Grid3x3, Grid2x2, Square, Filter  } from 'lucide-react';
-import { violet } from '@radix-ui/colors';
 import FullSizeImage from '../loupe/FullSizeImage.jsx';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { selectFocusIndex } from '../review/reviewSlice.js';
-import FiltersPanel from '../filters/FiltersPanel.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFocusChangeType, selectFocusIndex } from '../review/reviewSlice.js';
+import { useEffectAfterMount } from '../../app/utils.js';
+import { sortBy } from 'lodash';
+import { selectImagesLoading, sortChanged } from './imagesSlice.js';
+import { selectProjectsLoading } from '../projects/projectsSlice.js';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { RatsNoneFound } from './RatsNoneFound.jsx';
+import { FloatingToolbar } from './FloatingToolbar.jsx';
 
-const colCounts = {
+export const colCounts = {
   single: 1,
   middle: 3,
-  most: 5
-}
+  most: 5,
+};
 
-const heightModifier = 0.65
-
-const FloatingToolbarContainer = styled('div', {
-  position: 'fixed',
-  width: '80vw',
-  top: '90dvh',
-  display: 'flex',
-  justifyContent: 'space-around',
-  background: '$backgroundLight',
-  borderRadius: '1000000px',
-  margin: '0 auto',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  overflow: 'hidden',
-})
-
-const FloatingToolbarItem = styled('div', {
-  display: 'grid',
-  placeItems: 'center',
-  variants: {
-    active: {
-      true: {
-        backgroundColor: violet.violet5,
-        color: violet.violet11,
-      }
-    }
-  },
-  padding: '$1',
-  flex: '1',
-})
-
-const FloatingToolbar = ({
-  colCount,
-  setColCount,
-  openFiltersPanel,
-}) => {
-  return (
-    <FloatingToolbarContainer>
-      <FloatingToolbarItem
-        onClick={() => openFiltersPanel()}
-      >
-        <Filter/>
-      </FloatingToolbarItem>
-      <FloatingToolbarItem
-        onClick={() => setColCount(colCounts.most)}
-        active={colCount === colCounts.most}
-      >
-        <Grid3x3/>
-      </FloatingToolbarItem>
-      <FloatingToolbarItem
-        onClick={() => setColCount(colCounts.middle)}
-        active={colCount === colCounts.middle}
-      >
-        <Grid2x2/>
-      </FloatingToolbarItem>
-      <FloatingToolbarItem
-        onClick={() => setColCount(colCounts.single)}
-        active={colCount === colCounts.single}
-      >
-        <Square/>
-      </FloatingToolbarItem>
-    </FloatingToolbarContainer>
-  )
-}
+const heightModifier = 0.65;
 
 const ImageWrapper = styled(Image, {
   maxWidth: '100%',
   width: '100%',
   objectFit: 'contain',
   background: 'Black',
-})
+});
 
 const GridImage = ({ uniqueId, imgUrl, onClickImage, style }) => {
-  return (
-    <ImageWrapper
-      key={uniqueId}
-      onClick={() => onClickImage()}
-      src={imgUrl}
-      style={style}
-    />
-  )
-}
+  return <ImageWrapper key={uniqueId} onClick={() => onClickImage()} src={imgUrl} style={style} />;
+};
 
 const FullSizedImageWrapper = styled('div', {
-  backgroundColor: 'Black'
+  backgroundColor: 'Black',
+  scrollSnapAlign: 'start',
+  scrollSnapType: 'y',
+  display: 'grid',
+  placeItems: 'center',
 });
 
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
-  // const dispatch = useDispatch();
-  // const focusIndex = useSelector(selectFocusIndex);
-  const gridRef = useRef(null)
-  const infiniteLoaderRef = useRef(null)
-  const [colCount, setColCount] = useState(colCounts.most)
-  const [viewWidth, setViewWidth] = useState(0)
-  const [visibleStartStop, setVisibleStartStop] = useState({ rowStart: 0, rowStop: 0 })
-  const [scrollTo, setScrollTo] = useState({ row: 0, col: 0 })
-  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false)
+  const dispatch = useDispatch();
+  const focusIndex = useSelector(selectFocusIndex);
+  const projectsLoading = useSelector(selectProjectsLoading);
+  const imagesLoading = useSelector(selectImagesLoading);
+
+  const gridRef = useRef(null);
+  const infiniteLoaderRef = useRef(null);
+  const [colCount, setColCount] = useState(colCounts.single);
+  const [visibleStartStop, setVisibleStartStop] = useState({ rowStart: 0, rowStop: 0 });
+  const [scrollTo, setScrollTo] = useState({ row: 0, col: 0 });
 
   const onClickImage = (index) => {
-    setColCount(colCounts.single)
-    setScrollTo({ row: index, col: 0 })
-  }
+    setColCount(colCounts.single);
+    setScrollTo({ row: index, col: 0 });
+  };
+
+  useEffectAfterMount(() => {
+    dispatch(sortChanged(sortBy));
+    if (infiniteLoaderRef.current) {
+      infiniteLoaderRef.current.resetloadMoreItemsCache();
+    }
+  }, [sortBy, dispatch]);
 
   // TODO
   // For some reason, scroll to center acts weird
@@ -127,45 +73,43 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
   // the items in a weird spot
   const changeColCount = (newColCount) => {
     if (colCount === newColCount) {
-      return
+      return;
     }
 
-    const { rowStart, rowStop } = visibleStartStop
-    const halfway = Math.floor((rowStop - rowStart) / 2)
+    const { rowStart, rowStop } = visibleStartStop;
+    const halfway = Math.floor((rowStop - rowStart) / 2);
     // Current middle column
     const col = Math.floor(
-      (colCount === colCounts.most 
-        ? colCounts.most 
-        : colCounts.middle 
+      (colCount === colCounts.most
+        ? colCounts.most
+        : colCounts.middle
           ? colCounts.middle
-          : colCounts.single
-      ) / 2
-    )
+          : colCounts.single) / 2,
+    );
     // Find the middle element
-    const targetIndex = ((rowStart+halfway)*colCount)+col
-    let newRow = Math.floor(targetIndex/newColCount)
+    const targetIndex = (rowStart + halfway) * colCount + col;
+    let newRow = Math.floor(targetIndex / newColCount);
     const newCol = Math.floor(
       (newColCount === colCounts.most
         ? colCounts.most
         : colCounts.middle
           ? colCounts.middle
-          : colCounts.single
-      ) / 2
-    )
+          : colCounts.single) / 2,
+    );
 
     // Clamp to the last visible row or 0th row
-    if (newRow > (count / newColCount)) {
-      newRow = Math.floor(count / newColCount)
+    if (newRow > count / newColCount) {
+      newRow = Math.floor(count / newColCount);
     }
     if (newRow < 0) {
-      newRow = 0
+      newRow = 0;
     }
 
-    setColCount(newColCount)
-    setScrollTo({ row: newRow, col: newCol })
-  }
+    setColCount(newColCount);
+    setScrollTo({ row: newRow, col: newCol });
+  };
 
-  const count = hasNext ? workingImages.length + 1 : workingImages.length
+  const count = hasNext ? workingImages.length + 1 : workingImages.length;
   const isImageLoaded = useCallback(
     (index) => {
       return index < workingImages.length;
@@ -173,144 +117,180 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
     [hasNext, workingImages, colCount],
   );
 
-  const Cell = useCallback(({ columnIndex, rowIndex, style }) => {
-    const idx = (rowIndex * colCount) + columnIndex
-    if (!isImageLoaded(idx)) {
-      return (<></>)
-    }
-
-    const img = workingImages[idx]
-    const uniqueRowId = `${idx}-${img._id}`
-    const clickImage = () => onClickImage(idx)
-    if (colCount === colCounts.single) {
-      return (
-        <FullSizedImageWrapper style={style}>
-          <FullSizeImage
-            workingImages={workingImages}
-            image={img}
-            focusIndex={{ image: idx }}
-            css={{ height: '100%', width: '100%', objectFit: 'contain' }}
-          />
-        </FullSizedImageWrapper>
-      )
-    } else {
-      return (
-        // <div key={uniqueRowId} style={style}>{idx} ({rowIndex}/{columnIndex})</div>
-        <GridImage
-          uniqueId={uniqueRowId}
-          imgUrl={colCount === colCounts.single ? img.url : img.thumbUrl}
-          onClickImage={clickImage}
-          style={style}
-        />
-      )
-    }
-  }, [workingImages, isImageLoaded])
-  
-  const getRowHeight = useCallback((rowIndex, defaultWidth) => {
-    const start = rowIndex * colCount;
-    const end = start + colCount;
-
-    let tallest = 0;
-    for (let i = 0; i < end; i++) {
-      const h = workingImages[i]?.imageHeight ?? (defaultWidth*heightModifier);
-      const w = workingImages[i]?.imageWidth ?? defaultWidth;
-      const scalingFactor = defaultWidth / w;
-      const scaledHeight = h * scalingFactor;
-      if (scaledHeight > tallest) {
-        tallest = scaledHeight;
+  const Cell = useCallback(
+    ({ columnIndex, rowIndex, style }) => {
+      const idx = rowIndex * colCount + columnIndex;
+      if (!isImageLoaded(idx)) {
+        return <></>;
       }
-    }
-    return tallest
-  }, [workingImages, colCount]);
 
+      const img = workingImages[idx];
+      const uniqueRowId = `${idx}-${img._id}`;
+      const clickImage = () => onClickImage(idx);
+      if (colCount === colCounts.single) {
+        return (
+          <FullSizedImageWrapper key={uniqueRowId} style={style}>
+            <FullSizeImage
+              key={uniqueRowId}
+              workingImages={workingImages}
+              image={img}
+              focusIndex={{ image: idx }}
+              css={{ height: '100%', width: '100%', objectFit: 'contain' }}
+            />
+          </FullSizedImageWrapper>
+        );
+      } else {
+        return (
+          // Used for testing zoom in/out
+          // <div key={uniqueRowId} style={style}>{idx} ({rowIndex}/{columnIndex})</div>
+          <GridImage
+            uniqueId={uniqueRowId}
+            imgUrl={colCount === colCounts.single ? img.url : img.thumbUrl}
+            onClickImage={clickImage}
+            style={style}
+          />
+        );
+      }
+    },
+    [workingImages, isImageLoaded],
+  );
+
+  const getRowHeight = useCallback(
+    (rowIndex, defaultWidth) => {
+      const start = rowIndex * colCount;
+      const end = start + colCount;
+
+      let tallest = 0;
+      for (let i = 0; i < end; i++) {
+        const h = workingImages[i]?.imageHeight ?? defaultWidth * heightModifier;
+        const w = workingImages[i]?.imageWidth ?? defaultWidth;
+        const scalingFactor = defaultWidth / w;
+        const scaledHeight = h * scalingFactor;
+        if (scaledHeight > tallest) {
+          tallest = scaledHeight;
+        }
+      }
+      return tallest;
+    },
+    [workingImages, colCount],
+  );
+
+  // Clear grid cache when colCount changes so that
+  // it will recalculate the widths
   useEffect(() => {
+    onResize();
     if (gridRef.current) {
-      gridRef.current.resetAfterColumnIndex(0)
-      gridRef.current.resetAfterRowIndex(0)
-      const { row, col } = scrollTo
+      const { row, col } = scrollTo;
       gridRef.current.scrollToItem({
         align: 'center',
         rowIndex: row,
-        columnIndex: col
-      })
+        columnIndex: col,
+      });
     }
-  }, [colCount])
+  }, [colCount]);
 
-  useEffect(() => {
+  const onResize = useCallback(() => {
     if (gridRef.current) {
-      gridRef.current.resetAfterColumnIndex(0)
-      gridRef.current.resetAfterRowIndex(0)
+      gridRef.current.resetAfterColumnIndex(0);
+      gridRef.current.resetAfterRowIndex(0);
     }
-  }, [viewWidth])
+  }, [gridRef]);
+
+  const calcColWidth = useCallback(
+    (width) => {
+      return width / colCount;
+    },
+    [colCount],
+  );
+
+  // Scroll to query params focus image
+  const focusChangeType = useSelector(selectFocusChangeType);
+  useEffect(() => {
+    if (focusIndex.image && focusChangeType === 'auto') {
+      setColCount(colCounts.single);
+      if (gridRef.current) {
+        gridRef.current.scrollToItem({
+          align: 'center',
+          rowIndex: focusIndex.image,
+          columnIndex: 0,
+        });
+      }
+    }
+  }, [focusIndex.image, focusChangeType]);
 
   return (
     <>
-      {workingImages.length > 0 &&
-      <>
-        <AutoSizer>
-          {({ height, width }) => {
-            setViewWidth(width);
-            return (
-              <InfiniteLoader
-                ref={infiniteLoaderRef}
-                isItemLoaded={isImageLoaded}
-                items={workingImages}
-                itemCount={count}
-                loadMoreItems={loadNextPage}
-                threshold={50}
-              >
-                {({ onItemsRendered, ref }) => (
-                  <VariableSizeGrid
-                    ref={(grid) => {
-                      ref(grid)
-                      gridRef.current = grid
-                    }}
-                    height={(height)}
-                    width={width}
-                    columnCount={colCount}
-                    columnWidth={() => (width/colCount)}
-                    rowCount={Math.ceil(count/colCount)}
-                    rowHeight={(rowIndex) => {
-                      if (colCount === colCounts.single) {
-                        return (height * heightModifier)
-                      } else {
-                        return getRowHeight(rowIndex, (width/colCount));
+      {(projectsLoading.isLoading || imagesLoading.isLoading) && (
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      )}
+      {imagesLoading.noneFound && <RatsNoneFound />}
+      <FloatingToolbar colCount={colCount} setColCount={changeColCount} />
+      {workingImages.length > 0 && (
+        <>
+          <AutoSizer onResize={() => onResize()}>
+            {({ height, width }) => {
+              return (
+                <InfiniteLoader
+                  ref={infiniteLoaderRef}
+                  isItemLoaded={isImageLoaded}
+                  items={workingImages}
+                  itemCount={count}
+                  loadMoreItems={loadNextPage}
+                  threshold={50}
+                >
+                  {({ onItemsRendered, ref }) => (
+                    <VariableSizeGrid
+                      style={{
+                        scrollSnapType: 'y mandatory',
+                        WebkitScrollSnapType: 'y mandatory',
+                      }}
+                      ref={(grid) => {
+                        ref(grid);
+                        gridRef.current = grid;
+                      }}
+                      height={height}
+                      width={width}
+                      columnCount={colCount}
+                      columnWidth={() => calcColWidth(width)}
+                      rowCount={Math.ceil(count / colCount)}
+                      rowHeight={(rowIndex) => {
+                        if (colCount === colCounts.single) {
+                          return height;
+                        } else {
+                          return getRowHeight(rowIndex, width / colCount);
+                        }
+                      }}
+                      overscanRowCount={
+                        colCount === colCounts.most ? 25 : colCounts.middle ? 15 : 10
                       }
-                    }}
-                    overscanRowCount={
-                      colCount === colCounts.most
-                        ? 25 
-                        : colCounts.middle 
-                          ? 15 : 10 
-                    }
-                    onItemsRendered={(props) => {
-                      setVisibleStartStop({ rowStart: props.visibleRowStartIndex, rowStop: props.visibleRowStopIndex })
-                      return onItemsRendered({
-                        overscanStartIndex: props.overscanRowStartIndex * colCount + props.overscanColumnStartIndex,
-                        overscanStopIndex: props.overscanRowStopIndex * colCount + props.overscanColumnStopIndex,
-                        visibleStartIndex: props.visibleRowStartIndex * colCount + props.visibleColumnStartIndex,
-                        visibleStopIndex: props.visibleRowStopIndex * colCount + props.visibleColumnStopIndex
-                      })
-                    }}
-                  >
-                    {Cell}
-                  </VariableSizeGrid>
-                )}
-              </InfiniteLoader>
-          )}}
-        </AutoSizer>
-        { isFiltersPanelOpen &&
-          <FiltersPanel toggleFiltersPanel={setIsFiltersPanelOpen}/>
-        }
-        { !isFiltersPanelOpen &&
-          <FloatingToolbar
-            colCount={colCount}
-            setColCount={changeColCount}
-            openFiltersPanel={() => setIsFiltersPanelOpen(true)}
-          />
-        }
-      </>
-    }
+                      onItemsRendered={(props) => {
+                        setVisibleStartStop({
+                          rowStart: props.visibleRowStartIndex,
+                          rowStop: props.visibleRowStopIndex,
+                        });
+                        return onItemsRendered({
+                          overscanStartIndex:
+                            props.overscanRowStartIndex * colCount + props.overscanColumnStartIndex,
+                          overscanStopIndex:
+                            props.overscanRowStopIndex * colCount + props.overscanColumnStopIndex,
+                          visibleStartIndex:
+                            props.visibleRowStartIndex * colCount + props.visibleColumnStartIndex,
+                          visibleStopIndex:
+                            props.visibleRowStopIndex * colCount + props.visibleColumnStopIndex,
+                        });
+                      }}
+                    >
+                      {Cell}
+                    </VariableSizeGrid>
+                  )}
+                </InfiniteLoader>
+              );
+            }}
+          </AutoSizer>
+        </>
+      )}
     </>
-  )
-}
+  );
+};
