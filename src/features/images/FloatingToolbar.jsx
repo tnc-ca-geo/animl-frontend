@@ -8,7 +8,7 @@ import { violet } from '@radix-ui/colors';
 const FloatingToolbarContainer = styled('div', {
   position: 'fixed',
   width: '70vw',
-  top: '90dvh',
+  bottom: '10dvh',
   display: 'flex',
   justifyContent: 'space-around',
   background: '$backgroundLight',

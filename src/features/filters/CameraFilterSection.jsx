@@ -9,6 +9,8 @@ import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
+import { useWindowSize } from '../../hooks/useWindowSize.jsx';
+import { tableBreakpoints } from '../images/config.js';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -127,6 +129,18 @@ const OnlyButton = styled('div', {
   '&:hover': {
     textDecoration: 'underline',
   },
+  variants: {
+    hover: {
+      true: {
+        display: 'unset',
+      },
+    },
+  },
+  display: 'none',
+  marginLeft: 'auto',
+  '@bp1': {
+    marginLeft: 'unset',
+  },
 });
 
 const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps }) => {
@@ -156,6 +170,9 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
     dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds }));
   };
 
+  const { width } = useWindowSize();
+  const bp1 = tableBreakpoints.find((bp) => bp[0] === 'xs')[1];
+
   return (
     <CheckboxLabel
       active={someActive}
@@ -170,7 +187,9 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
         {!someActive && inactiveDepCount - 1 > 0 && `, +${inactiveDepCount - 1}`}
         {someActive && inactiveDepCount > 0 && `, +${inactiveDepCount}`}
       </AdditionalDepCount>
-      {showOnlyButton && <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>}
+      <OnlyButton onClick={handleOnlyButtonClick} hover={width <= bp1 || showOnlyButton}>
+        only
+      </OnlyButton>
     </CheckboxLabel>
   );
 };
