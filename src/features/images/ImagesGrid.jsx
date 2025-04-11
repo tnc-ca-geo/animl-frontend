@@ -36,8 +36,6 @@ const GridImage = ({ uniqueId, imgUrl, onClickImage, style }) => {
 
 const FullSizedImageWrapper = styled('div', {
   backgroundColor: 'Black',
-  scrollSnapAlign: 'start',
-  scrollSnapType: 'y',
   display: 'grid',
   placeItems: 'center',
 });
@@ -242,10 +240,6 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
                 >
                   {({ onItemsRendered, ref }) => (
                     <VariableSizeGrid
-                      style={{
-                        scrollSnapType: 'y mandatory',
-                        WebkitScrollSnapType: 'y mandatory',
-                      }}
                       ref={(grid) => {
                         ref(grid);
                         gridRef.current = grid;
@@ -256,11 +250,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
                       columnWidth={() => calcColWidth(width)}
                       rowCount={Math.ceil(count / colCount)}
                       rowHeight={(rowIndex) => {
-                        if (colCount === colCounts.single) {
-                          return height;
-                        } else {
-                          return getRowHeight(rowIndex, width / colCount);
-                        }
+                        return getRowHeight(rowIndex, width / colCount);
                       }}
                       overscanRowCount={
                         colCount === colCounts.most ? 25 : colCounts.middle ? 15 : 10
