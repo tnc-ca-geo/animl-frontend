@@ -60,6 +60,8 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  imageHeight
+  imageWidth
   tags
   reviewed
 `;

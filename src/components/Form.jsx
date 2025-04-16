@@ -4,7 +4,10 @@ import { styled } from '../theme/stitches.config';
 const textInput = {
   display: 'inherit',
   width: '100%',
-  fontSize: '$3',
+  fontSize: '$4',
+  '@bp1': {
+    fontSize: '$3',
+  },
   fontFamily: '$sourceSansPro',
   color: '$textMedium',
   padding: '$3',

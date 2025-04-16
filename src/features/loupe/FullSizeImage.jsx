@@ -18,7 +18,7 @@ const ImageContainer = styled('div', {
   position: 'relative',
   // maxWidth: '940px',
   width: '100%',
-  height: '100%',
+  // height: '100%',
 });
 
 const ImageFrame = styled('div', {

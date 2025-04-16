@@ -14,18 +14,9 @@ import {
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import ImagesTable from './ImagesTable.jsx';
 import { selectSelectedProjectId } from '../projects/projectsSlice.js';
-
-// const ImagesTableLoadingOverlay = styled('div', {
-//   flexGrow: '1',
-//   backgroundColor: '$hiContrast',
-//   opacity: '0.1',
-//   display: 'flex',
-//   flexDirection: 'column',
-//   height: 'calc(100% - 56px)',
-//   position: 'absolute',
-//   width: '100%',  // TODO: how to absolute position and use flex grow
-//   zIndex: '$2',
-// });
+import { ImagesGrid } from './ImagesGrid.jsx';
+import { useWindowSize } from '../../hooks/useWindowSize.jsx';
+import { tableBreakpoints } from './config.js';
 
 const StyledImagesPanel = styled('div', {
   flexGrow: '1',
@@ -48,17 +39,34 @@ const ImagesPanel = () => {
       dispatch(fetchImages(activeFilters));
       dispatch(fetchImagesCount(activeFilters));
     }
-  }, [selectedProjectId, activeFilters, imgContextLoading, paginatedField, sortAscending, dispatch]);
+  }, [
+    selectedProjectId,
+    activeFilters,
+    imgContextLoading,
+    paginatedField,
+    sortAscending,
+    dispatch,
+  ]);
 
   const loadNextPage = () => {
     // Pass an empty promise that immediately resolves to InfiniteLoader
     // in case it asks us to load more than once
-    return imagesLoading.isLoading ? Promise.resolve() : dispatch(fetchImages(activeFilters, 'next'));
+    return imagesLoading.isLoading
+      ? Promise.resolve()
+      : dispatch(fetchImages(activeFilters, 'next'));
   };
+
+  const { width } = useWindowSize();
+  const bpSmall = tableBreakpoints.find((bp) => bp[0] === 'xs')[1];
 
   return (
     <StyledImagesPanel>
-      <ImagesTable workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
+      {width > bpSmall && (
+        <ImagesTable workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
+      )}
+      {width <= bpSmall && (
+        <ImagesGrid workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
+      )}
     </StyledImagesPanel>
   );
 };

@@ -18,6 +18,7 @@ import { userAuthStateChanged } from '../features/auth/authSlice';
 import { mouseEventDetected, selectIsDrawingBbox } from '../features/loupe/loupeSlice';
 import logo from '../assets/animl-logo.svg';
 import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG } from '../config';
+import { WindowSize } from '../hooks/useWindowSize.jsx';
 
 Amplify.configure(AWS_AUTH_CONFIG);
 
@@ -142,20 +143,22 @@ const App = () => {
       ) : (
         <Tooltip.Provider>
           <Toast.Provider>
-            <AppContainer
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              css={isDrawingBbox && { userSelect: 'none' }}
-            >
-              <NavBar />
-              <Switch>
-                <Route exact path="/" component={HomePage} />
-                <Route path="/app" component={AppPage} />
-                <Route path="/case-studies" component={CaseStudiesPage} />
-                <Route path="/create-project" component={CreateProjectPage} />
-                {/*<Route component={NoMatch} />*/}
-              </Switch>
-            </AppContainer>
+            <WindowSize>
+              <AppContainer
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                css={isDrawingBbox && { userSelect: 'none' }}
+              >
+                <NavBar />
+                <Switch>
+                  <Route exact path="/" component={HomePage} />
+                  <Route path="/app" component={AppPage} />
+                  <Route path="/case-studies" component={CaseStudiesPage} />
+                  <Route path="/create-project" component={CreateProjectPage} />
+                  {/*<Route component={NoMatch} />*/}
+                </Switch>
+              </AppContainer>
+            </WindowSize>
           </Toast.Provider>
         </Tooltip.Provider>
       )}

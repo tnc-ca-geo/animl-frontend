@@ -1,18 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled } from '../../theme/stitches.config.js';
 import {
   selectAvailLabelFilters,
   selectActiveFilters,
   checkboxFilterToggled,
-  checkboxOnlyButtonClicked,
 } from './filtersSlice.js';
 import Accordion from '../../components/Accordion.jsx';
 import BulkSelectCheckbox from './BulkSelectCheckbox.jsx';
 import Checkbox from '../../components/Checkbox.jsx';
 import NoneFoundAlert from '../../components/NoneFoundAlert.jsx';
-import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
+import { LabelCheckboxLabel } from './LabelCheckboxLabel.jsx';
 
 const LabelFilter = () => {
   const availLabels = useSelector(selectAvailLabelFilters);
@@ -72,43 +70,6 @@ const LabelFilter = () => {
         </>
       )}
     </Accordion>
-  );
-};
-
-const OnlyButton = styled('div', {
-  // position: 'absolute',
-  // right: '16px',
-  background: '$gray3',
-  padding: '$0 $2',
-  fontWeight: '$5',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
-});
-
-// NOTE: this could be abstracted into it's own component
-// essentially same code is used in CameraFilterSection.js
-// the styling, however, is slightly different
-
-const LabelCheckboxLabel = ({ id, name, checked, active, filterCat }) => {
-  const [showOnlyButton, setShowOnlyButton] = useState(false);
-  const dispatch = useDispatch();
-
-  const handleOnlyButtonClick = (e) => {
-    e.preventDefault();
-    dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds: [id] }));
-  };
-
-  return (
-    <CheckboxLabel
-      checked={checked}
-      active={active}
-      onMouseEnter={() => setShowOnlyButton(true)}
-      onMouseLeave={() => setShowOnlyButton(false)}
-    >
-      {name}
-      {showOnlyButton && <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>}
-    </CheckboxLabel>
   );
 };
 
