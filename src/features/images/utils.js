@@ -14,7 +14,6 @@ const enrichImages = (res, camConfigs) => {
     img.url = IMAGES_URL + 'medium/' + img._id + '-medium.' + ext;
     img.thumbUrl = IMAGES_URL + 'small/' + img._id + '-small.' + ext;
 
-
   }
   return res;
 };

@@ -433,7 +433,6 @@ export const projectsSlice = createSlice({
     },
 
     setGlobalBreakpoint: (state, { payload }) => {
-      console.log(payload);
       state.globalBreakpoint = payload;
     },
   },
