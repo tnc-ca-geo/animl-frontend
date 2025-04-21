@@ -90,6 +90,10 @@ const StyledResizableBox = styled(ResizableBox, {
   position: 'absolute !important;',
   border: '2px solid #00C797',
   // zIndex: '$2',
+  pointerEvents: 'none',
+  '@bp1': {
+    pointerEvents: 'auto',
+  },
   variants: {
     selected: {
       true: {
@@ -213,18 +217,18 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
   };
 
   const globalBreakpoint = useSelector(selectGlobalBreakpoint);
-  const alwaysShowLabelButtons = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+  const isSmallScreen = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
 
   // manage label validation button state
-  const [showLabelButtons, setShowLabelButtons] = useState(() => alwaysShowLabelButtons);
+  const [showLabelButtons, setShowLabelButtons] = useState(() => isSmallScreen);
   const handleBBoxHover = () => {
-    if (alwaysShowLabelButtons) {
+    if (isSmallScreen) {
       return;
     }
     setShowLabelButtons(true);
   };
   const handleBBoxMouseLeave = () => {
-    if (alwaysShowLabelButtons) {
+    if (isSmallScreen) {
       return;
     }
     setShowLabelButtons(false);
@@ -275,7 +279,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
           onStart={onDragStart}
           onDrag={onDrag}
           onStop={onDragEnd}
-          disabled={!isAuthorized || object.locked}
+          disabled={isSmallScreen || !isAuthorized || object.locked}
         >
           <StyledResizableBox
             width={width}
@@ -325,7 +329,10 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
                   username={username}
                 />
               )}
-              <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
+              <DragHandle
+                className="drag-handle"
+                disabled={isSmallScreen || !isAuthorized || object.locked}
+              />
             </>
           </StyledResizableBox>
         </Draggable>
