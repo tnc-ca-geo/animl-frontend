@@ -9,8 +9,7 @@ import ImagesPanel from '../images/ImagesPanel.jsx';
 import Loupe from '../loupe/Loupe.jsx';
 import ErrorToast from '../../components/ErrorToast.jsx';
 import HydratedModal from '../../components/HydratedModal.jsx';
-import { useWindowSize } from '../../hooks/useWindowSize.jsx';
-import { tableBreakpoints } from '../images/config.js';
+import { selectGlobalBreakpoint } from './projectsSlice.js';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
@@ -34,17 +33,17 @@ const ViewExplorer = () => {
     setFiltersPanelOpen(!filtersPanelOpen);
   };
 
-  const { width } = useWindowSize();
-  const bp1 = tableBreakpoints.find((bp) => bp[0] === 'xs')[1] ?? 0;
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const notXsOrXxs = globalBreakpoint !== 'xs' && globalBreakpoint !== 'xxs';
 
   return (
     <ViewExplorerWrapper>
-      {width > bp1 && (
+      {notXsOrXxs && (
         <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
       )}
-      {width > bp1 && filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
+      {notXsOrXxs && filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
       <ImagesPanel />
-      {width > bp1 && loupeOpen && <Loupe />}
+      {notXsOrXxs && loupeOpen && <Loupe />}
       <HydratedModal />
       <ErrorToast />
     </ViewExplorerWrapper>

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { useWindowSize } from '../../hooks/useWindowSize';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
-import { tableBreakpoints } from '../images/config';
 import { checkboxOnlyButtonClicked } from './filtersSlice';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice';
 
 const OnlyButton = styled('div', {
   background: '$gray3',
@@ -36,8 +35,8 @@ export const LabelCheckboxLabel = ({ id, name, checked, active, filterCat }) => 
     dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds: [id] }));
   };
 
-  const { width } = useWindowSize();
-  const bp1 = tableBreakpoints.find((bp) => bp[0] === 'xs')[1];
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const alwaysShowOnly = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
 
   return (
     <CheckboxLabel
@@ -47,7 +46,7 @@ export const LabelCheckboxLabel = ({ id, name, checked, active, filterCat }) => 
       onMouseLeave={() => setShowOnlyButton(false)}
     >
       {name}
-      <OnlyButton onClick={handleOnlyButtonClick} hover={width <= bp1 || showOnlyButton}>
+      <OnlyButton onClick={handleOnlyButtonClick} hover={alwaysShowOnly || showOnlyButton}>
         only
       </OnlyButton>
     </CheckboxLabel>

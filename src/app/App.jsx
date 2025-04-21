@@ -18,7 +18,9 @@ import { userAuthStateChanged } from '../features/auth/authSlice';
 import { mouseEventDetected, selectIsDrawingBbox } from '../features/loupe/loupeSlice';
 import logo from '../assets/animl-logo.svg';
 import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG } from '../config';
-import { WindowSize } from '../hooks/useWindowSize.jsx';
+import { setGlobalBreakpoint } from '../features/projects/projectsSlice.js';
+import { tableBreakpoints } from '../features/images/config.js';
+import useBreakpoints from '../hooks/useBreakpoints.js';
 
 Amplify.configure(AWS_AUTH_CONFIG);
 
@@ -136,6 +138,11 @@ const App = () => {
     if (isDrawingBbox) dispatch(mouseEventDetected({ event: 'mouse-down' }));
   };
 
+  const { ref, breakpoint } = useBreakpoints(tableBreakpoints);
+  useEffect(() => {
+    dispatch(setGlobalBreakpoint(breakpoint));
+  }, [breakpoint]);
+
   return (
     <>
       {maintenanceMode === true ? (
@@ -143,22 +150,21 @@ const App = () => {
       ) : (
         <Tooltip.Provider>
           <Toast.Provider>
-            <WindowSize>
-              <AppContainer
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                css={isDrawingBbox && { userSelect: 'none' }}
-              >
-                <NavBar />
-                <Switch>
-                  <Route exact path="/" component={HomePage} />
-                  <Route path="/app" component={AppPage} />
-                  <Route path="/case-studies" component={CaseStudiesPage} />
-                  <Route path="/create-project" component={CreateProjectPage} />
-                  {/*<Route component={NoMatch} />*/}
-                </Switch>
-              </AppContainer>
-            </WindowSize>
+            <AppContainer
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              css={isDrawingBbox && { userSelect: 'none' }}
+              ref={ref}
+            >
+              <NavBar />
+              <Switch>
+                <Route exact path="/" component={HomePage} />
+                <Route path="/app" component={AppPage} />
+                <Route path="/case-studies" component={CaseStudiesPage} />
+                <Route path="/create-project" component={CreateProjectPage} />
+                {/*<Route component={NoMatch} />*/}
+              </Switch>
+            </AppContainer>
           </Toast.Provider>
         </Tooltip.Provider>
       )}

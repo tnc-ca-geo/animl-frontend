@@ -13,10 +13,8 @@ import {
 } from './imagesSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import ImagesTable from './ImagesTable.jsx';
-import { selectSelectedProjectId } from '../projects/projectsSlice.js';
+import { selectGlobalBreakpoint, selectSelectedProjectId } from '../projects/projectsSlice.js';
 import { ImagesGrid } from './ImagesGrid.jsx';
-import { useWindowSize } from '../../hooks/useWindowSize.jsx';
-import { tableBreakpoints } from './config.js';
 
 const StyledImagesPanel = styled('div', {
   flexGrow: '1',
@@ -56,15 +54,14 @@ const ImagesPanel = () => {
       : dispatch(fetchImages(activeFilters, 'next'));
   };
 
-  const { width } = useWindowSize();
-  const bpSmall = tableBreakpoints.find((bp) => bp[0] === 'xs')[1];
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
 
   return (
     <StyledImagesPanel>
-      {width > bpSmall && (
+      {globalBreakpoint !== 'xxs' && (
         <ImagesTable workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
       )}
-      {width <= bpSmall && (
+      {globalBreakpoint === 'xxs' && (
         <ImagesGrid workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
       )}
     </StyledImagesPanel>

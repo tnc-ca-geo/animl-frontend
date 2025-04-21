@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { truncateString } from '../../app/utils.js';
 import { checkboxFilterToggled, checkboxOnlyButtonClicked } from './filtersSlice.js';
@@ -9,8 +9,7 @@ import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import { useWindowSize } from '../../hooks/useWindowSize.jsx';
-import { tableBreakpoints } from '../images/config.js';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -170,8 +169,8 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
     dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds }));
   };
 
-  const { width } = useWindowSize();
-  const bp1 = tableBreakpoints.find((bp) => bp[0] === 'xs')[1];
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const alwaysShowOnly = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
 
   return (
     <CheckboxLabel
@@ -187,7 +186,7 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
         {!someActive && inactiveDepCount - 1 > 0 && `, +${inactiveDepCount - 1}`}
         {someActive && inactiveDepCount > 0 && `, +${inactiveDepCount}`}
       </AdditionalDepCount>
-      <OnlyButton onClick={handleOnlyButtonClick} hover={width <= bp1 || showOnlyButton}>
+      <OnlyButton onClick={handleOnlyButtonClick} hover={alwaysShowOnly || showOnlyButton}>
         only
       </OnlyButton>
     </CheckboxLabel>
