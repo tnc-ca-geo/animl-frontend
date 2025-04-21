@@ -25,7 +25,7 @@ import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
 import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons';
-import { selectLabels } from '../projects/projectsSlice';
+import { selectGlobalBreakpoint, selectLabels } from '../projects/projectsSlice';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -212,10 +212,23 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
     dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
   };
 
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const alwaysShowLabelButtons = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+
   // manage label validation button state
-  const [showLabelButtons, setShowLabelButtons] = useState(false);
-  const handleBBoxHover = () => setShowLabelButtons(true);
-  const handleBBoxMouseLeave = () => setShowLabelButtons(false);
+  const [showLabelButtons, setShowLabelButtons] = useState(() => alwaysShowLabelButtons);
+  const handleBBoxHover = () => {
+    if (alwaysShowLabelButtons) {
+      return;
+    }
+    setShowLabelButtons(true);
+  };
+  const handleBBoxMouseLeave = () => {
+    if (alwaysShowLabelButtons) {
+      return;
+    }
+    setShowLabelButtons(false);
+  };
 
   const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
