@@ -26,11 +26,9 @@ const globalStyles = globalCss({
       color: '$textDark',
       fontFamily: '$mono',
       fontWeight: '$2',
-      fontSize: '$4',
     },
     '.DateInput__small': {
-      width: '115px',
-      fontSize: '$4',
+      width: '109px',
     },
     '.DateInput_input__focused': {
       borderBottomColor: '$blue600',
