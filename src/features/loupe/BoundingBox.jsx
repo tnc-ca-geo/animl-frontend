@@ -32,6 +32,10 @@ const ResizeHandle = styled('div', {
   height: '$3',
   display: 'inline-block',
   position: 'absolute',
+  pointerEvents: 'none',
+  '@bp1': {
+    pointerEvents: 'auto',
+  },
   variants: {
     location: {
       sw: {
@@ -90,10 +94,6 @@ const StyledResizableBox = styled(ResizableBox, {
   position: 'absolute !important;',
   border: '2px solid #00C797',
   // zIndex: '$2',
-  pointerEvents: 'none',
-  '@bp1': {
-    pointerEvents: 'auto',
-  },
   variants: {
     selected: {
       true: {
