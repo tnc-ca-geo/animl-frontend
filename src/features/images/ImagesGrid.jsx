@@ -38,6 +38,7 @@ const FullSizedImageWrapper = styled('div', {
   backgroundColor: 'Black',
   display: 'grid',
   placeItems: 'center',
+  overflow: 'hidden',
 });
 
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
