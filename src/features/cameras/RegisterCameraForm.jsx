@@ -69,7 +69,14 @@ const RegisterCameraForm = () => {
                   <label htmlFor="cameraId">
                     {values.make.value === 'RidgeTec' ? 'IMEI Number' : 'Camera Serial Number'}
                   </label>
-                  <Field name="cameraId" id="cameraId" />
+                  <Field
+                    name="cameraId"
+                    id="cameraId"
+                    onChange={(e) => {
+                      const value = e.target.value || '';
+                      setFieldValue('cameraId', value.trim()); // trim whitespace
+                    }}
+                  />
                   {/*<ErrorMessage component={FormError} name='cameraId' />*/}
                 </FormFieldWrapper>
               </FieldRow>
