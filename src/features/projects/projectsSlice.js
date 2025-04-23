@@ -63,6 +63,7 @@ const initialState = {
   modalOpen: false,
   modalContent: null,
   selectedCamera: null,
+  globalBreakpoint: null,
 };
 
 export const projectsSlice = createSlice({
@@ -430,6 +431,10 @@ export const projectsSlice = createSlice({
     setSelectedCamera: (state, { payload }) => {
       state.selectedCamera = payload;
     },
+
+    setGlobalBreakpoint: (state, { payload }) => {
+      state.globalBreakpoint = payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -520,6 +525,8 @@ export const {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
+
+  setGlobalBreakpoint,
 } = projectsSlice.actions;
 
 // fetchProjects thunk
@@ -896,6 +903,7 @@ export const selectModelsLoadingState = (state) => state.projects.loadingStates.
 export const selectModalOpen = (state) => state.projects.modalOpen;
 export const selectModalContent = (state) => state.projects.modalContent;
 export const selectSelectedCamera = (state) => state.projects.selectedCamera;
+export const selectGlobalBreakpoint = (state) => state.projects.globalBreakpoint;
 export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
 export const selectModelsErrors = (state) => state.projects.loadingStates.models.errors;

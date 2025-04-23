@@ -25,13 +25,17 @@ import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
 import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons';
-import { selectLabels } from '../projects/projectsSlice';
+import { selectGlobalBreakpoint, selectLabels } from '../projects/projectsSlice';
 
 const ResizeHandle = styled('div', {
   width: '$3',
   height: '$3',
   display: 'inline-block',
   position: 'absolute',
+  pointerEvents: 'none',
+  '@bp1': {
+    pointerEvents: 'auto',
+  },
   variants: {
     location: {
       sw: {
@@ -212,10 +216,23 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
     dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
   };
 
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+
   // manage label validation button state
-  const [showLabelButtons, setShowLabelButtons] = useState(false);
-  const handleBBoxHover = () => setShowLabelButtons(true);
-  const handleBBoxMouseLeave = () => setShowLabelButtons(false);
+  const [showLabelButtons, setShowLabelButtons] = useState(() => isSmallScreen);
+  const handleBBoxHover = () => {
+    if (isSmallScreen) {
+      return;
+    }
+    setShowLabelButtons(true);
+  };
+  const handleBBoxMouseLeave = () => {
+    if (isSmallScreen) {
+      return;
+    }
+    setShowLabelButtons(false);
+  };
 
   const handleBBoxClick = () => dispatch(setFocus({ index, type: 'manual' }));
 
@@ -262,7 +279,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
           onStart={onDragStart}
           onDrag={onDrag}
           onStop={onDragEnd}
-          disabled={!isAuthorized || object.locked}
+          disabled={isSmallScreen || !isAuthorized || object.locked}
         >
           <StyledResizableBox
             width={width}
@@ -312,7 +329,10 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
                   username={username}
                 />
               )}
-              <DragHandle className="drag-handle" disabled={!isAuthorized || object.locked} />
+              <DragHandle
+                className="drag-handle"
+                disabled={isSmallScreen || !isAuthorized || object.locked}
+              />
             </>
           </StyledResizableBox>
         </Draggable>

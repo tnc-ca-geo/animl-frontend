@@ -18,8 +18,8 @@ const globalStyles = globalCss({
     '-moz-osx-font-smoothing': 'grayscale',
 
     // Date Picker styles
-    // Had to override them here b/c the actual Date Picker element gets 
-    // appended to the body (and thus you can't dump style overrides in a 
+    // Had to override them here b/c the actual Date Picker element gets
+    // appended to the body (and thus you can't dump style overrides in a
     // wrapper element)
 
     '.DateInput_input': {

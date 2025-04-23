@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { truncateString } from '../../app/utils.js';
 import { checkboxFilterToggled, checkboxOnlyButtonClicked } from './filtersSlice.js';
@@ -9,6 +9,7 @@ import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -127,6 +128,18 @@ const OnlyButton = styled('div', {
   '&:hover': {
     textDecoration: 'underline',
   },
+  variants: {
+    hover: {
+      true: {
+        display: 'unset',
+      },
+    },
+  },
+  display: 'none',
+  marginLeft: 'auto',
+  '@bp1': {
+    marginLeft: 'unset',
+  },
 });
 
 const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps }) => {
@@ -156,6 +169,9 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
     dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds }));
   };
 
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const alwaysShowOnly = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+
   return (
     <CheckboxLabel
       active={someActive}
@@ -170,7 +186,9 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
         {!someActive && inactiveDepCount - 1 > 0 && `, +${inactiveDepCount - 1}`}
         {someActive && inactiveDepCount > 0 && `, +${inactiveDepCount}`}
       </AdditionalDepCount>
-      {showOnlyButton && <OnlyButton onClick={handleOnlyButtonClick}>only</OnlyButton>}
+      <OnlyButton onClick={handleOnlyButtonClick} hover={alwaysShowOnly || showOnlyButton}>
+        only
+      </OnlyButton>
     </CheckboxLabel>
   );
 };

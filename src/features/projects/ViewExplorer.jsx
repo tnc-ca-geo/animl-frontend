@@ -9,6 +9,7 @@ import ImagesPanel from '../images/ImagesPanel.jsx';
 import Loupe from '../loupe/Loupe.jsx';
 import ErrorToast from '../../components/ErrorToast.jsx';
 import HydratedModal from '../../components/HydratedModal.jsx';
+import { selectGlobalBreakpoint } from './projectsSlice.js';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
@@ -32,12 +33,17 @@ const ViewExplorer = () => {
     setFiltersPanelOpen(!filtersPanelOpen);
   };
 
+  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const notXsOrXxs = globalBreakpoint !== 'xs' && globalBreakpoint !== 'xxs';
+
   return (
     <ViewExplorerWrapper>
-      <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
-      {filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
+      {notXsOrXxs && (
+        <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
+      )}
+      {notXsOrXxs && filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
       <ImagesPanel />
-      {loupeOpen && <Loupe />}
+      {notXsOrXxs && loupeOpen && <Loupe />}
       <HydratedModal />
       <ErrorToast />
     </ViewExplorerWrapper>
