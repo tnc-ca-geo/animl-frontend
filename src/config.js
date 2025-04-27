@@ -1,3 +1,5 @@
+import { createBreakpoints } from './app/utils';
+
 const API_URLS = {
   // development: 'http://localhost:3000/dev/external', // if serving animl-api locally
   development: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
@@ -56,22 +58,4 @@ const globalBreakpointValues = [
   ['xl', Infinity],
 ];
 
-const compareBreakpoints = (bp1, bp2) => {
-  const find = (bpLabel) => globalBreakpointValues.find((bp) => bp[0] === bpLabel);
-  const foundBp1 = find(bp1);
-  const foundBp2 = find(bp2);
-
-  if (foundBp1 === undefined || foundBp2 === undefined) {
-    throw new Error(
-      `${bp1} or ${bp2} is not a valid global breakpoint label.  Valid breakpoint labels are: xxs, xs, sm, md, lg, xl.`,
-    );
-  }
-
-  return foundBp1[1] - foundBp2[1];
-};
-
-export const globalBreakpoints = {
-  values: globalBreakpointValues,
-  lessThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) <= 0,
-  greaterThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) >= 0,
-};
+export const globalBreakpoints = createBreakpoints(globalBreakpointValues);
