@@ -26,6 +26,7 @@ import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
 import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import { selectGlobalBreakpoint, selectLabels } from '../projects/projectsSlice';
+import { globalBreakpoints } from '../../config';
 
 const ResizeHandle = styled('div', {
   width: '$3',
@@ -216,8 +217,8 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
     dispatch(bboxUpdated({ imgId, objId: object._id, bbox }));
   };
 
-  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
-  const isSmallScreen = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   // manage label validation button state
   const [showLabelButtons, setShowLabelButtons] = useState(() => isSmallScreen);
