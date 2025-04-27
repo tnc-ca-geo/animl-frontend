@@ -10,6 +10,7 @@ import Loupe from '../loupe/Loupe.jsx';
 import ErrorToast from '../../components/ErrorToast.jsx';
 import HydratedModal from '../../components/HydratedModal.jsx';
 import { selectGlobalBreakpoint } from './projectsSlice.js';
+import { globalBreakpoints } from '../../config.js';
 
 const ViewExplorerWrapper = styled('div', {
   display: 'flex',
@@ -33,17 +34,20 @@ const ViewExplorer = () => {
     setFiltersPanelOpen(!filtersPanelOpen);
   };
 
-  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
-  const notXsOrXxs = globalBreakpoint !== 'xs' && globalBreakpoint !== 'xxs';
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isLargeScreen =
+    !currentBreakpoint || globalBreakpoints.greaterThanOrEqual(currentBreakpoint, 'sm');
 
   return (
     <ViewExplorerWrapper>
-      {notXsOrXxs && (
+      {isLargeScreen && (
         <SidebarNav toggleFiltersPanel={toggleFiltersPanel} filtersPanelOpen={filtersPanelOpen} />
       )}
-      {notXsOrXxs && filtersPanelOpen && <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />}
+      {isLargeScreen && filtersPanelOpen && (
+        <FiltersPanel toggleFiltersPanel={toggleFiltersPanel} />
+      )}
       <ImagesPanel />
-      {notXsOrXxs && loupeOpen && <Loupe />}
+      {isLargeScreen && loupeOpen && <Loupe />}
       <HydratedModal />
       <ErrorToast />
     </ViewExplorerWrapper>

@@ -54,14 +54,14 @@ const ImagesPanel = () => {
       : dispatch(fetchImages(activeFilters, 'next'));
   };
 
-  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
 
   return (
     <StyledImagesPanel>
-      {globalBreakpoint !== 'xxs' && (
+      {currentBreakpoint !== 'xxs' && (
         <ImagesTable workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
       )}
-      {globalBreakpoint === 'xxs' && (
+      {currentBreakpoint === 'xxs' && (
         <ImagesGrid workingImages={workingImages} hasNext={hasNext} loadNextPage={loadNextPage} />
       )}
     </StyledImagesPanel>

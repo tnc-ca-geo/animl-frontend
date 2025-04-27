@@ -46,3 +46,32 @@ export const AWS_AUTH_CONFIG = {
   aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
   aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
 };
+
+const globalBreakpointValues = [
+  ['xxs', 540],
+  ['xs', 640],
+  ['sm', 740],
+  ['md', 840],
+  ['lg', 940],
+  ['xl', Infinity],
+];
+
+const compareBreakpoints = (bp1, bp2) => {
+  const find = (bpLabel) => globalBreakpointValues.find((bp) => bp[0] === bpLabel);
+  const foundBp1 = find(bp1);
+  const foundBp2 = find(bp2);
+
+  if (foundBp1 === undefined || foundBp2 === undefined) {
+    throw new Error(
+      `${bp1} or ${bp2} is not a valid global breakpoint label.  Valid breakpoint labels are: xxs, xs, sm, md, lg, xl.`,
+    );
+  }
+
+  return foundBp1[1] - foundBp2[1];
+};
+
+export const globalBreakpoints = {
+  values: globalBreakpointValues,
+  lessThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) <= 0,
+  greaterThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) >= 0,
+};

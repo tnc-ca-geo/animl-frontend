@@ -10,6 +10,7 @@ import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import { ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
+import { globalBreakpoints } from '../../config.js';
 
 const AdditionalDepCount = styled('div', {
   fontStyle: 'italic',
@@ -169,8 +170,8 @@ const CameraCheckboxLabel = ({ filterCat, managedIds, deployments, activeDeps })
     dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds }));
   };
 
-  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
-  const alwaysShowOnly = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const alwaysShowOnly = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   return (
     <CheckboxLabel
