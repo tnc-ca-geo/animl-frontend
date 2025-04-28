@@ -14,6 +14,7 @@ import { selectProjectsLoading } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
 import { FloatingToolbar } from './FloatingToolbar.jsx';
+import { ImageMetadata } from '../loupe/ImageMetadata.jsx';
 
 export const colCounts = {
   single: 1,
@@ -35,10 +36,11 @@ const GridImage = ({ uniqueId, imgUrl, onClickImage, style }) => {
 };
 
 const FullSizedImageWrapper = styled('div', {
-  backgroundColor: 'Black',
   display: 'grid',
   placeItems: 'center',
   overflow: 'hidden',
+  borderTop: '4px solid $border',
+  borderBottom: '4px solid $border',
 });
 
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
@@ -129,6 +131,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       if (colCount === colCounts.single) {
         return (
           <FullSizedImageWrapper key={uniqueRowId} style={style}>
+            <ImageMetadata image={img} />
             <FullSizeImage
               key={uniqueRowId}
               workingImages={workingImages}
@@ -169,6 +172,12 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
           tallest = scaledHeight;
         }
       }
+
+      if (colCount === colCounts.single) {
+        // Image metadata height + top border + bottom border
+        tallest += 40 + 8;
+      }
+
       return tallest;
     },
     [workingImages, colCount],

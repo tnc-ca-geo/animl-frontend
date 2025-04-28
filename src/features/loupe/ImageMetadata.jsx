@@ -24,28 +24,36 @@ const ItemLabel = styled('div', {
 });
 
 const StyledItem = styled('div', {
-  marginLeft: '$5',
   textAlign: 'center',
   flex: '1',
   textWrap: 'nowrap',
+  '@bp1': {
+    marginLeft: '$5',
+  },
 });
 
 const MetadataList = styled('div', {
   display: 'flex',
+  flex: '1',
+  '@bp1': {
+    flex: 'unset',
+  },
 });
 
 const MetadataPane = styled('div', {
   display: 'flex',
   justifyContent: 'center',
-  paddingRight: '$2',
   fontWeight: '$2',
   width: '100%',
+  '@bp1': {
+    paddingRight: '$2',
+  },
 });
 
 const metadataBreakpoints = createBreakpoints([
-  ['xs', 400],
-  ['sm', 500],
-  ['md', 600],
+  ['xs', 500],
+  ['sm', 550],
+  ['md', 700],
   ['lg', Infinity],
 ]);
 
@@ -73,9 +81,11 @@ export const ImageMetadata = ({ image }) => {
   const fullDateCreated = DateTime.fromISO(image.dateTimeOriginal).toLocaleString(
     DateTime.DATETIME_MED_WITH_SECONDS,
   );
-  const dateCreated = isSmallScreen
-    ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
-    : fullDateCreated;
+  const dateCreated = metadataBreakpoints.lessThanOrEqual(breakpoint ?? 'xs', 'xs')
+    ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATE_SHORT)
+    : isSmallScreen
+      ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
+      : fullDateCreated;
 
   const cameraId = isSmallScreen ? shortenedField(image.cameraId) : image.cameraId;
 
