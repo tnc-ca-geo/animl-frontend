@@ -39,8 +39,6 @@ const FullSizedImageWrapper = styled('div', {
   display: 'grid',
   placeItems: 'center',
   overflow: 'hidden',
-  borderTop: '4px solid $border',
-  borderBottom: '4px solid $border',
 });
 
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
@@ -174,8 +172,8 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       }
 
       if (colCount === colCounts.single) {
-        // Image metadata height + top border + bottom border
-        tallest += 40 + 8;
+        // Height of metadata bar
+        tallest += 40;
       }
 
       return tallest;

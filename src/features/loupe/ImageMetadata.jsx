@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { DateTime } from 'luxon';
 import { createBreakpoints } from '../../app/utils.js';
@@ -43,10 +43,14 @@ const MetadataList = styled('div', {
 const MetadataPane = styled('div', {
   display: 'flex',
   justifyContent: 'center',
+  zIndex: '$4',
   fontWeight: '$2',
   width: '100%',
+  boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
   '@bp1': {
     paddingRight: '$2',
+    boxShadow: 'unset',
+    zIndex: 'unset',
   },
 });
 
@@ -62,6 +66,30 @@ const shortenedField = (fieldVal) => {
     return fieldVal;
   }
   return `${fieldVal.substring(0, 10)}...`;
+};
+
+const ImageMetadataField = ({ isSmallScreen, label, displayValue, fullValue }) => {
+  const alwaysOpen = !isSmallScreen;
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <StyledItem>
+      <ItemLabel>{label}</ItemLabel>
+      {isSmallScreen ? (
+        <Tooltip onOpenChange={setIsOpen} open={alwaysOpen || isOpen}>
+          <TooltipTrigger asChild>
+            <ItemValue onClick={() => setIsOpen(!isOpen)}>{displayValue}</ItemValue>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            {fullValue}
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <ItemValue>{displayValue}</ItemValue>
+      )}
+    </StyledItem>
+  );
 };
 
 export const ImageMetadata = ({ image }) => {
@@ -104,22 +132,13 @@ export const ImageMetadata = ({ image }) => {
     <MetadataPane ref={ref}>
       <MetadataList>
         {metadataItems.map(({ label, displayValue, fullValue }, idx) => (
-          <StyledItem key={idx}>
-            <ItemLabel>{label}</ItemLabel>
-            {isSmallScreen ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <ItemValue>{displayValue}</ItemValue>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  {fullValue}
-                  <TooltipArrow />
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <ItemValue>{displayValue}</ItemValue>
-            )}
-          </StyledItem>
+          <ImageMetadataField
+            key={idx}
+            isSmallScreen={isSmallScreen}
+            label={label}
+            displayValue={displayValue}
+            fullValue={fullValue}
+          />
         ))}
       </MetadataList>
     </MetadataPane>
