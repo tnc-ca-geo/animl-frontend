@@ -51,10 +51,10 @@ export const AWS_AUTH_CONFIG = {
 
 const globalBreakpointValues = [
   ['xxs', 540],
-  ['xs', 640],
-  ['sm', 740],
-  ['md', 840],
-  ['lg', 940],
+  ['xs', 768],
+  ['sm', 1024],
+  ['md', 1280],
+  ['lg', 1536],
   ['xl', Infinity],
 ];
 
