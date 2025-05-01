@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { DateTime } from 'luxon';
-import { createBreakpoints } from '../../app/utils.js';
-import useBreakpoints from '../../hooks/useBreakpoints.js';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
+import { globalBreakpoints } from '../../config.js';
 import {
   Tooltip,
   TooltipArrow,
   TooltipContent,
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
+import { useSelector } from 'react-redux';
 
 const ItemValue = styled('div', {
   fontSize: '$3',
@@ -35,8 +36,10 @@ const StyledItem = styled('div', {
 const MetadataList = styled('div', {
   display: 'flex',
   flex: '1',
+  padding: '0 $2',
   '@bp1': {
     flex: 'unset',
+    padding: 'unset',
   },
 });
 
@@ -54,18 +57,11 @@ const MetadataPane = styled('div', {
   },
 });
 
-const metadataBreakpoints = createBreakpoints([
-  ['xs', 500],
-  ['sm', 550],
-  ['md', 700],
-  ['lg', Infinity],
-]);
-
 const shortenedField = (fieldVal) => {
-  if (fieldVal.length <= 10) {
+  if (fieldVal.length <= 8) {
     return fieldVal;
   }
-  return `${fieldVal.substring(0, 10)}...`;
+  return `${fieldVal.substring(0, 5)}...`;
 };
 
 const ImageMetadataField = ({ isSmallScreen, label, displayValue, fullValue }) => {
@@ -101,19 +97,17 @@ export const ImageMetadata = ({ image }) => {
     deploymentName: image.deploymentName ?? '',
   };
 
-  const { ref, breakpoint } = useBreakpoints(metadataBreakpoints.values);
-  const isSmallScreen = metadataBreakpoints.lessThanOrEqual(breakpoint ?? 'xs', 'md');
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint ?? 'xs', 'md');
 
   const filename = isSmallScreen ? shortenedField(image.originalFileName) : image.originalFileName;
 
   const fullDateCreated = DateTime.fromISO(image.dateTimeOriginal).toLocaleString(
     DateTime.DATETIME_MED_WITH_SECONDS,
   );
-  const dateCreated = metadataBreakpoints.lessThanOrEqual(breakpoint ?? 'xs', 'xs')
-    ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATE_SHORT)
-    : isSmallScreen
-      ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
-      : fullDateCreated;
+  const dateCreated = isSmallScreen
+    ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
+    : fullDateCreated;
 
   const cameraId = isSmallScreen ? shortenedField(image.cameraId) : image.cameraId;
 
@@ -129,7 +123,7 @@ export const ImageMetadata = ({ image }) => {
   ];
 
   return (
-    <MetadataPane ref={ref}>
+    <MetadataPane>
       <MetadataList>
         {metadataItems.map(({ label, displayValue, fullValue }, idx) => (
           <ImageMetadataField
