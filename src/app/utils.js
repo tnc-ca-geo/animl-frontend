@@ -170,3 +170,27 @@ export const isImageReviewed = (image) => {
   );
   return hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels;
 };
+
+// Factory to create breakpoints and utility methods
+export const createBreakpoints = (breakpointValues) => {
+  const compareBreakpoints = (bp1, bp2) => {
+    const find = (bpLabel) => breakpointValues.find((bp) => bp[0] === bpLabel);
+    const foundBp1 = find(bp1);
+    const foundBp2 = find(bp2);
+
+    if (foundBp1 === undefined || foundBp2 === undefined) {
+      const validValues = breakpointValues.map((bp) => bp[0]);
+      throw new Error(
+        `${bp1} or ${bp2} is not a valid global breakpoint label.  Valid breakpoint labels are: ${validValues.join(', ')}.`,
+      );
+    }
+
+    return foundBp1[1] - foundBp2[1];
+  };
+
+  return {
+    values: breakpointValues,
+    lessThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) <= 0,
+    greaterThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) >= 0,
+  };
+};
