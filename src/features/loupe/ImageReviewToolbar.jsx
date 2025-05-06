@@ -46,9 +46,14 @@ const Toolbar = styled('div', {
   display: 'flex',
   justifyContent: 'space-between',
   padding: '$2',
-  width: '100%',
-  minWidth: 'max-content',
   borderBottom: '1px solid $border',
+  overflowX: 'scroll',
+  width: '100dvw',
+  '@bp1': {
+    overflowX: 'unset',
+    width: '100%',
+    minWidth: 'max-content',
+  }
 });
 
 export const itemStyles = {
@@ -112,6 +117,7 @@ const CancelHint = styled('div', {
 
 const StyledPopoverContent = styled(PopoverContent, {
   zIndex: '$4',
+  '&:--radix-popover-content-transform-origin': '0px'
 });
 
 const StyledPopoverArrow = styled(PopoverArrow, {
@@ -364,33 +370,35 @@ const ImageReviewToolbar = ({
       )}
 
       {/* Increment/Decrement */}
-      <IncrementControls>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <IconButton
-                variant="ghost"
-                size="med"
-                onClick={() => handleIncrementClick('decrement')}
-              >
-                <ChevronLeftIcon />
-              </IconButton>
-              <IconButton
-                variant="ghost"
-                size="med"
-                onClick={() => handleIncrementClick('increment')}
-              >
-                <ChevronRightIcon />
-              </IconButton>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5}>
-            Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
-            <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      </IncrementControls>
+      { handleIncrementClick !== undefined && (
+        <IncrementControls>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <IconButton
+                  variant="ghost"
+                  size="med"
+                  onClick={() => handleIncrementClick('decrement')}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="med"
+                  onClick={() => handleIncrementClick('increment')}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5}>
+              Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
+              <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+        </IncrementControls>
+      )}
     </Toolbar>
   );
 };

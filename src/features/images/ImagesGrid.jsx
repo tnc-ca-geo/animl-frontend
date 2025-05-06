@@ -4,7 +4,6 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeGrid } from 'react-window';
 import { Image } from '../../components/Image.jsx';
-import FullSizeImage from '../loupe/FullSizeImage.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFocusChangeType, selectFocusIndex } from '../review/reviewSlice.js';
 import { useEffectAfterMount } from '../../app/utils.js';
@@ -14,6 +13,9 @@ import { selectProjectsLoading } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
 import { FloatingToolbar } from './FloatingToolbar.jsx';
+import { SmallScreensLoupe } from '../loupe/SmallScreensLoupe.jsx';
+import { selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 
 export const colCounts = {
   single: 1,
@@ -34,18 +36,14 @@ const GridImage = ({ uniqueId, imgUrl, onClickImage, style }) => {
   return <ImageWrapper key={uniqueId} onClick={() => onClickImage()} src={imgUrl} style={style} />;
 };
 
-const FullSizedImageWrapper = styled('div', {
-  backgroundColor: 'Black',
-  display: 'grid',
-  placeItems: 'center',
-  overflow: 'hidden',
-});
-
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const focusIndex = useSelector(selectFocusIndex);
   const projectsLoading = useSelector(selectProjectsLoading);
   const imagesLoading = useSelector(selectImagesLoading);
+  const userRoles = useSelector(selectUserCurrentRoles);
+
+  const hasObjectEditRole = hasRole(userRoles, WRITE_OBJECTS_ROLES);
 
   const gridRef = useRef(null);
   const infiniteLoaderRef = useRef(null);
@@ -128,15 +126,14 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       const clickImage = () => onClickImage(idx);
       if (colCount === colCounts.single) {
         return (
-          <FullSizedImageWrapper key={uniqueRowId} style={style}>
-            <FullSizeImage
-              key={uniqueRowId}
-              workingImages={workingImages}
-              image={img}
-              focusIndex={{ image: idx }}
-              css={{ height: '100%', width: '100%', objectFit: 'contain' }}
-            />
-          </FullSizedImageWrapper>
+          <SmallScreensLoupe 
+            key={uniqueRowId}
+            style={style}
+            idx={idx}
+            image={img}
+            workingImages={workingImages}
+            shouldShowToolbar={hasObjectEditRole}
+          />
         );
       } else {
         return (
@@ -169,6 +166,14 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
           tallest = scaledHeight;
         }
       }
+
+      if (colCount === colCounts.single) {
+        // Image height + toolbar height
+        if (hasObjectEditRole) {
+          tallest += 145;
+        }
+      }
+
       return tallest;
     },
     [workingImages, colCount],
