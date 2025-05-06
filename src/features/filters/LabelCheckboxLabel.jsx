@@ -4,6 +4,7 @@ import { styled } from '../../theme/stitches.config';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { checkboxOnlyButtonClicked } from './filtersSlice';
 import { selectGlobalBreakpoint } from '../projects/projectsSlice';
+import { globalBreakpoints } from '../../config';
 
 const OnlyButton = styled('div', {
   background: '$gray3',
@@ -35,8 +36,8 @@ export const LabelCheckboxLabel = ({ id, name, checked, active, filterCat }) => 
     dispatch(checkboxOnlyButtonClicked({ filterCat, managedIds: [id] }));
   };
 
-  const globalBreakpoint = useSelector(selectGlobalBreakpoint);
-  const alwaysShowOnly = globalBreakpoint === 'xs' || globalBreakpoint === 'xxs';
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const alwaysShowOnly = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   return (
     <CheckboxLabel

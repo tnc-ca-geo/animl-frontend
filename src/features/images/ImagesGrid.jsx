@@ -172,6 +172,8 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
         if (hasObjectEditRole) {
           tallest += 145;
         }
+        // Height of metadata bar
+        tallest += 40;
       }
 
       return tallest;

@@ -2,7 +2,6 @@ import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions as undoActions } from 'redux-undo-redo';
 import { styled } from '../../theme/stitches.config.js';
-import { DateTime } from 'luxon';
 import {
   selectWorkingImages,
   selectFocusIndex,
@@ -23,48 +22,8 @@ import PanelHeader from '../../components/PanelHeader.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import ShareImageButton from './ShareImageButton';
-import LoupeDropdown from './LoupeDropdown.jsx';
 import { ImageTagsToolbar } from './ImageTagsToolbar.jsx';
-
-const ItemValue = styled('div', {
-  fontSize: '$3',
-  fontFamily: '$sourceSansPro',
-  color: '$textDark',
-});
-
-const ItemLabel = styled('div', {
-  fontSize: '$1',
-  color: '$textLight',
-  fontFamily: '$mono',
-  marginBottom: '$1',
-});
-
-const StyledItem = styled('div', {
-  // marginBottom: '$3',
-  marginLeft: '$5',
-  textAlign: 'center',
-});
-
-const Item = ({ label, value }) => (
-  <StyledItem>
-    <ItemLabel>{label}</ItemLabel>
-    <ItemValue>{value}</ItemValue>
-  </StyledItem>
-);
-
-const MetadataList = styled('div', {
-  display: 'flex',
-  flexWrap: 'wrap',
-});
-
-const MetadataPane = styled('div', {
-  // paddingTop: '$3',
-  // marginBottom: '$6',
-  display: 'flex',
-  justifyContent: 'center',
-  paddingRight: '$2',
-  fontWeight: '$2',
-});
+import { ImageMetadata } from './ImageMetadata.jsx';
 
 const ImagePane = styled('div', {
   // display: 'flex',
@@ -225,11 +184,6 @@ const Loupe = () => {
     reviewMode ? dispatch(incrementFocusIndex(delta)) : dispatch(incrementImage(delta));
   };
 
-  // format date created
-  const dtCreated =
-    image &&
-    DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
-
   // Listen for hotkeys
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
@@ -295,17 +249,7 @@ const Loupe = () => {
     <StyledLoupe>
       <LoupeHeader handlePanelClose={handleCloseLoupe} closeButtonPosition="left">
         {image && (
-          <>
-            <MetadataPane>
-              <MetadataList>
-                <Item label="Date created" value={dtCreated} />
-                <Item label="Camera" value={image.cameraId} />
-                <Item label="Deployment" value={image.deploymentName} />
-                <Item label="File name" value={image.originalFileName} />
-              </MetadataList>
-            </MetadataPane>
-            <LoupeDropdown image={image} />
-          </>
+          <ImageMetadata image={image} />
         )}
         {/*<div>
           Label review

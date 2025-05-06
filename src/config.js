@@ -1,3 +1,5 @@
+import { createBreakpoints } from './app/utils';
+
 const API_URLS = {
   // development: 'http://localhost:3000/dev/external', // if serving animl-api locally
   development: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
@@ -46,3 +48,14 @@ export const AWS_AUTH_CONFIG = {
   aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
   aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
 };
+
+const globalBreakpointValues = [
+  ['xxs', 540],
+  ['xs', 768],
+  ['sm', 1024],
+  ['md', 1280],
+  ['lg', 1536],
+  ['xl', Infinity],
+];
+
+export const globalBreakpoints = createBreakpoints(globalBreakpointValues);
