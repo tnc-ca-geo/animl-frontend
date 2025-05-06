@@ -7,6 +7,7 @@ import { /*useDispatch,*/ useSelector } from 'react-redux';
 // import { selectUserCurrentRoles, selectUserUsername } from '../auth/authSlice';
 import { selectProjectTags } from '../projects/projectsSlice';
 // import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { ImageMetadata } from './ImageMetadata';
 
 const FullSizeImageWrapper = styled('div', {
   display: 'grid',
@@ -31,6 +32,7 @@ export const SmallScreensLoupe = ({
 
   return (
     <FullSizeImageWrapper style={style}>
+      <ImageMetadata image={image} />
       <FullSizeImage
         workingImages={workingImages}
         image={image}

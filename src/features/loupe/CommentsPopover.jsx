@@ -1,40 +1,52 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import React, { useEffect, useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { PopoverClose } from '@radix-ui/react-popover';
-import Button from '../../components/Button.jsx';
-import { Comment } from './Comment.jsx';
-import { useDispatch, useSelector } from 'react-redux';
-import { editComment, selectCommentsLoading } from '../review/reviewSlice.js';
-import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import {
+  ChatBubbleIcon,
+  Cross2Icon,
+} from '@radix-ui/react-icons';
+import { 
+  hasRole,
+  READ_COMMENT_ROLES,
+  WRITE_COMMENT_ROLES,
+} from '../auth/roles.js';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
+import {
+  Root as PopoverRoot,
+  PopoverPortal,
+  PopoverContent,
+  PopoverTrigger,
+  PopoverArrow,
+  PopoverClose,
+} from '@radix-ui/react-popover';
+import { ToolbarIconButton } from './ImageReviewToolbar.jsx';
+import { CommentsContent } from './CommentsContent.jsx';
+import { indigo } from '@radix-ui/colors';
 
-const StyledCommentsContainer = styled('div', {
-  overflowY: 'scroll',
-  padding: '$3 $3',
-});
-
-const StyledContent = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: '$loContrast',
-  borderRadius: '$2',
-  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
-  width: '450px',
-  maxHeight: '70vh',
-});
-
-const StyledHeader = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  borderTopLeftRadius: '$2',
-  borderTopRightRadius: '$2',
-  borderBottom: '1px solid $border',
-  backgroundColor: '$backgroundLight',
+const Badge = styled('div', {
+  position: 'absolute',
+  top: 1,
+  left: 18,
+  background: indigo.indigo4,
+  fontSize: '$1',
   fontWeight: '$5',
-  color: '$textDark',
-  padding: '$0 $3',
-  minHeight: '$7',
-  position: 'relative',
+  color: indigo.indigo11,
+  padding: '2px $1',
+  borderRadius: '$2',
+});
+
+const StyledPopoverContent = styled(PopoverContent, {
+  zIndex: '$4',
+  '&:--radix-popover-content-transform-origin': '0px'
+});
+
+const StyledPopoverArrow = styled(PopoverArrow, {
+  zIndex: 200,
+  fill: '$backgroundLight',
 });
 
 const StyledPopoverClose = styled(PopoverClose, {
@@ -56,130 +68,66 @@ const StyledPopoverClose = styled(PopoverClose, {
   },
 });
 
-const StyledAddCommentRow = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  borderBottomLeftRadius: '$2',
-  borderBottomRightRadius: '$2',
-  backgroundColor: '$backgroundLight',
-  fontWeight: '$5',
-  color: '$textDark',
-  padding: '$3',
-});
-
-const StyledTextArea = styled('textarea', {
-  resize: 'none',
-  width: '100%',
-  rows: '2',
-  color: '$textDark',
-  marginBottom: '$3',
-  padding: '$3',
-  fontSize: '$3',
-  fontWeight: '$2',
-  boxSizing: 'border-box',
-  border: '1px solid',
-  borderColor: '$border',
-  backgroundColor: '#FFFFFF',
-  borderRadius: '$1',
-  '&:focus': {
-    transition: 'all 0.2s ease',
-    outline: 'none',
-    boxShadow: '0 0 0 3px $gray3',
-    '&:hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
-    },
-  },
-});
-
-const StyledAddCommentButton = styled(Button, {
-  marginLeft: 'auto',
-  marginRight: '0',
-});
-
-export const CommentsPopover = ({ onClose, comments, imageId, onChangeActionMenu }) => {
-  const dispatch = useDispatch();
-  const commentsLoading = useSelector(selectCommentsLoading);
-  const [addCommentText, setAddCommentText] = useState('');
-  const handleAddComment = (commentText) => {
-    const addCommentDto = {
-      comment: commentText,
-      imageId: imageId,
-    };
-    dispatch(editComment('create', addCommentDto));
-    setAddCommentText('');
-  };
-
-  // Add comment using enter
-  // Shift + Enter makes a new line
-  const [isShiftDown, setIsShiftDown] = useState(false);
-  const handleKeyDown = (event) => {
-    event.stopPropagation();
-    if (event.key === 'Shift') {
-      setIsShiftDown(true);
-    }
-    if (event.key === 'Enter' && !isShiftDown) {
-      handleAddComment(addCommentText);
-      event.preventDefault();
+export const CommentsPopover = ({ 
+  image,
+  userRoles,
+}) => {
+  const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
+  const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
+  const onClickOutsideComments = () => {
+    if (!isCommentsActionMenuOpen) {
+      setIsCommentsPopoverOpen(false);
     }
   };
-  const handleKeyUp = (event) => {
-    if (event.key === 'Shift') {
-      setIsShiftDown(false);
-    }
-  };
-  // Scroll to bottom when adding a new comment
-  const scrollRef = useRef();
+
+  // Close popover when changing images using keyboard
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [comments]);
+    setIsCommentsPopoverOpen(false);
+  }, [image]);
 
   return (
-    <>
-      {commentsLoading && (
-        <SpinnerOverlay>
-          <SimpleSpinner />
-        </SpinnerOverlay>
-      )}
-      <StyledContent>
-        <StyledHeader>
-          Comments
-          <StyledPopoverClose onClick={() => onClose()}>
-            <Cross2Icon />
-          </StyledPopoverClose>
-        </StyledHeader>
-        {comments?.length > 0 && (
-          <StyledCommentsContainer>
-            {comments.map((comment, idx) => (
-              <Comment
-                key={comment._id}
-                comment={comment}
-                imageId={imageId}
-                onChangeOpen={onChangeActionMenu}
-                scrollRef={idx === comments.length - 1 ? scrollRef : undefined}
-              />
-            ))}
-          </StyledCommentsContainer>
-        )}
-        <StyledAddCommentRow css={{ borderTop: comments?.length ? '1px solid $border' : 'none' }}>
-          <StyledTextArea
-            value={addCommentText}
-            onChange={(e) => setAddCommentText(e.target.value)}
-            placeholder="Enter comment"
-            onKeyDown={(e) => handleKeyDown(e)}
-            onKeyUp={(e) => handleKeyUp(e)}
-          />
-          <StyledAddCommentButton
-            size="small"
-            onClick={() => handleAddComment(addCommentText)}
-            disabled={addCommentText === ''}
+    <Tooltip>
+      <PopoverRoot open={isCommentsPopoverOpen}>
+        <TooltipTrigger
+          asChild
+          disabled={
+            !hasRole(userRoles, READ_COMMENT_ROLES) ||
+            !hasRole(userRoles, WRITE_COMMENT_ROLES)
+          }
+        >
+          <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
+            <ToolbarIconButton css={{ position: 'relative' }}>
+              <ChatBubbleIcon />
+              {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+            </ToolbarIconButton>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5}>
+          Add comments
+          <TooltipArrow />
+        </TooltipContent>
+        <PopoverPortal>
+          <StyledPopoverContent
+            side="top"
+            sideOffset={25}
+            onPointerDownOutside={() => onClickOutsideComments()}
           >
-            Add Comment
-          </StyledAddCommentButton>
-        </StyledAddCommentRow>
-      </StyledContent>
-    </>
+            <CommentsContent
+              onChangeActionMenu={setIsCommentsActionMenuOpen}
+              comments={image.comments}
+              imageId={image._id}
+              closeContent={
+                <StyledPopoverClose 
+                  onClick={() => setIsCommentsPopoverOpen(false)}
+                >
+                  <Cross2Icon />
+                </StyledPopoverClose>
+              }
+            />
+            <StyledPopoverArrow />
+          </StyledPopoverContent>
+        </PopoverPortal>
+      </PopoverRoot>
+    </Tooltip>
   );
 };

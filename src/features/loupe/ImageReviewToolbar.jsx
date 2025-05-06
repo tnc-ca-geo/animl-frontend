@@ -11,7 +11,6 @@ import {
   ReloadIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ChatBubbleIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import { labelsAdded } from '../review/reviewSlice.js';
@@ -19,28 +18,22 @@ import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupe
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import {
   hasRole,
-  READ_COMMENT_ROLES,
-  WRITE_COMMENT_ROLES,
   WRITE_OBJECTS_ROLES,
 } from '../auth/roles.js';
-import { violet, mauve, indigo } from '@radix-ui/colors';
+import { violet, mauve } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
+import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
+import CategorySelector from '../../components/CategorySelector.jsx';
 import {
   Tooltip,
   TooltipContent,
   TooltipArrow,
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
-import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
-import CategorySelector from '../../components/CategorySelector.jsx';
-import {
-  Root as PopoverRoot,
-  PopoverPortal,
-  PopoverContent,
-  PopoverTrigger,
-  PopoverArrow,
-} from '@radix-ui/react-popover';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
+import { globalBreakpoints } from '../../config.js';
 import { CommentsPopover } from './CommentsPopover.jsx';
+import { CommentsDialog } from './CommentsDialog.jsx';
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -82,7 +75,7 @@ const Separator = styled('div', {
   margin: '0 10px',
 });
 
-const ToolbarIconButton = styled(Button, {
+export const ToolbarIconButton = styled(Button, {
   ...itemStyles,
   backgroundColor: 'white',
   marginLeft: 2,
@@ -115,27 +108,6 @@ const CancelHint = styled('div', {
   },
 });
 
-const StyledPopoverContent = styled(PopoverContent, {
-  zIndex: '$4',
-  '&:--radix-popover-content-transform-origin': '0px'
-});
-
-const StyledPopoverArrow = styled(PopoverArrow, {
-  zIndex: 200,
-  fill: '$backgroundLight',
-});
-
-const Badge = styled('div', {
-  position: 'absolute',
-  top: 1,
-  left: 18,
-  background: indigo.indigo4,
-  fontSize: '$1',
-  fontWeight: '$5',
-  color: indigo.indigo11,
-  padding: '2px $1',
-  borderRadius: '$2',
-});
 
 const ImageReviewToolbar = ({
   image,
@@ -187,18 +159,9 @@ const ImageReviewToolbar = ({
       obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
     );
 
-  const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
-  const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
-  const onClickOutsideComments = () => {
-    if (!isCommentsActionMenuOpen) {
-      setIsCommentsPopoverOpen(false);
-    }
-  };
-
-  // Close popover when changing images using keyboard
-  useEffect(() => {
-    setIsCommentsPopoverOpen(false);
-  }, [image._id]);
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'sm');
+  console.log(currentBreakpoint, isSmallScreen)
 
   return (
     <Toolbar>
@@ -311,43 +274,16 @@ const ImageReviewToolbar = ({
           <Separator />
 
           {/* Comments */}
-          <Tooltip>
-            <PopoverRoot open={isCommentsPopoverOpen}>
-              <TooltipTrigger
-                asChild
-                disabled={
-                  !hasRole(userRoles, READ_COMMENT_ROLES) ||
-                  !hasRole(userRoles, WRITE_COMMENT_ROLES)
-                }
-              >
-                <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
-                  <ToolbarIconButton css={{ position: 'relative' }}>
-                    <ChatBubbleIcon />
-                    {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
-                  </ToolbarIconButton>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Add comments
-                <TooltipArrow />
-              </TooltipContent>
-              <PopoverPortal>
-                <StyledPopoverContent
-                  side="top"
-                  sideOffset={25}
-                  onPointerDownOutside={() => onClickOutsideComments()}
-                >
-                  <CommentsPopover
-                    onClose={() => setIsCommentsPopoverOpen(false)}
-                    onChangeActionMenu={setIsCommentsActionMenuOpen}
-                    comments={image.comments}
-                    imageId={image._id}
-                  />
-                  <StyledPopoverArrow />
-                </StyledPopoverContent>
-              </PopoverPortal>
-            </PopoverRoot>
-          </Tooltip>
+          { isSmallScreen 
+            ? <CommentsDialog
+                image={image}
+                userRoles={userRoles}
+              />
+            : <CommentsPopover 
+                image={image} 
+                userRoles={userRoles}
+              />
+          }
 
           <Separator />
 
