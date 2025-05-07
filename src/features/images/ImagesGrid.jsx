@@ -16,6 +16,7 @@ import { FloatingToolbar } from './FloatingToolbar.jsx';
 import { SmallScreensLoupe } from '../loupe/SmallScreensLoupe.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { CommentsDialog } from '../loupe/CommentsDialog.jsx';
 
 export const colCounts = {
   single: 1,
@@ -126,7 +127,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       const clickImage = () => onClickImage(idx);
       if (colCount === colCounts.single) {
         return (
-          <SmallScreensLoupe 
+          <SmallScreensLoupe
             key={uniqueRowId}
             style={style}
             idx={idx}
@@ -287,6 +288,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
               );
             }}
           </AutoSizer>
+          <CommentsDialog />
         </>
       )}
     </>

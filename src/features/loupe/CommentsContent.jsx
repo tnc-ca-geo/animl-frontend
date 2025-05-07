@@ -15,19 +15,26 @@ const StyledContent = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   backgroundColor: '$loContrast',
-  borderRadius: '$2',
+  borderRadius: '$3 $3 0 0',
+  height: '100%',
   '@bp1': {
     width: '450px',
-    boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+    boxShadow:
+      'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+    maxHeight: '70vh',
+    borderRadius: '$2',
   },
-  maxHeight: '70vh',
 });
 
 const StyledHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  borderTopLeftRadius: '$2',
-  borderTopRightRadius: '$2',
+  borderTopLeftRadius: '$3',
+  borderTopRightRadius: '$3',
+  '@bp1': {
+    borderTopLeftRadius: '$2',
+    borderTopRightRadius: '$2',
+  },
   borderBottom: '1px solid $border',
   backgroundColor: '$backgroundLight',
   fontWeight: '$5',
@@ -44,7 +51,9 @@ const StyledAddCommentRow = styled('div', {
   fontWeight: '$5',
   color: '$textDark',
   padding: '$3',
+  marginTop: 'auto',
   '@bp1': {
+    marginTop: 'unset',
     borderBottomLeftRadius: '$2',
     borderBottomRightRadius: '$2',
   },
@@ -78,12 +87,19 @@ const StyledTextArea = styled('textarea', {
 const StyledAddCommentButton = styled(Button, {
   marginLeft: 'auto',
   marginRight: '0',
+  width: '100%',
+  '@bp1': {
+    width: 'unset',
+    fontSize: '$2',
+    paddingLeft: '$3',
+    paddingRight: '$3',
+  },
 });
 
-export const CommentsContent = ({ 
-  comments, 
-  imageId, 
-  onChangeActionMenu,
+export const CommentsContent = ({
+  comments,
+  imageId,
+  onChangeActionMenu = () => {},
   closeContent,
 }) => {
   const dispatch = useDispatch();
@@ -134,7 +150,7 @@ export const CommentsContent = ({
       <StyledContent>
         <StyledHeader>
           Comments
-          { closeContent }
+          {closeContent}
         </StyledHeader>
         {comments?.length > 0 && (
           <StyledCommentsContainer>
@@ -158,7 +174,6 @@ export const CommentsContent = ({
             onKeyUp={(e) => handleKeyUp(e)}
           />
           <StyledAddCommentButton
-            size="small"
             onClick={() => handleAddComment(addCommentText)}
             disabled={addCommentText === ''}
           >

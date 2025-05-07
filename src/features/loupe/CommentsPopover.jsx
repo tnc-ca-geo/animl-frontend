@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import {
-  ChatBubbleIcon,
-  Cross2Icon,
-} from '@radix-ui/react-icons';
-import { 
-  hasRole,
-  READ_COMMENT_ROLES,
-  WRITE_COMMENT_ROLES,
-} from '../auth/roles.js';
+import { ChatBubbleIcon, Cross2Icon } from '@radix-ui/react-icons';
+import { hasRole, READ_COMMENT_ROLES, WRITE_COMMENT_ROLES } from '../auth/roles.js';
 import {
   Tooltip,
   TooltipContent,
@@ -41,7 +34,7 @@ const Badge = styled('div', {
 
 const StyledPopoverContent = styled(PopoverContent, {
   zIndex: '$4',
-  '&:--radix-popover-content-transform-origin': '0px'
+  '&:--radix-popover-content-transform-origin': '0px',
 });
 
 const StyledPopoverArrow = styled(PopoverArrow, {
@@ -68,10 +61,7 @@ const StyledPopoverClose = styled(PopoverClose, {
   },
 });
 
-export const CommentsPopover = ({ 
-  image,
-  userRoles,
-}) => {
+export const CommentsPopover = ({ image, userRoles }) => {
   const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
   const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
   const onClickOutsideComments = () => {
@@ -83,7 +73,7 @@ export const CommentsPopover = ({
   // Close popover when changing images using keyboard
   useEffect(() => {
     setIsCommentsPopoverOpen(false);
-  }, [image]);
+  }, [image._id]);
 
   return (
     <Tooltip>
@@ -91,8 +81,7 @@ export const CommentsPopover = ({
         <TooltipTrigger
           asChild
           disabled={
-            !hasRole(userRoles, READ_COMMENT_ROLES) ||
-            !hasRole(userRoles, WRITE_COMMENT_ROLES)
+            !hasRole(userRoles, READ_COMMENT_ROLES) || !hasRole(userRoles, WRITE_COMMENT_ROLES)
           }
         >
           <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
@@ -117,9 +106,7 @@ export const CommentsPopover = ({
               comments={image.comments}
               imageId={image._id}
               closeContent={
-                <StyledPopoverClose 
-                  onClick={() => setIsCommentsPopoverOpen(false)}
-                >
+                <StyledPopoverClose onClick={() => setIsCommentsPopoverOpen(false)}>
                   <Cross2Icon />
                 </StyledPopoverClose>
               }

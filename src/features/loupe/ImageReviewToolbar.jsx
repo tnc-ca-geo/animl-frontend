@@ -11,16 +11,19 @@ import {
   ReloadIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChatBubbleIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import { labelsAdded } from '../review/reviewSlice.js';
+import { labelsAdded, setMobileCommentFocusIndex } from '../review/reviewSlice.js';
 import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import {
   hasRole,
   WRITE_OBJECTS_ROLES,
+  READ_COMMENT_ROLES,
+  WRITE_COMMENT_ROLES,
 } from '../auth/roles.js';
-import { violet, mauve } from '@radix-ui/colors';
+import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
@@ -33,7 +36,18 @@ import {
 import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 import { globalBreakpoints } from '../../config.js';
 import { CommentsPopover } from './CommentsPopover.jsx';
-import { CommentsDialog } from './CommentsDialog.jsx';
+
+const Badge = styled('div', {
+  position: 'absolute',
+  top: 1,
+  left: 18,
+  background: indigo.indigo4,
+  fontSize: '$1',
+  fontWeight: '$5',
+  color: indigo.indigo11,
+  padding: '2px $1',
+  borderRadius: '$2',
+});
 
 const Toolbar = styled('div', {
   display: 'flex',
@@ -46,7 +60,7 @@ const Toolbar = styled('div', {
     overflowX: 'unset',
     width: '100%',
     minWidth: 'max-content',
-  }
+  },
 });
 
 export const itemStyles = {
@@ -108,7 +122,6 @@ const CancelHint = styled('div', {
   },
 });
 
-
 const ImageReviewToolbar = ({
   image,
   lastAction,
@@ -160,8 +173,7 @@ const ImageReviewToolbar = ({
     );
 
   const currentBreakpoint = useSelector(selectGlobalBreakpoint);
-  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'sm');
-  console.log(currentBreakpoint, isSmallScreen)
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   return (
     <Toolbar>
@@ -274,16 +286,20 @@ const ImageReviewToolbar = ({
           <Separator />
 
           {/* Comments */}
-          { isSmallScreen 
-            ? <CommentsDialog
-                image={image}
-                userRoles={userRoles}
-              />
-            : <CommentsPopover 
-                image={image} 
-                userRoles={userRoles}
-              />
-          }
+          {isSmallScreen ? (
+            <ToolbarIconButton
+              disabled={
+                !hasRole(userRoles, READ_COMMENT_ROLES) || !hasRole(userRoles, WRITE_COMMENT_ROLES)
+              }
+              css={{ position: 'relative' }}
+              onClick={() => dispatch(setMobileCommentFocusIndex(image._id))}
+            >
+              <ChatBubbleIcon />
+              {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+            </ToolbarIconButton>
+          ) : (
+            <CommentsPopover image={image} userRoles={userRoles} />
+          )}
 
           <Separator />
 
@@ -306,7 +322,7 @@ const ImageReviewToolbar = ({
       )}
 
       {/* Increment/Decrement */}
-      { handleIncrementClick !== undefined && (
+      {handleIncrementClick !== undefined && (
         <IncrementControls>
           <Tooltip>
             <TooltipTrigger asChild>

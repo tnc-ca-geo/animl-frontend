@@ -1,22 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled, keyframes } from '../../theme/stitches.config.js';
 import * as Dialog from '@radix-ui/react-dialog';
 import { CommentsContent } from './CommentsContent.jsx';
-import { indigo } from '@radix-ui/colors';
-import { ToolbarIconButton } from './ImageReviewToolbar.jsx';
-import { ChatBubbleIcon } from '@radix-ui/react-icons';
-
-const Badge = styled('div', {
-  position: 'absolute',
-  top: 1,
-  left: 18,
-  background: indigo.indigo4,
-  fontSize: '$1',
-  fontWeight: '$5',
-  color: indigo.indigo11,
-  padding: '2px $1',
-  borderRadius: '$2',
-});
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  selectMobileCommentFocusIndex,
+  selectWorkingImages,
+  setMobileCommentFocusIndex,
+} from '../review/reviewSlice.js';
+import IconButton from '../../components/IconButton.jsx';
+import { X } from 'lucide-react';
 
 const openOverlayAnimation = keyframes({
   from: { opacity: 0 },
@@ -84,34 +77,49 @@ const Overlay = styled(Dialog.Overlay, {
   ...animateOverlayOpenClose,
 });
 
-export const CommentsDialog = ({
-  image,
-  userRoles,
-}) => {
-  const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
+const ClosePanelButton = styled(IconButton, {
+  borderRadius: '$2',
+  marginLeft: 'auto',
+});
 
-  console.log(userRoles, isCommentsActionMenuOpen)
+export const CommentsDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const workingImages = useSelector(selectWorkingImages);
+  const commentFocusIdx = useSelector(selectMobileCommentFocusIndex);
+  const dispatch = useDispatch();
+
+  const image = workingImages.find((img) => img._id === commentFocusIdx);
+
+  useEffect(() => {
+    setIsOpen(commentFocusIdx !== null && commentFocusIdx !== undefined);
+  }, [commentFocusIdx]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    dispatch(setMobileCommentFocusIndex(null));
+  };
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <ToolbarIconButton 
-          css={{ position: 'relative' }}
-        >
-          <ChatBubbleIcon />
-          {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
-        </ToolbarIconButton>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Content>
-          <CommentsContent
-            onChangeActionMenu={setIsCommentsActionMenuOpen}
-            comments={image.comments}
-            imageId={image._id}
-          />
-        </Content>
-        <Overlay />
-      </Dialog.Portal>
-    </Dialog.Root>
+    <>
+      <Dialog.Root open={isOpen}>
+        <Dialog.Portal>
+          <Content onPointerDownOutside={() => handleClose()}>
+            {image && (
+              <CommentsContent
+                comments={image.comments}
+                imageId={image._id}
+                closeContent={
+                  <ClosePanelButton variant="ghost" onClick={() => handleClose()}>
+                    <X />
+                  </ClosePanelButton>
+                }
+              />
+            )}
+          </Content>
+          <Overlay />
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   );
-}
+};
