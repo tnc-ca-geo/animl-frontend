@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { FieldArray } from 'formik';
+import { FieldArray, Field } from 'formik';
 import { StandAloneInput as Input } from '../../components/Form.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
-import { Field } from 'formik';
 import ReactSlider from 'react-slider';
 import Checkbox from '../../components/Checkbox.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
