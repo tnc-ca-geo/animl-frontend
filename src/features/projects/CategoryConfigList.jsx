@@ -2,13 +2,166 @@ import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { FieldArray } from 'formik';
 import { StandAloneInput as Input } from '../../components/Form.jsx';
-import CategoryConfigForm from './CategoryConfigForm.jsx';
+import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
+import { Field } from 'formik';
+import ReactSlider from 'react-slider';
+import Checkbox from '../../components/Checkbox.jsx';
+import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 
 const CategoryConfigFilter = styled('div', {
   display: 'flex',
   marginBottom: '$3',
   width: '300px',
 });
+
+const Table = styled('table', {
+  borderSpacing: '0',
+  borderCollapse: 'collapse',
+  width: '100%',
+  tableLayout: 'fixed',
+  marginBottom: '15px',
+  // borderBottom: '1px solid',
+  // borderColor: '$border',
+});
+
+const TableHeadCell = styled('th', {
+  color: '$textMedium',
+  fontSize: '$2',
+  fontWeight: '400',
+  textTransform: 'uppercase',
+  textAlign: 'left',
+  verticalAlign: 'bottom',
+  padding: '5px 15px',
+  borderBottom: '1px solid',
+  borderTop: '1px solid',
+  borderColor: '$border',
+});
+
+const TableRow = styled('tr', {
+  '&:nth-child(odd)': {
+    backgroundColor: '$backgroundDark',
+  },
+});
+
+const TableCell = styled('td', {
+  color: '$textDark',
+  fontSize: '$3',
+  fontWeight: '400',
+  padding: '5px 15px',
+  // borderBottom: '1px solid',
+  // borderColor: mauve.mauve11,
+});
+
+const DisabledCheckboxWrapper = styled(CheckboxWrapper, {
+  padding: '0px',
+  minWidth: '100px',
+
+  label: {
+    display: 'flex',
+    marginBottom: '0px',
+  },
+});
+
+const CategoryName = styled(CheckboxLabel, {
+  fontSize: '$3',
+  fontFamily: '$Roboto',
+  fontWeight: '$2',
+  minWidth: '250px',
+});
+
+const ConfThreshold = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: '$3',
+  fontFamily: '$Roboto',
+  fontWeight: '$2',
+});
+
+const StyledSlider = styled(ReactSlider, {
+  height: '2px',
+  minWidth: '200px',
+  variants: {
+    disabledStyles: {
+      true: {
+        '.track': {
+          backgroundColor: '$gray4',
+        },
+        '.thumb': {
+          backgroundColor: '$gray4',
+          cursor: 'default',
+        },
+      },
+    },
+  },
+});
+
+const StyledThumb = styled('div', {
+  top: '-5px',
+  height: '12px',
+  width: '12px',
+  textAlign: 'center',
+  backgroundColor: '$hiContrast',
+  color: '$loContrast',
+  border: '3px solid white',
+  borderRadius: '50%',
+  cursor: 'grab',
+  zIndex: 0,
+});
+
+const StyledTrack = styled('div', {
+  top: '0',
+  bottom: '0',
+  background: '#ddd',
+  borderRadius: '999px',
+
+  '&.track-0': {
+    backgroundColor: '$hiContrast',
+  },
+});
+
+const ConfDisplay = styled('div', {
+  marginLeft: '$3',
+  variants: {
+    disabled: {
+      true: {
+        color: '$gray4',
+      },
+    },
+  },
+});
+
+export function fieldToSlider({ field, form: { isSubmitting }, disabled, ...props }) {
+  return {
+    ...props,
+    ...field,
+    disabled: isSubmitting || disabled,
+    disabledStyles: disabled,
+    value: props.value * 100,
+  };
+}
+
+const DisabledCheckbox = (props) => {
+  const handleCheckboxChange = () => {
+    props.form.setFieldValue(props.field.name, !props.field.value);
+  };
+  return <Checkbox checked={!props.value} active={!props.value} onChange={handleCheckboxChange} />;
+};
+
+const Slider = (props) => (
+  <StyledSlider
+    {...fieldToSlider(props)}
+    step={5}
+    renderTrack={Track}
+    renderThumb={Thumb}
+    onChange={(value) => {
+      const decimalVal = value / 100;
+      props.form.setFieldValue(props.field.name, decimalVal);
+    }}
+  />
+);
+
+const Track = (props, state) => <StyledTrack {...props} index={state.index} />;
+const Thumb = (props) => <StyledThumb {...props} />;
 
 const CategoryConfigList = ({ values }) => {
   // filter categories
@@ -26,20 +179,69 @@ const CategoryConfigList = ({ values }) => {
         />
       </CategoryConfigFilter>
       <FieldArray name="categoryConfigs">
-        <>
-          {Object.entries(values.action.categoryConfig)
-            .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
-            .filter(([k]) => {
-              if (categoryFilter) {
-                return k.toLowerCase().includes(categoryFilter.toLowerCase());
-              } else {
-                return true;
-              }
-            })
-            .map(([k, v]) => (
-              <CategoryConfigForm key={k} catName={k} config={v} />
-            ))}
-        </>
+        <Table>
+          <thead>
+            <tr>
+              <TableHeadCell css={{ width: '30%' }}>Label name</TableHeadCell>
+              <TableHeadCell css={{ width: '45%' }}>Taxonomy</TableHeadCell>
+              <TableHeadCell css={{ width: '25%' }}>Confidence threshold</TableHeadCell>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(values.action.categoryConfig)
+              .filter(
+                ([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty'),
+              ) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
+              .filter(([k]) => {
+                if (categoryFilter) {
+                  return k.toLowerCase().includes(categoryFilter.toLowerCase());
+                } else {
+                  return true;
+                }
+              })
+              .map(([catName, config]) => (
+                <TableRow key={catName}>
+                  <TableCell>
+                    <DisabledCheckboxWrapper>
+                      <label>
+                        <Field
+                          component={DisabledCheckbox}
+                          name={`action.categoryConfig.${catName}.disabled`}
+                          value={config.disabled}
+                        />
+                        <CategoryName checked={!config.disabled} active={!config.disabled}>
+                          {catName}
+                        </CategoryName>
+                      </label>
+                    </DisabledCheckboxWrapper>
+                  </TableCell>
+                  <TableCell>
+                    {/* {v.taxonomy.map((taxonomy) => (
+                      <div key={taxonomy}>{taxonomy}</div>
+                    ))} */}
+                    <i>
+                      mammalia {'>'} primates {'>'} callitrichidae {'>'} saguinus {'>'} melanoleucus
+                    </i>
+                  </TableCell>
+                  <TableCell>
+                    <ConfThreshold>
+                      <div>
+                        <Field
+                          component={Slider}
+                          name={`action.categoryConfig.${catName}.confThreshold`}
+                          value={config.confThreshold}
+                          disabled={config.disabled}
+                        />
+                      </div>
+                      <ConfDisplay disabled={config.disabled}>
+                        {Math.round(config.confThreshold * 100)}%
+                      </ConfDisplay>
+                    </ConfThreshold>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </tbody>
+        </Table>
       </FieldArray>
     </div>
   );

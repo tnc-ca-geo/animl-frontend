@@ -107,7 +107,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
 
   return (
-    <FormWrapper>
+    <FormWrapper css={{ height: '95vh', color: 'red' }}>
       <Formik
         initialValues={rule ? ruleToVals(rule) : { ...emptyRule }}
         validationSchema={addRuleSchema}
