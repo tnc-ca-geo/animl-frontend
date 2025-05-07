@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled } from '../../theme/stitches.config.js';
 import _ from 'lodash';
-import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { updateAutomationRules, selectMLModels, fetchModels } from './projectsSlice.js';
 import SelectField from '../../components/SelectField.jsx';
@@ -13,15 +12,8 @@ import {
   ButtonRow,
   FormFieldWrapper,
   FormError,
-  StandAloneInput as Input,
 } from '../../components/Form.jsx';
-import CategoryConfigForm from './CategoryConfigForm.jsx';
-
-const CategoryConfigFilter = styled('div', {
-  display: 'flex',
-  marginBottom: '$3',
-  width: '300px',
-});
+import CategoryConfigList from './CategoryConfigList.jsx';
 
 const emptyRule = {
   name: '',
@@ -113,9 +105,6 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
 
   // discard rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
-
-  // filter categories
-  const [categoryFilter, setCategoryFilter] = useState('');
 
   return (
     <FormWrapper>
@@ -239,36 +228,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
             {/* category configurations */}
             {values.action.categoryConfig &&
               Object.entries(values.action.categoryConfig).length > 0 && (
-                <div>
-                  <label htmlFor="event-label">Labels</label>
-                  <CategoryConfigFilter>
-                    <Input
-                      css={{ width: 320, height: 40, padding: '$0 $3', marginRight: '$3' }}
-                      placeholder="Filter by common name..."
-                      value={categoryFilter}
-                      onChange={(e) => setCategoryFilter(e.target.value)}
-                    />
-                  </CategoryConfigFilter>
-                  <FieldArray name="categoryConfigs">
-                    <>
-                      {Object.entries(values.action.categoryConfig)
-                        .filter(
-                          ([k]) =>
-                            !(values.action.model.value.includes('megadetector') && k === 'empty'),
-                        ) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
-                        .filter(([k]) => {
-                          if (categoryFilter) {
-                            return k.toLowerCase().includes(categoryFilter.toLowerCase());
-                          } else {
-                            return true;
-                          }
-                        })
-                        .map(([k, v]) => (
-                          <CategoryConfigForm key={k} catName={k} config={v} />
-                        ))}
-                    </>
-                  </FieldArray>
-                </div>
+                <CategoryConfigList values={values} />
               )}
 
             <ButtonRow>
