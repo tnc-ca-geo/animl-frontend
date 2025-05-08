@@ -272,7 +272,7 @@ const ImageReviewToolbar = ({
             </CancelHint>
           ) : (
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger asChild disabled={isSmallScreen}>
                 <ToolbarIconButton onClick={handleAddObjectButtonClick}>
                   <GroupIcon />
                 </ToolbarIconButton>
@@ -319,10 +319,12 @@ const ImageReviewToolbar = ({
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
+
+          {/* On mobile, include the share button as well */}
           {isSmallScreen && (
             <>
               <Separator />
-              <ShareImageButton />
+              <ShareImageButton imageId={image._id} />
             </>
           )}
         </AnnotationControls>
