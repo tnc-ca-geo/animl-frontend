@@ -172,17 +172,20 @@ const DisabledBulkCheckbox = ({ form, filteredCategories }) => {
   };
 
   const handleBulkCheckboxChange = () => {
-    if (bulkCheckboxState !== 'allSelected') {
-      // not all labels are currently selected, select them all
-      filteredCategories.forEach((cat) => {
-        form.setFieldValue(`action.categoryConfig.${cat[0]}.disabled`, false);
-      });
-    } else {
-      // all labels are selected, so unselect all:
-      filteredCategories.forEach((cat) => {
-        form.setFieldValue(`action.categoryConfig.${cat[0]}.disabled`, true);
-      });
-    }
+    let newCategoryConfig = {};
+    Object.entries(form.values.action.categoryConfig).forEach(([catName, config]) => {
+      if (filteredCategories.some((cat) => cat[0] === catName)) {
+        newCategoryConfig[catName] = {
+          ...config,
+          // if not all are selected, set "disabled" to false for all filtered categories
+          // if all are selected, set "disabled" to true for all filtered categories
+          disabled: bulkCheckboxState !== 'allSelected' ? false : true,
+        };
+      } else {
+        newCategoryConfig[catName] = config;
+      }
+    });
+    form.setFieldValue(`action.categoryConfig`, newCategoryConfig);
   };
 
   return (
