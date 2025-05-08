@@ -171,7 +171,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       if (colCount === colCounts.single) {
         // Image height + toolbar height
         if (hasObjectEditRole) {
-          tallest += 97;
+          tallest += 98;
         }
         // Height of metadata bar
         tallest += 40;

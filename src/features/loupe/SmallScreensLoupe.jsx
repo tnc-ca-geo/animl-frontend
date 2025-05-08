@@ -4,11 +4,8 @@ import FullSizeImage from './FullSizeImage';
 import ImageReviewToolbar from './ImageReviewToolbar';
 import { ImageTagsToolbar } from './ImageTagsToolbar';
 import { useDispatch, useSelector } from 'react-redux';
-// import { selectUserCurrentRoles, selectUserUsername } from '../auth/authSlice';
-import { selectProjectTags } from '../projects/projectsSlice';
-// import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import { ImageMetadata } from './ImageMetadata';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
+import { selectUserUsername } from '../auth/authSlice';
 import {
   selectLastAction,
   selectLastCategoryApplied,
@@ -17,6 +14,7 @@ import {
   markedEmpty,
   objectsManuallyUnlocked,
 } from '../review/reviewSlice.js';
+import { selectProjectTags } from '../projects/projectsSlice.js';
 
 const FullSizeImageWrapper = styled('div', {
   display: 'grid',
@@ -30,8 +28,6 @@ const ToolbarContainer = styled('div', {
 });
 
 export const SmallScreensLoupe = ({ image, idx, workingImages, shouldShowToolbar, style }) => {
-  const userRoles = useSelector(selectUserCurrentRoles);
-  console.log(userRoles);
   const userId = useSelector(selectUserUsername);
   const dispatch = useDispatch();
   const projectTags = useSelector(selectProjectTags);
