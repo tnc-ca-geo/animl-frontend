@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { FieldArray, Field } from 'formik';
 import { StandAloneInput as Input } from '../../components/Form.jsx';
@@ -146,6 +146,64 @@ const DisabledCheckbox = (props) => {
   return <Checkbox checked={!props.value} active={!props.value} onChange={handleCheckboxChange} />;
 };
 
+const DisabledBulkCheckbox = ({ form, filteredCategories }) => {
+  const [bulkCheckboxState, setBulkCheckboxState] = useState('allSelected');
+  useEffect(() => {
+    if (filteredCategories.every((cat) => !cat[1].disabled)) {
+      setBulkCheckboxState('allSelected');
+    } else {
+      setBulkCheckboxState('notAllSelected');
+    }
+  }, [filteredCategories]);
+
+  const stateMap = {
+    notAllSelected: {
+      checked: false,
+      active: false,
+      indeterminate: false,
+      label: 'select all filtered labels',
+    },
+    allSelected: {
+      checked: true,
+      active: true,
+      indeterminate: false,
+      label: 'unselect all filtered labels',
+    },
+  };
+
+  const handleBulkCheckboxChange = () => {
+    if (bulkCheckboxState !== 'allSelected') {
+      // not all labels are currently selected, select them all
+      filteredCategories.forEach((cat) => {
+        form.setFieldValue(`action.categoryConfig.${cat[0]}.disabled`, false);
+      });
+    } else {
+      // all labels are selected, so unselect all:
+      filteredCategories.forEach((cat) => {
+        form.setFieldValue(`action.categoryConfig.${cat[0]}.disabled`, true);
+      });
+    }
+  };
+
+  return (
+    <>
+      <Checkbox
+        checked={stateMap[bulkCheckboxState].checked}
+        active={stateMap[bulkCheckboxState].active}
+        indeterminate={stateMap[bulkCheckboxState].indeterminate}
+        onChange={handleBulkCheckboxChange}
+      />
+      <CheckboxLabel
+        checked={stateMap[bulkCheckboxState].checked}
+        active={stateMap[bulkCheckboxState].active}
+        css={{ fontFamily: '$sourceSansPro', fontWeight: '$5' }}
+      >
+        {stateMap[bulkCheckboxState].label}
+      </CheckboxLabel>
+    </>
+  );
+};
+
 const Slider = (props) => (
   <StyledSlider
     {...fieldToSlider(props)}
@@ -165,6 +223,15 @@ const Thumb = (props) => <StyledThumb {...props} />;
 const CategoryConfigList = ({ values }) => {
   // filter categories
   const [categoryFilter, setCategoryFilter] = useState('');
+  const filteredCategories = Object.entries(values.action.categoryConfig)
+    .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
+    .filter(([k]) => {
+      if (categoryFilter) {
+        return k.toLowerCase().includes(categoryFilter.toLowerCase());
+      } else {
+        return true;
+      }
+    });
 
   return (
     <div>
@@ -187,58 +254,66 @@ const CategoryConfigList = ({ values }) => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(values.action.categoryConfig)
-              .filter(
-                ([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty'),
-              ) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
-              .filter(([k]) => {
-                if (categoryFilter) {
-                  return k.toLowerCase().includes(categoryFilter.toLowerCase());
-                } else {
-                  return true;
-                }
-              })
-              .map(([catName, config]) => (
-                <TableRow key={catName}>
-                  <TableCell>
-                    <DisabledCheckboxWrapper>
-                      <label>
-                        <Field
-                          component={DisabledCheckbox}
-                          name={`action.categoryConfig.${catName}.disabled`}
-                          value={config.disabled}
-                        />
-                        <CategoryName checked={!config.disabled} active={!config.disabled}>
-                          {catName}
-                        </CategoryName>
-                      </label>
-                    </DisabledCheckboxWrapper>
-                  </TableCell>
-                  <TableCell>
-                    {/* {v.taxonomy.map((taxonomy) => (
+            <TableRow
+              css={{
+                textTransform: 'uppercase',
+                borderBottom: '1px solid $border',
+              }}
+            >
+              <TableCell>
+                <label style={{ marginBottom: '0px' }}>
+                  <Field name={`action.categoryConfig`}>
+                    {({ form }) => (
+                      <DisabledBulkCheckbox form={form} filteredCategories={filteredCategories} />
+                    )}
+                  </Field>
+                </label>
+              </TableCell>
+              <TableCell></TableCell>
+              <TableCell>global confidence threshold</TableCell>
+            </TableRow>
+
+            {filteredCategories.map(([catName, config]) => (
+              <TableRow key={catName}>
+                <TableCell>
+                  <DisabledCheckboxWrapper>
+                    <label>
+                      <Field
+                        component={DisabledCheckbox}
+                        name={`action.categoryConfig.${catName}.disabled`}
+                        value={config.disabled}
+                      />
+                      <CategoryName checked={!config.disabled} active={!config.disabled}>
+                        {catName}
+                      </CategoryName>
+                    </label>
+                  </DisabledCheckboxWrapper>
+                </TableCell>
+                <TableCell>
+                  {/* {v.taxonomy.map((taxonomy) => (
                       <div key={taxonomy}>{taxonomy}</div>
                     ))} */}
-                    <i>
-                      mammalia {'>'} primates {'>'} callitrichidae {'>'} saguinus {'>'} melanoleucus
-                    </i>
-                  </TableCell>
-                  <TableCell>
-                    <ConfThreshold>
-                      <div>
-                        <Field
-                          component={Slider}
-                          name={`action.categoryConfig.${catName}.confThreshold`}
-                          value={config.confThreshold}
-                          disabled={config.disabled}
-                        />
-                      </div>
-                      <ConfDisplay disabled={config.disabled}>
-                        {Math.round(config.confThreshold * 100)}%
-                      </ConfDisplay>
-                    </ConfThreshold>
-                  </TableCell>
-                </TableRow>
-              ))}
+                  <i>
+                    mammalia {'>'} primates {'>'} callitrichidae {'>'} saguinus {'>'} melanoleucus
+                  </i>
+                </TableCell>
+                <TableCell>
+                  <ConfThreshold>
+                    <div>
+                      <Field
+                        component={Slider}
+                        name={`action.categoryConfig.${catName}.confThreshold`}
+                        value={config.confThreshold}
+                        disabled={config.disabled}
+                      />
+                    </div>
+                    <ConfDisplay disabled={config.disabled}>
+                      {Math.round(config.confThreshold * 100)}%
+                    </ConfDisplay>
+                  </ConfThreshold>
+                </TableCell>
+              </TableRow>
+            ))}
           </tbody>
         </Table>
       </FieldArray>
