@@ -36,6 +36,7 @@ import {
 import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 import { globalBreakpoints } from '../../config.js';
 import { CommentsPopover } from './CommentsPopover.jsx';
+import ShareImageButton from './ShareImageButton.jsx';
 
 const Badge = styled('div', {
   position: 'absolute',
@@ -202,7 +203,7 @@ const ImageReviewToolbar = ({
               ) : (
                 <ToolbarIconButton
                   onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked}
+                  disabled={allObjectsLocked || isSmallScreen}
                 >
                   <Pencil1Icon />
                 </ToolbarIconButton>
@@ -318,6 +319,12 @@ const ImageReviewToolbar = ({
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
+          {isSmallScreen && (
+            <>
+              <Separator />
+              <ShareImageButton />
+            </>
+          )}
         </AnnotationControls>
       )}
 
