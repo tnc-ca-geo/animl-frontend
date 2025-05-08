@@ -207,7 +207,7 @@ const DisabledBulkCheckbox = ({ form, filteredCategories }) => {
   );
 };
 
-const Slider = (props) => (
+const ConfidenceSlider = (props) => (
   <StyledSlider
     {...fieldToSlider(props)}
     step={5}
@@ -219,6 +219,28 @@ const Slider = (props) => (
     }}
   />
 );
+
+const BulkConfidenceSlider = () => {
+  const [bulkConfidence, setBulkConfidence] = useState(0.5);
+  console.log('bulkConfidence', bulkConfidence);
+  return (
+    <>
+      <StyledSlider
+        // {...fieldToSlider(props)}
+        value={bulkConfidence * 100}
+        step={5}
+        renderTrack={Track}
+        renderThumb={Thumb}
+        onChange={(value) => {
+          const decimalVal = value / 100;
+          setBulkConfidence(decimalVal);
+          // props.form.setFieldValue(props.field.name, decimalVal);
+        }}
+      />
+      <ConfDisplay>{Math.round(bulkConfidence * 100)}%</ConfDisplay>
+    </>
+  );
+};
 
 const Track = (props, state) => <StyledTrack {...props} index={state.index} />;
 const Thumb = (props) => <StyledThumb {...props} />;
@@ -257,6 +279,7 @@ const CategoryConfigList = ({ values }) => {
             </tr>
           </thead>
           <tbody>
+            {/* bulk adjustment controls */}
             <TableRow
               css={{
                 textTransform: 'uppercase',
@@ -273,9 +296,13 @@ const CategoryConfigList = ({ values }) => {
                 </label>
               </TableCell>
               <TableCell></TableCell>
-              <TableCell>global confidence threshold</TableCell>
+              <TableCell>
+                <ConfThreshold>
+                  <Field component={BulkConfidenceSlider} name={`action.categoryConfig`} />
+                </ConfThreshold>
+              </TableCell>
             </TableRow>
-
+            {/* individual category controls */}
             {filteredCategories.map(([catName, config]) => (
               <TableRow key={catName}>
                 <TableCell>
@@ -304,7 +331,7 @@ const CategoryConfigList = ({ values }) => {
                   <ConfThreshold>
                     <div>
                       <Field
-                        component={Slider}
+                        component={ConfidenceSlider}
                         name={`action.categoryConfig.${catName}.confThreshold`}
                         value={config.confThreshold}
                         disabled={config.disabled}
