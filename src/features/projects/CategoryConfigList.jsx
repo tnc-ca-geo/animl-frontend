@@ -78,7 +78,7 @@ const ConfThreshold = styled('div', {
 
 const StyledSlider = styled(ReactSlider, {
   height: '2px',
-  minWidth: '200px',
+  width: '100%',
   variants: {
     disabledStyles: {
       true: {
@@ -329,14 +329,12 @@ const CategoryConfigList = ({ values }) => {
                 </TableCell>
                 <TableCell>
                   <ConfThreshold>
-                    <div>
-                      <Field
-                        component={ConfidenceSlider}
-                        name={`action.categoryConfig.${catName}.confThreshold`}
-                        value={config.confThreshold}
-                        disabled={config.disabled}
-                      />
-                    </div>
+                    <Field
+                      component={ConfidenceSlider}
+                      name={`action.categoryConfig.${catName}.confThreshold`}
+                      value={config.confThreshold}
+                      disabled={config.disabled}
+                    />
                     <ConfDisplay disabled={config.disabled}>
                       {Math.round(config.confThreshold * 100)}%
                     </ConfDisplay>
