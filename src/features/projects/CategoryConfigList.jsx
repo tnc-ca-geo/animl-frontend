@@ -6,6 +6,7 @@ import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import ReactSlider from 'react-slider';
 import Checkbox from '../../components/Checkbox.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
+import { BulkUpdateConfidenceConfigAlert } from './BulkUpdateConfidenceConfigAlert.jsx';
 
 const CategoryConfigFilter = styled('div', {
   display: 'flex',
@@ -220,13 +221,13 @@ const ConfidenceSlider = (props) => (
   />
 );
 
-const BulkConfidenceSlider = () => {
+const BulkConfidenceSlider = ({ form, filteredCategories }) => {
   const [bulkConfidence, setBulkConfidence] = useState(0.5);
-  console.log('bulkConfidence', bulkConfidence);
+  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
+
   return (
     <>
       <StyledSlider
-        // {...fieldToSlider(props)}
         value={bulkConfidence * 100}
         step={5}
         renderTrack={Track}
@@ -234,10 +235,29 @@ const BulkConfidenceSlider = () => {
         onChange={(value) => {
           const decimalVal = value / 100;
           setBulkConfidence(decimalVal);
-          // props.form.setFieldValue(props.field.name, decimalVal);
         }}
+        onAfterChange={() => setUpdateAlertOpen(true)}
       />
       <ConfDisplay>{Math.round(bulkConfidence * 100)}%</ConfDisplay>
+      <BulkUpdateConfidenceConfigAlert
+        isOpen={updateAlertOpen}
+        onUpdateCancel={() => setUpdateAlertOpen(false)}
+        onUpdateConfirm={() => {
+          let newCategoryConfig = {};
+          Object.entries(form.values.action.categoryConfig).forEach(([catName, config]) => {
+            if (filteredCategories.some((cat) => cat[0] === catName)) {
+              newCategoryConfig[catName] = {
+                ...config,
+                confThreshold: bulkConfidence,
+              };
+            } else {
+              newCategoryConfig[catName] = config;
+            }
+          });
+          form.setFieldValue(`action.categoryConfig`, newCategoryConfig);
+          setUpdateAlertOpen(false);
+        }}
+      />
     </>
   );
 };
@@ -298,7 +318,11 @@ const CategoryConfigList = ({ values }) => {
               <TableCell></TableCell>
               <TableCell>
                 <ConfThreshold>
-                  <Field component={BulkConfidenceSlider} name={`action.categoryConfig`} />
+                  <Field name={`action.categoryConfig`}>
+                    {({ form }) => (
+                      <BulkConfidenceSlider form={form} filteredCategories={filteredCategories} />
+                    )}
+                  </Field>
                 </ConfThreshold>
               </TableCell>
             </TableRow>
