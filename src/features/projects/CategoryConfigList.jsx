@@ -265,10 +265,37 @@ const BulkConfidenceSlider = ({ form, filteredCategories }) => {
 const Track = (props, state) => <StyledTrack {...props} index={state.index} />;
 const Thumb = (props) => <StyledThumb {...props} />;
 
-const CategoryConfigList = ({ values }) => {
+const Taxonomy = ({ catName, config }) => {
+  const taxon = config.taxonomy.split(';').filter((t) => t !== '');
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      {taxon.length > 0 &&
+        taxon.map((t, i) => (
+          <div key={`${catName}-${i}`}>
+            <span style={{ fontStyle: 'italic', padding: '0px 5px' }}>{t}</span>
+            {i + 1 !== taxon.length && <span>{'>'}</span>}
+          </div>
+        ))}
+    </div>
+  );
+};
+
+const CategoryConfigList = ({ selectedModel, values }) => {
   // filter categories
   const [categoryFilter, setCategoryFilter] = useState('');
-  const filteredCategories = Object.entries(values.action.categoryConfig)
+
+  const enrichedCategories = Object.entries(values.action.categoryConfig).map(([k, v]) => {
+    const category = selectedModel.categories.find((cat) => cat.name === k);
+    return [
+      k,
+      {
+        ...v,
+        taxonomy: category ? category.taxonomy : undefined,
+      },
+    ];
+  });
+
+  const filteredCategories = enrichedCategories
     .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
     .filter(([k]) => {
       if (categoryFilter) {
@@ -344,12 +371,7 @@ const CategoryConfigList = ({ values }) => {
                   </DisabledCheckboxWrapper>
                 </TableCell>
                 <TableCell>
-                  {/* {v.taxonomy.map((taxonomy) => (
-                      <div key={taxonomy}>{taxonomy}</div>
-                    ))} */}
-                  <i>
-                    mammalia {'>'} primates {'>'} callitrichidae {'>'} saguinus {'>'} melanoleucus
-                  </i>
+                  {config.taxonomy !== undefined && <Taxonomy catName={catName} config={config} />}
                 </TableCell>
                 <TableCell>
                   <ConfThreshold>

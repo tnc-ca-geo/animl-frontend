@@ -227,8 +227,12 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
 
             {/* category configurations */}
             {values.action.categoryConfig &&
+              models &&
               Object.entries(values.action.categoryConfig).length > 0 && (
-                <CategoryConfigList values={values} />
+                <CategoryConfigList
+                  selectedModel={models.find((m) => m._id === values.action.model.value) || null}
+                  values={values}
+                />
               )}
 
             <ButtonRow>
