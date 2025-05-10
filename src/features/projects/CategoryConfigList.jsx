@@ -11,7 +11,17 @@ import { BulkUpdateConfidenceConfigAlert } from './BulkUpdateConfidenceConfigAle
 const CategoryConfigFilter = styled('div', {
   display: 'flex',
   marginBottom: '$3',
-  width: '300px',
+  width: '450px',
+});
+
+const FilterCount = styled('div', {
+  fontSize: '$3',
+  width: '250px',
+  fontFamily: '$Roboto',
+  fontWeight: '$2',
+  color: '$textMedium',
+  display: 'flex',
+  alignItems: 'center',
 });
 
 const Table = styled('table', {
@@ -297,9 +307,12 @@ const CategoryConfigList = ({ selectedModel, values }) => {
 
   const filteredCategories = enrichedCategories
     .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
-    .filter(([k]) => {
+    .filter(([k, v]) => {
       if (categoryFilter) {
-        return k.toLowerCase().includes(categoryFilter.toLowerCase());
+        return (
+          k.toLowerCase().includes(categoryFilter.toLowerCase()) ||
+          (v.taxonomy && v.taxonomy.toLowerCase().includes(categoryFilter.toLowerCase()))
+        );
       } else {
         return true;
       }
@@ -311,10 +324,13 @@ const CategoryConfigList = ({ selectedModel, values }) => {
       <CategoryConfigFilter>
         <Input
           css={{ width: 320, height: 40, padding: '$0 $3', marginRight: '$3' }}
-          placeholder="Filter labels..."
+          placeholder="Filter labels by name or taxonomy..."
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
         />
+        <FilterCount>
+          {filteredCategories.length} of {enrichedCategories.length} labels
+        </FilterCount>
       </CategoryConfigFilter>
       <FieldArray name="categoryConfigs">
         <Table>
@@ -371,7 +387,7 @@ const CategoryConfigList = ({ selectedModel, values }) => {
                   </DisabledCheckboxWrapper>
                 </TableCell>
                 <TableCell>
-                  {config.taxonomy !== undefined && <Taxonomy catName={catName} config={config} />}
+                  {config.taxonomy && <Taxonomy catName={catName} config={config} />}
                 </TableCell>
                 <TableCell>
                   <ConfThreshold>
