@@ -148,6 +148,9 @@ const ImageReviewToolbar = ({
     if (localCatSelectorOpen) {
       setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
     }
+    if (isAddingLabel === null) {
+      setLocalCatSelectorOpen(false);
+    }
   }, [isAddingLabel, localCatSelectorOpen]);
 
   const handleCategoryChange = (newValue) => {
