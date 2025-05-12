@@ -55,10 +55,8 @@ const Toolbar = styled('div', {
   justifyContent: 'space-between',
   padding: '$2',
   borderBottom: '1px solid $border',
-  overflowX: 'scroll',
   width: '100dvw',
   '@bp1': {
-    overflowX: 'unset',
     width: '100%',
     minWidth: 'max-content',
   },
@@ -140,10 +138,17 @@ const ImageReviewToolbar = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
+  // On mobile, each image in a single column has its own instanc of an
+  // image review toolbar so when the redux state is updated, all of the
+  // toolbars respond to the change.  This local state scopes the
+  // behavior to the toolbar where the action occurred.
+  const [localCatSelectorOpen, setLocalCatSelectorOpen] = useState(false);
   const [catSelectorOpen, setCatSelectorOpen] = useState(isAddingLabel === 'from-review-toolbar');
   useEffect(() => {
-    setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
-  }, [isAddingLabel]);
+    if (localCatSelectorOpen) {
+      setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
+    }
+  }, [isAddingLabel, localCatSelectorOpen]);
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
@@ -158,10 +163,12 @@ const ImageReviewToolbar = ({
         imgId: image._id,
       }));
     dispatch(labelsAdded({ labels: newLabels }));
+    setLocalCatSelectorOpen(false);
   };
 
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
+    setLocalCatSelectorOpen(true);
     dispatch(addLabelStart('from-review-toolbar'));
   };
 
@@ -176,24 +183,39 @@ const ImageReviewToolbar = ({
   const currentBreakpoint = useSelector(selectGlobalBreakpoint);
   const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
+  const toolbarScrollCss = isSmallScreen
+    ? catSelectorOpen
+      ? { overflowX: 'unset' }
+      : { overflowX: 'scroll' }
+    : {};
+
   return (
-    <Toolbar>
+    <Toolbar
+      // overflow x is needed because the toolbar is too wide on mobile
+      // overflow x automatically sets overflow y which hides the
+      // category menu
+      css={toolbarScrollCss}
+    >
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
         <AnnotationControls>
           {/* Repeat last action */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
-                <ReloadIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Repeat last action
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
+          {!isSmallScreen && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
+                    <ReloadIcon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Repeat last action
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
 
-          <Separator />
+              <Separator />
+            </>
+          )}
 
           {/* Edit */}
           <Tooltip>
@@ -203,7 +225,7 @@ const ImageReviewToolbar = ({
               ) : (
                 <ToolbarIconButton
                   onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked || isSmallScreen}
+                  disabled={allObjectsLocked}
                 >
                   <Pencil1Icon />
                 </ToolbarIconButton>
