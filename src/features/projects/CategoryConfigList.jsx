@@ -62,6 +62,20 @@ const TableCell = styled('td', {
   // borderColor: mauve.mauve11,
 });
 
+const BulkConfidenceLabel = styled('div', {
+  fontSize: '$2',
+  fontFamily: '$sourceSansPro',
+  fontWeight: '$5',
+  color: '$textDark',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'end',
+  marginBottom: '0px',
+  marginLeft: '0px',
+  marginRight: '0px',
+  padding: '0px',
+});
+
 const DisabledCheckboxWrapper = styled(CheckboxWrapper, {
   padding: '0px',
   minWidth: '100px',
@@ -347,6 +361,7 @@ const CategoryConfigList = ({ selectedModel, values }) => {
               css={{
                 textTransform: 'uppercase',
                 borderBottom: '1px solid $border',
+                backgroundColor: '$backgroundExtraDark !important ',
               }}
             >
               <TableCell>
@@ -358,7 +373,9 @@ const CategoryConfigList = ({ selectedModel, values }) => {
                   </Field>
                 </label>
               </TableCell>
-              <TableCell></TableCell>
+              <TableCell>
+                <BulkConfidenceLabel>Adjust all thresholds:</BulkConfidenceLabel>
+              </TableCell>
               <TableCell>
                 <ConfThreshold>
                   <Field name={`action.categoryConfig`}>
