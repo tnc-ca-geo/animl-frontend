@@ -394,7 +394,7 @@ const queries = {
   }),
 
   // TODO: name this something more specific (like exportImageData)
-  exportAnnotations: ({ format, filters, timezone }) => ({
+  exportAnnotations: ({ format, filters, timezone, onlyIncludeReviewed }) => ({
     template: `
       query ExportAnnotations($input: ExportInput!) {
         exportAnnotations(input: $input) {
@@ -403,7 +403,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { format, filters, timezone },
+      input: { format, filters, timezone, onlyIncludeReviewed },
     },
   }),
 

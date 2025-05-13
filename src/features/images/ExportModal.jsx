@@ -11,10 +11,13 @@ import { selectSelectedProject } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import SelectField from '../../components/SelectField.jsx';
 import { ButtonRow, FormWrapper } from '../../components/Form';
+import InfoIcon from '../../components/InfoIcon';
 import Button from '../../components/Button';
 import Callout from '../../components/Callout';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
 import { timeZonesNames } from '@vvo/tzdb';
+import Checkbox from '../../components/Checkbox.jsx';
+import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 
 const NotReviewedWarning = ({ reviewedCount }) => {
   const total = reviewedCount.notReviewed + reviewedCount.reviewed;
@@ -36,6 +39,7 @@ const ExportModal = () => {
   const selectedProject = useSelector(selectSelectedProject);
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const [timezone, setTimezone] = useState(selectedProject.timezone);
+  const [includeNonReviewed, setIncludedNonReviewed] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -56,12 +60,16 @@ const ExportModal = () => {
     }
   }, [exportPending, exportLoading, dispatch]);
 
+  const handleIncludeNonReviewedChange = () => {
+    setIncludedNonReviewed(!includeNonReviewed);
+  }
+
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportAnnotations({ format, filters, timezone }));
+      dispatch(exportAnnotations({ format, filters, timezone, includeNonReviewed }));
     }
   };
 
@@ -114,6 +122,7 @@ const ExportModal = () => {
           </Callout>
         )}
         {exportReady &&
+          !includeNonReviewed &&
           annotationsExport.meta.reviewedCount &&
           annotationsExport.meta.reviewedCount.notReviewed > 0 && (
             <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
@@ -131,8 +140,23 @@ const ExportModal = () => {
           isMulti={false}
           onBlur={() => {}}
         />
+        <br />
+        <label style={{ display: 'flex', flexDirection: 'row' }}>
+          <Checkbox
+            checked={includeNonReviewed}
+            active={includeNonReviewed}
+            onChange={handleIncludeNonReviewedChange}
+          />
+          <CheckboxLabel
+            checked={false}
+            active={false}
+            css={{ fontFamily: '$sourceSansPro', fontWeight: 'bold', display: 'flex',  alignItems: 'center'}}
+          >
+            include non-reviewed objects
+            <InfoIcon tooltipContent='include non-reviewed objects' />
+          </CheckboxLabel>
+        </label>
       </FormWrapper>
-
       <ButtonRow>
         <Button
           type="submit"
