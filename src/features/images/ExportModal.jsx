@@ -11,6 +11,7 @@ import { selectSelectedProject } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import SelectField from '../../components/SelectField.jsx';
 import { ButtonRow, FormWrapper } from '../../components/Form';
+import InfoIcon from '../../components/InfoIcon';
 import Button from '../../components/Button';
 import Callout from '../../components/Callout';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
@@ -148,9 +149,10 @@ const ExportModal = () => {
           <CheckboxLabel
             checked={false}
             active={false}
-            css={{ fontFamily: '$sourceSansPro', fontWeight: 'bold' }}
+            css={{ fontFamily: '$sourceSansPro', fontWeight: 'bold', display: 'flex',  alignItems: 'center'}}
           >
             include non-reviewed objects
+            <InfoIcon tooltipContent='include non-reviewed objects' />
           </CheckboxLabel>
         </label>
       </FormWrapper>

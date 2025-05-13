@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -12,8 +12,6 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
 import { indigo } from '@radix-ui/colors';
 import InfoIcon from '../../components/InfoIcon';
-import Checkbox from '../../components/Checkbox.jsx';
-import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import {
   Bar,
   XAxis,
@@ -205,15 +203,10 @@ const GraphCard = ({ label, list, content }) => {
 const ImagesStatsModal = ({ open }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
-  const [nonReviewedCheckboxState, setNonReviewedCheckboxState] = useState(false);
 
   // fetch images stats
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
-
-  const handleIncludeNonReviewedChange = () => {
-    setNonReviewedCheckboxState(!nonReviewedCheckboxState);
-  }
 
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
@@ -244,22 +237,6 @@ const ImagesStatsModal = ({ open }) => {
       )}
       {stats && (
         <StatsDash>
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-            <label style={{ display: 'flex', flexDirection: 'row' }}>
-              <Checkbox
-                checked={nonReviewedCheckboxState}
-                active={nonReviewedCheckboxState}
-                onChange={handleIncludeNonReviewedChange}
-              />
-              <CheckboxLabel
-                checked={false}
-                active={false}
-                css={{ fontFamily: '$sourceSansPro', fontWeight: 'bold' }}
-              >
-                include non-reviewed objects
-              </CheckboxLabel>
-            </label>
-          </div>
           <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
             <RatioCard label="Images" tnum={stats.imageCount} content={hints.imagesCount} />
             <RatioCard
