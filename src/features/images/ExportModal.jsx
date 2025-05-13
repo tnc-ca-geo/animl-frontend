@@ -122,6 +122,7 @@ const ExportModal = () => {
           </Callout>
         )}
         {exportReady &&
+          !includeNonReviewed &&
           annotationsExport.meta.reviewedCount &&
           annotationsExport.meta.reviewedCount.notReviewed > 0 && (
             <NotReviewedWarning reviewedCount={annotationsExport.meta.reviewedCount} />
