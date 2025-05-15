@@ -32,7 +32,7 @@ const overlayShow = keyframes({
 // });
 
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
-  zIndex: '$4',
+  zIndex: '$5',
   backgroundColor: blackA.blackA9,
   position: 'fixed',
   inset: 0,
@@ -57,11 +57,17 @@ const StyledContent = styled(DialogPrimitive.Content, {
   variants: {
     size: {
       sm: {
-        width: '30vw',
-        minWidth: '430px',
+        width: '95dvw',
+        '@bp1': {
+          width: '30vw',
+          minWidth: '430px',
+        },
       },
       md: {
-        width: '60vw',
+        width: '95dvw',
+        '@bp1': {
+          width: '60vw',
+        },
       },
       lg: {
         width: '95vw',

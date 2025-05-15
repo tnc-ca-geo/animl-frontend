@@ -98,7 +98,10 @@ const DepName = styled('div', {
 
 const DeploymentItem = styled('div', {
   fontSize: '$3',
-  marginLeft: '$9',
+  marginLeft: '0',
+  '@bp2': {
+    marginLeft: '$9',
+  },
   display: 'grid',
   gridTemplateColumns: 'auto auto auto',
   alignContent: 'center',
