@@ -15,6 +15,30 @@ import {
 } from '../../components/Form';
 import { SUPPORTED_WIRELESS_CAMS } from '../../config.js';
 import InfoIcon from '../../components/InfoIcon';
+import { styled } from '../../theme/stitches.config.js';
+
+const StyledFieldRow = styled(FieldRow, {
+  flexDirection: 'column',
+  '@bp2': {
+    flexDirection: 'row',
+  },
+});
+
+const StyledFormFieldWrapper = styled(FormFieldWrapper, {
+  marginLeft: 0,
+  '@bp2': {
+    '&:first-child': {
+      marginLeft: '0',
+    },
+  },
+});
+
+const StyledRegister = styled(Button, {
+  width: '100%',
+  '@bp2': {
+    width: 'unset',
+  },
+});
 
 // TODO: improve validation? Make sure cameraId is not already actively
 // registered to current project
@@ -50,8 +74,8 @@ const RegisterCameraForm = () => {
               <FormSubheader css={{ display: 'flex', alignItems: 'center' }}>
                 Register a wireless camera <InfoIcon tooltipContent={<RegisterCameraHelp />} />
               </FormSubheader>
-              <FieldRow>
-                <FormFieldWrapper>
+              <StyledFieldRow>
+                <StyledFormFieldWrapper>
                   <SelectField
                     name="make"
                     label="Camera Make"
@@ -64,8 +88,8 @@ const RegisterCameraForm = () => {
                     isSearchable={false}
                     menuPlacement="top"
                   />
-                </FormFieldWrapper>
-                <FormFieldWrapper>
+                </StyledFormFieldWrapper>
+                <StyledFormFieldWrapper>
                   <label htmlFor="cameraId">
                     {values.make.value === 'RidgeTec' ? 'IMEI Number' : 'Camera Serial Number'}
                   </label>
@@ -78,12 +102,12 @@ const RegisterCameraForm = () => {
                     }}
                   />
                   {/*<ErrorMessage component={FormError} name='cameraId' />*/}
-                </FormFieldWrapper>
-              </FieldRow>
+                </StyledFormFieldWrapper>
+              </StyledFieldRow>
               <ButtonRow>
-                <Button type="submit" size="large" disabled={!isValid || !dirty}>
+                <StyledRegister type="submit" size="large" disabled={!isValid || !dirty}>
                   Register Camera
-                </Button>
+                </StyledRegister>
               </ButtonRow>
             </Form>
           )}
