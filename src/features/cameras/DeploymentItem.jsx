@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '../../theme/stitches.config';
 import { Cross2Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import { MapPin } from 'lucide-react';
@@ -9,7 +9,6 @@ import { selectGlobalBreakpoint } from '../projects/projectsSlice';
 import { globalBreakpoints } from '../../config';
 import { Tooltip, TooltipArrow, TooltipContent, TooltipTrigger } from '../../components/Tooltip';
 import { shortenedField } from '../../app/utils';
-import { useState } from 'react';
 import { selectUserCurrentRoles } from '../auth/authSlice';
 import { DateTime } from 'luxon';
 
