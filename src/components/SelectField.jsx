@@ -6,10 +6,29 @@ import { FormError } from './Form';
 // TODO: refactor using radix select primative.
 // I don't love the incongruous approach to styling react-select forces
 
+const valueContainerStyles = (isSearchable) => {
+  return (provided) => ({
+    ...provided,
+    padding: 'var(--space-2)',
+    '@media screen only and (min-width: 768px)': {
+      padding: '0px 16px',
+    },
+    fontSize: 'var(--fontSizes-3)',
+    fontFamily: 'var(--fonts-sourceSansPro)',
+    color: 'var(--colors-gray7)',
+    ...(!isSearchable && {
+      '> div': { margin: '2px' },
+      '> input': { display: 'none' },
+    }),
+  });
+};
+
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
-    height: '55px',
+    '@bp2': {
+      height: '55px',
+    },
     boxSizing: 'border-box',
     border: '1px solid',
     borderColor: 'var(--colors-border) !important',
@@ -25,13 +44,6 @@ const customStyles = {
       },
     }),
   }),
-  valueContainer: (provided) => ({
-    ...provided,
-    padding: '0px 16px',
-    fontSize: 'var(--fontSizes-3)',
-    fontFamily: 'var(--fonts-sourceSansPro)',
-    color: 'var(--colors-gray7)',
-  }),
   menu: (provided) => ({
     ...provided,
     color: 'var(--colors-hiContrast)',
@@ -46,6 +58,13 @@ const customStyles = {
     }),
     ...(state.isFocused && {
       backgroundColor: 'var(--colors-gray3)',
+    }),
+  }),
+  input: (provided, state) => ({
+    ...provided,
+    boxShadow: 'none',
+    ...(state.isFocused && {
+      boxShadow: 'none',
     }),
   }),
 };
@@ -71,11 +90,18 @@ const SelectField = ({
     onBlur(name, true);
   };
 
+  const styles = {
+    ...customStyles,
+    ...{ valueContainer: valueContainerStyles(isSearchable ?? false) },
+  };
+
+  console.log(styles);
+
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
       <Select
-        styles={customStyles}
+        styles={styles}
         inputId={name}
         options={options}
         multi={true}

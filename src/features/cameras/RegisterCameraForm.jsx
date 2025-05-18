@@ -40,6 +40,13 @@ const StyledRegister = styled(Button, {
   },
 });
 
+const StyledField = styled(Field, {
+  padding: '$2 !important',
+  '@bp2': {
+    padding: '$3',
+  },
+});
+
 // TODO: improve validation? Make sure cameraId is not already actively
 // registered to current project
 const registerCameraSchema = Yup.object().shape({
@@ -93,7 +100,7 @@ const RegisterCameraForm = () => {
                   <label htmlFor="cameraId">
                     {values.make.value === 'RidgeTec' ? 'IMEI Number' : 'Camera Serial Number'}
                   </label>
-                  <Field
+                  <StyledField
                     name="cameraId"
                     id="cameraId"
                     onChange={(e) => {

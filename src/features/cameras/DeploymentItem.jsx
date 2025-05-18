@@ -50,12 +50,20 @@ const DepName = styled('div', {
 
 const DepDates = styled('div', {
   placeSelf: 'center',
-  display: 'flex',
-  alignItems: 'center',
   color: '$textDark',
+  display: 'grid',
+  gridTemplateColumns: '1fr auto 1fr',
+  '@bp2': {
+    display: 'flex',
+    alignItems: 'center',
+  },
 });
 
 const Date = styled('span', {
+  '@bp2': {
+    fontFamily: 'unset',
+  },
+  fontFamily: '$sourceSansPro',
   variants: {
     type: {
       start: {
