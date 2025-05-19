@@ -73,6 +73,12 @@ const ExportModal = () => {
     }
   };
 
+  const IncludeNonReviewedToolTip = () => (
+    <div style={{ maxWidth: '400px' }}>
+      {"If an object hasn't been reviewed and validated by a human, the most recently added label/prediction will be used as the 'representative label' for the analyses. Animl assumes the most recent label is the most specific and accurate label available"}
+    </div>
+  );
+
   return (
     <div>
       {exportLoading.isLoading && (
@@ -153,7 +159,7 @@ const ExportModal = () => {
             css={{ fontFamily: '$sourceSansPro', fontWeight: 'bold', display: 'flex',  alignItems: 'center'}}
           >
             include non-reviewed objects
-            <InfoIcon tooltipContent='include non-reviewed objects' />
+            <InfoIcon tooltipContent={ <IncludeNonReviewedToolTip/> } />
           </CheckboxLabel>
         </label>
       </FormWrapper>
