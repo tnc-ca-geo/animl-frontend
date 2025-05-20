@@ -66,7 +66,7 @@ const ShareImageButton = ({ imageId }) => {
       <StyledURLInput type="text" id="shareURL" readOnly={true} value={shareURL} />
       <Tooltip>
         <TooltipTrigger asChild>
-          <StyledIconButton variant="ghost" onClick={handleCopyToClipboard}>
+          <StyledIconButton variant="ghost" onPointerDown={handleCopyToClipboard}>
             <ClipboardCopyIcon />
           </StyledIconButton>
         </TooltipTrigger>

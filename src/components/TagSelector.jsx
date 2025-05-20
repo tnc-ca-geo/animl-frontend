@@ -74,7 +74,10 @@ const TagSelectorContent = styled('div', {
 const TagOptionsContainer = styled('div', {
   maxHeight: '50vh',
   overflowY: 'auto',
-  maxWidth: 450,
+  maxWidth: '90dvw',
+  '@bp2': {
+    maxWidth: 450,
+  },
 });
 
 const TagOption = styled('div', {
@@ -88,6 +91,7 @@ const TagOption = styled('div', {
 const DefaultTagMessage = styled('div', {
   padding: '$2 $3',
   color: '$gray10',
+  fontSize: '$3',
 });
 
 // [FUTURE FEATURE]

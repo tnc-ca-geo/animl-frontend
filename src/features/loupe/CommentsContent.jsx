@@ -65,7 +65,6 @@ const StyledTextArea = styled('textarea', {
   rows: '2',
   color: '$textDark',
   marginBottom: '$3',
-  padding: '$3',
   fontSize: '$3',
   fontWeight: '$2',
   boxSizing: 'border-box',
@@ -73,6 +72,7 @@ const StyledTextArea = styled('textarea', {
   borderColor: '$border',
   backgroundColor: '#FFFFFF',
   borderRadius: '$1',
+  padding: '$3',
   '&:focus': {
     transition: 'all 0.2s ease',
     outline: 'none',
