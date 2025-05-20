@@ -15,7 +15,7 @@ const ModalBody = styled('div', {
   variants: {
     fullHeight: {
       true: {
-        height: 'calc(95vh - $7)',
+        height: 'calc(95dvh - $7)',
       },
     },
   },
@@ -59,24 +59,24 @@ const StyledContent = styled(DialogPrimitive.Content, {
       sm: {
         width: '95dvw',
         '@bp1': {
-          width: '30vw',
+          width: '30dvw',
           minWidth: '430px',
         },
       },
       md: {
         width: '95dvw',
         '@bp1': {
-          width: '60vw',
+          width: '60dvw',
         },
       },
       lg: {
-        width: '95vw',
-        maxHeight: '95vh',
+        width: '95dvw',
+        maxHeight: '95dvh',
       },
     },
     fullHeight: {
       true: {
-        height: '95vh',
+        height: '95dvh',
       },
     },
   },

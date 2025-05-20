@@ -14,7 +14,6 @@ import {
   setModalContent,
   setModalOpen,
 } from '../features/projects/projectsSlice.js';
-// import { mauve } from '@radix-ui/colors';
 
 const openOverlayAnimation = keyframes({
   from: { opacity: 0 },

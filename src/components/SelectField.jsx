@@ -95,8 +95,6 @@ const SelectField = ({
     ...{ valueContainer: valueContainerStyles(isSearchable ?? false) },
   };
 
-  console.log(styles);
-
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}

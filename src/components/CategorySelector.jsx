@@ -68,9 +68,11 @@ const CategorySelector = forwardRef(function CategorySelector(
     value: category._id,
     label: category.name,
   });
-  const enabledLabels = useSelector(selectSelectedProject).labels.filter(
-    (lbl) => lbl.reviewerEnabled,
-  );
+  const selectedProject = useSelector(selectSelectedProject);
+  const enabledLabels = selectedProject
+    ? selectedProject.labels.filter((lbl) => lbl.reviewerEnabled)
+    : [];
+
   const options = enabledLabels.map(createOption);
   const dispatch = useDispatch();
 
