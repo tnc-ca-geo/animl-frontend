@@ -26,6 +26,10 @@ const globalStyles = globalCss({
       color: '$textDark',
       fontFamily: '$mono',
       fontWeight: '$2',
+      padding: '$2 !important',
+      '@bp2': {
+        padding: '$3',
+      },
     },
     '.DateInput__small': {
       width: '109px',

@@ -12,6 +12,29 @@ const DepName = styled('span', {
   fontWeight: '$5',
 });
 
+const StyledHelperText = styled(HelperText, {
+  '@bp2': {
+    padding: '$3',
+  },
+  padding: '$3 0',
+});
+
+const StyledButtonRow = styled(ButtonRow, {
+  display: 'flex',
+  gap: '$2',
+  flexDirection: 'column',
+  '@bp2': {
+    display: 'auto',
+  },
+});
+
+const StyledButton = styled(Button, {
+  width: '100%',
+  '@bp2': {
+    width: 'unset',
+  },
+});
+
 const deleteDeploymentSchema = Yup.object().shape({
   cameraId: Yup.string().required('A camera ID is required'),
   deploymentId: Yup.string().required('A deployment ID is required'),
@@ -57,20 +80,20 @@ const DeleteDeploymentForm = ({ cameraId, deployment, handleClose }) => {
         >
           {() => (
             <Form>
-              <HelperText>
+              <StyledHelperText>
                 Are you sure you&apos;d like to delete the <DepName>{deployment.name}</DepName>{' '}
                 deployment?
-              </HelperText>
+              </StyledHelperText>
               <Field name="cameraId" type="hidden" />
               <Field name="deploymentId" type="hidden" />
-              <ButtonRow>
-                <Button type="button" size="large" onClick={handleClose}>
+              <StyledButtonRow>
+                <StyledButton type="button" size="large" onClick={handleClose}>
                   Cancel
-                </Button>
-                <Button type="submit" size="large">
+                </StyledButton>
+                <StyledButton type="submit" size="large">
                   Delete deployment
-                </Button>
-              </ButtonRow>
+                </StyledButton>
+              </StyledButtonRow>
             </Form>
           )}
         </Formik>
