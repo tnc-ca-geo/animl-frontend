@@ -60,6 +60,8 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  imageHeight
+  imageWidth
   tags
   reviewed
 `;
@@ -351,6 +353,7 @@ const queries = {
             categories {
               _id
               name
+              taxonomy
             }
           }
         }
