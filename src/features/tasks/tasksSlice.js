@@ -606,13 +606,12 @@ export const exportAnnotations = ({ format, filters, timezone, includeNonReviewe
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projects = getState().projects.projects;
       const selectedProj = projects.find((proj) => proj.selected);
-      const onlyIncludeReviewed = includeNonReviewed ? false : true;
 
       if (token && selectedProj) {
         const res = await call({
           projId: selectedProj._id,
           request: 'exportAnnotations',
-          input: { format, filters, timezone, onlyIncludeReviewed },
+          input: { format, filters, timezone, onlyIncludeReviewed: !includeNonReviewed },
         });
         dispatch(exportAnnotationsUpdate({ taskId: res.exportAnnotations._id }));
       }
