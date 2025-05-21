@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Accordion from '../../components/Accordion';
 import { selectPaginatedField, selectSortAscending, sortChanged } from '../images/imagesSlice';
@@ -7,24 +7,21 @@ import { SortCheckbox } from './SortCheckbox';
 export const SortBy = () => {
   const sortAsc = useSelector(selectSortAscending);
   const sortCriteria = useSelector(selectPaginatedField);
-  const [sortBy, setSortBy] = useState(() => ({
-    id: sortCriteria,
-    desc: !sortAsc,
-  }));
-
   const dispatch = useDispatch();
 
   const handleSortChanged = (criteria, isDesc) => {
-    const newSortBy = {
-      id: criteria,
-      desc: isDesc,
-    };
-    setSortBy(newSortBy);
-    dispatch(sortChanged([newSortBy]));
+    dispatch(
+      sortChanged([
+        {
+          id: criteria,
+          desc: isDesc,
+        },
+      ]),
+    );
   };
 
   const isCurrentSort = (criteria, isDesc) => {
-    return sortBy.id === criteria && sortBy.desc === isDesc;
+    return sortCriteria === criteria && !sortAsc === isDesc;
   };
 
   return (
