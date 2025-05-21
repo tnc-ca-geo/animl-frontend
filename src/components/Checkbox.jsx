@@ -115,7 +115,6 @@ const StyledCheckbox = styled('div', {
         },
       },
     },
-
   ],
 });
 
@@ -124,25 +123,20 @@ const StyledCheckbox = styled('div', {
 
 const Checkbox = ({ className, checked, active, indeterminate, ...props }) => (
   <CheckboxContainer className={className}>
-    <HiddenCheckbox type='checkbox' checked={checked} {...props} />
-    <StyledCheckbox
-      checked={checked}
-      active={active}
-      indeterminate={indeterminate}
-    >
-      {checked && 
+    <HiddenCheckbox type="checkbox" checked={checked} {...props} />
+    <StyledCheckbox checked={checked} active={active} indeterminate={indeterminate}>
+      {checked && (
         <SVGIcon viewBox="0 0 24 24">
           <polyline points="20 4 9 15 4 10" />
-        </SVGIcon> 
-      }
-      {indeterminate && 
+        </SVGIcon>
+      )}
+      {indeterminate && (
         <SVGIcon viewBox="0 0 24 24">
           <line x1="4" y1="10" x2="20" y2="10" />
-        </SVGIcon> 
-      }
+        </SVGIcon>
+      )}
     </StyledCheckbox>
   </CheckboxContainer>
 );
-
 
 export default Checkbox;

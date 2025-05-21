@@ -353,6 +353,7 @@ const queries = {
             categories {
               _id
               name
+              taxonomy
             }
           }
         }
