@@ -111,6 +111,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
       <Formik
         initialValues={rule ? ruleToVals(rule) : { ...emptyRule }}
         validationSchema={addRuleSchema}
+        validateOnChange={false}
         onSubmit={handleSaveRulesSubmit}
       >
         {({ values, errors, touched, setFieldValue, setFieldTouched, isValid, dirty }) => (
@@ -225,6 +226,15 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
               )}
             </FieldRow>
 
+            <ButtonRow>
+              <Button type="button" size="large" onClick={handleDiscardRuleClick}>
+                Cancel
+              </Button>
+              <Button type="submit" size="large" disabled={!isValid || !dirty}>
+                Save
+              </Button>
+            </ButtonRow>
+
             {/* category configurations */}
             {values.action.categoryConfig &&
               models &&
@@ -234,15 +244,6 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                   values={values}
                 />
               )}
-
-            <ButtonRow>
-              <Button type="button" size="large" onClick={handleDiscardRuleClick}>
-                Cancel
-              </Button>
-              <Button type="submit" size="large" disabled={!isValid || !dirty}>
-                Save
-              </Button>
-            </ButtonRow>
           </Form>
         )}
       </Formik>

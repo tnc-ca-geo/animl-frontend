@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { FieldArray, Field } from 'formik';
+import { FieldArray, Field, FastField } from 'formik';
 import { StandAloneInput as Input } from '../../components/Form.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
-import ReactSlider from 'react-slider';
+import { SliderRoot, Track, Range, Thumb } from '../../components/Slider.jsx';
 import Checkbox from '../../components/Checkbox.jsx';
 import { CheckboxLabel } from '../../components/CheckboxLabel.jsx';
 import { BulkUpdateConfidenceConfigAlert } from './BulkUpdateConfidenceConfigAlert.jsx';
@@ -27,44 +27,6 @@ const FilterCount = styled('div', {
   display: 'flex',
   alignItems: 'center',
 });
-
-// const Table = styled('table', {
-//   borderSpacing: '0',
-//   borderCollapse: 'collapse',
-//   width: '100%',
-//   tableLayout: 'fixed',
-//   marginBottom: '15px',
-//   // borderBottom: '1px solid',
-//   // borderColor: '$border',
-// });
-
-// const TableHeadCell = styled('th', {
-//   color: '$textMedium',
-//   fontSize: '$2',
-//   fontWeight: '400',
-//   textTransform: 'uppercase',
-//   textAlign: 'left',
-//   verticalAlign: 'bottom',
-//   padding: '5px 15px',
-//   borderBottom: '1px solid',
-//   borderTop: '1px solid',
-//   borderColor: '$border',
-// });
-
-// const TableRow = styled('tr', {
-//   '&:nth-child(odd)': {
-//     backgroundColor: '$backgroundDark',
-//   },
-// });
-
-// const TableCell = styled('td', {
-//   color: '$textDark',
-//   fontSize: '$3',
-//   fontWeight: '400',
-//   padding: '5px 15px',
-//   // borderBottom: '1px solid',
-//   // borderColor: mauve.mauve11,
-// });
 
 const BulkConfidenceLabel = styled('div', {
   fontSize: '$2',
@@ -106,48 +68,6 @@ const ConfThreshold = styled('div', {
   width: '100%',
 });
 
-const StyledSlider = styled(ReactSlider, {
-  height: '2px',
-  width: '100%',
-  variants: {
-    disabledStyles: {
-      true: {
-        '.track': {
-          backgroundColor: '$gray4',
-        },
-        '.thumb': {
-          backgroundColor: '$gray4',
-          cursor: 'default',
-        },
-      },
-    },
-  },
-});
-
-const StyledThumb = styled('div', {
-  top: '-5px',
-  height: '12px',
-  width: '12px',
-  textAlign: 'center',
-  backgroundColor: '$hiContrast',
-  color: '$loContrast',
-  border: '3px solid white',
-  borderRadius: '50%',
-  cursor: 'grab',
-  zIndex: 0,
-});
-
-const StyledTrack = styled('div', {
-  top: '0',
-  bottom: '0',
-  background: '#ddd',
-  borderRadius: '999px',
-
-  '&.track-0': {
-    backgroundColor: '$hiContrast',
-  },
-});
-
 const ConfDisplay = styled('div', {
   marginLeft: '$3',
   variants: {
@@ -185,15 +105,6 @@ const TableRow = styled('div', {
       borderBottom: '0',
     },
   },
-
-  variants: {
-    selected: {
-      true: {
-        // 'zIndex': '2',
-        // 'boxShadow': '0px 4px 14px 0px #0000003b',
-      },
-    },
-  },
 });
 
 const TableCell = styled('div', {
@@ -210,6 +121,7 @@ const TableCell = styled('div', {
   borderRight: '0',
   '&:last-child': {
     borderRight: '0',
+    paddingRight: '$3',
   },
   '&:first-child': {
     paddingLeft: '$3',
@@ -224,6 +136,9 @@ const HeaderCell = styled(TableCell, {
   fontSize: '$2',
   '&:first-child': {
     paddingLeft: '0',
+  },
+  '&:last-child': {
+    paddingRight: '0',
   },
 });
 
@@ -337,40 +252,63 @@ const DisabledBulkCheckbox = ({ form, filteredCategories }) => {
   );
 };
 
-const ConfidenceSlider = (props) => (
-  <StyledSlider
-    {...fieldToSlider(props)}
-    step={5}
-    renderTrack={Track}
-    renderThumb={Thumb}
-    onChange={(value) => {
-      const decimalVal = value / 100;
-      props.form.setFieldValue(props.field.name, decimalVal);
-    }}
-  />
-);
+const ConfidenceSlider = (props) => {
+  const [confidence, setConfidence] = useState(props.value);
+  return (
+    <>
+      <SliderRoot
+        value={[confidence * 100]}
+        max={100}
+        step={5}
+        disabled={props.disabled}
+        onValueChange={(value) => {
+          const decimalVal = value[0] / 100;
+          setConfidence(decimalVal);
+        }}
+        onValueCommit={() => {
+          props.form.setFieldValue(props.field.name, confidence);
+        }}
+      >
+        <Track>
+          <Range />
+        </Track>
+        <Thumb />
+      </SliderRoot>
+      <ConfDisplay disabled={props.disabled}>{Math.round(confidence * 100)}%</ConfDisplay>
+    </>
+  );
+};
 
-const BulkConfidenceSlider = ({ form, filteredCategories }) => {
-  const [bulkConfidence, setBulkConfidence] = useState(0.5);
+const BulkConfidenceSlider = ({ form, filteredCategories, defaultConf }) => {
+  const [bulkConfidence, setBulkConfidence] = useState(defaultConf || 0.5);
   const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
 
   return (
     <>
-      <StyledSlider
-        value={bulkConfidence * 100}
+      <SliderRoot
+        value={[bulkConfidence * 100]}
+        max={100}
         step={5}
-        renderTrack={Track}
-        renderThumb={Thumb}
-        onChange={(value) => {
-          const decimalVal = value / 100;
+        onValueChange={(value) => {
+          const decimalVal = value[0] / 100;
           setBulkConfidence(decimalVal);
         }}
-        onAfterChange={() => setUpdateAlertOpen(true)}
-      />
+        onValueCommit={() => {
+          setUpdateAlertOpen(true);
+        }}
+      >
+        <Track>
+          <Range />
+        </Track>
+        <Thumb />
+      </SliderRoot>
       <ConfDisplay>{Math.round(bulkConfidence * 100)}%</ConfDisplay>
       <BulkUpdateConfidenceConfigAlert
         isOpen={updateAlertOpen}
-        onUpdateCancel={() => setUpdateAlertOpen(false)}
+        onUpdateCancel={() => {
+          setBulkConfidence(defaultConf || 0.5);
+          setUpdateAlertOpen(false);
+        }}
         onUpdateConfirm={() => {
           let newCategoryConfig = {};
           Object.entries(form.values.action.categoryConfig).forEach(([catName, config]) => {
@@ -391,9 +329,6 @@ const BulkConfidenceSlider = ({ form, filteredCategories }) => {
   );
 };
 
-const Track = (props, state) => <StyledTrack {...props} index={state.index} />;
-const Thumb = (props) => <StyledThumb {...props} />;
-
 const Taxonomy = ({ catName, config }) => {
   const taxon = config.taxonomy.split(';').filter((t) => t !== '');
   return (
@@ -411,9 +346,9 @@ const Taxonomy = ({ catName, config }) => {
 
 const CategoryConfigList = ({ selectedModel, values }) => {
   const scrollBarSize = useScrollbarSize();
-  // filter categories
   const [categoryFilter, setCategoryFilter] = useState('');
 
+  // enrich categories with taxonomy
   const enrichedCategories = useMemo(() => {
     console.log('1. form values changed, so enriching categories');
     return Object.entries(values.action.categoryConfig).map(([k, v]) => {
@@ -428,6 +363,7 @@ const CategoryConfigList = ({ selectedModel, values }) => {
     });
   }, [selectedModel, values.action.categoryConfig]);
 
+  // filter categories based on categoryFilter
   const filteredCategories = useMemo(() => {
     console.log('2. enriched categories changed, so filtering categories');
     return enrichedCategories
@@ -451,7 +387,7 @@ const CategoryConfigList = ({ selectedModel, values }) => {
       const categoryCheckbox = (
         <DisabledCheckboxWrapper>
           <label>
-            <Field
+            <FastField
               component={DisabledCheckbox}
               name={`action.categoryConfig.${catName}.disabled`}
               value={config.disabled}
@@ -469,15 +405,12 @@ const CategoryConfigList = ({ selectedModel, values }) => {
       // confidence slider column
       const confidenceSlider = (
         <ConfThreshold>
-          <Field
+          <FastField
             component={ConfidenceSlider}
             name={`action.categoryConfig.${catName}.confThreshold`}
             value={config.confThreshold}
             disabled={config.disabled}
           />
-          <ConfDisplay disabled={config.disabled}>
-            {Math.round(config.confThreshold * 100)}%
-          </ConfDisplay>
         </ConfThreshold>
       );
 
@@ -533,12 +466,17 @@ const CategoryConfigList = ({ selectedModel, values }) => {
       {
         Header: (
           <div style={{ width: '100%' }}>
-            <HeaderLabel>Confidence threshold</HeaderLabel>
-            <SubHeader>
+            <HeaderLabel css={{ paddingRight: '$3' }}>Confidence threshold</HeaderLabel>
+            <SubHeader css={{ paddingRight: '$3' }}>
               <ConfThreshold>
                 <Field name={`action.categoryConfig`}>
                   {({ form }) => (
-                    <BulkConfidenceSlider form={form} filteredCategories={filteredCategories} />
+                    <BulkConfidenceSlider
+                      key={selectedModel._id}
+                      form={form}
+                      filteredCategories={filteredCategories}
+                      defaultConf={selectedModel.defaultConfThreshold}
+                    />
                   )}
                 </Field>
               </ConfThreshold>
@@ -628,142 +566,6 @@ const CategoryConfigList = ({ selectedModel, values }) => {
             </AutoSizer>
           </Table>
         </TableContainer>
-        {/* <Table>
-          <thead>
-            <tr>
-              <TableHeadCell css={{ width: '30%' }}>Label name</TableHeadCell>
-              <TableHeadCell css={{ width: '45%' }}>Taxonomy</TableHeadCell>
-              <TableHeadCell css={{ width: '25%' }}>Confidence threshold</TableHeadCell>
-            </tr>
-          </thead>
-          <tbody>
-            <AutoSizer>
-              {({ width, height }) => (
-                <List
-                  height={800}
-                  itemCount={filteredCategories.length}
-                  itemSize={40}
-                  width={width}
-                  itemData={filteredCategories}
-                  overscanCount={6}
-                  style={{ overflow: 'auto' }}
-                >
-                  {({ index, style, data }) => {
-                    const [catName, config] = data[index];
-                    return (
-                      <TableRow key={catName} style={style}>
-                        <TableCell>
-                          <DisabledCheckboxWrapper>
-                            <label>
-                              <Field
-                                component={DisabledCheckbox}
-                                name={`action.categoryConfig.${catName}.disabled`}
-                                value={config.disabled}
-                              />
-                              <CategoryName checked={!config.disabled} active={!config.disabled}>
-                                {catName}
-                              </CategoryName>
-                            </label>
-                          </DisabledCheckboxWrapper>
-                        </TableCell>
-                        <TableCell>
-                          {config.taxonomy && <Taxonomy catName={catName} config={config} />}
-                        </TableCell>
-                        <TableCell>
-                          <ConfThreshold>
-                            <Field name={`action.categoryConfig`}>
-                              {({ form }) => (
-                                <BulkConfidenceSlider
-                                  form={form}
-                                  filteredCategories={filteredCategories}
-                                />
-                              )}
-                            </Field>
-                          </ConfThreshold>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }}
-                </List>
-              )}
-            </AutoSizer>
-          </tbody>
-        </Table> */}
-
-        {/* <Table>
-          <thead>
-            <tr>
-              <TableHeadCell css={{ width: '30%' }}>Label name</TableHeadCell>
-              <TableHeadCell css={{ width: '45%' }}>Taxonomy</TableHeadCell>
-              <TableHeadCell css={{ width: '25%' }}>Confidence threshold</TableHeadCell>
-            </tr>
-          </thead>
-          <tbody>
-            <TableRow
-              css={{
-                textTransform: 'uppercase',
-                borderBottom: '1px solid $border',
-                backgroundColor: '$backgroundExtraDark !important ',
-              }}
-            >
-              <TableCell>
-                <label style={{ marginBottom: '0px' }}>
-                  <Field name={`action.categoryConfig`}>
-                    {({ form }) => (
-                      <DisabledBulkCheckbox form={form} filteredCategories={filteredCategories} />
-                    )}
-                  </Field>
-                </label>
-              </TableCell>
-              <TableCell>
-                <BulkConfidenceLabel>Adjust all thresholds:</BulkConfidenceLabel>
-              </TableCell>
-              <TableCell>
-                <ConfThreshold>
-                  <Field name={`action.categoryConfig`}>
-                    {({ form }) => (
-                      <BulkConfidenceSlider form={form} filteredCategories={filteredCategories} />
-                    )}
-                  </Field>
-                </ConfThreshold>
-              </TableCell>
-            </TableRow>
-            {filteredCategories.map(([catName, config]) => (
-              <TableRow key={catName}>
-                <TableCell>
-                  <DisabledCheckboxWrapper>
-                    <label>
-                      <Field
-                        component={DisabledCheckbox}
-                        name={`action.categoryConfig.${catName}.disabled`}
-                        value={config.disabled}
-                      />
-                      <CategoryName checked={!config.disabled} active={!config.disabled}>
-                        {catName}
-                      </CategoryName>
-                    </label>
-                  </DisabledCheckboxWrapper>
-                </TableCell>
-                <TableCell>
-                  {config.taxonomy && <Taxonomy catName={catName} config={config} />}
-                </TableCell>
-                <TableCell>
-                  <ConfThreshold>
-                    <Field
-                      component={ConfidenceSlider}
-                      name={`action.categoryConfig.${catName}.confThreshold`}
-                      value={config.confThreshold}
-                      disabled={config.disabled}
-                    />
-                    <ConfDisplay disabled={config.disabled}>
-                      {Math.round(config.confThreshold * 100)}%
-                    </ConfDisplay>
-                  </ConfThreshold>
-                </TableCell>
-              </TableRow>
-            ))}
-          </tbody>
-        </Table> */}
       </FieldArray>
     </div>
   );
