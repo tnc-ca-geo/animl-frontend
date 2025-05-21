@@ -16,7 +16,6 @@ const FloatingToolbarContainer = styled('div', {
   margin: '0 auto',
   left: '50%',
   transform: 'translateX(-50%)',
-  overflow: 'hidden',
   zIndex: '$1',
   boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   border: '1px solid $border',
@@ -39,30 +38,50 @@ const FloatingToolbarItem = styled('div', {
   '&:hover': {
     cursor: 'pointer',
   },
+  '&:first-child': {
+    borderTopLeftRadius: '1000000px',
+    borderBottomLeftRadius: '1000000px',
+  },
+  '&:last-child': {
+    borderTopRightRadius: '1000000px',
+    borderBottomLeftRadius: '1000000px',
+  },
+});
+
+const WideGrid = styled(Grid3x3, {
+  strokeWidth: 1.75,
+});
+
+const MidGrid = styled(Grid2x2, {
+  strokeWidth: 1.75,
+});
+
+const NarGrid = styled(Square, {
+  strokeWidth: 1.75,
 });
 
 export const FloatingToolbar = ({ colCount, setColCount }) => {
   return (
     <FloatingToolbarContainer>
-      <SmallScreensFiltersMenu />
       <FloatingToolbarItem
         onClick={() => setColCount(colCounts.most)}
         active={colCount === colCounts.most}
       >
-        <Grid3x3 />
+        <WideGrid />
       </FloatingToolbarItem>
       <FloatingToolbarItem
         onClick={() => setColCount(colCounts.middle)}
         active={colCount === colCounts.middle}
       >
-        <Grid2x2 />
+        <MidGrid />
       </FloatingToolbarItem>
       <FloatingToolbarItem
         onClick={() => setColCount(colCounts.single)}
         active={colCount === colCounts.single}
       >
-        <Square />
+        <NarGrid />
       </FloatingToolbarItem>
+      <SmallScreensFiltersMenu />
     </FloatingToolbarContainer>
   );
 };
