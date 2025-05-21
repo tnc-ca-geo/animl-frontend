@@ -103,7 +103,7 @@ const ExportModal = () => {
           >
             COCO Camera Traps
           </a>{' '}
-          format. Any images that have not been reviewed will be ignored.
+          format.
         </p>
         {!exportReady && (
           <Callout type="info" title="Please bear with us!">
