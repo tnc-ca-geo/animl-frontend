@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { updateAutomationRules, selectMLModels, fetchModels } from './projectsSlice.js';
+import {
+  updateAutomationRules,
+  selectMLModels,
+  fetchModels,
+  selectModelsLoadingState,
+} from './projectsSlice.js';
 import SelectField from '../../components/SelectField.jsx';
 import Button from '../../components/Button.jsx';
 import {
@@ -14,6 +19,7 @@ import {
   FormError,
 } from '../../components/Form.jsx';
 import CategoryConfigList from './CategoryConfigList.jsx';
+import { SpinnerOverlay, SimpleSpinner } from '../../components/Spinner.jsx';
 
 const emptyRule = {
   name: '',
@@ -79,6 +85,7 @@ const addRuleSchema = Yup.object().shape({
 const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
+  const modelsLoading = useSelector(selectModelsLoadingState);
 
   // fetch model source records
   useEffect(() => {
@@ -107,147 +114,159 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
 
   return (
-    <FormWrapper css={{ height: '95vh', color: 'red' }}>
-      <Formik
-        initialValues={rule ? ruleToVals(rule) : { ...emptyRule }}
-        validationSchema={addRuleSchema}
-        validateOnChange={false}
-        onSubmit={handleSaveRulesSubmit}
-      >
-        {({ values, errors, touched, setFieldValue, setFieldTouched, isValid, dirty }) => (
-          <Form>
-            {/* name */}
-            <FieldRow>
-              <FormFieldWrapper>
-                <label htmlFor="rule-name">Rule name</label>
-                <Field name="name" id="rule-name" value={values.name} placeholder="Rule name..." />
-                <ErrorMessage component={FormError} name="name" />
-              </FormFieldWrapper>
-            </FieldRow>
-
-            {/* trigger */}
-            <FieldRow>
-              <FormFieldWrapper>
-                <SelectField
-                  name="event.type"
-                  label="Trigger"
-                  value={values.event.type}
-                  onChange={setFieldValue}
-                  onBlur={setFieldTouched}
-                  error={_.has(errors, 'event.type.value') && errors.event.type.value}
-                  touched={touched.event}
-                  options={[
-                    { value: 'image-added', label: 'Image added' },
-                    { value: 'label-added', label: 'Label added' },
-                  ]}
-                  isSearchable={false}
-                />
-              </FormFieldWrapper>
-              {values.event.type.value === 'label-added' && (
-                <FormFieldWrapper css={{ flexGrow: '0' }}>
-                  <label htmlFor="event-label">Label</label>
+    <>
+      {modelsLoading.isLoading && (
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      )}
+      <FormWrapper css={{ height: '95vh', color: 'red' }}>
+        <Formik
+          initialValues={rule ? ruleToVals(rule) : { ...emptyRule }}
+          validationSchema={addRuleSchema}
+          validateOnChange={false}
+          onSubmit={handleSaveRulesSubmit}
+        >
+          {({ values, errors, touched, setFieldValue, setFieldTouched, isValid, dirty }) => (
+            <Form>
+              {/* name */}
+              <FieldRow>
+                <FormFieldWrapper>
+                  <label htmlFor="rule-name">Rule name</label>
                   <Field
-                    id="event-label"
-                    name="event.label"
-                    value={values.event.label ? values.event.label : ''}
+                    name="name"
+                    id="rule-name"
+                    value={values.name}
+                    placeholder="Rule name..."
                   />
-                  <ErrorMessage component={FormError} name="event.label" />
+                  <ErrorMessage component={FormError} name="name" />
                 </FormFieldWrapper>
-              )}
-            </FieldRow>
+              </FieldRow>
 
-            {/* action */}
-            <FieldRow>
-              <FormFieldWrapper>
-                <SelectField
-                  name="action.type"
-                  label="Action"
-                  menuPlacement="top"
-                  value={values.action.type}
-                  onChange={(name, value) => {
-                    setFieldValue(name, value);
-                    if (value.value === 'send-alert') {
-                      setFieldValue('action.categoryConfig', {});
-                    } else if (value.value === 'run-inference') {
-                      setFieldValue('action.model', null);
-                    }
-                  }}
-                  onBlur={setFieldTouched}
-                  error={_.has(errors, 'action.type.value') && errors.action.type.value}
-                  touched={touched.action}
-                  options={[
-                    { value: 'run-inference', label: 'Run inference' },
-                    { value: 'send-alert', label: 'Send alert' },
-                  ]}
-                  isSearchable={false}
-                />
-              </FormFieldWrapper>
-              {values.action.type.value === 'run-inference' && (
+              {/* trigger */}
+              <FieldRow>
                 <FormFieldWrapper>
                   <SelectField
-                    name="action.model"
-                    label="Model"
-                    menuPlacement="top"
-                    value={values.action.model}
-                    onChange={(name, value) => {
-                      setFieldValue(name, value);
-                      const selectedModel = models.find((m) => m._id === value.value);
-                      const categoryConfig = {};
-                      selectedModel.categories.forEach((cat) => {
-                        categoryConfig[cat.name] = {
-                          confThreshold: selectedModel.defaultConfThreshold,
-                          disabled: false,
-                        };
-                      });
-                      setFieldValue('action.categoryConfig', categoryConfig);
-                    }}
+                    name="event.type"
+                    label="Trigger"
+                    value={values.event.type}
+                    onChange={setFieldValue}
                     onBlur={setFieldTouched}
-                    error={_.has(errors, 'action.model.value') && errors.action.model.value}
-                    touched={touched.action}
-                    options={availableModels.map((model) => ({
-                      value: model,
-                      label: `${model}`,
-                    }))}
+                    error={_.has(errors, 'event.type.value') && errors.event.type.value}
+                    touched={touched.event}
+                    options={[
+                      { value: 'image-added', label: 'Image added' },
+                      { value: 'label-added', label: 'Label added' },
+                    ]}
                     isSearchable={false}
                   />
                 </FormFieldWrapper>
-              )}
-              {values.action.type.value === 'send-alert' && (
-                <FormFieldWrapper css={{ minWidth: '300px' }}>
-                  <label htmlFor="action-alert-recipients">To</label>
-                  <Field
-                    name="action.alertRecipients"
-                    id="action-alert-recipients"
-                    value={values.action.alertRecipients ? values.action.alertRecipients : ''}
-                    placeholder="Comma-separated list of email addresses..."
+                {values.event.type.value === 'label-added' && (
+                  <FormFieldWrapper css={{ flexGrow: '0' }}>
+                    <label htmlFor="event-label">Label</label>
+                    <Field
+                      id="event-label"
+                      name="event.label"
+                      value={values.event.label ? values.event.label : ''}
+                    />
+                    <ErrorMessage component={FormError} name="event.label" />
+                  </FormFieldWrapper>
+                )}
+              </FieldRow>
+
+              {/* action */}
+              <FieldRow>
+                <FormFieldWrapper>
+                  <SelectField
+                    name="action.type"
+                    label="Action"
+                    menuPlacement="top"
+                    value={values.action.type}
+                    onChange={(name, value) => {
+                      setFieldValue(name, value);
+                      if (value.value === 'send-alert') {
+                        setFieldValue('action.categoryConfig', {});
+                      } else if (value.value === 'run-inference') {
+                        setFieldValue('action.model', null);
+                      }
+                    }}
+                    onBlur={setFieldTouched}
+                    error={_.has(errors, 'action.type.value') && errors.action.type.value}
+                    touched={touched.action}
+                    options={[
+                      { value: 'run-inference', label: 'Run inference' },
+                      { value: 'send-alert', label: 'Send alert' },
+                    ]}
+                    isSearchable={false}
                   />
-                  <ErrorMessage component={FormError} name="action.alertRecipients" />
                 </FormFieldWrapper>
-              )}
-            </FieldRow>
+                {values.action.type.value === 'run-inference' && (
+                  <FormFieldWrapper>
+                    <SelectField
+                      name="action.model"
+                      label="Model"
+                      menuPlacement="top"
+                      value={values.action.model}
+                      onChange={(name, value) => {
+                        setFieldValue(name, value);
+                        const selectedModel = models.find((m) => m._id === value.value);
+                        const categoryConfig = {};
+                        selectedModel.categories.forEach((cat) => {
+                          categoryConfig[cat.name] = {
+                            confThreshold: selectedModel.defaultConfThreshold,
+                            disabled: false,
+                          };
+                        });
+                        setFieldValue('action.categoryConfig', categoryConfig);
+                      }}
+                      onBlur={setFieldTouched}
+                      error={_.has(errors, 'action.model.value') && errors.action.model.value}
+                      touched={touched.action}
+                      options={availableModels.map((model) => ({
+                        value: model,
+                        label: `${model}`,
+                      }))}
+                      isSearchable={false}
+                    />
+                  </FormFieldWrapper>
+                )}
+                {values.action.type.value === 'send-alert' && (
+                  <FormFieldWrapper css={{ minWidth: '300px' }}>
+                    <label htmlFor="action-alert-recipients">To</label>
+                    <Field
+                      name="action.alertRecipients"
+                      id="action-alert-recipients"
+                      value={values.action.alertRecipients ? values.action.alertRecipients : ''}
+                      placeholder="Comma-separated list of email addresses..."
+                    />
+                    <ErrorMessage component={FormError} name="action.alertRecipients" />
+                  </FormFieldWrapper>
+                )}
+              </FieldRow>
 
-            <ButtonRow>
-              <Button type="button" size="large" onClick={handleDiscardRuleClick}>
-                Cancel
-              </Button>
-              <Button type="submit" size="large" disabled={!isValid || !dirty}>
-                Save
-              </Button>
-            </ButtonRow>
+              <ButtonRow>
+                <Button type="button" size="large" onClick={handleDiscardRuleClick}>
+                  Cancel
+                </Button>
+                <Button type="submit" size="large" disabled={!isValid || !dirty}>
+                  Save
+                </Button>
+              </ButtonRow>
 
-            {/* category configurations */}
-            {values.action.categoryConfig &&
-              models &&
-              Object.entries(values.action.categoryConfig).length > 0 && (
-                <CategoryConfigList
-                  selectedModel={models.find((m) => m._id === values.action.model.value) || null}
-                  values={values}
-                />
-              )}
-          </Form>
-        )}
-      </Formik>
-    </FormWrapper>
+              {/* category configurations */}
+              {values.action.categoryConfig &&
+                models &&
+                Object.entries(values.action.categoryConfig).length > 0 && (
+                  <CategoryConfigList
+                    selectedModel={models.find((m) => m._id === values.action.model.value) || null}
+                    values={values}
+                  />
+                )}
+            </Form>
+          )}
+        </Formik>
+      </FormWrapper>
+    </>
   );
 };
 

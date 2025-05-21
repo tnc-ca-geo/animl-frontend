@@ -367,7 +367,15 @@ const CategoryConfigList = ({ selectedModel, values }) => {
   const filteredCategories = useMemo(() => {
     console.log('2. enriched categories changed, so filtering categories');
     return enrichedCategories
-      .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
+      .filter(
+        ([k]) =>
+          // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by Megadetector
+          !(
+            (selectedModel._id.includes('megadetector') ||
+              selectedModel._id.includes('speciesnet')) &&
+            k === 'empty'
+          ),
+      )
       .filter(([k, v]) => {
         if (categoryFilter) {
           return (
