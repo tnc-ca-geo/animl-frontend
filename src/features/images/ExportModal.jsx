@@ -62,7 +62,7 @@ const ExportModal = () => {
 
   const handleIncludeNonReviewedChange = () => {
     setIncludedNonReviewed(!includeNonReviewed);
-  }
+  };
 
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;
@@ -75,7 +75,9 @@ const ExportModal = () => {
 
   const IncludeNonReviewedToolTip = () => (
     <div style={{ maxWidth: '400px' }}>
-      {"If an object hasn't been reviewed and validated by a human, the most recently added label/prediction will be used as the 'representative label' for the analyses. Animl assumes the most recent label is the most specific and accurate label available"}
+      If an object hasn&apos;t been reviewed and validated by a human, the most recently added
+      label/prediction will be used as the &quot;representative label&quot; for the analyses. Animl
+      assumes the most recent label is the most specific and accurate label available.
     </div>
   );
 
@@ -156,10 +158,17 @@ const ExportModal = () => {
           <CheckboxLabel
             checked={false}
             active={false}
-            css={{ fontFamily: '$sourceSansPro', fontWeight: 'bold', display: 'flex',  alignItems: 'center'}}
+            css={{
+              fontFamily: '$roboto',
+              fontWeight: '$3',
+              fontSize: '$3',
+              color: '$hiContrast',
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
-            include non-reviewed objects
-            <InfoIcon tooltipContent={ <IncludeNonReviewedToolTip/> } />
+            Include non-reviewed objects
+            <InfoIcon tooltipContent={<IncludeNonReviewedToolTip />} />
           </CheckboxLabel>
         </label>
       </FormWrapper>
