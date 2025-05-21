@@ -207,6 +207,7 @@ const ImagesStatsModal = ({ open }) => {
   // fetch images stats
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
+
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
     const noErrors = !errors || errors.length === 0;

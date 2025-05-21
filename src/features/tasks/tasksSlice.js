@@ -598,7 +598,7 @@ export const fetchStats = (filters) => {
 };
 
 // export annotations thunk
-export const exportAnnotations = ({ format, filters, timezone }) => {
+export const exportAnnotations = ({ format, filters, timezone, includeNonReviewed }) => {
   return async (dispatch, getState) => {
     try {
       dispatch(exportAnnotationsStart());
@@ -611,7 +611,7 @@ export const exportAnnotations = ({ format, filters, timezone }) => {
         const res = await call({
           projId: selectedProj._id,
           request: 'exportAnnotations',
-          input: { format, filters, timezone },
+          input: { format, filters, timezone, onlyIncludeReviewed: !includeNonReviewed },
         });
         dispatch(exportAnnotationsUpdate({ taskId: res.exportAnnotations._id }));
       }
