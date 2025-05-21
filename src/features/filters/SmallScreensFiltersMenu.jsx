@@ -158,8 +158,6 @@ export const SmallScreensFiltersMenu = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const activeFilters = useSelector(selectActiveFilters);
 
-  console.log(activeFilters);
-
   const areFiltersApplied =
     activeFilters &&
     (activeFilters.createdStart !== null ||
@@ -172,8 +170,6 @@ export const SmallScreensFiltersMenu = () => {
       activeFilters.tags !== null ||
       activeFilters.reviewed !== null ||
       activeFilters.custom !== null);
-
-  console.log(areFiltersApplied);
 
   return (
     <Dialog.Root>
