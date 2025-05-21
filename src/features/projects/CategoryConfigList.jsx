@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { styled } from '../../theme/stitches.config.js';
-import { FieldArray, Field, FastField } from 'formik';
+import { FieldArray, Field } from 'formik';
 import { StandAloneInput as Input } from '../../components/Form.jsx';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper.jsx';
 import ReactSlider from 'react-slider';
@@ -278,15 +278,10 @@ const DisabledCheckbox = (props) => {
 
 const DisabledBulkCheckbox = ({ form, filteredCategories }) => {
   const [bulkCheckboxState, setBulkCheckboxState] = useState('allSelected');
-
-  console.log('bulkCheckboxState', bulkCheckboxState);
   useEffect(() => {
-    console.log('filtered categories changed...');
     if (filteredCategories.every((cat) => !cat[1].disabled)) {
-      console.log('all categories selected');
       setBulkCheckboxState('allSelected');
     } else {
-      console.log('not all categories selected');
       setBulkCheckboxState('notAllSelected');
     }
   }, [filteredCategories]);
@@ -307,7 +302,6 @@ const DisabledBulkCheckbox = ({ form, filteredCategories }) => {
   };
 
   const handleBulkCheckboxChange = () => {
-    console.log('handleBulkCheckboxChange');
     let newCategoryConfig = {};
     Object.entries(form.values.action.categoryConfig).forEach(([catName, config]) => {
       if (filteredCategories.some((cat) => cat[0] === catName)) {
@@ -415,14 +409,13 @@ const Taxonomy = ({ catName, config }) => {
   );
 };
 
-// const Row = ({ index, style }) => <div style={style}>Row {index}</div>;
-
 const CategoryConfigList = ({ selectedModel, values }) => {
   const scrollBarSize = useScrollbarSize();
   // filter categories
   const [categoryFilter, setCategoryFilter] = useState('');
 
   const enrichedCategories = useMemo(() => {
+    console.log('1. form values changed, so enriching categories');
     return Object.entries(values.action.categoryConfig).map(([k, v]) => {
       const category = selectedModel.categories.find((cat) => cat.name === k);
       return [
@@ -435,60 +428,66 @@ const CategoryConfigList = ({ selectedModel, values }) => {
     });
   }, [selectedModel, values.action.categoryConfig]);
 
-  const filteredCategories = enrichedCategories
-    .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
-    .filter(([k, v]) => {
-      if (categoryFilter) {
-        return (
-          k.toLowerCase().includes(categoryFilter.toLowerCase()) ||
-          (v.taxonomy && v.taxonomy.toLowerCase().includes(categoryFilter.toLowerCase()))
-        );
-      } else {
-        return true;
-      }
-    });
+  const filteredCategories = useMemo(() => {
+    console.log('2. enriched categories changed, so filtering categories');
+    return enrichedCategories
+      .filter(([k]) => !(values.action.model.value.includes('megadetector') && k === 'empty')) // NOTE: manually hiding "empty" categories b/c it isn't a real category returned by MDv5
+      .filter(([k, v]) => {
+        if (categoryFilter) {
+          return (
+            k.toLowerCase().includes(categoryFilter.toLowerCase()) ||
+            (v.taxonomy && v.taxonomy.toLowerCase().includes(categoryFilter.toLowerCase()))
+          );
+        } else {
+          return true;
+        }
+      });
+  }, [enrichedCategories, categoryFilter]);
 
-  const data = filteredCategories.map(([catName, config]) => {
-    // category checkbox column
-    const categoryCheckbox = (
-      <DisabledCheckboxWrapper>
-        <label>
-          <FastField
-            component={DisabledCheckbox}
-            name={`action.categoryConfig.${catName}.disabled`}
-            value={config.disabled}
+  const data = useMemo(() => {
+    console.log('3. filtered categories changed, so building table data');
+    return filteredCategories.map(([catName, config]) => {
+      // category checkbox column
+      const categoryCheckbox = (
+        <DisabledCheckboxWrapper>
+          <label>
+            <Field
+              component={DisabledCheckbox}
+              name={`action.categoryConfig.${catName}.disabled`}
+              value={config.disabled}
+            />
+            <CategoryName checked={!config.disabled} active={!config.disabled}>
+              {catName}
+            </CategoryName>
+          </label>
+        </DisabledCheckboxWrapper>
+      );
+
+      // taxonomy column
+      const taxonomy = config.taxonomy && <Taxonomy catName={catName} config={config} />;
+
+      // confidence slider column
+      const confidenceSlider = (
+        <ConfThreshold>
+          <Field
+            component={ConfidenceSlider}
+            name={`action.categoryConfig.${catName}.confThreshold`}
+            value={config.confThreshold}
+            disabled={config.disabled}
           />
-          <CategoryName checked={!config.disabled} active={!config.disabled}>
-            {catName}
-          </CategoryName>
-        </label>
-      </DisabledCheckboxWrapper>
-    );
+          <ConfDisplay disabled={config.disabled}>
+            {Math.round(config.confThreshold * 100)}%
+          </ConfDisplay>
+        </ConfThreshold>
+      );
 
-    // taxonomy column
-    const taxonomy = config.taxonomy && <Taxonomy catName={catName} config={config} />;
-
-    // confidence slider column
-    const confidenceSlider = (
-      <ConfThreshold>
-        <FastField
-          component={ConfidenceSlider}
-          name={`action.categoryConfig.${catName}.confThreshold`}
-          value={config.confThreshold}
-          disabled={config.disabled}
-        />
-        <ConfDisplay disabled={config.disabled}>
-          {Math.round(config.confThreshold * 100)}%
-        </ConfDisplay>
-      </ConfThreshold>
-    );
-
-    return {
-      categoryCheckbox,
-      taxonomy,
-      confidenceSlider,
-    };
-  });
+      return {
+        categoryCheckbox,
+        taxonomy,
+        confidenceSlider,
+      };
+    });
+  }, [filteredCategories]);
 
   const defaultColumn = useMemo(
     () => ({
@@ -506,11 +505,13 @@ const CategoryConfigList = ({ selectedModel, values }) => {
           <div style={{ width: '100%' }}>
             <HeaderLabel css={{ paddingLeft: '$3' }}>Label name</HeaderLabel>
             <SubHeader css={{ paddingLeft: '$3' }}>
-              <Field name={`action.categoryConfig`}>
-                {({ form }) => (
-                  <DisabledBulkCheckbox form={form} filteredCategories={filteredCategories} />
-                )}
-              </Field>
+              <label style={{ marginBottom: '0px' }}>
+                <Field name={`action.categoryConfig`}>
+                  {({ form }) => (
+                    <DisabledBulkCheckbox form={form} filteredCategories={filteredCategories} />
+                  )}
+                </Field>
+              </label>
             </SubHeader>
           </div>
         ),
@@ -549,30 +550,19 @@ const CategoryConfigList = ({ selectedModel, values }) => {
         width: '150',
       },
     ],
-    [],
+    [filteredCategories],
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    // setHiddenColumns,
-    // toggleHideAllColumns,
-    // state: { sortBy },
-  } = useTable(
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
       columns,
       data,
       defaultColumn,
       manualSortBy: true,
       disableSortRemove: true,
-      // initialState,
     },
     useResizeColumns,
     useFlexLayout,
-    // useSortBy,
   );
 
   return (
