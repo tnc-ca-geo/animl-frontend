@@ -20,9 +20,59 @@ import {
 import DatePickerWithFormik from '../../components/DatePicker.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
+const StyledButtonRow = styled(ButtonRow, {
+  flexDirection: 'column',
+  gap: '$2',
+  '@bp2': {
+    flexDirection: 'row',
+    gap: '0',
+  },
+});
+
+const StyledButton = styled(Button, {
+  width: '100%',
+  '@bp2': {
+    width: 'unset',
+  },
+});
+
+// HLPXMQ10173484
+
+const StyledFieldRow = styled(FieldRow, {
+  paddingBottom: '$0',
+  flexDirection: 'column',
+  '@bp2': {
+    flexDirection: 'row',
+    paddingBottom: '$2',
+  },
+});
+
+const StyledFormFieldWrapper = styled(FormFieldWrapper, {
+  '&:last-child': {
+    marginLeft: '0',
+  },
+  '@bp2': {
+    '&:last-child': {
+      marginLeft: '$3',
+    },
+  },
+});
+
+const StyledField = styled(Field, {
+  padding: '$2 !important',
+  '@bp2': {
+    padding: '$3',
+  },
+});
+
 const FormHeader = styled('div', {
+  textAlign: 'left',
   fontWeight: '$3',
-  textAlign: 'center',
+  marginBottom: '$3',
+  '@bp2': {
+    textAlign: 'center',
+    marginBottom: '0',
+  },
 });
 
 const newDeploymentSchema = Yup.object().shape({
@@ -132,39 +182,39 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
           {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>
               {/* name */}
-              <FieldRow>
+              <StyledFieldRow>
                 <FormFieldWrapper>
                   <label htmlFor="name">Name</label>
-                  <Field name="name" id="name" />
+                  <StyledField name="name" id="name" />
                   <ErrorMessage component={FormError} name="name" />
                 </FormFieldWrapper>
-              </FieldRow>
+              </StyledFieldRow>
 
               {/* description */}
-              <FieldRow>
+              <StyledFieldRow>
                 <FormFieldWrapper>
                   <label htmlFor="description">Description</label>
-                  <Field name="description" id="description" component="textarea" />
+                  <StyledField name="description" id="description" component="textarea" />
                   <ErrorMessage component={FormError} name="description" />
                 </FormFieldWrapper>
-              </FieldRow>
+              </StyledFieldRow>
 
               {/* lat/lon */}
-              <FieldRow>
+              <StyledFieldRow>
                 <FormFieldWrapper>
                   <label htmlFor="latitude">Latitude</label>
-                  <Field name="latitude" id="latitude" />
+                  <StyledField name="latitude" id="latitude" />
                   <ErrorMessage component={FormError} name="latitude" />
                 </FormFieldWrapper>
-                <FormFieldWrapper>
+                <StyledFormFieldWrapper>
                   <label htmlFor="longitude">Longitude</label>
-                  <Field name="longitude" id="longitude" />
+                  <StyledField name="longitude" id="longitude" />
                   <ErrorMessage component={FormError} name="longitude" />
-                </FormFieldWrapper>
-              </FieldRow>
+                </StyledFormFieldWrapper>
+              </StyledFieldRow>
 
               {/* timezone */}
-              <FieldRow>
+              <StyledFieldRow>
                 <FormFieldWrapper>
                   <SelectField
                     name="timezone"
@@ -190,24 +240,24 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                     isSearchable={true}
                   />
                 </FormFieldWrapper>
-              </FieldRow>
+              </StyledFieldRow>
 
               {/* start date */}
-              <FieldRow>
+              <StyledFieldRow>
                 <FormFieldWrapper>
                   <label htmlFor="startDate">Start Date</label>
-                  <Field
+                  <StyledField
                     component={DatePickerWithFormik}
                     timezone={values.timezone.value}
                     className="form-control"
                   />
                   <ErrorMessage component={FormError} name="startDate" />
                 </FormFieldWrapper>
-              </FieldRow>
+              </StyledFieldRow>
 
               <Field name="editable" type="hidden" />
-              <ButtonRow>
-                <Button
+              <StyledButtonRow>
+                <StyledButton
                   type="button"
                   size="large"
                   onClick={() => {
@@ -219,11 +269,11 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                   }}
                 >
                   Cancel
-                </Button>
-                <Button type="submit" size="large" disabled={!isValid || !dirty}>
+                </StyledButton>
+                <StyledButton type="submit" size="large" disabled={!isValid || !dirty}>
                   Save
-                </Button>
-              </ButtonRow>
+                </StyledButton>
+              </StyledButtonRow>
             </Form>
           )}
         </Formik>
