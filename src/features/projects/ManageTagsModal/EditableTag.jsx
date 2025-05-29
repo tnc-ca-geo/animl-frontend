@@ -30,7 +30,10 @@ const Actions = styled('div', {
   marginRight: 0,
   marginLeft: 'auto',
   display: 'flex',
-  gap: '$3'
+  gap: '$2',
+  '@bp2': {
+    gap: '$3'
+  },
 });
 
 export const EditableTag = ({

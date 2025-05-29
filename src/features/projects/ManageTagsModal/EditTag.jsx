@@ -79,6 +79,11 @@ const EditContainer = styled('div', {
   }
 });
 
+const EditFieldContainer = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 const EditFieldLabel = styled('label', {
   fontWeight: 'bold',
   color: '$textDark',
@@ -111,7 +116,7 @@ const EditFieldError = styled('div', {
 
 const EditActionButtonsContainer = styled('div', {
   display: 'flex',
-  margin: 'auto 0',
+  margin: 'auto auto',
   gap: '$2',
   justifyContent: 'flex-end'
 });
@@ -233,99 +238,100 @@ export const EditTag = ({
       }
       <EditContainer>
         {/* Row 1 column 1 */}
-        <EditFieldLabel>Name</EditFieldLabel>
+        <EditFieldContainer>
+          <EditFieldLabel>Name</EditFieldLabel>
+          {/* Row 2 column 1 */}
+          <EditFieldInput 
+            value={name} 
+            onChange={(e) => setName(e.target.value)}
+          />
+          {/* Row 3 column 1 */}
+          <EditFieldError>{nameError}</EditFieldError>
+        </EditFieldContainer>
 
-        {/* Row 1 column 2 */}
-        <EditFieldLabel>Color</EditFieldLabel>
-
-        {/* Row 1 column 3 */}
-        <div />
-
-        {/* Row 2 column 1 */}
-        <EditFieldInput 
-          value={name} 
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        {/* Row 2 column 2 */}
-        <ColorPicker>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <IconButton
-                type="button"
-                aria-label="Get a new color"
-                size="md"
-                onClick={() => updateColor(`#${getRandomColor()}`)}
-                css={{
-                  backgroundColor: color,
-                  borderColor: color,
-                  color: getTextColor(color),
-                  '&:hover': {
+        <EditFieldContainer>
+          {/* Row 1 column 2 */}
+          <EditFieldLabel>Color</EditFieldLabel>
+          {/* Row 2 column 2 */}
+          <ColorPicker>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IconButton
+                  type="button"
+                  aria-label="Get a new color"
+                  size="md"
+                  onClick={() => updateColor(`#${getRandomColor()}`)}
+                  css={{
+                    backgroundColor: color,
                     borderColor: color,
-                  },
-                  '&:active': {
-                    borderColor: '$border',
-                  },
+                    color: getTextColor(color),
+                    '&:hover': {
+                      borderColor: color,
+                    },
+                    '&:active': {
+                      borderColor: '$border',
+                    },
+                  }}
+                >
+                  <SymbolIcon />
+                </IconButton>
+              </TooltipTrigger>
+              <TooltipContent side='top' sideOffset={5}>
+                Get a new color
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <EditFieldInput 
+                  value={tempColor}
+                  onChange={(e) => setTempColor(`${e.target.value}`)}/>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                sideOffset={5}
+                css={{
+                  maxWidth: 324,
+                  padding: '$2',
+                  color: '$textMedium',
+                  backgroundColor: 'white',
                 }}
               >
-                <SymbolIcon />
-              </IconButton>
-            </TooltipTrigger>
-            <TooltipContent side='top' sideOffset={5}>
-              Get a new color
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <EditFieldInput 
-                value={tempColor}
-                onChange={(e) => setTempColor(`${e.target.value}`)}/>
-            </TooltipTrigger>
-            <TooltipContent
-              side="top"
-              sideOffset={5}
-              css={{
-                maxWidth: 324,
-                padding: '$2',
-                color: '$textMedium',
-                backgroundColor: 'white',
-              }}
-            >
-              <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
-              {defaultColors.map((color) => (
-                <ColorSwatch
-                  key={color}
-                  css={{ backgroundColor: color }}
-                  type="button"
-                  onClick={() => updateColor(color)}
-                />
-              ))}
-              <TooltipArrow css={{ fill: 'white' }} />
-            </TooltipContent>
-          </Tooltip>
-        </ColorPicker>
+                <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+                {defaultColors.map((color) => (
+                  <ColorSwatch
+                    key={color}
+                    css={{ backgroundColor: color }}
+                    type="button"
+                    onClick={() => updateColor(color)}
+                  />
+                ))}
+                <TooltipArrow css={{ fill: 'white' }} />
+              </TooltipContent>
+            </Tooltip>
+          </ColorPicker>
+          {/* Row 3 column 2 */}
+          <EditFieldError>{colorError}</EditFieldError>
+        </EditFieldContainer>
 
         {/* Row 2 column 3 */}
-        <EditActionButtonsContainer>
-          <Button 
-            size="small" 
-            type="button" 
-            disabled={!name} 
-            onClick={() => onConfirmEdit()}
-          >
-            Save
-          </Button>
-          <Button size="small" type="button" onClick={() => onCancelEdit(false)}>
-            Cancel
-          </Button>
-        </EditActionButtonsContainer>
+        <EditFieldContainer>
+          <EditActionButtonsContainer>
+            <Button 
+              size="small" 
+              type="button" 
+              disabled={!name} 
+              onClick={() => onConfirmEdit()}
+            >
+              Save
+            </Button>
+            <Button size="small" type="button" onClick={() => onCancelEdit(false)}>
+              Cancel
+            </Button>
+          </EditActionButtonsContainer>
+        </EditFieldContainer>
 
-        {/* Row 3 column 1 */}
-        <EditFieldError>{nameError}</EditFieldError>
 
-        {/* Row 3 column 2 */}
-        <EditFieldError>{colorError}</EditFieldError>
       </EditContainer>
     </>
   );
