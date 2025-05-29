@@ -4,6 +4,9 @@ import 'react-dates/initialize';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import { inViewportTopHalf } from '../app/utils';
+import { useSelector } from 'react-redux';
+import { selectGlobalBreakpoint } from '../features/projects/projectsSlice';
+import { globalBreakpoints } from '../config';
 
 // NOTE: Date Picker style overrides are in theme/globalStyles.js
 // Had to override them there b/c the actual Date Picker element gets
@@ -27,6 +30,9 @@ const DatePickerWithFormik = ({
     setFocusedInput(focused);
   };
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
   return (
     <div ref={containerEl}>
       <SingleDatePicker
@@ -44,6 +50,7 @@ const DatePickerWithFormik = ({
         onFocusChange={onFocusChange}
         id="startDate"
         small={true}
+        numberOfMonths={isSmallScreen ? 1 : 2}
         hideKeyboardShortcutsPanel={true}
         enableOutsideDays={true}
         isOutsideRange={() => false}
