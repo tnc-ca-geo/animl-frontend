@@ -14,7 +14,7 @@ import {
   setModalContent,
   setModalOpen,
 } from '../features/projects/projectsSlice.js';
-// import { mauve } from '@radix-ui/colors';
+import { WRITE_PROJECT_ROLES, hasRole } from '../features/auth/roles.js';
 
 const openOverlayAnimation = keyframes({
   from: { opacity: 0 },
@@ -228,6 +228,13 @@ export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
                   handleClick={() => handleModalToggle('camera-admin-modal')}
                   text={'Manage cameras'}
                 />
+                {hasRole(userRoles, WRITE_PROJECT_ROLES) && (
+                  <ModalTrigger
+                    disabled={!selectedProject}
+                    handleClick={() => handleModalToggle('manage-tags-and-labels-form')}
+                    text={'Manage labels and tags'}
+                  />
+                )}
                 <Dialog.Close asChild>
                   <SignOut onClick={signOut}>Sign out</SignOut>
                 </Dialog.Close>
