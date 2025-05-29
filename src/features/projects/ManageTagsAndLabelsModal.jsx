@@ -59,6 +59,12 @@ const TagsVsLabelsContent = styled('div', {
   maxWidth: '300px',
 });
 
+const ButtonsContainer = styled('div', {
+  display: 'flex',
+  gap: '$2',
+  alignItems: 'center'
+});
+
 const TagsVsLabelsHelp = () => (
   <TagsVsLabelsContent>
     <p>
@@ -90,13 +96,15 @@ export const ManageLabelsAndTagsModalTitle = ({ tab, setTab }) => {
   return (
     <TitleContainer>
       <ModalTitle>{`Manage ${tab}`}</ModalTitle>
-      <TabTitle active={tab === 'labels'} onClick={() => setTab('labels')}>
-        Labels
-      </TabTitle>
-      <TabTitle active={tab === 'tags'} onClick={() => setTab('tags')}>
-        Tags
-      </TabTitle>
-      <InfoIcon side="bottom" tooltipContent={<TagsVsLabelsHelp />} />
+      <ButtonsContainer>
+        <TabTitle active={tab === 'labels'} onClick={() => setTab('labels')}>
+          Labels
+        </TabTitle>
+        <TabTitle active={tab === 'tags'} onClick={() => setTab('tags')}>
+          Tags
+        </TabTitle>
+        <InfoIcon side="bottom" tooltipContent={<TagsVsLabelsHelp />} />
+      </ButtonsContainer>
     </TitleContainer>
   );
 };

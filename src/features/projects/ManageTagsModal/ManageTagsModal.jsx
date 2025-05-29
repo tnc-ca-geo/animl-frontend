@@ -6,12 +6,18 @@ import Button from '../../../components/Button';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner';
 import { DeleteTagAlert } from './DeleteTagAlert';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProjectTag, deleteProjectTag, selectProjectTags, selectTagsLoading, updateProjectTag } from '../projectsSlice';
+import {
+  createProjectTag,
+  deleteProjectTag,
+  selectProjectTags,
+  selectTagsLoading,
+  updateProjectTag,
+} from '../projectsSlice';
 
 const EditableTagsContainer = styled('div', {
   overflowY: 'scroll',
   padding: '3px', // so that the input boxes' shadow does get cutoff
-  maxHeight: '500px'
+  maxHeight: '500px',
 });
 
 const AddNewTagButtonContainer = styled('div', {
@@ -21,13 +27,16 @@ const AddNewTagButtonContainer = styled('div', {
 const AddNewTagButton = styled(Button, {
   marginRight: 0,
   marginLeft: 'auto',
-  marginTop: '$3'
+  marginTop: '$3',
+  width: '100%',
+  '@bp2': {
+    width: 'auto',
+  },
 });
 
 const EditTagContainer = styled('div', {
-  marginLeft: '3px'
+  marginLeft: '3px',
 });
-
 
 export const ManageTagsModal = () => {
   const dispatch = useDispatch();
@@ -41,29 +50,29 @@ export const ManageTagsModal = () => {
   const isLoading = useSelector(selectTagsLoading);
 
   const onConfirmEdit = (tagId, tagName, tagColor) => {
-    console.log("edit", tagId, tagName, tagColor);
+    console.log('edit', tagId, tagName, tagColor);
     dispatch(updateProjectTag({ _id: tagId, name: tagName, color: tagColor }));
-  }
+  };
 
   const onConfirmAdd = (tagName, tagColor) => {
     dispatch(createProjectTag({ name: tagName, color: tagColor }));
     setIsNewTagOpen(false);
-  }
+  };
 
   const onConfirmDelete = (tagId) => {
     dispatch(deleteProjectTag({ _id: tagId }));
     setIsAlertOpen(false);
-  }
+  };
 
   const onStartDelete = (id) => {
     setTagToDelete(id);
     setIsAlertOpen(true);
-  }
+  };
 
   const onCancelDelete = () => {
     setIsAlertOpen(false);
     setTagToDelete('');
-  }
+  };
 
   return (
     <>
@@ -73,8 +82,8 @@ export const ManageTagsModal = () => {
         </SpinnerOverlay>
       )}
       <EditableTagsContainer>
-        { tags.map(({ _id, name, color }) => (
-          <EditableTag 
+        {tags.map(({ _id, name, color }) => (
+          <EditableTag
             key={Math.random()}
             id={_id}
             currentName={name}
@@ -85,33 +94,29 @@ export const ManageTagsModal = () => {
           />
         ))}
       </EditableTagsContainer>
-      { !isNewTagOpen &&
+      {!isNewTagOpen && (
         <AddNewTagButtonContainer>
-          <AddNewTagButton 
-            size="small" 
-            type="button" 
-            onClick={() => setIsNewTagOpen(true)}
-          >
+          <AddNewTagButton size="small" type="button" onClick={() => setIsNewTagOpen(true)}>
             New tag
           </AddNewTagButton>
         </AddNewTagButtonContainer>
-      }
-      { isNewTagOpen &&
+      )}
+      {isNewTagOpen && (
         <EditTagContainer>
-          <EditTag 
+          <EditTag
             allTagNames={tags.map((t) => t.name)}
             onSubmit={onConfirmAdd}
             onCancel={() => setIsNewTagOpen(false)}
             isNewLabel={true}
           />
         </EditTagContainer>
-      }
-      <DeleteTagAlert 
-        open={isAlertOpen} 
-        tag={tags.find((tag) => tag._id === tagToDelete)} 
+      )}
+      <DeleteTagAlert
+        open={isAlertOpen}
+        tag={tags.find((tag) => tag._id === tagToDelete)}
         onConfirm={onConfirmDelete}
         onCancel={onCancelDelete}
       />
     </>
   );
-}
+};
