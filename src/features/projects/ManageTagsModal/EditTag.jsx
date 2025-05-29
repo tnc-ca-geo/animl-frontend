@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../../components/IconButton';
 import { styled } from '../../../theme/stitches.config';
@@ -234,38 +234,42 @@ export const EditTag = ({
 
   // to get rid of warning for now
   const [name, setName] = useState(currentName);
-  const [color, setColor] = useState(currentColor);
   const [tempColor, setTempColor] = useState(currentColor);
 
   const [nameError, setNameError] = useState('');
   const [colorError, setColorError] = useState('');
 
+  const tagNameSchema = useMemo(() => {
+    return createTagNameSchema(currentName, allTagNames);
+  }, [currentName, allTagNames]);
+
   const updateTempColor = (color) => {
-    if (colorError !== '') {
-      setColorError('');
+    let colorError = '';
+    try {
+      tagColorSchema.validateSync(color);
+    } catch (err) {
+      colorError = err.message ?? '';
     }
     setTempColor(color);
-  };
-
-  const updateColor = (newColor) => {
-    setTempColor(newColor);
-    setColor(newColor);
     if (onPreviewColor) {
-      onPreviewColor(newColor);
+      onPreviewColor(color);
     }
-    setColorError('');
+    setColorError(colorError);
   };
 
   const updateName = (name) => {
-    if (nameError !== '') {
-      setNameError('');
+    let nameError = '';
+    try {
+      tagNameSchema.validateSync(name);
+    } catch (err) {
+      nameError = err.message ?? '';
     }
+    setNameError(nameError);
     setName(name);
   };
 
   const onCancelEdit = () => {
     setName(currentName);
-    setColor(currentColor);
     setTempColor(currentColor);
     onCancel();
   };
@@ -274,10 +278,8 @@ export const EditTag = ({
     let validatedName = '';
     let validatedColor = '';
 
-    const tagNameSchema = createTagNameSchema(currentName, allTagNames);
-
     // If the user typed in a color, tempColor !== color
-    const submittedColor = tempColor !== color ? tempColor : color;
+    const submittedColor = tempColor;
     try {
       validatedColor = tagColorSchema.validateSync(submittedColor);
     } catch (err) {
@@ -304,19 +306,14 @@ export const EditTag = ({
   const currentBreakpoint = useSelector(selectGlobalBreakpoint);
   const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
-  useEffect(() => {
-    console.log(isColorPickerOpen);
-  }, [isColorPickerOpen]);
-
   return (
     <>
       {isNewLabel && (
         <PreviewTagContainer>
           <PreviewTag
             css={{
-              borderColor: color,
-              backgroundColor: `${color}1A`,
+              borderColor: tempColor,
+              backgroundColor: `${tempColor}1A`,
             }}
           >
             {!name ? 'new tag' : name}
@@ -340,13 +337,13 @@ export const EditTag = ({
                       type="button"
                       aria-label="Get a new color"
                       size="md"
-                      onClick={() => updateColor(`#${getRandomColor()}`)}
+                      onClick={() => updateTempColor(`#${getRandomColor()}`)}
                       css={{
-                        backgroundColor: color,
-                        borderColor: color,
-                        color: getTextColor(color),
+                        backgroundColor: tempColor,
+                        borderColor: tempColor,
+                        color: getTextColor(tempColor),
                         '&:hover': {
-                          borderColor: color,
+                          borderColor: tempColor,
                         },
                         '&:active': {
                           borderColor: '$border',
@@ -361,7 +358,7 @@ export const EditTag = ({
                     <TooltipArrow />
                   </TooltipContent>
                 </Tooltip>
-                <Tooltip onOpenChange={setIsColorPickerOpen} open={isColorPickerOpen}>
+                <Tooltip>
                   <TooltipTrigger asChild>
                     <EditFieldInput
                       value={tempColor}
@@ -384,7 +381,7 @@ export const EditTag = ({
                         key={color}
                         css={{ backgroundColor: color }}
                         type="button"
-                        onClick={() => updateColor(color)}
+                        onClick={() => updateTempColor(color)}
                       />
                     ))}
                     <TooltipArrow css={{ fill: 'white' }} />
@@ -397,13 +394,13 @@ export const EditTag = ({
                   type="button"
                   aria-label="Get a new color"
                   size="md"
-                  onClick={() => updateColor(`#${getRandomColor()}`)}
+                  onClick={() => updateTempColor(`#${getRandomColor()}`)}
                   css={{
-                    backgroundColor: color,
-                    borderColor: color,
-                    color: getTextColor(color),
+                    backgroundColor: tempColor,
+                    borderColor: tempColor,
+                    color: getTextColor(tempColor),
                     '&:hover': {
-                      borderColor: color,
+                      borderColor: tempColor,
                     },
                     '&:active': {
                       borderColor: '$border',
@@ -420,11 +417,8 @@ export const EditTag = ({
                       focusDisabled={true}
                     />
                     <PopoverTrigger asChild>
-                      <ColorPickerButton
-                        variant="ghost"
-                        onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-                      >
-                        <Palette strokeWidth={1.25} />
+                      <ColorPickerButton variant="ghost">
+                        <Palette />
                       </ColorPickerButton>
                     </PopoverTrigger>
                     <ColorPickerPopover
@@ -442,7 +436,7 @@ export const EditTag = ({
                           key={color}
                           css={{ backgroundColor: color }}
                           type="button"
-                          onClick={() => updateColor(color)}
+                          onClick={() => updateTempColor(color)}
                         />
                       ))}
                       <PopoverArrow style={{ fill: 'white' }} />

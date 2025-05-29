@@ -9,6 +9,14 @@ import Button from '../../../components/Button';
 import LabelForm from './LabelForm';
 import { LabelRow, LabelHeader, LabelActions } from './components';
 import { getRandomColor } from '../../../app/utils.js';
+import { styled } from '../../../theme/stitches.config.js';
+
+const StyledFormButton = styled(Button, {
+  width: '100%',
+  '@bp2': {
+    width: 'auto',
+  },
+});
 
 const NewLabelForm = ({ labels }) => {
   const dispatch = useDispatch();
@@ -27,7 +35,11 @@ const NewLabelForm = ({ labels }) => {
       name: Yup.string()
         .required('Enter a label name.')
         .matches(/^[a-zA-Z0-9_. -']*$/, "Labels can't contain special characters")
-        .test('unique', 'A label with this name already exists.', (val) => !labelsNames.includes(val?.toLowerCase())),
+        .test(
+          'unique',
+          'A label with this name already exists.',
+          (val) => !labelsNames.includes(val?.toLowerCase()),
+        ),
       color: Yup.string()
         .matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Enter a valid color code with 6 digits' })
         .required('Select a color.'),
@@ -44,18 +56,22 @@ const NewLabelForm = ({ labels }) => {
       {({ values, resetForm }) => (
         <LabelRow css={{ borderBottom: 'none' }}>
           <LabelHeader>
-            {showNewLabelForm && <LabelPill color={values.color} name={values.name || 'new label'} />}
-            <LabelActions>
-              <Button
-                size="small"
-                onClick={() => {
-                  resetForm();
-                  toggleOpenForm();
-                }}
-              >
-                New label
-              </Button>
-            </LabelActions>
+            {showNewLabelForm && (
+              <LabelPill color={values.color} name={values.name || 'new label'} />
+            )}
+            {!showNewLabelForm && (
+              <LabelActions>
+                <StyledFormButton
+                  size="small"
+                  onClick={() => {
+                    resetForm();
+                    toggleOpenForm();
+                  }}
+                >
+                  New label
+                </StyledFormButton>
+              </LabelActions>
+            )}
           </LabelHeader>
           {showNewLabelForm && (
             <LabelForm

@@ -64,7 +64,7 @@ export const EditableTag = ({
           {currentName}
         </TagName>
         <Actions>
-          <IconButton disabled={isEditOpen} variant="ghost" onClick={() => setIsEditOpen(true)}>
+          <IconButton variant="ghost" onClick={() => setIsEditOpen(!isEditOpen)}>
             <Pencil1Icon />
           </IconButton>
           <IconButton variant="ghost" onClick={() => onDelete(id)}>

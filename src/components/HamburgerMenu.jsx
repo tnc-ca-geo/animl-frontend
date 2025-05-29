@@ -8,7 +8,6 @@ import IconButton from './IconButton.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserCurrentRoles } from '../features/auth/authSlice.js';
 import {
-  selectModalContent,
   selectModalOpen,
   selectSelectedProject,
   setModalContent,
@@ -196,12 +195,9 @@ const ModalTrigger = ({ text, disabled, handleClick }) => {
 export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const modalOpen = useSelector(selectModalOpen);
-  const modalContent = useSelector(selectModalContent);
   const selectedProject = useSelector(selectSelectedProject);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-
-  console.log(userRoles, modalContent);
 
   const handleModalToggle = (content) => {
     dispatch(setModalOpen(!modalOpen));
