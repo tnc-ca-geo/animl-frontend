@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -10,6 +10,12 @@ import {
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import NoneFoundAlert from '../../components/NoneFoundAlert';
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger
+} from '../../components/NavigationMenu.jsx';
 import { indigo } from '@radix-ui/colors';
 import InfoIcon from '../../components/InfoIcon';
 import {
@@ -61,6 +67,25 @@ const Heading = ({ label, content }) => (
   </div>
 );
 
+const NavMenu = styled(NavigationMenu, {
+  justifyContent: 'left',
+});
+
+const Trigger = styled(NavigationMenuTrigger, {
+  variants: {
+    active: {
+      true: {
+        backgroundColor: '$hiContrast',
+        color: '$loContrast',
+        '&:hover': {
+          backgroundColor: '$hiContrast',
+          color: '$loContrast',
+        }
+      },
+    },
+  },
+});
+
 const StatsCard = styled('div', {
   background: '$loContrast',
   padding: '15px',
@@ -109,6 +134,31 @@ const RatioCard = ({ label, tnum, bnum, content }) => {
     </StatsCard>
   );
 };
+
+const ReviewCounts = ({
+  label,
+  count,
+  reviewedCount,
+  notReviewedCount
+}) => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+      <RatioCard label={label} tnum={count} content={hints.imagesCount} />
+      <RatioCard
+        label="Reviewed"
+        tnum={reviewedCount}
+        // bnum={stats.imageCount}
+        content={hints.reviewedCount}
+      />
+      <RatioCard
+        label="Not reviewed"
+        tnum={notReviewedCount}
+        // bnum={stats.imageCount}
+        content={hints.notReviewedCount}
+      />
+    </div>
+  );
+}
 
 const Table = styled('div', {
   display: 'flex',
@@ -203,6 +253,7 @@ const GraphCard = ({ label, list, content }) => {
 const ImagesStatsModal = ({ open }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
+  const [activePanel, setActivePanel] = useState("objects");
 
   // fetch images stats
   const stats = useSelector(selectImagesStats);
@@ -237,34 +288,67 @@ const ImagesStatsModal = ({ open }) => {
       )}
       {stats && (
         <StatsDash>
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-            <RatioCard label="Images" tnum={stats.imageCount} content={hints.imagesCount} />
-            <RatioCard
-              label="Reviewed"
-              tnum={stats.reviewedCount.reviewed}
-              // bnum={stats.imageCount}
-              content={hints.reviewedCount}
-            />
-            <RatioCard
-              label="Not reviewed"
-              tnum={stats.reviewedCount.notReviewed}
-              // bnum={stats.imageCount}
-              content={hints.notReviewedCount}
-            />
-          </div>
-          {Object.keys(stats['labelList']).length !== 0 && (
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-              <GraphCard
-                label="Validated labels"
-                list={stats.labelList}
-                content={hints.labelList}
+          <NavMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <Trigger onClick={() => setActivePanel("objects")} active={activePanel === "objects"}>
+                  Objects
+                </Trigger>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Trigger onClick={() => setActivePanel("images")} active={activePanel === "images"}>
+                  Images
+                </Trigger>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavMenu>
+          {activePanel === "objects" && (
+            <>
+              <ReviewCounts
+                label="Objects"
+                count={stats.objectCount}
+                reviewedCount={stats.objectReviewCount.reviewed}
+                notReviewedCount={stats.objectReviewCount.notReviewed}
               />
-            </div>
+              {Object.keys(stats['objectLabelList']).length !== 0 && (
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                  <GraphCard
+                    label="Validated labels"
+                    list={stats.objectLabelList}
+                    content={hints.objectLabelList}
+                  />
+                </div>
+              )}
+              {stats['objectReviewerList'].length !== 0 && (
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                  <ListCard label="Reviewers" list={stats.objectReviewerList} content={hints.reviewerList} />
+                </div>
+              )}
+            </>
           )}
-          {stats['reviewerList'].length !== 0 && (
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-              <ListCard label="Reviewers" list={stats.reviewerList} content={hints.reviewerList} />
-            </div>
+          {activePanel === "images" && (
+            <>
+              <ReviewCounts
+                label="Images"
+                count={stats.imageCount}
+                reviewedCount={stats.imageReviewCount.reviewed}
+                notReviewedCount={stats.imageReviewCount.notReviewed}
+              />
+              {Object.keys(stats['imageLabelList']).length !== 0 && (
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                  <GraphCard
+                    label="Validated labels"
+                    list={stats.imageLabelList}
+                    content={hints.imageLabelList}
+                  />
+                </div>
+              )}
+              {stats['imageReviewerList'].length !== 0 && (
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                  <ListCard label="Reviewers" list={stats.imageReviewerList} content={hints.reviewerList} />
+                </div>
+              )}
+            </>
           )}
         </StatsDash>
       )}
