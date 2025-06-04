@@ -40,6 +40,7 @@ const ExportModal = () => {
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const [timezone, setTimezone] = useState(selectedProject.timezone);
   const [includeNonReviewed, setIncludedNonReviewed] = useState(false);
+  const [aggregateObjects, setAggregateObjects] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -64,6 +65,11 @@ const ExportModal = () => {
     setIncludedNonReviewed(!includeNonReviewed);
   };
 
+  const handleAggregateObjectsChange = () => {
+    setAggregateObjects(!aggregateObjects);
+  };
+
+
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;
     const noErrors = !errors || errors.length === 0;
@@ -74,6 +80,14 @@ const ExportModal = () => {
   };
 
   const IncludeNonReviewedToolTip = () => (
+    <div style={{ maxWidth: '400px' }}>
+      If an object hasn&apos;t been reviewed and validated by a human, the most recently added
+      label/prediction will be used as the &quot;representative label&quot; for the analyses. Animl
+      assumes the most recent label is the most specific and accurate label available.
+    </div>
+  );
+
+  const AggregateObjectsToolTip = () => (
     <div style={{ maxWidth: '400px' }}>
       If an object hasn&apos;t been reviewed and validated by a human, the most recently added
       label/prediction will be used as the &quot;representative label&quot; for the analyses. Animl
@@ -169,6 +183,28 @@ const ExportModal = () => {
           >
             Include non-reviewed objects
             <InfoIcon tooltipContent={<IncludeNonReviewedToolTip />} />
+          </CheckboxLabel>
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'row' }}>
+          <Checkbox
+            checked={aggregateObjects}
+            active={aggregateObjects}
+            onChange={handleAggregateObjectsChange}
+          />
+          <CheckboxLabel
+            checked={false}
+            active={false}
+            css={{
+              fontFamily: '$roboto',
+              fontWeight: '$3',
+              fontSize: '$3',
+              color: '$hiContrast',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            Aggregate objects at image-level (CSV only)
+            <InfoIcon tooltipContent={<AggregateObjectsToolTip />} />
           </CheckboxLabel>
         </label>
       </FormWrapper>
