@@ -75,7 +75,7 @@ const ExportModal = () => {
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportAnnotations({ format, filters, timezone, includeNonReviewed }));
+      dispatch(exportAnnotations({ format, filters, timezone, includeNonReviewed, aggregateObjects }));
     }
   };
 
