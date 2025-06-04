@@ -64,6 +64,9 @@ const shortenedField = (fieldVal) => {
   return `${fieldVal.substring(0, 5)}...`;
 };
 
+const formatDeploymentMobile = (depName, cameraId) =>
+  depName === 'default' ? `${cameraId} (default)` : depName;
+
 const ImageMetadataField = ({ isSmallScreen, label, displayValue, fullValue }) => {
   const alwaysOpen = !isSmallScreen;
   const [isOpen, setIsOpen] = useState(false);
@@ -105,6 +108,7 @@ export const ImageMetadata = ({ image }) => {
   const fullDateCreated = DateTime.fromISO(image.dateTimeOriginal).toLocaleString(
     DateTime.DATETIME_MED_WITH_SECONDS,
   );
+
   const dateCreated = isSmallScreen
     ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
     : fullDateCreated;
@@ -112,15 +116,20 @@ export const ImageMetadata = ({ image }) => {
   const cameraId = isSmallScreen ? shortenedField(image.cameraId) : image.cameraId;
 
   const deploymentName = isSmallScreen
-    ? shortenedField(image.deploymentName)
+    ? formatDeploymentMobile(image.deploymentName, image.cameraId)
     : image.deploymentName;
 
-  const metadataItems = [
-    { label: 'Date created', displayValue: dateCreated, fullValue: fullDateCreated },
-    { label: 'Camera', displayValue: cameraId, fullValue: image.cameraId },
-    { label: 'Deployment', displayValue: deploymentName, fullValue: image.deploymentName },
-    { label: 'File name', displayValue: filename, fullValue: image.originalFileName },
-  ];
+  const metadataItems = isSmallScreen
+    ? [
+        { label: 'Date created', displayValue: dateCreated, fullValue: fullDateCreated },
+        { label: 'Deployment', displayValue: deploymentName, fullValue: image.deploymentName },
+      ]
+    : [
+        { label: 'Date created', displayValue: dateCreated, fullValue: fullDateCreated },
+        { label: 'Camera', displayValue: cameraId, fullValue: image.cameraId },
+        { label: 'Deployment', displayValue: deploymentName, fullValue: image.deploymentName },
+        { label: 'File name', displayValue: filename, fullValue: image.originalFileName },
+      ];
 
   return (
     <MetadataPane>
