@@ -40,7 +40,7 @@ const LoupeBody = styled('div', {
   // $8 - height of nav bar
   // 98px - height of toolbar plus height of 2 borders
   height: 'calc(100vh - $7 - $8 - 145px)',
-  backgroundColor: '$hiContrast',
+  backgroundColor: '$backgroundBlack',
 });
 
 const LoupeHeader = styled(PanelHeader, {
@@ -248,9 +248,7 @@ const Loupe = () => {
   return (
     <StyledLoupe>
       <LoupeHeader handlePanelClose={handleCloseLoupe} closeButtonPosition="left">
-        {image && (
-          <ImageMetadata image={image} />
-        )}
+        {image && <ImageMetadata image={image} />}
         {/*<div>
           Label review
           <IconButton

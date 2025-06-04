@@ -16,6 +16,10 @@ import {
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
 
+const ImageContainer = styled('div', {
+  backgroundColor: '$backgroundBlack',
+});
+
 const FullSizeImageWrapper = styled('div', {
   display: 'grid',
   placeItems: 'center',
@@ -116,13 +120,20 @@ export const SmallScreensLoupe = ({ image, idx, workingImages, shouldShowToolbar
 
   return (
     <FullSizeImageWrapper style={style}>
-      <ImageMetadata image={image} />
-      <FullSizeImage
-        workingImages={workingImages}
-        image={image}
-        focusIndex={{ image: idx }}
-        css={{ height: '100%', width: '100%', objectFit: 'contain' }}
-      />
+      <ImageContainer>
+        <ImageMetadata image={image} />
+        <FullSizeImage
+          workingImages={workingImages}
+          image={image}
+          focusIndex={{ image: idx }}
+          css={{
+            height: '100%',
+            width: '100%',
+            objectFit: 'contain',
+            backgoundColor: '$backgroundBlack',
+          }}
+        />
+      </ImageContainer>
       {shouldShowToolbar && (
         <ToolbarContainer>
           <ImageReviewToolbar
