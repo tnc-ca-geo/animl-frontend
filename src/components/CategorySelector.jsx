@@ -5,8 +5,10 @@ import Select, { createFilter } from 'react-select';
 import {
   selectSelectedProject,
   selectProjectLabelsLoading,
+  selectGlobalBreakpoint,
 } from '../features/projects/projectsSlice.js';
 import { addLabelEnd } from '../features/loupe/loupeSlice.js';
+import { globalBreakpoints } from '../config.js';
 
 const StyledCategorySelector = styled(Select, {
   width: '155px',
@@ -76,6 +78,9 @@ const CategorySelector = forwardRef(function CategorySelector(
 
   const defaultHandleBlur = () => dispatch(addLabelEnd());
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
   return (
     <StyledCategorySelector
       ref={ref}
@@ -93,6 +98,7 @@ const CategorySelector = forwardRef(function CategorySelector(
       onChange={handleCategoryChange}
       onBlur={handleCategorySelectorBlur || defaultHandleBlur}
       options={options}
+      maxMenuHeight={isSmallScreen ? 200 : undefined}
     />
   );
 });

@@ -27,8 +27,10 @@ export const { styled, css, globalCss, keyframes, getCssText, theme, createTheme
         textDark: slate.slate12,
         textMedium: slate.slate11,
         textLight: slate.slate9,
+        textExtraLight: slate.slate7,
 
         // backgrounds
+        backgroundBlack: slate.slate12,
         backgroundExtraDark: slate.slate4,
         backgroundDark: slate.slate3,
         backgroundMedium: slate.slate2,
