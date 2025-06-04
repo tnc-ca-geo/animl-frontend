@@ -85,7 +85,8 @@ const HydratedModal = () => {
     },
     'automation-rules-form': {
       title: 'Configure Automation Rules',
-      size: 'md',
+      size: 'lg',
+      fullHeight: true,
       content: <AutomationRulesForm />,
       callBackOnClose: () => true,
     },

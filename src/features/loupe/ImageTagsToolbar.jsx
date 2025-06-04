@@ -38,6 +38,7 @@ const ScrollContainer = styled('div', {
   top: 0,
   padding: '$2 0',
   scrollbarWidth: 'none',
+  paddingRight: '$2',
 });
 
 const Separator = styled('div', {

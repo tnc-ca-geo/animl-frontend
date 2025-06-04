@@ -12,6 +12,7 @@ const initialState = {
     object: null,
     label: null,
   },
+  mobileCommentFocusIndex: null,
   selectedImageIndices: [],
   focusChangeType: null,
   loadingStates: {
@@ -45,6 +46,10 @@ export const reviewSlice = createSlice({
       if (payload.index.image !== undefined && payload.index.image !== null) {
         state.selectedImageIndices = [payload.index.image];
       }
+    },
+
+    setMobileCommentFocusIndex: (state, { payload }) => {
+      state.mobileCommentFocusIndex = payload;
     },
 
     setSelectedImageIndices: (state, { payload }) => {
@@ -236,12 +241,13 @@ export const reviewSlice = createSlice({
       })
       .addCase(deleteImagesSuccess, (state, { payload }) => {
         state.workingImages = state.workingImages.filter(({ _id }) => !payload.includes(_id));
-      })
+      });
   },
 });
 
 export const {
   setFocus,
+  setMobileCommentFocusIndex,
   setSelectedImageIndices,
   bboxUpdated,
   objectsRemoved,
@@ -363,7 +369,7 @@ export const editTag = (operation, payload) => {
 
       if (token && selectedProj) {
         const req = `${operation}ImageTag`;
-        console.log('req:',req);
+        console.log('req:', req);
 
         const res = await call({
           projId: selectedProj._id,
@@ -390,6 +396,7 @@ export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 
 export const selectWorkingImages = (state) => state.review.workingImages;
 export const selectFocusIndex = (state) => state.review.focusIndex;
+export const selectMobileCommentFocusIndex = (state) => state.review.mobileCommentFocusIndex;
 export const selectSelectedImageIndices = (state) => state.review.selectedImageIndices;
 export const selectFocusChangeType = (state) => state.review.focusChangeType;
 export const selectLabelsErrors = (state) => state.review.loadingStates.labels.errors;

@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import * as Label from '@radix-ui/react-label';
-import { Toast, ToastTitle, ToastDescription, ToastAction, ToastViewport } from '../../components/Toast';
+import {
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastAction,
+  ToastViewport,
+} from '../../components/Toast';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { copyUrlToClipboard } from './loupeSlice';
@@ -15,6 +21,10 @@ const StyledLabel = styled(Label.Root, {
   fontWeight: '$3',
   marginRight: '$3',
   textTransform: 'uppercase',
+  display: 'none',
+  '@bp1': {
+    display: 'unset',
+  },
 });
 
 const StyledURLInput = styled('input', {
@@ -25,6 +35,17 @@ const StyledURLInput = styled('input', {
   color: '$textMedium',
   marginRight: '$1',
   padding: '0 $2',
+  display: 'none',
+  '@bp1': {
+    display: 'unset',
+  },
+});
+
+const StyledIconButton = styled(IconButton, {
+  borderRadius: 4,
+  '@bp1': {
+    borderRadius: '$round',
+  },
 });
 
 const ShareImageButton = ({ imageId }) => {
@@ -45,9 +66,9 @@ const ShareImageButton = ({ imageId }) => {
       <StyledURLInput type="text" id="shareURL" readOnly={true} value={shareURL} />
       <Tooltip>
         <TooltipTrigger asChild>
-          <IconButton variant="ghost" onClick={handleCopyToClipboard}>
+          <StyledIconButton variant="ghost" onPointerDown={handleCopyToClipboard}>
             <ClipboardCopyIcon />
-          </IconButton>
+          </StyledIconButton>
         </TooltipTrigger>
         <TooltipContent side="bottom" sideOffset={5}>
           Copy URL to clipboard
