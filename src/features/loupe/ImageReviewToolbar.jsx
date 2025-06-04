@@ -90,7 +90,7 @@ const Separator = styled('div', {
 
 export const ToolbarIconButton = styled(Button, {
   ...itemStyles,
-  backgroundColor: 'white',
+  backgroundColor: '$background',
   marginLeft: 2,
   '&:first-child': { marginLeft: 0 },
   '&[data-state=on]': {
@@ -290,26 +290,29 @@ const ImageReviewToolbar = ({
           <Separator />
 
           {/* Add object */}
-          {isDrawingBbox ? (
-            <CancelHint>
-              <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
-              <span style={{ paddingBottom: '2px' }}>to cancel</span>
-            </CancelHint>
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild disabled={isSmallScreen}>
-                <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                  <GroupIcon />
-                </ToolbarIconButton>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Add object
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
+          {!isSmallScreen && (
+            <>
+              {isDrawingBbox ? (
+                <CancelHint>
+                  <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
+                  <span style={{ paddingBottom: '2px' }}>to cancel</span>
+                </CancelHint>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild disabled={isSmallScreen}>
+                    <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                      <GroupIcon />
+                    </ToolbarIconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" sideOffset={5}>
+                    Add object
+                    <TooltipArrow />
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <Separator />
+            </>
           )}
-
-          <Separator />
 
           {/* Comments */}
           {isSmallScreen ? (
