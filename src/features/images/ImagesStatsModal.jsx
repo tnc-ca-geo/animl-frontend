@@ -313,7 +313,7 @@ const ImagesStatsModal = ({ open }) => {
               {Object.keys(stats['objectLabelList']).length !== 0 && (
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                   <GraphCard
-                    label="Validated labels"
+                    label="Objects"
                     list={stats.objectLabelList}
                     content={hints.objectLabelList}
                   />
@@ -337,7 +337,7 @@ const ImagesStatsModal = ({ open }) => {
               {Object.keys(stats['imageLabelList']).length !== 0 && (
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                   <GraphCard
-                    label="Validated labels"
+                    label="Images"
                     list={stats.imageLabelList}
                     content={hints.imageLabelList}
                   />
