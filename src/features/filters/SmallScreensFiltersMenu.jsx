@@ -12,7 +12,7 @@ import TagFilter from './TagFilter.jsx';
 import CustomFilter from './CustomFilter.jsx';
 import FiltersPanelFooter from './FiltersPanelFooter.jsx';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Filter, X } from 'lucide-react';
+import { X, Settings2 } from 'lucide-react';
 import { violet } from '@radix-ui/colors';
 import IconButton from '../../components/IconButton.jsx';
 import { selectActiveFilters } from './filtersSlice.js';
@@ -65,39 +65,27 @@ const FloatingToolbarItem = styled('div', {
     active: {
       true: {
         color: violet.violet11,
+        backgroundColor: violet.violet4,
       },
     },
   },
-  padding: '$1',
+  padding: '$2',
   flex: '1',
   '&:hover': {
     cursor: 'pointer',
   },
 });
 
-const FilterIcon = styled(Filter, {
+const FilterIcon = styled(Settings2, {
   strokeWidth: 1.75,
+  color: '$hiContrast',
   variants: {
     active: {
       true: {
-        fill: violet.violet5,
+        color: violet.violet11,
       },
     },
   },
-});
-
-const Badge = styled('div', {
-  position: 'absolute',
-  top: -4,
-  right: 18,
-  background: violet.violet11,
-  fontSize: '$1',
-  fontWeight: '$5',
-  padding: '2px $1',
-  borderRadius: '$round',
-  border: `2px solid ${violet.violet5}`,
-  height: '$3',
-  width: '$3',
 });
 
 const Overlay = styled(Dialog.Overlay, {
@@ -176,7 +164,6 @@ export const SmallScreensFiltersMenu = () => {
       <Dialog.Trigger asChild>
         <FloatingToolbarItem active={areFiltersApplied}>
           <FilterIcon active={areFiltersApplied} />
-          {areFiltersApplied && <Badge />}
         </FloatingToolbarItem>
       </Dialog.Trigger>
       <Dialog.Portal>
