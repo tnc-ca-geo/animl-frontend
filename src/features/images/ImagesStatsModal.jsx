@@ -69,14 +69,25 @@ const Heading = ({ label, content }) => (
 
 const NavMenu = styled(NavigationMenu, {
   justifyContent: 'left',
+  marginBottom: '15px',
+});
+
+const MenuList = styled(NavigationMenuList, {
+  background: '$backgroundDark',
 });
 
 const Trigger = styled(NavigationMenuTrigger, {
+  color: '$textMedium',
+  '&:hover': {
+    color: '$textDark',
+  },
+
   variants: {
     active: {
       true: {
-        backgroundColor: '$hiContrast',
-        color: '$loContrast',
+        backgroundColor: '$backgroundLight',
+        color: '$hiContrast',
+        border: '1px solid $border',
         '&:hover': {
           backgroundColor: '$hiContrast',
           color: '$loContrast',
@@ -287,9 +298,9 @@ const ImagesStatsModal = ({ open }) => {
         </NoneFoundAlert>
       )}
       {stats && (
-        <StatsDash>
+        <>
           <NavMenu>
-            <NavigationMenuList>
+            <MenuList>
               <NavigationMenuItem>
                 <Trigger onClick={() => setActivePanel("objects")} active={activePanel === "objects"}>
                   Objects
@@ -300,57 +311,59 @@ const ImagesStatsModal = ({ open }) => {
                   Images
                 </Trigger>
               </NavigationMenuItem>
-            </NavigationMenuList>
+            </MenuList>
           </NavMenu>
-          {activePanel === "objects" && (
-            <>
-              <ReviewCounts
-                label="Objects"
-                count={stats.objectCount}
-                reviewedCount={stats.objectReviewCount.reviewed}
-                notReviewedCount={stats.objectReviewCount.notReviewed}
-              />
-              {Object.keys(stats['objectLabelList']).length !== 0 && (
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                  <GraphCard
-                    label="Objects"
-                    list={stats.objectLabelList}
-                    content={hints.objectLabelList}
-                  />
-                </div>
-              )}
-              {stats['objectReviewerList'].length !== 0 && (
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                  <ListCard label="Reviewers" list={stats.objectReviewerList} content={hints.reviewerList} />
-                </div>
-              )}
-            </>
-          )}
-          {activePanel === "images" && (
-            <>
-              <ReviewCounts
-                label="Images"
-                count={stats.imageCount}
-                reviewedCount={stats.imageReviewCount.reviewed}
-                notReviewedCount={stats.imageReviewCount.notReviewed}
-              />
-              {Object.keys(stats['imageLabelList']).length !== 0 && (
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                  <GraphCard
-                    label="Images"
-                    list={stats.imageLabelList}
-                    content={hints.imageLabelList}
-                  />
-                </div>
-              )}
-              {stats['imageReviewerList'].length !== 0 && (
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                  <ListCard label="Reviewers" list={stats.imageReviewerList} content={hints.reviewerList} />
-                </div>
-              )}
-            </>
-          )}
-        </StatsDash>
+          <StatsDash>
+            {activePanel === "objects" && (
+              <>
+                <ReviewCounts
+                  label="Objects"
+                  count={stats.objectCount}
+                  reviewedCount={stats.objectReviewCount.reviewed}
+                  notReviewedCount={stats.objectReviewCount.notReviewed}
+                />
+                {Object.keys(stats['objectLabelList']).length !== 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                    <GraphCard
+                      label="Objects"
+                      list={stats.objectLabelList}
+                      content={hints.objectLabelList}
+                    />
+                  </div>
+                )}
+                {stats['objectReviewerList'].length !== 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                    <ListCard label="Reviewers" list={stats.objectReviewerList} content={hints.reviewerList} />
+                  </div>
+                )}
+              </>
+            )}
+            {activePanel === "images" && (
+              <>
+                <ReviewCounts
+                  label="Images"
+                  count={stats.imageCount}
+                  reviewedCount={stats.imageReviewCount.reviewed}
+                  notReviewedCount={stats.imageReviewCount.notReviewed}
+                />
+                {Object.keys(stats['imageLabelList']).length !== 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                    <GraphCard
+                      label="Images"
+                      list={stats.imageLabelList}
+                      content={hints.imageLabelList}
+                    />
+                  </div>
+                )}
+                {stats['imageReviewerList'].length !== 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                    <ListCard label="Reviewers" list={stats.imageReviewerList} content={hints.reviewerList} />
+                  </div>
+                )}
+              </>
+            )}
+          </StatsDash>
+        </>
       )}
     </div>
   );
