@@ -158,7 +158,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       const end = start + colCount;
 
       let tallest = 0;
-      for (let i = start; i < end; i++) {
+      for (let i = 0; i < end; i++) {
         const h = workingImages[i]?.imageHeight ?? defaultWidth * heightModifier;
         const w = workingImages[i]?.imageWidth ?? defaultWidth;
         const scalingFactor = defaultWidth / w;

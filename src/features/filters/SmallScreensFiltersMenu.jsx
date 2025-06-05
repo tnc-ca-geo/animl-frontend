@@ -12,9 +12,11 @@ import TagFilter from './TagFilter.jsx';
 import CustomFilter from './CustomFilter.jsx';
 import FiltersPanelFooter from './FiltersPanelFooter.jsx';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Filter, X } from 'lucide-react';
+import { X, Settings2 } from 'lucide-react';
 import { violet } from '@radix-ui/colors';
 import IconButton from '../../components/IconButton.jsx';
+import { selectActiveFilters } from './filtersSlice.js';
+import { SortBy } from './SortBy.jsx';
 
 const openOverlayAnimation = keyframes({
   from: { opacity: 0 },
@@ -62,15 +64,27 @@ const FloatingToolbarItem = styled('div', {
   variants: {
     active: {
       true: {
-        backgroundColor: violet.violet5,
         color: violet.violet11,
+        backgroundColor: violet.violet4,
       },
     },
   },
-  padding: '$1',
+  padding: '$2',
   flex: '1',
   '&:hover': {
     cursor: 'pointer',
+  },
+});
+
+const FilterIcon = styled(Settings2, {
+  strokeWidth: 1.75,
+  color: '$hiContrast',
+  variants: {
+    active: {
+      true: {
+        color: violet.violet11,
+      },
+    },
   },
 });
 
@@ -89,12 +103,12 @@ const Overlay = styled(Dialog.Overlay, {
 const PanelBody = styled('div', {
   backgroundColor: '$backgroundLight',
   height: 'calc(100% - $7 - $7)', // 2x $7's to account for header + footer
-  position: 'absolute',
+  position: 'relative',
   width: '100%',
 });
 
 const StyledFiltersPanel = styled(Dialog.Content, {
-  zIndex: '$6',
+  zIndex: '$5',
   width: '100vw',
   height: '80dvh',
   position: 'fixed',
@@ -130,12 +144,26 @@ const CloseButton = styled(IconButton, {
 
 export const SmallScreensFiltersMenu = () => {
   const userRoles = useSelector(selectUserCurrentRoles);
+  const activeFilters = useSelector(selectActiveFilters);
+
+  const areFiltersApplied =
+    activeFilters &&
+    (activeFilters.createdStart !== null ||
+      activeFilters.createdEnd !== null ||
+      activeFilters.addedStart !== null ||
+      activeFilters.addedEnd !== null ||
+      activeFilters.deployments !== null ||
+      activeFilters.labels !== null ||
+      activeFilters.cameras !== null ||
+      activeFilters.tags !== null ||
+      activeFilters.reviewed !== null ||
+      activeFilters.custom !== null);
 
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <FloatingToolbarItem>
-          <Filter />
+        <FloatingToolbarItem active={areFiltersApplied}>
+          <FilterIcon active={areFiltersApplied} />
         </FloatingToolbarItem>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -157,6 +185,7 @@ export const SmallScreensFiltersMenu = () => {
               <DateFilter type="created" />
               <DateFilter type="added" />
               {hasRole(userRoles, QUERY_WITH_CUSTOM_FILTER) && <CustomFilter />}
+              <SortBy />
             </StyledScrollArea>
           </PanelBody>
           <FiltersPanelFooter areActionsDisabled={true} />
