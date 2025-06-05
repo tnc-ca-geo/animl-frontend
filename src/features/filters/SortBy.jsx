@@ -27,34 +27,24 @@ export const SortBy = () => {
   return (
     <Accordion label="Sort" expandedDefault={false} expandOnHeaderClick={true}>
       <SortCheckbox
-        label="Date created: most recent first"
+        label="Date created: newest to oldest"
         isCurrentSort={isCurrentSort('dateTimeOriginal', true)}
         handleSortChanged={() => handleSortChanged('dateTimeOriginal', true)}
       />
       <SortCheckbox
-        label="Date created: most recent last"
+        label="Date created: oldest to newest"
         isCurrentSort={isCurrentSort('dateTimeOriginal', false)}
         handleSortChanged={() => handleSortChanged('dateTimeOriginal', false)}
       />
       <SortCheckbox
-        label="Date added: most recent first"
+        label="Date added: newest to oldest"
         isCurrentSort={isCurrentSort('dateAdded', true)}
         handleSortChanged={() => handleSortChanged('dateAdded', true)}
       />
       <SortCheckbox
-        label="Date added: most recent last"
+        label="Date added: oldest to newest"
         isCurrentSort={isCurrentSort('dateAdded', false)}
         handleSortChanged={() => handleSortChanged('dateAdded', false)}
-      />
-      <SortCheckbox
-        label="Camera: alphabetical"
-        isCurrentSort={isCurrentSort('cameraId', true)}
-        handleSortChanged={() => handleSortChanged('cameraId', true)}
-      />
-      <SortCheckbox
-        label="Camera: reverse alphabetical"
-        isCurrentSort={isCurrentSort('cameraId', false)}
-        handleSortChanged={() => handleSortChanged('cameraId', false)}
       />
     </Accordion>
   );
