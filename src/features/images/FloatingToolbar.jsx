@@ -16,6 +16,7 @@ const FloatingToolbarContainer = styled('div', {
   zIndex: '$1',
   boxShadow: '0 16px 32px hsl(206deg 12% 5% / 25%), 0 3px 5px hsl(0deg 0% 0% / 10%)',
   border: '1px solid $border',
+  overflow: 'hidden',
 });
 
 const Separator = styled('div', {
