@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { iso31661, iso31662 } from 'iso-3166';
 import {
   updateAutomationRules,
   selectMLModels,
@@ -244,6 +245,50 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                 )}
               </FieldRow>
 
+              {values.action.model && values.action.model.value === 'speciesnet' && (
+                <FieldRow>
+                  <FormFieldWrapper css={{ minWidth: '300px' }}>
+                    <SelectField
+                      name="action.country"
+                      label="Country"
+                      value={values.action.country}
+                      onChange={setFieldValue}
+                      onBlur={setFieldTouched}
+                      error={_.has(errors, 'action.country.value') && errors.action.country.value}
+                      touched={touched.action}
+                      options={iso31661.map((country) => ({
+                        value: country.alpha3,
+                        label: `${country.name}`,
+                      }))}
+                      isSearchable={true}
+                    />
+                  </FormFieldWrapper>
+
+                  {values.action.country && values.action.country.value === 'USA' && (
+                    <FormFieldWrapper css={{ minWidth: '300px' }}>
+                      <SelectField
+                        name="action.admin1Region"
+                        label="State"
+                        value={values.action.admin1Region}
+                        onChange={setFieldValue}
+                        onBlur={setFieldTouched}
+                        error={
+                          _.has(errors, 'action.admin1Region.value') && errors.action.country.value
+                        }
+                        touched={touched.action}
+                        options={iso31662
+                          .filter((subdivision) => subdivision.parent === 'US')
+                          .map((sub) => ({
+                            value: sub.code,
+                            label: `${sub.name}`,
+                          }))}
+                        isSearchable={true}
+                      />
+                    </FormFieldWrapper>
+                  )}
+                </FieldRow>
+              )}
+
               <ButtonRow>
                 <Button type="button" size="large" onClick={handleDiscardRuleClick}>
                   Cancel
@@ -284,6 +329,8 @@ function valsToRule({ name, event, action }) {
   if (action.type.value === 'run-inference') {
     newRule.action.mlModel = action.model.value;
     newRule.action.categoryConfig = action.categoryConfig;
+    newRule.action.country = action.country ? action.country.value : null;
+    newRule.action.admin1Region = action.admin1Region ? action.admin1Region.value : null;
   } else if (action.type.value === 'send-alert') {
     const recipients = action.alertRecipients.replace(/\s/g, '').split(',');
     newRule.action.alertRecipients = recipients;
@@ -322,6 +369,18 @@ function ruleToVals(rule) {
   if (rule.action.type === 'run-inference') {
     vals.action.model = { value: rule.action.mlModel, label: rule.action.mlModel };
     vals.action.categoryConfig = rule.action.categoryConfig;
+    vals.action.country = rule.action.country
+      ? {
+          value: rule.action.country,
+          label: iso31661.find((c) => c.alpha3 === rule.action.country).name,
+        }
+      : null;
+    vals.action.admin1Region = rule.action.admin1Region
+      ? {
+          value: rule.action.admin1Region,
+          label: iso31662.find((s) => s.code === rule.action.admin1Region).name,
+        }
+      : null;
   } else if (rule.action.type === 'send-alert') {
     const recipients = rule.action.alertRecipients.join(', ');
     vals.action.alertRecipients = recipients;
