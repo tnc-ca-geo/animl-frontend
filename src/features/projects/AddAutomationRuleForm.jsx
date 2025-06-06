@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -113,6 +113,31 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
 
   // discard rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
+
+  // countries for speceiesnet geofencing (ISO 3166-1 alpha-3 codes)
+  const countryOptions = useMemo(() => {
+    return [
+      { value: null, label: 'None' },
+      ...iso31661.map((country) => ({
+        value: country.alpha3,
+        label: `${country.name}`,
+      })),
+    ];
+  }, []);
+
+  // subdivisions (e.g. provinces or states) for speceiesnet geofencing (ISO 3166-2 codes)
+  const admin1RegionOptions = useMemo(() => {
+    return [
+      { value: null, label: 'None' },
+      // NOTE: for now, speciesnet geofencing only supports admin1Regions from USA
+      ...iso31662
+        .filter((subdivision) => subdivision.parent === 'US')
+        .map((sub) => ({
+          value: sub.code,
+          label: `${sub.name}`,
+        })),
+    ];
+  }, []);
 
   return (
     <>
@@ -256,10 +281,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                       onBlur={setFieldTouched}
                       error={_.has(errors, 'action.country.value') && errors.action.country.value}
                       touched={touched.action}
-                      options={iso31661.map((country) => ({
-                        value: country.alpha3,
-                        label: `${country.name}`,
-                      }))}
+                      options={countryOptions}
                       isSearchable={true}
                     />
                   </FormFieldWrapper>
@@ -276,12 +298,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                           _.has(errors, 'action.admin1Region.value') && errors.action.country.value
                         }
                         touched={touched.action}
-                        options={iso31662
-                          .filter((subdivision) => subdivision.parent === 'US')
-                          .map((sub) => ({
-                            value: sub.code,
-                            label: `${sub.name}`,
-                          }))}
+                        options={admin1RegionOptions}
                         isSearchable={true}
                       />
                     </FormFieldWrapper>
