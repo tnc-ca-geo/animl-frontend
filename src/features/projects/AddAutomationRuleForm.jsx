@@ -270,12 +270,12 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                 )}
               </FieldRow>
 
-              {values.action.model && values.action.model.value === 'speciesnet' && (
+              {values.action.model && values.action.model.value === 'speciesnet-all' && (
                 <FieldRow>
                   <FormFieldWrapper css={{ minWidth: '300px' }}>
                     <SelectField
                       name="action.country"
-                      label="Country"
+                      label="Country (optional)"
                       value={values.action.country}
                       onChange={setFieldValue}
                       onBlur={setFieldTouched}
@@ -290,7 +290,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                     <FormFieldWrapper css={{ minWidth: '300px' }}>
                       <SelectField
                         name="action.admin1Region"
-                        label="State"
+                        label="State (optional)"
                         value={values.action.admin1Region}
                         onChange={setFieldValue}
                         onBlur={setFieldTouched}
