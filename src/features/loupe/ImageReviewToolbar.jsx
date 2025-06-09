@@ -14,7 +14,11 @@ import {
   ChatBubbleIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import { labelsAdded, setMobileCommentFocusIndex } from '../review/reviewSlice.js';
+import {
+  labelsAdded,
+  setMobileCategorySelectorFocusIndex,
+  setMobileCommentFocusIndex,
+} from '../review/reviewSlice.js';
 import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import {
@@ -142,16 +146,10 @@ const ImageReviewToolbar = ({
   // image review toolbar so when the redux state is updated, all of the
   // toolbars respond to the change.  This local state scopes the
   // behavior to the toolbar where the action occurred.
-  const [localCatSelectorOpen, setLocalCatSelectorOpen] = useState(false);
   const [catSelectorOpen, setCatSelectorOpen] = useState(isAddingLabel === 'from-review-toolbar');
   useEffect(() => {
-    if (localCatSelectorOpen) {
-      setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
-    }
-    if (isAddingLabel === null) {
-      setLocalCatSelectorOpen(false);
-    }
-  }, [isAddingLabel, localCatSelectorOpen]);
+    setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
+  }, [isAddingLabel]);
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
@@ -166,13 +164,15 @@ const ImageReviewToolbar = ({
         imgId: image._id,
       }));
     dispatch(labelsAdded({ labels: newLabels }));
-    setLocalCatSelectorOpen(false);
   };
 
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
-    setLocalCatSelectorOpen(true);
-    dispatch(addLabelStart('from-review-toolbar'));
+    if (isSmallScreen) {
+      dispatch(setMobileCategorySelectorFocusIndex(image._id));
+    } else {
+      dispatch(addLabelStart('from-review-toolbar'));
+    }
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
@@ -223,7 +223,7 @@ const ImageReviewToolbar = ({
           {/* Edit */}
           <Tooltip>
             <TooltipTrigger asChild>
-              {catSelectorOpen ? (
+              {!isSmallScreen && catSelectorOpen ? (
                 <CategorySelector handleCategoryChange={handleCategoryChange} />
               ) : (
                 <ToolbarIconButton

@@ -17,6 +17,7 @@ import { SmallScreensLoupe } from '../loupe/SmallScreensLoupe.jsx';
 import { selectUserCurrentRoles } from '../auth/authSlice.js';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import { CommentsDialog } from '../loupe/CommentsDialog.jsx';
+import { CategorySelectorDialog } from '../../components/CategorySelectorDialog.jsx';
 
 export const colCounts = {
   single: 1,
@@ -289,6 +290,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
             }}
           </AutoSizer>
           <CommentsDialog />
+          <CategorySelectorDialog />
         </>
       )}
     </>
