@@ -46,6 +46,7 @@
     "graphql-request": "^4.2.0",
     "install": "^0.13.0",
     "intrinsic-scale": "^3.0.4",
+    "iso-3166": "^4.3.0",
     "lodash": "^4.17.20",
     "lucide-react": "^0.441.0",
     "luxon": "^3.0.1",

@@ -143,6 +143,8 @@ const automationRuleFields = `
     type
     alertRecipients
     mlModel
+    country
+    admin1Region
     confThreshold
     categoryConfig
   }
