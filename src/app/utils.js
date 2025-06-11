@@ -194,3 +194,11 @@ export const createBreakpoints = (breakpointValues) => {
     greaterThanOrEqual: (bp1, bp2) => compareBreakpoints(bp1, bp2) >= 0,
   };
 };
+
+// Shorten words for mobile screens
+export const shortenedField = (fieldVal) => {
+  if (fieldVal.length <= 8) {
+    return fieldVal;
+  }
+  return `${fieldVal.substring(0, 5)}...`;
+};
