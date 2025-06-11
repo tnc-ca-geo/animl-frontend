@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SymbolIcon } from '@radix-ui/react-icons';
 import IconButton from '../../../components/IconButton';
 import { styled } from '../../../theme/stitches.config';
@@ -7,6 +7,11 @@ import { Tooltip, TooltipArrow, TooltipTrigger, TooltipContent } from '../../../
 import { getRandomColor, getTextColor } from '../../../app/utils';
 import * as Yup from 'yup';
 import Button from '../../../components/Button';
+import { useSelector } from 'react-redux';
+import { selectGlobalBreakpoint } from '../projectsSlice';
+import { globalBreakpoints } from '../../../config';
+import { Palette } from 'lucide-react';
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 
 const defaultColors = [
   '#E54D2E',
@@ -33,6 +38,16 @@ const defaultColors = [
   '#F0F0F0',
 ];
 
+const ColorPickerPopover = styled(PopoverContent, {
+  borderRadius: '$2',
+  padding: '$2',
+  fontSize: '$3',
+  lineHeight: 1,
+  backgroundColor: '$hiContrast',
+  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  color: '$textMedium',
+});
+
 const ColorSwatch = styled('button', {
   border: 'none',
   color: '$backgroundLight',
@@ -50,7 +65,7 @@ const createTagNameSchema = (currentName, allNames) => {
     .required('Enter a tag name.')
     .matches(/^[a-zA-Z0-9_. -]*$/, "Tags can't contain special characters")
     .test('unique', 'A tag with this name already exists.', (val) => {
-      const allNamesLowerCase = allNames.map((n) => n.toLowerCase())
+      const allNamesLowerCase = allNames.map((n) => n.toLowerCase());
       if (val?.toLowerCase() === currentName.toLowerCase()) {
         // name hasn't changed
         return true;
@@ -61,69 +76,104 @@ const createTagNameSchema = (currentName, allNames) => {
         return false;
       }
     });
-}
+};
 
 const tagColorSchema = Yup.string()
   .matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Enter a valid color code with 6 digits' })
   .required('Select a color.');
 
 const EditContainer = styled('div', {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
-  columnGap: '$3',
+  display: 'flex',
+  flexDirection: 'column',
   rowGap: '$1',
+  '@bp2': {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
+  },
+  columnGap: '$3',
   marginBottom: '$3',
   marginTop: '$2',
   '& > *': {
-    minWidth: 0
-  }
+    minWidth: 0,
+  },
 });
 
 const EditFieldContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
+  gap: '$1',
 });
 
 const EditFieldLabel = styled('label', {
   fontWeight: 'bold',
   color: '$textDark',
-  fontSize: '$3'
+  fontSize: '$3',
 });
 
 const EditFieldInput = styled('input', {
-  padding: '$2 $3',
+  padding: '$2',
+  width: '100%',
+  '@bp2': {
+    width: 'auto',
+    padding: '$2 $3',
+  },
   color: '$textMedium',
   fontFamily: '$sourceSansPro',
   border: '1px solid $border',
   borderRadius: '$1',
   minWidth: 0,
-  '&:focus': {
-    transition: 'all 0.2s ease',
-    outline: 'none',
-    boxShadow: '0 0 0 3px $gray3',
-    // borderColor: '$textDark',
-    '&:hover': {
-      boxShadow: '0 0 0 3px $blue200',
-      borderColor: '$blue500',
+  variants: {
+    focusDisabled: {
+      true: {
+        border: 'none',
+        '&:focus': {
+          outline: 'none',
+          boxShadow: 'none',
+        },
+      },
+      false: {
+        '&:focus': {
+          transition: 'all 0.2s ease',
+          outline: 'none',
+          boxShadow: '0 0 0 3px $gray3',
+          // borderColor: '$textDark',
+          '&:hover': {
+            boxShadow: '0 0 0 3px $blue200',
+            borderColor: '$blue500',
+          },
+        },
+      },
     },
   },
 });
 
 const EditFieldError = styled('div', {
   color: '$errorText',
-  fontSize: '$3'
+  fontSize: '$3',
 });
 
 const EditActionButtonsContainer = styled('div', {
   display: 'flex',
-  margin: 'auto auto',
   gap: '$2',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
+  width: '100%',
+  marginTop: '$1',
+  '@bp2': {
+    margin: 'auto auto',
+    marginBottom: '$2',
+  },
+});
+
+const EditActionsButton = styled(Button, {
+  flex: '1',
+  '@bp2': {
+    flex: 'unset',
+  },
 });
 
 const PreviewTagContainer = styled('div', {
   display: 'flex',
-  marginTop: '$2'
+  marginTop: '$2',
 });
 
 const PreviewTag = styled('div', {
@@ -138,7 +188,33 @@ const PreviewTag = styled('div', {
   placeItems: 'center',
   marginLeft: '0',
   marginRight: 'auto',
-  height: '$5'
+  height: '$5',
+});
+
+const SmallScreenColorPicker = styled('div', {
+  width: '100%',
+  display: 'flex',
+  border: '1px solid $border',
+  borderRadius: '$1',
+  '&:focus-within': {
+    transition: 'all 0.2s ease',
+    outline: 'none',
+    boxShadow: '0 0 0 3px $gray3',
+    // borderColor: '$textDark',
+    '&:hover': {
+      boxShadow: '0 0 0 3px $blue200',
+      borderColor: '$blue500',
+    },
+  },
+});
+
+const ColorPickerButton = styled(IconButton, {
+  height: '100%',
+  aspectRatio: '1/1',
+  background: '$backgroundLight',
+  borderRadius: '$1',
+  margin: 'auto 0',
+  marginRight: '$2',
 });
 
 export const EditTag = ({
@@ -152,55 +228,58 @@ export const EditTag = ({
   isNewLabel,
 }) => {
   if (isNewLabel) {
-    currentColor = `#${getRandomColor()}`
-    currentName = ''
+    currentColor = `#${getRandomColor()}`;
+    currentName = '';
   }
 
   // to get rid of warning for now
   const [name, setName] = useState(currentName);
-  const [color, setColor] = useState(currentColor);
   const [tempColor, setTempColor] = useState(currentColor);
 
+  const [nameError, setNameError] = useState('');
+  const [colorError, setColorError] = useState('');
 
-  const [nameError, setNameError] = useState("");
-  const [colorError, setColorError] = useState("");
+  const tagNameSchema = useMemo(() => {
+    return createTagNameSchema(currentName, allTagNames);
+  }, [currentName, allTagNames]);
 
-  const updateColor = (newColor) => {
-    setTempColor(newColor);
-    setColor(newColor);
+  const updateTempColor = (color) => {
+    let colorError = '';
+    try {
+      tagColorSchema.validateSync(color);
+    } catch (err) {
+      colorError = err.message ?? '';
+    }
+    setTempColor(color);
     if (onPreviewColor) {
-      onPreviewColor(newColor);
+      onPreviewColor(color);
     }
-    setColorError("");
-  }
+    setColorError(colorError);
+  };
 
-  useEffect(() => {
-    if (colorError !== "") {
-      setColorError("");
+  const updateName = (name) => {
+    let nameError = '';
+    try {
+      tagNameSchema.validateSync(name);
+    } catch (err) {
+      nameError = err.message ?? '';
     }
-  }, [tempColor, color]);
-
-  useEffect(() => {
-    if (nameError !== "") {
-      setNameError("");
-    }
-  }, [name]);
+    setNameError(nameError);
+    setName(name);
+  };
 
   const onCancelEdit = () => {
     setName(currentName);
-    setColor(currentColor);
     setTempColor(currentColor);
     onCancel();
-  }
+  };
 
   const onConfirmEdit = () => {
-    let validatedName = "";
-    let validatedColor = "";
-
-    const tagNameSchema = createTagNameSchema(currentName, allTagNames);
+    let validatedName = '';
+    let validatedColor = '';
 
     // If the user typed in a color, tempColor !== color
-    const submittedColor = tempColor !== color ? tempColor : color;
+    const submittedColor = tempColor;
     try {
       validatedColor = tagColorSchema.validateSync(submittedColor);
     } catch (err) {
@@ -213,7 +292,7 @@ export const EditTag = ({
       setNameError(err.message);
     }
 
-    if (validatedName === "" || validatedColor === "") {
+    if (validatedName === '' || validatedColor === '') {
       return;
     }
 
@@ -222,51 +301,106 @@ export const EditTag = ({
     } else {
       onSubmit(id, validatedName, validatedColor);
     }
-  }
+  };
+
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   return (
     <>
-      { isNewLabel &&
+      {isNewLabel && (
         <PreviewTagContainer>
-          <PreviewTag css={{
-            borderColor: color,
-            backgroundColor: `${color}1A`,
-          }}>
-            { !name ? 'new tag' : name }
+          <PreviewTag
+            css={{
+              borderColor: tempColor,
+              backgroundColor: `${tempColor}1A`,
+            }}
+          >
+            {!name ? 'new tag' : name}
           </PreviewTag>
         </PreviewTagContainer>
-      }
+      )}
       <EditContainer>
-        {/* Row 1 column 1 */}
         <EditFieldContainer>
           <EditFieldLabel>Name</EditFieldLabel>
-          {/* Row 2 column 1 */}
-          <EditFieldInput 
-            value={name} 
-            onChange={(e) => setName(e.target.value)}
-          />
-          {/* Row 3 column 1 */}
+          <EditFieldInput value={name} onChange={(e) => updateName(e.target.value)} />
           <EditFieldError>{nameError}</EditFieldError>
         </EditFieldContainer>
-
         <EditFieldContainer>
-          {/* Row 1 column 2 */}
           <EditFieldLabel>Color</EditFieldLabel>
-          {/* Row 2 column 2 */}
           <ColorPicker>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            {!isSmallScreen ? (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <IconButton
+                      type="button"
+                      aria-label="Get a new color"
+                      size="md"
+                      onClick={() => updateTempColor(`#${getRandomColor()}`)}
+                      css={{
+                        backgroundColor: tempColor,
+                        borderColor: tempColor,
+                        color: getTextColor(tempColor),
+                        '&:hover': {
+                          borderColor: tempColor,
+                        },
+                        '&:active': {
+                          borderColor: '$border',
+                        },
+                      }}
+                    >
+                      <SymbolIcon />
+                    </IconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" sideOffset={5}>
+                    Get a new color
+                    <TooltipArrow />
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <EditFieldInput
+                      value={tempColor}
+                      onChange={(e) => updateTempColor(`${e.target.value}`)}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    sideOffset={5}
+                    css={{
+                      maxWidth: 324,
+                      padding: '$2',
+                      color: '$textMedium',
+                      backgroundColor: 'white',
+                    }}
+                  >
+                    <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+                    {defaultColors.map((color) => (
+                      <ColorSwatch
+                        key={color}
+                        css={{ backgroundColor: color }}
+                        type="button"
+                        onClick={() => updateTempColor(color)}
+                      />
+                    ))}
+                    <TooltipArrow css={{ fill: 'white' }} />
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            ) : (
+              <>
                 <IconButton
                   type="button"
                   aria-label="Get a new color"
                   size="md"
-                  onClick={() => updateColor(`#${getRandomColor()}`)}
+                  onClick={() => updateTempColor(`#${getRandomColor()}`)}
                   css={{
-                    backgroundColor: color,
-                    borderColor: color,
-                    color: getTextColor(color),
+                    backgroundColor: tempColor,
+                    borderColor: tempColor,
+                    color: getTextColor(tempColor),
                     '&:hover': {
-                      borderColor: color,
+                      borderColor: tempColor,
                     },
                     '&:active': {
                       borderColor: '$border',
@@ -275,64 +409,61 @@ export const EditTag = ({
                 >
                   <SymbolIcon />
                 </IconButton>
-              </TooltipTrigger>
-              <TooltipContent side='top' sideOffset={5}>
-                Get a new color
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <EditFieldInput 
-                  value={tempColor}
-                  onChange={(e) => setTempColor(`${e.target.value}`)}/>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                sideOffset={5}
-                css={{
-                  maxWidth: 324,
-                  padding: '$2',
-                  color: '$textMedium',
-                  backgroundColor: 'white',
-                }}
-              >
-                <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
-                {defaultColors.map((color) => (
-                  <ColorSwatch
-                    key={color}
-                    css={{ backgroundColor: color }}
-                    type="button"
-                    onClick={() => updateColor(color)}
-                  />
-                ))}
-                <TooltipArrow css={{ fill: 'white' }} />
-              </TooltipContent>
-            </Tooltip>
+                <Popover>
+                  <SmallScreenColorPicker>
+                    <EditFieldInput
+                      value={tempColor}
+                      onChange={(e) => updateTempColor(`${e.target.value}`)}
+                      focusDisabled={true}
+                    />
+                    <PopoverTrigger asChild>
+                      <ColorPickerButton variant="ghost">
+                        <Palette />
+                      </ColorPickerButton>
+                    </PopoverTrigger>
+                    <ColorPickerPopover
+                      side="top"
+                      sideOffset={5}
+                      style={{
+                        maxWidth: 324,
+                        padding: '$2',
+                        backgroundColor: 'white',
+                      }}
+                    >
+                      <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+                      {defaultColors.map((color) => (
+                        <ColorSwatch
+                          key={color}
+                          css={{ backgroundColor: color }}
+                          type="button"
+                          onClick={() => updateTempColor(color)}
+                        />
+                      ))}
+                      <PopoverArrow style={{ fill: 'white' }} />
+                    </ColorPickerPopover>
+                  </SmallScreenColorPicker>
+                </Popover>
+              </>
+            )}
           </ColorPicker>
-          {/* Row 3 column 2 */}
           <EditFieldError>{colorError}</EditFieldError>
         </EditFieldContainer>
-
-        {/* Row 2 column 3 */}
         <EditFieldContainer>
           <EditActionButtonsContainer>
-            <Button 
-              size="small" 
-              type="button" 
-              disabled={!name} 
+            <EditActionsButton
+              size="small"
+              type="button"
+              disabled={!name}
               onClick={() => onConfirmEdit()}
             >
               Save
-            </Button>
-            <Button size="small" type="button" onClick={() => onCancelEdit(false)}>
+            </EditActionsButton>
+            <EditActionsButton size="small" type="button" onClick={() => onCancelEdit(false)}>
               Cancel
-            </Button>
+            </EditActionsButton>
           </EditActionButtonsContainer>
         </EditFieldContainer>
-
-
       </EditContainer>
     </>
   );
-}
+};

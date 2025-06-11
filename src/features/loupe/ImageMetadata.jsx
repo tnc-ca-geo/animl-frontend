@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
 import { useSelector } from 'react-redux';
+import { shortenedField } from '../../app/utils.js';
 
 const ItemValue = styled('div', {
   fontSize: '$3',
@@ -68,13 +69,6 @@ const MetadataPane = styled('div', {
     backgroundColor: 'unset',
   },
 });
-
-const shortenedField = (fieldVal) => {
-  if (fieldVal.length <= 8) {
-    return fieldVal;
-  }
-  return `${fieldVal.substring(0, 5)}...`;
-};
 
 const formatDeploymentMobile = (depName, cameraId) =>
   depName === 'default' ? `${cameraId} (default)` : depName;
