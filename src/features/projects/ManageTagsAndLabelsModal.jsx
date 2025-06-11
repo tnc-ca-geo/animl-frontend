@@ -3,6 +3,9 @@ import { styled } from '../../theme/stitches.config';
 import ManageLabelsModal from './ManageLabelsModal';
 import { ManageTagsModal } from './ManageTagsModal/ManageTagsModal';
 import InfoIcon from '../../components/InfoIcon';
+import { useSelector } from 'react-redux';
+import { selectGlobalBreakpoint } from './projectsSlice';
+import { globalBreakpoints } from '../../config';
 
 export const ManageLabelsAndTagsModal = ({ tab = 'labels' }) => {
   return (
@@ -53,6 +56,10 @@ const ModalTitle = styled('div', {
   left: '$3',
   paddingTop: '$1',
   paddingBottom: '$1',
+  display: 'none',
+  '@bp2': {
+    display: 'block',
+  },
 });
 
 const TagsVsLabelsContent = styled('div', {
@@ -62,7 +69,7 @@ const TagsVsLabelsContent = styled('div', {
 const ButtonsContainer = styled('div', {
   display: 'flex',
   gap: '$2',
-  alignItems: 'center'
+  alignItems: 'center',
 });
 
 const TagsVsLabelsHelp = () => (
@@ -93,15 +100,21 @@ const TagsVsLabelsHelp = () => (
 );
 
 export const ManageLabelsAndTagsModalTitle = ({ tab, setTab }) => {
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
+  const labelsTitle = isSmallScreen ? 'Manage Labels' : 'Labels';
+  const tagsTitle = isSmallScreen ? 'Manage Tags' : 'Tags';
+
   return (
     <TitleContainer>
       <ModalTitle>{`Manage ${tab}`}</ModalTitle>
       <ButtonsContainer>
         <TabTitle active={tab === 'labels'} onClick={() => setTab('labels')}>
-          Labels
+          {labelsTitle}
         </TabTitle>
         <TabTitle active={tab === 'tags'} onClick={() => setTab('tags')}>
-          Tags
+          {tagsTitle}
         </TabTitle>
         <InfoIcon side="bottom" tooltipContent={<TagsVsLabelsHelp />} />
       </ButtonsContainer>
