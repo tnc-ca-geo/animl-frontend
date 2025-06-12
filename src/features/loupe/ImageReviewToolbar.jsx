@@ -150,7 +150,7 @@ const ImageReviewToolbar = ({
     } else {
       setCatSelectorOpen(false);
     }
-    if (isAddingLabel === null || !localCatSelectorOpen) {
+    if (isAddingLabel === null) {
       setLocalCatSelectorOpen(false);
     }
   }, [isAddingLabel, localCatSelectorOpen]);
