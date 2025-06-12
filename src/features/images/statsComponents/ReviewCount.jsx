@@ -54,18 +54,22 @@ const ReviewCounts = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
       <RatioCard label={label} tnum={count} content={countHint} />
-      <RatioCard
-        label="Reviewed"
-        tnum={reviewedCount}
-        // bnum={stats.imageCount}
-        content={reviewedHint}
-      />
-      <RatioCard
-        label="Not reviewed"
-        tnum={notReviewedCount}
-        // bnum={stats.imageCount}
-        content={notReviewedHint}
-      />
+      {reviewedCount && (
+        <RatioCard
+          label="Reviewed"
+          tnum={reviewedCount}
+          // bnum={stats.imageCount}
+          content={reviewedHint}
+        />
+      )}
+      {notReviewedCount && (
+        <RatioCard
+          label="Not reviewed"
+          tnum={notReviewedCount}
+          // bnum={stats.imageCount}
+          content={notReviewedHint}
+        />
+      )}
     </div>
   );
 }

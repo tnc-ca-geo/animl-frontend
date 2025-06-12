@@ -9,6 +9,7 @@ import {
 
 import ObjectPanel from './statsComponents/ObjectPanel';
 import ImagePanel from './statsComponents/ImagePanel';
+import BurstsPanel from './statsComponents/BurstsPanel';
 
 const StatsDash = styled('div', {
   display: 'flex',
@@ -51,7 +52,7 @@ const Trigger = styled(NavigationMenuTrigger, {
 });
 
 const ImagesStatsModal = ({ open }) => {
-    const [activePanel, setActivePanel] = useState("objects");
+  const [activePanel, setActivePanel] = useState("objects");
 
   return (
     <div>
@@ -67,11 +68,17 @@ const ImagesStatsModal = ({ open }) => {
               Images
             </Trigger>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Trigger onClick={() => setActivePanel("bursts")} active={activePanel === "bursts"}>
+              Bursts
+            </Trigger>
+          </NavigationMenuItem>
         </MenuList>
       </NavMenu>
       <StatsDash>
         {activePanel === "objects" && <ObjectPanel open={open} />}
         {activePanel === "images" && <ImagePanel open={open} />}
+        {activePanel === "bursts" && <BurstsPanel open={open} />}
       </StatsDash>
     </div>
   );
