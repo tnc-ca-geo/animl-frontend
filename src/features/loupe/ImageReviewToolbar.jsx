@@ -147,8 +147,10 @@ const ImageReviewToolbar = ({
   useEffect(() => {
     if (localCatSelectorOpen) {
       setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
+    } else {
+      setCatSelectorOpen(false);
     }
-    if (isAddingLabel === null) {
+    if (isAddingLabel === null || !localCatSelectorOpen) {
       setLocalCatSelectorOpen(false);
     }
   }, [isAddingLabel, localCatSelectorOpen]);
