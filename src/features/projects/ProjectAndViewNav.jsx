@@ -23,7 +23,7 @@ import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuTrigger,
+  NavigationMenuTriggerWithCaret,
   NavigationMenuLink,
   NavigationMenuContent,
   NavigationMenuViewport,
@@ -115,7 +115,7 @@ const ContentListItem = React.forwardRef(function ContentListItem(
   );
 });
 
-const NavigationMenuTriggerViews = styled(NavigationMenuTrigger, {
+const NavigationMenuTriggerViews = styled(NavigationMenuTriggerWithCaret, {
   variants: {
     edited: {
       true: {
@@ -229,9 +229,9 @@ const ProjectAndViewNav = () => {
       {selectedView && (
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger onPointerMove={(e) => e.preventDefault()}>
+            <NavigationMenuTriggerWithCaret onPointerMove={(e) => e.preventDefault()}>
               {selectedProj.name}
-            </NavigationMenuTrigger>
+            </NavigationMenuTriggerWithCaret>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Projects</MenuTitle>
               <ContentList layout="one">
