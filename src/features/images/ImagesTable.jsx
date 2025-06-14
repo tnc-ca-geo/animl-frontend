@@ -288,7 +288,9 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              height={height - headerHeight}
+              // Autosizer is consistently setting the height to be
+              // 1 px taller than its parent
+              height={height - headerHeight - 1}
               itemCount={imagesCount}
               itemSize={91}
               onItemsRendered={onItemsRendered}
