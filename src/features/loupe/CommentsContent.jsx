@@ -5,6 +5,7 @@ import { Comment } from './Comment.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { editComment, selectCommentsLoading } from '../review/reviewSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { BottomUpMenuHeader } from '../../components/BottomUpMenu.jsx';
 
 const StyledCommentsContainer = styled('div', {
   overflowY: 'scroll',
@@ -24,24 +25,6 @@ const StyledContent = styled('div', {
     maxHeight: '70vh',
     borderRadius: '$2',
   },
-});
-
-const StyledHeader = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  borderTopLeftRadius: '$3',
-  borderTopRightRadius: '$3',
-  '@bp1': {
-    borderTopLeftRadius: '$2',
-    borderTopRightRadius: '$2',
-  },
-  borderBottom: '1px solid $border',
-  backgroundColor: '$backgroundLight',
-  fontWeight: '$5',
-  color: '$textDark',
-  padding: '$0 $3',
-  minHeight: '$7',
-  position: 'relative',
 });
 
 const StyledAddCommentRow = styled('div', {
@@ -148,10 +131,10 @@ export const CommentsContent = ({
         </SpinnerOverlay>
       )}
       <StyledContent>
-        <StyledHeader>
+        <BottomUpMenuHeader>
           Comments
           {closeContent}
-        </StyledHeader>
+        </BottomUpMenuHeader>
         {comments?.length > 0 && (
           <StyledCommentsContainer>
             {comments.map((comment, idx) => (

@@ -256,6 +256,9 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
 
   const handleEditLabelMenuItemClick = (e) => {
     e.stopPropagation();
+    if (isSmallScreen) {
+      return;
+    }
     // NOTE: if user selects the "edit label" item, we need to force
     // focus to shift to the react-select category selector component.
     // see https://github.com/radix-ui/primitives/issues/1446
@@ -272,7 +275,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger disabled={!isAuthorized}>
+      <ContextMenuTrigger disabled={isSmallScreen || !isAuthorized}>
         <Draggable
           bounds=".image-frame"
           handle=".drag-handle"

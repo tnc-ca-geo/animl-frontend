@@ -1,11 +1,13 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { labelsAdded, setFocus } from '../review/reviewSlice.js';
+import { labelsAdded, setFocus, setMobileCategorySelectorFocus } from '../review/reviewSlice.js';
 import { addLabelStart, addLabelEnd, selectIsAddingLabel } from './loupeSlice.js';
 import ValidationButtons from './ValidationButtons.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
 import { getTextColor } from '../../app/utils.js';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
+import { globalBreakpoints } from '../../config.js';
 
 const StyledBoundingBoxLabel = styled('div', {
   // backgroundColor: '#345EFF',
@@ -107,9 +109,19 @@ const BoundingBoxLabel = forwardRef(function BoundingBoxLabel(
     if (catSelectorOpen) ref.current.focus();
   }, [ref, catSelectorOpen]);
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
   const handleLabelClick = (e) => {
     e.stopPropagation();
-    if (!object.locked && isAuthorized && !catSelectorOpen) {
+    if (object.locked || !isAuthorized) {
+      return;
+    }
+    if (isSmallScreen) {
+      dispatch(setMobileCategorySelectorFocus({ imageId: imgId, objectId: object._id }));
+      return;
+    }
+    if (!catSelectorOpen) {
       dispatch(setFocus({ index, type: 'manual' }));
       dispatch(addLabelStart('from-object'));
     }
