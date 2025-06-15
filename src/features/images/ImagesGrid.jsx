@@ -254,7 +254,9 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
                         ref(grid);
                         gridRef.current = grid;
                       }}
-                      height={height}
+                      // Autosizer is consistently setting the height to be
+                      // 1 px taller than its parent
+                      height={height - 1}
                       width={width}
                       columnCount={colCount}
                       columnWidth={() => calcColWidth(width)}

@@ -16,7 +16,7 @@ import {
 import IconButton from '../../components/IconButton.jsx';
 import {
   labelsAdded,
-  setMobileCategorySelectorFocusIndex,
+  setMobileCategorySelectorFocus,
   setMobileCommentFocusIndex,
 } from '../review/reviewSlice.js';
 import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
@@ -169,7 +169,7 @@ const ImageReviewToolbar = ({
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
     if (isSmallScreen) {
-      dispatch(setMobileCategorySelectorFocusIndex(image._id));
+      dispatch(setMobileCategorySelectorFocus({ imageId: image._id, objectId: null }));
     } else {
       dispatch(addLabelStart('from-review-toolbar'));
     }

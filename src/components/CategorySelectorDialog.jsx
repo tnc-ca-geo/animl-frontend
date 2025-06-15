@@ -11,9 +11,9 @@ import {
 } from './BottomUpMenu';
 import {
   labelsAdded,
-  selectMobileCategorySelectorFocusIndex,
+  selectMobileCategorySelectorFocus,
   selectWorkingImages,
-  setMobileCategorySelectorFocusIndex,
+  setMobileCategorySelectorFocus,
 } from '../features/review/reviewSlice';
 import {
   selectProjectLabelsLoading,
@@ -61,7 +61,7 @@ export const CategorySelectorDialog = () => {
   const workingImages = useSelector(selectWorkingImages);
   const labelsLoading = useSelector(selectProjectLabelsLoading);
   const project = useSelector(selectSelectedProject);
-  const focusIndex = useSelector(selectMobileCategorySelectorFocusIndex);
+  const { imageId, objectId } = useSelector(selectMobileCategorySelectorFocus);
   const userId = useSelector(selectUserUsername);
   const dispatch = useDispatch();
 
@@ -69,26 +69,27 @@ export const CategorySelectorDialog = () => {
     .filter((lbl) => lbl.reviewerEnabled)
     .sort((lbl1, lbl2) => compareLabelNames(lbl1.name, lbl2.name));
   const [filteredLabels, setFilteredLabels] = useState(enabledLabels);
-  const image = workingImages.find((img) => img._id === focusIndex);
+  const image = workingImages.find((img) => img._id === imageId);
 
   useEffect(() => {
-    setIsOpen(focusIndex !== null && focusIndex !== undefined);
-  }, [focusIndex]);
+    setIsOpen(imageId !== null && imageId !== undefined);
+  }, [imageId]);
 
   const handleClose = () => {
     setIsOpen(false);
     setFilteredLabels(enabledLabels);
-    dispatch(setMobileCategorySelectorFocusIndex(null));
+    dispatch(setMobileCategorySelectorFocus({ imageId: null, objectId: null }));
   };
 
   const onLabelChange = (newLabel) => {
     if (!newLabel) {
       return;
     }
+
     const labelsToAdd = image.objects
+      .filter((obj) => (objectId ? obj._id === objectId : true))
       .filter((obj) => !obj.locked)
       .map((obj) => {
-        console.log(obj);
         return {
           objIsTemp: obj.isTemp,
           userId,
