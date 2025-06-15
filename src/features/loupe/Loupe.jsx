@@ -38,8 +38,9 @@ const LoupeBody = styled('div', {
   // display: 'grid',
   // $7 - height of panel header
   // $8 - height of nav bar
+  // 1px - border
   // 98px - height of toolbar plus height of 2 borders
-  height: 'calc(100vh - $7 - $8 - 145px)',
+  height: 'calc(100vh - $7 - $8 - 145px - 1px)',
   backgroundColor: '$backgroundBlack',
 });
 
