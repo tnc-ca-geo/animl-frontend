@@ -13,7 +13,6 @@ import {
   labelsAdded,
   selectMobileCategorySelectorFocus,
   selectWorkingImages,
-  setFocus,
   setMobileCategorySelectorFocus,
 } from '../features/review/reviewSlice';
 import {
