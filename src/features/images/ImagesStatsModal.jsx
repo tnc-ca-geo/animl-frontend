@@ -252,7 +252,7 @@ const ImagesStatsModal = ({ open }) => {
               content={hints.notReviewedCount}
             />
           </div>
-          {Object.keys(stats['labelList']).length !== 0 && (
+          {stats['labelList'] && Object.keys(stats['labelList']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <GraphCard
                 label="Validated labels"
