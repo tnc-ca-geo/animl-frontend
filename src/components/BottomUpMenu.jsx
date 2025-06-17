@@ -125,7 +125,6 @@ export const BottomUpInput = styled('input', {
   resize: 'none',
   width: '100%',
   color: '$textDark',
-  marginBottom: '$3',
   fontSize: '$3',
   fontWeight: '$2',
   boxSizing: 'border-box',

@@ -13,16 +13,18 @@ import {
   labelsAdded,
   selectMobileCategorySelectorFocus,
   selectWorkingImages,
+  setFocus,
   setMobileCategorySelectorFocus,
 } from '../features/review/reviewSlice';
 import {
   selectProjectLabelsLoading,
   selectSelectedProject,
 } from '../features/projects/projectsSlice';
-import { X } from 'lucide-react';
+import { MoveRight, X } from 'lucide-react';
 import { SimpleSpinner, SpinnerOverlay } from './Spinner';
 import { selectUserUsername } from '../features/auth/authSlice';
 import { compareLabelNames } from './CategorySelector';
+import Button from './Button';
 
 const ContentContainer = styled('div', {
   overflowY: 'scroll',
@@ -42,8 +44,20 @@ const SearchRow = styled('div', {
   borderTop: '1px solid $border',
   padding: '$3',
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'row',
   backgroundColor: '$backgroundLight',
+  gap: '$2',
+});
+
+const SearchButton = styled(Button, {
+  height: '100%',
+  flex: '1',
+  display: 'grid',
+  placeItems: 'center',
+  aspectRatio: '1',
+  svg: {
+    marginRight: '0 !important',
+  },
 });
 
 const Label = styled('div', {
@@ -52,6 +66,20 @@ const Label = styled('div', {
   '&:hover': {
     backgroundColor: '$backgroundDark',
     cursor: 'pointer',
+  },
+  '&:first-child': {
+    backgroundColor: '$backgroundDark',
+  },
+});
+
+const MenuContent = styled(BottomUpMenuContent, {
+  variants: {
+    searchFocused: {
+      true: {
+        height: '55dvh',
+        top: '45dvh',
+      },
+    },
   },
 });
 
@@ -63,6 +91,7 @@ export const CategorySelectorDialog = () => {
   const project = useSelector(selectSelectedProject);
   const { imageId, objectId } = useSelector(selectMobileCategorySelectorFocus);
   const userId = useSelector(selectUserUsername);
+  const [searchFocused, setSearchFocused] = useState(false);
   const dispatch = useDispatch();
 
   const enabledLabels = project.labels
@@ -118,7 +147,7 @@ export const CategorySelectorDialog = () => {
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
-        <BottomUpMenuContent onPointerDownOutside={() => handleClose()}>
+        <MenuContent onPointerDownOutside={() => handleClose()} searchFocused={searchFocused}>
           <ContentContainer>
             <BottomUpMenuHeader>
               Labels
@@ -141,10 +170,21 @@ export const CategorySelectorDialog = () => {
               </>
             </CategorySelectorContainer>
             <SearchRow>
-              <BottomUpInput onChange={(e) => onSearch(e.target.value)} placeholder="Search..." />
+              <BottomUpInput
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                onChange={(e) => onSearch(e.target.value)}
+                placeholder="Search..."
+              />
+              <SearchButton
+                disabled={filteredLabels.length <= 0}
+                onClick={() => onLabelChange(filteredLabels[0]._id)}
+              >
+                <MoveRight />
+              </SearchButton>
             </SearchRow>
           </ContentContainer>
-        </BottomUpMenuContent>
+        </MenuContent>
         <BottomUpMenuOverlay />
       </Dialog.Portal>
     </Dialog.Root>
