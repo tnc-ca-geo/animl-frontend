@@ -15,7 +15,7 @@ import ListCard from './ListCard.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
-const ImagePanel = ({ open }) => {
+const ImagePanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -26,10 +26,10 @@ const ImagePanel = ({ open }) => {
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
     const noErrors = !errors || errors.length === 0;
-    if (open && stats === null && !noneFound && !isLoading && noErrors) {
+    if (stats === null && !noneFound && !isLoading && noErrors) {
       dispatch(fetchStats(filters));
     }
-  }, [open, stats, imagesStatsLoading, filters, dispatch]);
+  }, [stats, imagesStatsLoading, filters, dispatch]);
 
   useEffect(() => {
     const getStatsPending = imagesStatsLoading.isLoading && imagesStatsLoading.taskId;

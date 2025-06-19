@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { indigo } from '@radix-ui/colors';
-console.log("Color", indigo.indigo11);
 
 import StatsCard from "./StatsCard";
 import Heading from './Heading';
