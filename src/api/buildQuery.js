@@ -62,6 +62,10 @@ const imageFields = `
   }
   tags
   reviewed
+  url {
+    medium
+    small
+  }
 `;
 
 const pageInfoFields = `

@@ -371,7 +371,7 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
   return workingImages.map((img, imageIndex) => {
     // thumbnails
     const isImageFocused = selectedImageIndices.includes(imageIndex);
-    const thumbnail = <Image selected={isImageFocused} src={img.thumbUrl} />;
+    const thumbnail = <Image selected={isImageFocused} src={img.url.small} />;
 
     // label pills
     const labelPills = (
