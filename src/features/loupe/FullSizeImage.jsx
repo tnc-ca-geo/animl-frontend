@@ -113,7 +113,7 @@ const FullSizeImage = ({ workingImages, image, focusIndex }) => {
           }*/}
         </ImageFrame>
       )}
-      <FullImage ref={imgEl} src={image.url} onLoad={() => handleImgLoaded()} />
+      <FullImage ref={imgEl} src={image.url.medium} onLoad={() => handleImgLoaded()} />
     </ImageContainer>
   );
 };
