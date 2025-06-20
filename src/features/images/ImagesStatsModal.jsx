@@ -10,6 +10,7 @@ import {
 import ObjectPanel from './statsComponents/ObjectPanel';
 import ImagePanel from './statsComponents/ImagePanel';
 import BurstsPanel from './statsComponents/BurstsPanel';
+import IndependentDetectionsPanel from './statsComponents/IndependentDetectionsPanel'
 
 const StatsDash = styled('div', {
   display: 'flex',
@@ -73,12 +74,21 @@ const ImagesStatsModal = ({ open }) => {
               Bursts
             </Trigger>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Trigger
+              onClick={() => setActivePanel("independent-detections")}
+              active={activePanel === "independent-detections"}
+            >
+              Independent Detections
+            </Trigger>
+          </NavigationMenuItem>
         </MenuList>
       </NavMenu>
       <StatsDash>
         {activePanel === "objects" && <ObjectPanel open={open} />}
         {activePanel === "images" && <ImagePanel open={open} />}
         {activePanel === "bursts" && <BurstsPanel open={open} />}
+        {activePanel === "independent-detections" && <IndependentDetectionsPanel />}
       </StatsDash>
     </div>
   );
