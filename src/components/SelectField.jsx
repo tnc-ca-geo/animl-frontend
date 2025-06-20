@@ -25,6 +25,13 @@ const customStyles = {
       },
     }),
   }),
+  input: (provided) => ({
+    ...provided,
+    'input:focus': {
+      boxShadow: 'none !important',
+      transition: 'none',
+    },
+  }),
   valueContainer: (provided) => ({
     ...provided,
     height: '100%',
