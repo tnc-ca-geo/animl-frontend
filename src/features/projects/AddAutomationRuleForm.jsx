@@ -83,6 +83,13 @@ const addRuleSchema = Yup.object().shape({
   }),
 });
 
+const GeofencingTooltip = () => (
+  <div style={{ maxWidth: '200px' }}>
+    Select a country to limit the results to species that occur in that region. If no country is
+    selected, no geographic filtering will be applied.
+  </div>
+);
+
 const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
@@ -276,6 +283,7 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
                     <SelectField
                       name="action.country"
                       label="Country (optional)"
+                      tooltip={<GeofencingTooltip />}
                       value={values.action.country}
                       onChange={setFieldValue}
                       onBlur={setFieldTouched}
