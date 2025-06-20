@@ -60,6 +60,8 @@ const imageFields = `
   comments {
     ${imageCommentFields}
   }
+  imageHeight
+  imageWidth
   tags
   reviewed
   url {
@@ -355,6 +357,7 @@ const queries = {
             categories {
               _id
               name
+              taxonomy
             }
           }
         }
@@ -396,7 +399,7 @@ const queries = {
   }),
 
   // TODO: name this something more specific (like exportImageData)
-  exportAnnotations: ({ format, filters, timezone }) => ({
+  exportAnnotations: ({ format, filters, timezone, onlyIncludeReviewed, aggregateObjects }) => ({
     template: `
       query ExportAnnotations($input: ExportInput!) {
         exportAnnotations(input: $input) {
@@ -405,7 +408,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { format, filters, timezone },
+      input: { format, filters, timezone, onlyIncludeReviewed, aggregateObjects },
     },
   }),
 

@@ -122,7 +122,6 @@ const StyledAuthenticator = styled(Authenticator, {
   '.amplify-input': {
     display: 'inherit',
     width: '100%',
-    fontSize: '$3',
     fontFamily: '$sourceSansPro',
     color: '$textMedium',
     padding: '$3',

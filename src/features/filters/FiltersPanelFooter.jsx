@@ -87,7 +87,9 @@ const CountingImages = styled('span', {
   },
 });
 
-const FiltersPanelFooter = () => {
+// TODO mobile UX:
+// Temporarily disable features that are not mobile optimized yet
+const FiltersPanelFooter = ({ areActionsDisabled = false }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   let imagesCount = useSelector(selectImagesCount);
   imagesCount = imagesCount && imagesCount.toLocaleString('en-US');
@@ -117,7 +119,7 @@ const FiltersPanelFooter = () => {
           </div>
         )}
       </ImagesCount>
-      {hasRole(userRoles, READ_STATS_ROLES) && (
+      {!areActionsDisabled && hasRole(userRoles, READ_STATS_ROLES) && (
         <Tooltip>
           <TooltipTrigger asChild>
             <InfoButton>
@@ -136,22 +138,26 @@ const FiltersPanelFooter = () => {
           </TooltipContent>
         </Tooltip>
       )}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <RefreshButton>
-            <IconButton variant="ghost" size="large" onClick={handleRefreshClick}>
-              <SymbolIcon />
-            </IconButton>
-          </RefreshButton>
-        </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={5}>
-          Refresh data
-          <TooltipArrow />
-        </TooltipContent>
-      </Tooltip>
-      <DropDownButton>
-        <FiltersPanelFooterDropdown handleModalToggle={handleModalToggle} />
-      </DropDownButton>
+      {!areActionsDisabled && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <RefreshButton>
+              <IconButton variant="ghost" size="large" onClick={handleRefreshClick}>
+                <SymbolIcon />
+              </IconButton>
+            </RefreshButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5}>
+            Refresh data
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      )}
+      {!areActionsDisabled && (
+        <DropDownButton>
+          <FiltersPanelFooterDropdown handleModalToggle={handleModalToggle} />
+        </DropDownButton>
+      )}
     </StyledFiltersPanelFooter>
   );
 };

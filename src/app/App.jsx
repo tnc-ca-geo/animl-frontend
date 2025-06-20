@@ -17,7 +17,9 @@ import { selectRouterLocation } from '../features/images/imagesSlice';
 import { userAuthStateChanged } from '../features/auth/authSlice';
 import { mouseEventDetected, selectIsDrawingBbox } from '../features/loupe/loupeSlice';
 import logo from '../assets/animl-logo.svg';
-import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG } from '../config';
+import { IN_MAINTENANCE_MODE, GA_CONFIG, AWS_AUTH_CONFIG, globalBreakpoints } from '../config';
+import { setGlobalBreakpoint } from '../features/projects/projectsSlice.js';
+import useBreakpoints from '../hooks/useBreakpoints.js';
 
 Amplify.configure(AWS_AUTH_CONFIG);
 
@@ -135,6 +137,11 @@ const App = () => {
     if (isDrawingBbox) dispatch(mouseEventDetected({ event: 'mouse-down' }));
   };
 
+  const { ref, breakpoint } = useBreakpoints(globalBreakpoints.values);
+  useEffect(() => {
+    dispatch(setGlobalBreakpoint(breakpoint));
+  }, [breakpoint]);
+
   return (
     <>
       {maintenanceMode === true ? (
@@ -146,6 +153,7 @@ const App = () => {
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               css={isDrawingBbox && { userSelect: 'none' }}
+              ref={ref}
             >
               <NavBar />
               <Switch>

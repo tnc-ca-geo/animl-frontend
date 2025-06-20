@@ -29,6 +29,7 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import { selectProjectsLoading } from '../projects/projectsSlice';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
+import { RatsNoneFound } from './RatsNoneFound.jsx';
 
 // TODO: make table horizontally scrollable on smaller screens
 // '.tableWrap': {
@@ -140,23 +141,6 @@ const TableHeader = styled('div', {
   },
 });
 
-const NoneFoundAlert = styled('div', {
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: '$backgroundDark',
-  fontWeight: '$3',
-  fontSize: '$5',
-
-  '&::after': {
-    content: '\\1F400',
-    paddingLeft: '$2',
-    fontSize: '30px',
-  },
-});
-
 const StyledReviewIcon = styled('div', {
   display: 'flex',
   alignItems: 'center',
@@ -241,7 +225,9 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
     if (focusIndex.image && focusChangeType === 'auto') {
       // TODO: make auto scrolling smooth:
       // https://github.com/bvaughn/react-window/issues/16
-      listRef.current.scrollToItem(focusIndex.image, 'center');
+      if (listRef.current) {
+        listRef.current.scrollToItem(focusIndex.image, 'center');
+      }
     }
   }, [focusIndex.image, focusChangeType]);
 
@@ -302,7 +288,9 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
         >
           {({ onItemsRendered, ref }) => (
             <List
-              height={height - headerHeight}
+              // Autosizer is consistently setting the height to be
+              // 1 px taller than its parent
+              height={height - headerHeight - 1}
               itemCount={imagesCount}
               itemSize={91}
               onItemsRendered={onItemsRendered}
@@ -330,9 +318,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           <SimpleSpinner />
         </SpinnerOverlay>
       )}
-      {imagesLoading.noneFound && (
-        <NoneFoundAlert>Rats! We couldn&apos;t find any matching images</NoneFoundAlert>
-      )}
+      {imagesLoading.noneFound && <RatsNoneFound />}
       {workingImages.length > 0 && (
         <Table {...getTableProps()}>
           <div style={{ height: headerHeight, width: `calc(100% - ${scrollBarSize.width}px)` }}>
