@@ -142,7 +142,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
           // <div key={uniqueRowId} style={style}>{idx} ({rowIndex}/{columnIndex})</div>
           <GridImage
             uniqueId={uniqueRowId}
-            imgUrl={colCount === colCounts.single ? img.url : img.thumbUrl}
+            imgUrl={colCount === colCounts.single ? img.url.medium : img.url.small}
             onClickImage={clickImage}
             style={style}
           />
