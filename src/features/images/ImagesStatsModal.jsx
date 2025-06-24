@@ -22,6 +22,7 @@ import {
   BarChart,
   ResponsiveContainer,
 } from 'recharts';
+import MapView from '../../components/MapView';
 
 const StatsDash = styled('div', {
   display: 'flex',
@@ -252,7 +253,7 @@ const ImagesStatsModal = ({ open }) => {
               content={hints.notReviewedCount}
             />
           </div>
-          {Object.keys(stats['labelList']).length !== 0 && (
+          {stats['labelList'] && Object.keys(stats['labelList']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <GraphCard
                 label="Validated labels"
@@ -266,6 +267,7 @@ const ImagesStatsModal = ({ open }) => {
               <ListCard label="Reviewers" list={stats.reviewerList} content={hints.reviewerList} />
             </div>
           )}
+          <MapView />
         </StatsDash>
       )}
     </div>

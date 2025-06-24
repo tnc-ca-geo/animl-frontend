@@ -49,6 +49,7 @@
     "lodash": "^4.17.20",
     "lucide-react": "^0.441.0",
     "luxon": "^3.0.1",
+    "mapbox-gl": "^3.13.0",
     "moment-timezone": "^0.5.34",
     "mongodb-query-parser": "^2.4.3",
     "npm-force-resolutions": "^0.0.10",
