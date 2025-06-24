@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -23,6 +23,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import MapView from '../../components/MapView';
+import { selectSelectedProject } from '../projects/projectsSlice';
 
 const StatsDash = styled('div', {
   display: 'flex',
@@ -204,10 +205,12 @@ const GraphCard = ({ label, list, content }) => {
 const ImagesStatsModal = ({ open }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
+  const selectedProject = useSelector(selectSelectedProject);
 
   // fetch images stats
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
+  const [deploymentLocations, setDeploymentLocations] = useState([]);
 
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
@@ -224,6 +227,21 @@ const ImagesStatsModal = ({ open }) => {
     }
   }, [imagesStatsLoading, dispatch]);
 
+  useEffect(() => {
+    const camDeploymentLocations = selectedProject.cameraConfigs.reduce((acc, config) => {
+      const camDeployment = config.deployments
+      .filter((dep) => dep.location) // filter for camera deployments where location is not null
+      .map((dep) => ({
+        id: config._id,
+        location: dep.location,
+        deploymentId: dep._id
+      }));
+      return acc.concat(camDeployment)
+    }, [])
+
+    setDeploymentLocations(camDeploymentLocations);
+  }, [selectedProject, setDeploymentLocations])
+ 
   return (
     <div>
       {imagesStatsLoading.isLoading && (
@@ -267,7 +285,7 @@ const ImagesStatsModal = ({ open }) => {
               <ListCard label="Reviewers" list={stats.reviewerList} content={hints.reviewerList} />
             </div>
           )}
-          <MapView />
+          <MapView coordinates={deploymentLocations?.map((dep) => dep.location.geometry.coordinates) || []} />
         </StatsDash>
       )}
     </div>
