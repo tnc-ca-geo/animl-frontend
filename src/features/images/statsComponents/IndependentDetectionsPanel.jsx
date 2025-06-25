@@ -60,7 +60,7 @@ const IndependentDetectionsPanel = () => {
           countHint='Given the time window or "independence interval" selected above, after an animal triggers a camera, all occurrences of that same species within the independence interval are considered part of the same "independent detection". An occurrence of a species is defined here as an instance of an Object for which that species/label is its “Representative Label”.
 This Independent Detection count value is the total number of independent detections that occured in the currently filtered Images.'
         />
-        {Object.keys(independentDetectionStats['detectionsLabelList']).length !== 0 && (
+        {(independentDetectionStats['detectionsLabelList'] && Object.keys(independentDetectionStats['detectionsLabelList']).length !== 0) && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label='Independent detections'
