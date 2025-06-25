@@ -59,7 +59,7 @@ const BurstsPanel = ({ open }) => {
           count={burstsStats.burstCount}
           countHint='The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters.'
         />
-        {Object.keys(burstsStats['burstLabelList']).length !== 0 && (
+        {(burstsStats['burstLabelList'] && Object.keys(burstsStats['burstLabelList']).length !== 0) && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label='Burst-level detections'
