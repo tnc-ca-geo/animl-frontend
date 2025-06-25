@@ -35,6 +35,12 @@ const initialState = {
       errors: null,
       noneFound: false,
     },
+    independentDetectionStats: {
+      taskId: null,
+      isLoading: false,
+      errors: null,
+      noneFound: false,
+    },
     annotationsExport: {
       taskId: null,
       isLoading: false,
@@ -77,6 +83,7 @@ const initialState = {
   },
   imagesStats: null,
   burstsStats: null,
+  independentDetectionStats: null,
   annotationsExport: null,
   errorsExport: null,
 };
@@ -130,6 +137,8 @@ export const tasksSlice = createSlice({
       state.loadingStates.stats = initialState.loadingStates.stats;
       state.burstsStats = null;
       state.loadingStates.burstsStats = initialState.loadingStates.burstsStats;
+      state.independentDetectionStats = null;
+      state.loadingStates.independentDetectionStats = initialState.loadingStates.independentDetectionStats;
     },
 
     dismissStatsError: (state, { payload }) => {
@@ -168,6 +177,39 @@ export const tasksSlice = createSlice({
     dismissBurstsStatsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.burstsStats.errors.splice(index, 1);
+    },
+
+    // get independent detection stats
+    getIndependentDetectionStatsStart: (state) => {
+      let ls = state.loadingStates.independentDetectionStats;
+      ls.taskId = null;
+      ls.isLoading = true;
+      ls.errors = null;
+      ls.noneFound = false;
+    },
+
+    independentDetectionStatsUpdate: (state, { payload }) => {
+      state.loadingStates.independentDetectionStats.taskId = payload.taskId;
+    },
+
+    getIndependentDetectionStatsSuccess: (state, { payload }) => {
+      state.independentDetectionStats = payload.task.output;
+      let ls = state.loadingStates.independentDetectionStats;
+      ls.isLoading = false;
+      ls.noneFound = payload.task.output.detectionCount === 0;
+      ls.errors = null;
+    },
+
+    getIndependentDetectionStatsFailure: (state, { payload }) => {
+      let ls = state.loadingStates.independentDetectionStats;
+      ls.isLoading = false;
+      ls.noneFound = false;
+      ls.errors = [payload.task.output.error];
+    },
+
+    dismissIndependentDetectionStatsError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.independentDetectionStats.errors.splice(index, 1);
     },
 
     // export annotations
@@ -443,6 +485,12 @@ export const {
   getBurstsStatsFailure,
   dismissBurstsStatsError,
 
+  getIndependentDetectionStatsStart,
+  independentDetectionStatsUpdate,
+  getIndependentDetectionStatsSuccess,
+  getIndependentDetectionStatsFailure,
+  dismissIndependentDetectionStatsError,
+
   exportAnnotationsStart,
   exportAnnotationsUpdate,
   exportAnnotationsSuccess,
@@ -522,6 +570,9 @@ export const fetchTask = (taskId) => {
                 }
                 if (id === loadingStates.burstsStats.taskId) {
                   dispatch(getBurstsStatsSuccess(res))
+                }
+                if (id === loadingStates.independentDetectionStats.taskId) {
+                  dispatch(getIndependentDetectionStatsSuccess(res))
                 }
               },
               FAIL: (res) => dispatch(getStatsFailure(res)),
@@ -679,6 +730,32 @@ export const fetchBurstsStats = (filters) => {
       }
     } catch (err) {
       dispatch(getBurstsStatsFailure(err));
+    }
+  }
+}
+
+export const fetchIndependentDetectionStats = (filters) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(getIndependentDetectionStatsStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+
+      if (token && selectedProj) {
+        const res = await call({
+          projId: selectedProj._id,
+          request: 'getStats',
+          input: {
+            filters,
+            aggregationLevel: 'independentDetection'
+          },
+        });
+        dispatch(independentDetectionStatsUpdate({ taskId: res.stats._id }));
+      }
+    } catch (err) {
+      dispatch(getIndependentDetectionStatsFailure(err));
     }
   }
 }
@@ -873,5 +950,7 @@ export const selectDeleteProjectLabelErrors = (state) =>
 
 export const selectBurstsStats = (state) => state.tasks.burstsStats;
 export const selectBurstsStatsLoading = (state) => state.tasks.loadingStates.burstsStats;
+export const selectIndependentDetectionStats = (state) => state.tasks.independentDetectionStats;
+export const selectIndependentDetectionStatsLoading = (state) => state.tasks.loadingStates.independentDetectionStats;
 
 export default tasksSlice.reducer;
