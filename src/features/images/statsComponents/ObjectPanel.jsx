@@ -66,7 +66,7 @@ const ObjectPanel = () => {
           notReviewedHint='The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user'
           countHint='The total number of individual Objects found in the currently filtered Images.'
         />
-        {Object.keys(stats['objectLabelList']).length !== 0 && (
+        {(stats['objectLabelList'] && Object.keys(stats['objectLabelList']).length !== 0) && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label='Object-level detections'

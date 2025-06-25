@@ -66,7 +66,7 @@ const ImagePanel = () => {
           notReviewedHint='The total number of Images that either have unlocked Objects that still require review or have no Objects and have not been marked empty.'
           countHint='The total number of Images that match the current filters.'
         />
-        {Object.keys(stats['imageLabelList']).length !== 0 && (
+        {(stats['imageLabelList'] && Object.keys(stats['imageLabelList']).length !== 0) && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label='Image-level detections'
@@ -76,7 +76,7 @@ const ImagePanel = () => {
             />
           </div>
         )}
-        {stats['objectReviewerList'].length !== 0 && (
+        {stats['imageReviewerList'].length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <ListCard
               label='Reviewers'
