@@ -66,6 +66,6 @@ export const MAPBOX_TOKEN =
 export const MAP_CONFIG = {
   style: "mapbox://styles/nathanielrindlaub/clw8kxzdk01ij01ob1jl677k2",
   attributionControl: false,
-  center: [1, 1],
-  zoom: 4,
+  center: [124, -1.98],
+  zoom: 5.5
 }
