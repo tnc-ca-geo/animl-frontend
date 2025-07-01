@@ -4,8 +4,11 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAPBOX_TOKEN, MAP_CONFIG } from '../config';
 
-// Resource: https://docs.mapbox.com/mapbox-gl-js/example/cluster-html/#:~:text=This%20advanced%20example%20uses%20Mapbox,while%20the%20map%20view%20changes.
-
+/**
+ * RESOURCES
+ * https://github.com/mapbox/tutorials/blob/main/dynamic-markers-react/src/Map.jsx
+ * https://docs.mapbox.com/mapbox-gl-js/example/cluster-html/#:~:text=This%20advanced%20example%20uses%20Mapbox,while%20the%20map%20view%20changes.
+ */
 function donutSegment(start, end, r, r0, color) {
   if (end - start === 1) end -= 0.00001;
   const a0 = 2 * Math.PI * (start - 0.25);
@@ -48,7 +51,7 @@ function DonutMarker({map, feature, isActive, onClick}) {
       offsets.push(total);
       total += count;
   }
-  
+
   const fontSize =
   total >= 1000 ? 22 : total >= 100 ? 20 : total >= 10 ? 18 : 16;
   const r =
@@ -106,6 +109,7 @@ export default function MapView() {
   const [earthquakeData, setEarthquakeData] = useState()
   const [activeFeature, setActiveFeature] = useState()
 
+  // @TODO: Mockdata for now but to be removed so camera deployment and stats could replace this
   const getBboxAndFetch = React.useCallback(async () => {
       const bounds = mapRef.current.getBounds()
 
@@ -123,7 +127,7 @@ export default function MapView() {
       mapboxgl.accessToken = MAPBOX_TOKEN;
       mapRef.current = new mapboxgl.Map({
           container: mapContainerRef.current,
-          center: [124, -1.98],
+          center: [124, -1.98], // @TODO: These values are just hardcoded for now
           minZoom: 5.5,
           zoom: 5.5
       });
