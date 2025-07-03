@@ -64,6 +64,10 @@ const imageFields = `
   imageWidth
   tags
   reviewed
+  url {
+    medium
+    small
+  }
 `;
 
 const pageInfoFields = `
