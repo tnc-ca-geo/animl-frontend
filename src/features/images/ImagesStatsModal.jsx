@@ -53,8 +53,8 @@ const Trigger = styled(NavigationMenuTrigger, {
   },
 });
 
-const ImagesStatsModal = ({ open }) => {
-  const [activePanel, setActivePanel] = useState("objects");
+const ImagesStatsModal = () => {
+    const [activePanel, setActivePanel] = useState("objects");
 
   return (
     <div>
@@ -86,9 +86,9 @@ const ImagesStatsModal = ({ open }) => {
         </MenuList>
       </NavMenu>
       <StatsDash>
-        {activePanel === "objects" && <ObjectPanel open={open} />}
-        {activePanel === "images" && <ImagePanel open={open} />}
-        {activePanel === "bursts" && <BurstsPanel open={open} />}
+        {activePanel === "objects" && <ObjectPanel />}
+        {activePanel === "images" && <ImagePanel />}
+        {activePanel === "bursts" && <BurstsPanel />}
         {activePanel === "independent-detections" && <IndependentDetectionsPanel />}
       </StatsDash>
     </div>

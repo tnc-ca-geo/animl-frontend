@@ -15,7 +15,7 @@ import ListCard from './ListCard.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
-const ImagePanel = ({ open }) => {
+const ImagePanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -26,10 +26,10 @@ const ImagePanel = ({ open }) => {
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
     const noErrors = !errors || errors.length === 0;
-    if (open && stats === null && !noneFound && !isLoading && noErrors) {
+    if (stats === null && !noneFound && !isLoading && noErrors) {
       dispatch(fetchStats(filters));
     }
-  }, [open, stats, imagesStatsLoading, filters, dispatch]);
+  }, [stats, imagesStatsLoading, filters, dispatch]);
 
   useEffect(() => {
     const getStatsPending = imagesStatsLoading.isLoading && imagesStatsLoading.taskId;
@@ -66,7 +66,7 @@ const ImagePanel = ({ open }) => {
           notReviewedHint='The total number of Images that either have unlocked Objects that still require review or have no Objects and have not been marked empty.'
           countHint='The total number of Images that match the current filters.'
         />
-        {Object.keys(stats['imageLabelList']).length !== 0 && (
+        {(stats['imageLabelList'] && Object.keys(stats['imageLabelList']).length !== 0) && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label='Image-level detections'
@@ -76,7 +76,7 @@ const ImagePanel = ({ open }) => {
             />
           </div>
         )}
-        {stats['objectReviewerList'].length !== 0 && (
+        {stats['imageReviewerList'].length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <ListCard
               label='Reviewers'

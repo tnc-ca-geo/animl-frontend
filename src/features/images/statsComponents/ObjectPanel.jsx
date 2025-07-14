@@ -15,7 +15,7 @@ import ListCard from './ListCard.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
-const ObjectPanel = ({ open }) => {
+const ObjectPanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -26,10 +26,10 @@ const ObjectPanel = ({ open }) => {
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
     const noErrors = !errors || errors.length === 0;
-    if (open && stats === null && !noneFound && !isLoading && noErrors) {
+    if (stats === null && !noneFound && !isLoading && noErrors) {
       dispatch(fetchStats(filters));
     }
-  }, [open, stats, imagesStatsLoading, filters, dispatch]);
+  }, [stats, imagesStatsLoading, filters, dispatch]);
 
   useEffect(() => {
     const getStatsPending = imagesStatsLoading.isLoading && imagesStatsLoading.taskId;
@@ -66,7 +66,7 @@ const ObjectPanel = ({ open }) => {
           notReviewedHint='The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user'
           countHint='The total number of individual Objects found in the currently filtered Images.'
         />
-        {Object.keys(stats['objectLabelList']).length !== 0 && (
+        {(stats['objectLabelList'] && Object.keys(stats['objectLabelList']).length !== 0) && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label='Object-level detections'
