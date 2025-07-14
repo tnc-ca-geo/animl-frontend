@@ -3,7 +3,7 @@
 const wirelessCameraFields = `
   _id
   make
-  model 
+  model
   projRegistrations {
     _id
     projectId
@@ -182,7 +182,7 @@ const projectFields = `
   tags {
     ${projectTagFields}
   }
-  availableMLModels 
+  availableMLModels
 `;
 
 const queries = {
@@ -381,7 +381,7 @@ const queries = {
     },
   }),
 
-  getStats: ({ filters }) => ({
+  getStats: ({ filters, aggregationLevel }) => ({
     template: `
       query GetStats($input: QueryStatsInput!) {
         stats(input: $input) {
@@ -390,7 +390,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { filters },
+      input: { filters, aggregationLevel },
     },
   }),
 
@@ -692,7 +692,7 @@ const queries = {
     template: `
       mutation DeleteImageTag($input: DeleteImageTagInput!) {
         deleteImageTag(input: $input) {
-          tags 
+          tags
         }
       }
     `,
