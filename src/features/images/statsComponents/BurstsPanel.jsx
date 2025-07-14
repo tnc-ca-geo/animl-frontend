@@ -10,10 +10,10 @@ import {
 } from '../../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
-import ReviewCount from "./ReviewCount.jsx";
-import GraphCard from "./GraphCard.jsx";
+import ReviewCount from './ReviewCount.jsx';
+import GraphCard from './GraphCard.jsx';
 
-const BurstsPanel = ({ open }) => {
+const BurstsPanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -23,10 +23,10 @@ const BurstsPanel = ({ open }) => {
   useEffect(() => {
     const { isLoading, errors, noneFound } = burstsStatsLoading;
     const noErrors = !errors || errors.length === 0;
-    if (open && burstsStats === null && !noneFound && !isLoading && noErrors) {
+    if (burstsStats === null && !noneFound && !isLoading && noErrors) {
       dispatch(fetchBurstsStats(filters));
     }
-  }, [open, burstsStats, burstsStatsLoading, filters, dispatch]);
+  }, [burstsStats, burstsStatsLoading, filters, dispatch]);
 
   useEffect(() => {
     const getStatsPending = burstsStatsLoading.isLoading && burstsStatsLoading.taskId;
@@ -57,23 +57,24 @@ const BurstsPanel = ({ open }) => {
         <ReviewCount
           label="Bursts"
           count={burstsStats.burstCount}
-          countHint='The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters.'
+          countHint="The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters."
         />
-        {(burstsStats['burstLabelList'] && Object.keys(burstsStats['burstLabelList']).length !== 0) && (
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-            <GraphCard
-              label='Burst-level detections'
-              list={burstsStats.burstLabelList}
-              content='For each Label, the total number of Bursts matching the current filters that have at least one Object for which that Label is their “Representative Label”. For example, if you have 2 Bursts of 3 Images and all of the Images in each Burst contain multiple pigs, their burst-level detection count would still be 2.'
-              dataKey='Number of Bursts that contain at least one Object with a given “Representative Label”'
-            />
-          </div>
-        )}
+        {burstsStats['burstLabelList'] &&
+          Object.keys(burstsStats['burstLabelList']).length !== 0 && (
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+              <GraphCard
+                label="Burst-level detections"
+                list={burstsStats.burstLabelList}
+                content="For each Label, the total number of Bursts matching the current filters that have at least one Object for which that Label is their “Representative Label”. For example, if you have 2 Bursts of 3 Images and all of the Images in each Burst contain multiple pigs, their burst-level detection count would still be 2."
+                dataKey="Number of Bursts that contain at least one Object with a given “Representative Label”"
+              />
+            </div>
+          )}
       </>
     );
   }
 
   return null;
-}
+};
 
 export default BurstsPanel;
