@@ -1,8 +1,8 @@
 import React from 'react';
-import { styled } from "@stitches/react";
+import { styled } from '@stitches/react';
 import { indigo } from '@radix-ui/colors';
-import Heading from "./Heading";
-import StatsCard from "./StatsCard";
+import Heading from './Heading';
+import StatsCard from './StatsCard';
 
 const Container = styled('div', {
   display: 'flex',
@@ -54,7 +54,7 @@ const ReviewCounts = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
       <RatioCard label={label} tnum={count} content={countHint} />
-      {reviewedCount && (
+      {reviewedCount !== undefined && (
         <RatioCard
           label="Reviewed"
           tnum={reviewedCount}
@@ -62,7 +62,7 @@ const ReviewCounts = ({
           content={reviewedHint}
         />
       )}
-      {notReviewedCount && (
+      {notReviewedCount !== undefined && (
         <RatioCard
           label="Not reviewed"
           tnum={notReviewedCount}
@@ -72,6 +72,6 @@ const ReviewCounts = ({
       )}
     </div>
   );
-}
+};
 
 export default ReviewCounts;

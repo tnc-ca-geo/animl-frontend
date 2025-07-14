@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectActiveFilters } from '../../filters/filtersSlice.js';
@@ -10,8 +10,8 @@ import {
 } from '../../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
-import ReviewCount from "./ReviewCount.jsx";
-import GraphCard from "./GraphCard.jsx";
+import ReviewCount from './ReviewCount.jsx';
+import GraphCard from './GraphCard.jsx';
 
 const IndependentDetectionsPanel = () => {
   const dispatch = useDispatch();
@@ -29,7 +29,8 @@ const IndependentDetectionsPanel = () => {
   }, [independentDetectionStats, independentDetectionStatsLoading, filters, dispatch]);
 
   useEffect(() => {
-    const getStatsPending = independentDetectionStatsLoading.isLoading && independentDetectionStatsLoading.taskId;
+    const getStatsPending =
+      independentDetectionStatsLoading.isLoading && independentDetectionStatsLoading.taskId;
     if (getStatsPending) {
       dispatch(fetchTask(independentDetectionStatsLoading.taskId));
     }
@@ -58,23 +59,24 @@ const IndependentDetectionsPanel = () => {
           label="Independent detections"
           count={independentDetectionStats.detectionsCount}
           countHint='Given the time window or "independence interval" selected above, after an animal triggers a camera, all occurrences of that same species within the independence interval are considered part of the same "independent detection". An occurrence of a species is defined here as an instance of an Object for which that species/label is its “Representative Label”.
-This Independent Detection count value is the total number of independent detections that occured in the currently filtered Images.'
+This Independent Detection count value is the total number of independent detections that occurred in the currently filtered Images.'
         />
-        {(independentDetectionStats['detectionsLabelList'] && Object.keys(independentDetectionStats['detectionsLabelList']).length !== 0) && (
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-            <GraphCard
-              label='Independent detections'
-              list={independentDetectionStats.detectionsLabelList}
-              content='The total number of Independent Detections of a given Label'
-              dataKey='Number of Independent Detections of a given Label'
-            />
-          </div>
-        )}
+        {independentDetectionStats['detectionsLabelList'] &&
+          Object.keys(independentDetectionStats['detectionsLabelList']).length !== 0 && (
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+              <GraphCard
+                label="Independent detections"
+                list={independentDetectionStats.detectionsLabelList}
+                content="The total number of Independent Detections of a given Label"
+                dataKey="Number of Independent Detections of a given Label"
+              />
+            </div>
+          )}
       </>
     );
   }
 
   return null;
-}
+};
 
 export default IndependentDetectionsPanel;
