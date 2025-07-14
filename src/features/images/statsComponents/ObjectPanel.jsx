@@ -9,8 +9,8 @@ import {
 } from '../../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../../filters/filtersSlice.js';
 
-import GraphCard from "./GraphCard.jsx";
-import ReviewCount from "./ReviewCount.jsx";
+import GraphCard from './GraphCard.jsx';
+import ReviewCount from './ReviewCount.jsx';
 import ListCard from './ListCard.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
@@ -62,26 +62,26 @@ const ObjectPanel = () => {
           count={stats.objectCount}
           reviewedCount={stats.objectReviewCount.reviewed}
           notReviewedCount={stats.objectReviewCount.notReviewed}
-          reviewedHint='The total number of Objects that have been “reviewed”, i.e., Objects that are locked and a user has either validated one of the ML-predicted labels or manually added their own.'
-          notReviewedHint='The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user'
-          countHint='The total number of individual Objects found in the currently filtered Images.'
+          reviewedHint="The total number of Objects that have been “reviewed”, i.e., Objects that are locked and a user has either validated one of the ML-predicted labels or manually added their own."
+          notReviewedHint="The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user"
+          countHint="The total number of individual Objects found in the currently filtered Images."
         />
-        {(stats['objectLabelList'] && Object.keys(stats['objectLabelList']).length !== 0) && (
+        {stats['objectLabelList'] && Object.keys(stats['objectLabelList']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
-              label='Object-level detections'
+              label="Object-level detections"
               list={stats.objectLabelList}
-              content='For each Label, the total number of Objects in the currently filtered set of Images for which that Label is their “Representative Label”. For example, if you have 2 images that each contain 3 pigs, their object-level detection count would be 6. Object-level annotations are the most granular annotations that Animl stores.'
-              dataKey='Number Objects with a given “Representative Label”'
+              content="For each Label, the total number of Objects in the currently filtered set of Images for which that Label is their “Representative Label”. For example, if you have 2 images that each contain 3 pigs, their object-level detection count would be 6. Object-level annotations are the most granular annotations that Animl stores."
+              dataKey="Number Objects with a given “Representative Label”"
             />
           </div>
         )}
         {stats['objectReviewerList'].length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <ListCard
-              label='Reviewers'
+              label="Reviewers"
               list={stats.objectReviewerList}
-              content='Each reviewer&apo;s \"Reviewed Count\" is the total number of Objects they have edited in some way (e.g., validated/invalidated/added a Label)'
+              content='Each reviewer&apos;s "Reviewed Count" is the total number of Objects they have edited in some way (e.g., validated/invalidated/added a Label)'
             />
           </div>
         )}
@@ -90,6 +90,6 @@ const ObjectPanel = () => {
   }
 
   return null;
-}
+};
 
 export default ObjectPanel;
