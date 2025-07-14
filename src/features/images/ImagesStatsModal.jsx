@@ -25,6 +25,7 @@ const StatsDash = styled('div', {
 const NavMenu = styled(NavigationMenu, {
   justifyContent: 'left',
   marginBottom: '15px',
+  zIndex: 0,
 });
 
 const MenuList = styled(NavigationMenuList, {
