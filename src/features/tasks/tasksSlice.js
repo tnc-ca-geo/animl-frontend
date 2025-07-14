@@ -138,7 +138,8 @@ export const tasksSlice = createSlice({
       state.burstsStats = null;
       state.loadingStates.burstsStats = initialState.loadingStates.burstsStats;
       state.independentDetectionStats = null;
-      state.loadingStates.independentDetectionStats = initialState.loadingStates.independentDetectionStats;
+      state.loadingStates.independentDetectionStats =
+        initialState.loadingStates.independentDetectionStats;
     },
 
     dismissStatsError: (state, { payload }) => {
@@ -196,7 +197,7 @@ export const tasksSlice = createSlice({
       state.independentDetectionStats = payload.task.output;
       let ls = state.loadingStates.independentDetectionStats;
       ls.isLoading = false;
-      ls.noneFound = payload.task.output.detectionCount === 0;
+      ls.noneFound = payload.task.output.detectionsCount === 0;
       ls.errors = null;
     },
 
@@ -566,13 +567,13 @@ export const fetchTask = (taskId) => {
                 const id = res.task._id;
                 const loadingStates = getState().tasks.loadingStates;
                 if (id === loadingStates.stats.taskId) {
-                  dispatch(getStatsSuccess(res))
+                  dispatch(getStatsSuccess(res));
                 }
                 if (id === loadingStates.burstsStats.taskId) {
-                  dispatch(getBurstsStatsSuccess(res))
+                  dispatch(getBurstsStatsSuccess(res));
                 }
                 if (id === loadingStates.independentDetectionStats.taskId) {
-                  dispatch(getIndependentDetectionStatsSuccess(res))
+                  dispatch(getIndependentDetectionStatsSuccess(res));
                 }
               },
               FAIL: (res) => dispatch(getStatsFailure(res)),
@@ -697,7 +698,7 @@ export const fetchStats = (filters) => {
           request: 'getStats',
           input: {
             filters,
-            aggregationLevel: 'imageAndObject'
+            aggregationLevel: 'imageAndObject',
           },
         });
         dispatch(statsUpdate({ taskId: res.stats._id }));
@@ -723,7 +724,7 @@ export const fetchBurstsStats = (filters) => {
           request: 'getStats',
           input: {
             filters,
-            aggregationLevel: 'burst'
+            aggregationLevel: 'burst',
           },
         });
         dispatch(burstsStatsUpdate({ taskId: res.stats._id }));
@@ -731,8 +732,8 @@ export const fetchBurstsStats = (filters) => {
     } catch (err) {
       dispatch(getBurstsStatsFailure(err));
     }
-  }
-}
+  };
+};
 
 export const fetchIndependentDetectionStats = (filters) => {
   return async (dispatch, getState) => {
@@ -749,7 +750,7 @@ export const fetchIndependentDetectionStats = (filters) => {
           request: 'getStats',
           input: {
             filters,
-            aggregationLevel: 'independentDetection'
+            aggregationLevel: 'independentDetection',
           },
         });
         dispatch(independentDetectionStatsUpdate({ taskId: res.stats._id }));
@@ -757,11 +758,17 @@ export const fetchIndependentDetectionStats = (filters) => {
     } catch (err) {
       dispatch(getIndependentDetectionStatsFailure(err));
     }
-  }
-}
+  };
+};
 
 // export annotations thunk
-export const exportAnnotations = ({ format, filters, timezone, includeNonReviewed, aggregateObjects }) => {
+export const exportAnnotations = ({
+  format,
+  filters,
+  timezone,
+  includeNonReviewed,
+  aggregateObjects,
+}) => {
   return async (dispatch, getState) => {
     try {
       dispatch(exportAnnotationsStart());
@@ -774,7 +781,13 @@ export const exportAnnotations = ({ format, filters, timezone, includeNonReviewe
         const res = await call({
           projId: selectedProj._id,
           request: 'exportAnnotations',
-          input: { format, filters, timezone, onlyIncludeReviewed: !includeNonReviewed, aggregateObjects },
+          input: {
+            format,
+            filters,
+            timezone,
+            onlyIncludeReviewed: !includeNonReviewed,
+            aggregateObjects,
+          },
         });
         dispatch(exportAnnotationsUpdate({ taskId: res.exportAnnotations._id }));
       }
@@ -951,6 +964,7 @@ export const selectDeleteProjectLabelErrors = (state) =>
 export const selectBurstsStats = (state) => state.tasks.burstsStats;
 export const selectBurstsStatsLoading = (state) => state.tasks.loadingStates.burstsStats;
 export const selectIndependentDetectionStats = (state) => state.tasks.independentDetectionStats;
-export const selectIndependentDetectionStatsLoading = (state) => state.tasks.loadingStates.independentDetectionStats;
+export const selectIndependentDetectionStatsLoading = (state) =>
+  state.tasks.loadingStates.independentDetectionStats;
 
 export default tasksSlice.reducer;
