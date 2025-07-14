@@ -64,6 +64,10 @@ const imageFields = `
   imageWidth
   tags
   reviewed
+  url {
+    medium
+    small
+  }
 `;
 
 const pageInfoFields = `
@@ -143,6 +147,8 @@ const automationRuleFields = `
     type
     alertRecipients
     mlModel
+    country
+    admin1Region
     confThreshold
     categoryConfig
   }
@@ -395,7 +401,7 @@ const queries = {
   }),
 
   // TODO: name this something more specific (like exportImageData)
-  exportAnnotations: ({ format, filters, timezone, onlyIncludeReviewed }) => ({
+  exportAnnotations: ({ format, filters, timezone, onlyIncludeReviewed, aggregateObjects }) => ({
     template: `
       query ExportAnnotations($input: ExportInput!) {
         exportAnnotations(input: $input) {
@@ -404,7 +410,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { format, filters, timezone, onlyIncludeReviewed },
+      input: { format, filters, timezone, onlyIncludeReviewed, aggregateObjects },
     },
   }),
 
