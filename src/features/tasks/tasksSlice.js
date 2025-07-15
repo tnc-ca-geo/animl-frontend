@@ -751,7 +751,7 @@ export const fetchIndependentDetectionStats = (filters, independenceInterval) =>
           input: {
             filters,
             aggregationLevel: 'independentDetection',
-            independenceInterval
+            independenceInterval,
           },
         });
         dispatch(independentDetectionStatsUpdate({ taskId: res.stats._id }));

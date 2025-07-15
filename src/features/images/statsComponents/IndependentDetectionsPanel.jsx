@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { selectActiveFilters } from '../../filters/filtersSlice.js';
 import {
   fetchIndependentDetectionStats,
   fetchTask,
@@ -13,9 +12,8 @@ import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
 
-const IndependentDetectionsPanel = ({ independenceInterval = 30 }) => {
+const IndependentDetectionsPanel = ({ independenceInterval = 30, filters }) => {
   const dispatch = useDispatch();
-  const filters = useSelector(selectActiveFilters);
 
   const independentDetectionStats = useSelector(selectIndependentDetectionStats);
   const independentDetectionStatsLoading = useSelector(selectIndependentDetectionStatsLoading);
@@ -26,14 +24,20 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30 }) => {
     if (independentDetectionStats === null && !noneFound && !isLoading && noErrors) {
       dispatch(fetchIndependentDetectionStats(filters, independenceInterval));
     }
-  }, [independentDetectionStats, independentDetectionStatsLoading, filters, dispatch, independenceInterval]);
+  }, [
+    independentDetectionStats,
+    independentDetectionStatsLoading,
+    filters,
+    dispatch,
+    independenceInterval,
+  ]);
 
-  useEffect(() => {
-    // Reload the stats data when the independence interval is updated
-    if (independentDetectionStats !== null) {
-      dispatch(fetchIndependentDetectionStats(filters, independenceInterval));
-    }
-  }, [independentDetectionStats, independenceInterval])
+  // useEffect(() => {
+  //   // Reload the stats data when the independence interval is updated
+  //   if (independentDetectionStats !== null) {
+  //     dispatch(fetchIndependentDetectionStats(filters, independenceInterval));
+  //   }
+  // }, [independentDetectionStats, independenceInterval])
 
   useEffect(() => {
     const getStatsPending =

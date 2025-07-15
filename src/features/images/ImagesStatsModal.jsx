@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchIndependentDetectionStats } from '../tasks/tasksSlice.js';
+import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { styled } from '../../theme/stitches.config';
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuTrigger
+  NavigationMenuTrigger,
 } from '../../components/NavigationMenu.jsx';
 
 import ObjectPanel from './statsComponents/ObjectPanel';
 import ImagePanel from './statsComponents/ImagePanel';
 import BurstsPanel from './statsComponents/BurstsPanel';
-import IndependentDetectionsPanel from './statsComponents/IndependentDetectionsPanel'
+import IndependentDetectionsPanel from './statsComponents/IndependentDetectionsPanel';
 import SelectField from '../../components/SelectField.jsx';
 
 const StatsDash = styled('div', {
@@ -50,58 +53,68 @@ const Trigger = styled(NavigationMenuTrigger, {
         '&:hover': {
           backgroundColor: '$hiContrast',
           color: '$loContrast',
-        }
+        },
       },
     },
   },
 });
 
 const intervalOptions = [
-  { value: 15, label: "15 min"},
-  { value: 30, label: "30 min"}
+  { value: 1, label: '1 min' },
+  { value: 2, label: '2 min' },
+  { value: 30, label: '30 min' },
+  { value: 60, label: '60 min' },
 ];
 
 const ImagesStatsModal = () => {
-  const [activePanel, setActivePanel] = useState("objects");
+  const dispatch = useDispatch();
+  const [activePanel, setActivePanel] = useState('objects');
   const [independenceInterval, setIndependenceInterval] = useState(30);
 
   const intervalValue = intervalOptions.find(({ value }) => value === independenceInterval);
+
+  const filters = useSelector(selectActiveFilters);
+
+  const handleIndependenceIntervalChange = (value) => {
+    setIndependenceInterval(value);
+    dispatch(fetchIndependentDetectionStats(filters, value));
+  };
 
   return (
     <div>
       <NavMenu>
         <MenuList>
           <NavigationMenuItem>
-            <Trigger onClick={() => setActivePanel("objects")} active={activePanel === "objects"}>
+            <Trigger onClick={() => setActivePanel('objects')} active={activePanel === 'objects'}>
               Objects
             </Trigger>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Trigger onClick={() => setActivePanel("images")} active={activePanel === "images"}>
+            <Trigger onClick={() => setActivePanel('images')} active={activePanel === 'images'}>
               Images
             </Trigger>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Trigger onClick={() => setActivePanel("bursts")} active={activePanel === "bursts"}>
+            <Trigger onClick={() => setActivePanel('bursts')} active={activePanel === 'bursts'}>
               Bursts
             </Trigger>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <Trigger
-              onClick={() => setActivePanel("independent-detections")}
-              active={activePanel === "independent-detections"}
+              onClick={() => setActivePanel('independent-detections')}
+              active={activePanel === 'independent-detections'}
             >
               Independent Detections
             </Trigger>
           </NavigationMenuItem>
         </MenuList>
-        {activePanel === "independent-detections" && (
+        {activePanel === 'independent-detections' && (
           <>
             <label htmlFor="independence-interval">Independence Interval</label>
             <SelectField
               name="independence-interval"
               value={intervalValue}
-              onChange={(_, {value}) => setIndependenceInterval(value)}
+              onChange={(_, { value }) => handleIndependenceIntervalChange(value)}
               options={intervalOptions}
               onBlur={() => {}}
               isSearchable={false}
@@ -110,10 +123,15 @@ const ImagesStatsModal = () => {
         )}
       </NavMenu>
       <StatsDash>
-        {activePanel === "objects" && <ObjectPanel />}
-        {activePanel === "images" && <ImagePanel />}
-        {activePanel === "bursts" && <BurstsPanel />}
-        {activePanel === "independent-detections" && (<IndependentDetectionsPanel independenceInterval={independenceInterval} />)}
+        {activePanel === 'objects' && <ObjectPanel />}
+        {activePanel === 'images' && <ImagePanel />}
+        {activePanel === 'bursts' && <BurstsPanel />}
+        {activePanel === 'independent-detections' && (
+          <IndependentDetectionsPanel
+            independenceInterval={independenceInterval}
+            filters={filters}
+          />
+        )}
       </StatsDash>
     </div>
   );
