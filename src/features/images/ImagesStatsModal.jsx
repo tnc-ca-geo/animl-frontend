@@ -14,7 +14,7 @@ import ObjectPanel from './statsComponents/ObjectPanel';
 import ImagePanel from './statsComponents/ImagePanel';
 import BurstsPanel from './statsComponents/BurstsPanel';
 import IndependentDetectionsPanel from './statsComponents/IndependentDetectionsPanel';
-import SelectField from '../../components/SelectField.jsx';
+import IndependenceIntervalSelector from './statsComponents/IndependenceIntervalSelector.jsx';
 
 const StatsDash = styled('div', {
   display: 'flex',
@@ -40,6 +40,7 @@ const MenuList = styled(NavigationMenuList, {
 
 const Trigger = styled(NavigationMenuTrigger, {
   color: '$textMedium',
+  fontSize: '$3',
   '&:hover': {
     color: '$textDark',
   },
@@ -59,19 +60,10 @@ const Trigger = styled(NavigationMenuTrigger, {
   },
 });
 
-const intervalOptions = [
-  { value: 1, label: '1 min' },
-  { value: 2, label: '2 min' },
-  { value: 30, label: '30 min' },
-  { value: 60, label: '60 min' },
-];
-
 const ImagesStatsModal = () => {
   const dispatch = useDispatch();
   const [activePanel, setActivePanel] = useState('objects');
   const [independenceInterval, setIndependenceInterval] = useState(30);
-
-  const intervalValue = intervalOptions.find(({ value }) => value === independenceInterval);
 
   const filters = useSelector(selectActiveFilters);
 
@@ -109,17 +101,10 @@ const ImagesStatsModal = () => {
           </NavigationMenuItem>
         </MenuList>
         {activePanel === 'independent-detections' && (
-          <>
-            <label htmlFor="independence-interval">Independence Interval</label>
-            <SelectField
-              name="independence-interval"
-              value={intervalValue}
-              onChange={(_, { value }) => handleIndependenceIntervalChange(value)}
-              options={intervalOptions}
-              onBlur={() => {}}
-              isSearchable={false}
-            />
-          </>
+          <IndependenceIntervalSelector
+            onValueChange={handleIndependenceIntervalChange}
+            value={independenceInterval}
+          />
         )}
       </NavMenu>
       <StatsDash>
