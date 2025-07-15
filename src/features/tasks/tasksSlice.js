@@ -735,7 +735,7 @@ export const fetchBurstsStats = (filters) => {
   };
 };
 
-export const fetchIndependentDetectionStats = (filters) => {
+export const fetchIndependentDetectionStats = (filters, independenceInterval) => {
   return async (dispatch, getState) => {
     try {
       dispatch(getIndependentDetectionStatsStart());
@@ -751,6 +751,7 @@ export const fetchIndependentDetectionStats = (filters) => {
           input: {
             filters,
             aggregationLevel: 'independentDetection',
+            independenceInterval,
           },
         });
         dispatch(independentDetectionStatsUpdate({ taskId: res.stats._id }));
