@@ -11,6 +11,7 @@ import ObjectPanel from './statsComponents/ObjectPanel';
 import ImagePanel from './statsComponents/ImagePanel';
 import BurstsPanel from './statsComponents/BurstsPanel';
 import IndependentDetectionsPanel from './statsComponents/IndependentDetectionsPanel'
+import SelectField from '../../components/SelectField.jsx';
 
 const StatsDash = styled('div', {
   display: 'flex',
@@ -24,6 +25,8 @@ const StatsDash = styled('div', {
 
 const NavMenu = styled(NavigationMenu, {
   justifyContent: 'left',
+  alignItems: 'center',
+  gap: '15px',
   marginBottom: '15px',
   zIndex: 0,
 });
@@ -53,8 +56,16 @@ const Trigger = styled(NavigationMenuTrigger, {
   },
 });
 
+const intervalOptions = [
+  { value: 15, label: "15 min"},
+  { value: 30, label: "30 min"}
+];
+
 const ImagesStatsModal = () => {
-    const [activePanel, setActivePanel] = useState("objects");
+  const [activePanel, setActivePanel] = useState("objects");
+  const [independenceInterval, setIndependenceInterval] = useState(30);
+
+  const intervalValue = intervalOptions.find(({ value }) => value === independenceInterval);
 
   return (
     <div>
@@ -84,12 +95,25 @@ const ImagesStatsModal = () => {
             </Trigger>
           </NavigationMenuItem>
         </MenuList>
+        {activePanel === "independent-detections" && (
+          <>
+            <label htmlFor="independence-interval">Independence Interval</label>
+            <SelectField
+              name="independence-interval"
+              value={intervalValue}
+              onChange={(_, {value}) => setIndependenceInterval(value)}
+              options={intervalOptions}
+              onBlur={() => {}}
+              isSearchable={false}
+            />
+          </>
+        )}
       </NavMenu>
       <StatsDash>
         {activePanel === "objects" && <ObjectPanel />}
         {activePanel === "images" && <ImagePanel />}
         {activePanel === "bursts" && <BurstsPanel />}
-        {activePanel === "independent-detections" && <IndependentDetectionsPanel />}
+        {activePanel === "independent-detections" && (<IndependentDetectionsPanel independenceInterval={independenceInterval} />)}
       </StatsDash>
     </div>
   );

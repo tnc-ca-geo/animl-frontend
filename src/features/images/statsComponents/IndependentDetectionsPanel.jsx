@@ -13,7 +13,7 @@ import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
 
-const IndependentDetectionsPanel = () => {
+const IndependentDetectionsPanel = ({ independenceInterval = 30 }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -24,9 +24,16 @@ const IndependentDetectionsPanel = () => {
     const { isLoading, errors, noneFound } = independentDetectionStatsLoading;
     const noErrors = !errors || errors.length === 0;
     if (independentDetectionStats === null && !noneFound && !isLoading && noErrors) {
-      dispatch(fetchIndependentDetectionStats(filters));
+      dispatch(fetchIndependentDetectionStats(filters, independenceInterval));
     }
-  }, [independentDetectionStats, independentDetectionStatsLoading, filters, dispatch]);
+  }, [independentDetectionStats, independentDetectionStatsLoading, filters, dispatch, independenceInterval]);
+
+  useEffect(() => {
+    // Reload the stats data when the independence interval is updated
+    if (independentDetectionStats !== null) {
+      dispatch(fetchIndependentDetectionStats(filters, independenceInterval));
+    }
+  }, [independentDetectionStats, independenceInterval])
 
   useEffect(() => {
     const getStatsPending =

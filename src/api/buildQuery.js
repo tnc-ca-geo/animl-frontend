@@ -387,7 +387,7 @@ const queries = {
     },
   }),
 
-  getStats: ({ filters, aggregationLevel }) => ({
+  getStats: ({ filters, aggregationLevel, independenceInterval }) => ({
     template: `
       query GetStats($input: QueryStatsInput!) {
         stats(input: $input) {
@@ -396,7 +396,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { filters, aggregationLevel },
+      input: { filters, aggregationLevel, independenceInterval },
     },
   }),
 
