@@ -12,7 +12,7 @@ const Container = styled('div', {
 
 const NumerContainer = styled('div', {
   width: '100%',
-  marginTop: '15px',
+  marginTop: '5px',
 });
 
 const LargeNumber = styled('span', {

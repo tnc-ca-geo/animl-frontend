@@ -62,7 +62,7 @@ const HydratedModal = () => {
 
   const modalContentMap = {
     'stats-modal': {
-      title: 'Stats',
+      title: 'Stats Dashboard',
       size: 'lg',
       content: <ImagesStatsModal />,
       callBackOnClose: () => dispatch(clearStats()),

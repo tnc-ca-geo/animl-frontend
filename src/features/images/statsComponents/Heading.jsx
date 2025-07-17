@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from "@stitches/react";
+import { styled } from '@stitches/react';
 import InfoIcon from '../../../components/InfoIcon';
 
 const Content = styled('div', {
@@ -8,8 +8,8 @@ const Content = styled('div', {
 });
 
 const Heading = ({ label, content }) => (
-  <div style={{ display: 'flex', flexDirection: 'row' }}>
-    <label>
+  <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '10px' }}>
+    <label style={{ display: 'flex', alignItems: 'center' }}>
       {label}
       <InfoIcon side="right" tooltipContent={<Content>{content}</Content>} />
     </label>

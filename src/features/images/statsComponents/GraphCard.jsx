@@ -45,7 +45,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         <ChartTooltip>
           <p>
             {`${label}: `}
-            <TooltipValue>{payload[0].value}</TooltipValue>
+            <TooltipValue>{payload[0].value.toLocaleString('en-US')}</TooltipValue>
           </p>
         </ChartTooltip>
       )}
