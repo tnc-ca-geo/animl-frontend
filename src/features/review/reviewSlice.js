@@ -150,6 +150,20 @@ export const reviewSlice = createSlice({
       state.lastAction = 'marked-empty';
     },
 
+    tagsAdded: (state, { payload }) => {
+      console.log('adding tags to redux state: ', payload.tags);
+      for (const tag of payload.tags) {
+        const { imageId, tagId } = tag;
+        const image = findImage(state.workingImages, imageId);
+        if (!image.tags) {
+          image.tags = [tagId];
+        }
+        if (!image.tags.includes(tagId)) {
+          image.tags.push(tagId);
+        }
+      }
+    },
+
     editLabelStart: (state) => {
       state.loadingStates.labels.isLoading = true;
       state.loadingStates.labels.operation = 'updating';
@@ -257,6 +271,7 @@ export const {
   labelsValidationReverted,
   objectsLocked,
   markedEmpty,
+  tagsAdded,
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
@@ -356,8 +371,8 @@ export const editTag = (operation, payload) => {
       return;
     }
     try {
-      console.log('editTag - operation: ', operation);
-      console.log('editTag - payload: ', payload);
+      console.log('editTag thunk - operation: ', operation);
+      console.log('editTag thunk - payload: ', payload);
 
       if (!operation || !payload) {
         const msg = `An operation (create or delete) and payload is required`;
