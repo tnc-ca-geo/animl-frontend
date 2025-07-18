@@ -706,6 +706,7 @@ export const fetchModelOptions = () => {
 // Project Tags thunks
 export const createProjectTag = (payload) => {
   return async (dispatch, getState) => {
+    console.log('createProjectTag payload: ', payload);
     try {
       dispatch(createProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
