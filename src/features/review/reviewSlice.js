@@ -352,6 +352,9 @@ export const editComment = (operation, payload) => {
 
 export const editTag = (operation, payload) => {
   return async (dispatch, getState) => {
+    if (payload.tags && !payload.tags.length) {
+      return;
+    }
     try {
       console.log('editTag - operation: ', operation);
       console.log('editTag - payload: ', payload);
@@ -368,7 +371,7 @@ export const editTag = (operation, payload) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        const req = `${operation}ImageTag`;
+        const req = operation === 'create' ? 'createImageTags' : 'deleteImageTag';
         console.log('req:', req);
 
         const res = await call({
@@ -377,9 +380,14 @@ export const editTag = (operation, payload) => {
           input: payload,
         });
         console.log('editTag - res: ', res);
-        const mutation = Object.keys(res)[0];
-        const tags = res[mutation].tags;
-        dispatch(editTagSuccess({ imageId: payload.imageId, tags }));
+        if (operation === 'create') {
+          // TODO: when tags are added, update the image.tags in redux state immediately (like we do with labels)
+          // TODO: then here we just call editTagSuccess with no payload (also like we do with labels)
+        } else if (operation === 'delete') {
+          const mutation = Object.keys(res)[0];
+          const tags = res[mutation].tags;
+          dispatch(editTagSuccess({ imageId: payload.imageId, tags }));
+        }
       }
     } catch (err) {
       console.log(`error attempting to ${operation}ImageTag: `, err);

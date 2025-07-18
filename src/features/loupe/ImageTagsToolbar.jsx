@@ -102,7 +102,7 @@ export const ImageTagsToolbar = ({ image, projectTags }) => {
       unaddedTags.splice(idx, 1);
       setUnaddedTags(orderUnaddedTags([...unaddedTags]));
     }
-    dispatch(editTag('create', addTagDto));
+    dispatch(editTag('create', { tags: [addTagDto] }));
   };
 
   return (
