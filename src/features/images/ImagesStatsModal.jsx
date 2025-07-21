@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchIndependentDetectionStats } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
@@ -9,6 +9,9 @@ import {
   NavigationMenuItem,
   NavigationMenuTrigger,
 } from '../../components/NavigationMenu.jsx';
+
+import MapView from '../../components/MapView';
+import { selectSelectedProject } from '../projects/projectsSlice';
 
 import ObjectPanel from './statsComponents/ObjectPanel';
 import ImagePanel from './statsComponents/ImagePanel';
@@ -66,12 +69,30 @@ const ImagesStatsModal = () => {
   const [independenceInterval, setIndependenceInterval] = useState(30);
 
   const filters = useSelector(selectActiveFilters);
+  const selectedProject = useSelector(selectSelectedProject);
 
   const handleIndependenceIntervalChange = (value) => {
     setIndependenceInterval(value);
     dispatch(fetchIndependentDetectionStats(filters, value));
   };
 
+  const [deploymentLocations, setDeploymentLocations] = useState([]);
+
+  useEffect(() => {
+    const camDeploymentLocations = selectedProject.cameraConfigs.reduce((acc, config) => {
+      const camDeployment = config.deployments
+      .filter((dep) => dep.location) // filter for camera deployments where location is not null
+      .map((dep) => ({
+        id: config._id,
+        location: dep.location,
+        deploymentId: dep._id
+      }));
+      return acc.concat(camDeployment)
+    }, [])
+
+    setDeploymentLocations(camDeploymentLocations);
+  }, [selectedProject, setDeploymentLocations])
+ 
   return (
     <div>
       <NavMenu>
@@ -117,6 +138,7 @@ const ImagesStatsModal = () => {
             filters={filters}
           />
         )}
+        <MapView coordinates={deploymentLocations?.map((dep) => dep.location.geometry.coordinates) || []} />
       </StatsDash>
     </div>
   );
