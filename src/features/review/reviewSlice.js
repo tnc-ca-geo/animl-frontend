@@ -151,7 +151,6 @@ export const reviewSlice = createSlice({
     },
 
     tagsAdded: (state, { payload }) => {
-      console.log('adding tags to redux state: ', payload.tags);
       for (const tag of payload.tags) {
         const { imageId, tagId } = tag;
         const image = findImage(state.workingImages, imageId);
@@ -160,6 +159,16 @@ export const reviewSlice = createSlice({
         }
         if (!image.tags.includes(tagId)) {
           image.tags.push(tagId);
+        }
+      }
+    },
+
+    tagsRemoved: (state, { payload }) => {
+      for (const tag of payload.tags) {
+        const { imageId, tagId } = tag;
+        const image = findImage(state.workingImages, imageId);
+        if (image.tags) {
+          image.tags = image.tags.filter((id) => id !== tagId);
         }
       }
     },
@@ -176,7 +185,6 @@ export const reviewSlice = createSlice({
     },
 
     editLabelSuccess: (state) => {
-      // NOTE: currently not doing anything with returned image
       state.loadingStates.labels.isLoading = false;
       state.loadingStates.labels.operation = null;
       state.loadingStates.labels.errors = null;
@@ -212,12 +220,10 @@ export const reviewSlice = createSlice({
       state.loadingStates.tags.errors = payload;
     },
 
-    editTagSuccess: (state, { payload }) => {
+    editTagSuccess: (state) => {
       state.loadingStates.tags.isLoading = false;
       state.loadingStates.tags.operation = null;
       state.loadingStates.tags.errors = null;
-      const image = findImage(state.workingImages, payload.imageId);
-      image.tags = payload.tags;
     },
 
     dismissLabelsError: (state, { payload }) => {
@@ -272,6 +278,7 @@ export const {
   objectsLocked,
   markedEmpty,
   tagsAdded,
+  tagsRemoved,
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
@@ -330,9 +337,6 @@ export const editLabel = (operation, entity, payload) => {
 export const editComment = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
-      console.log('editComment - operation: ', operation);
-      console.log('editComment - payload: ', payload);
-
       if (!operation || !payload) {
         const msg = `An operation (create, update, or delete) and payload is required`;
         throw new Error(msg);
@@ -346,14 +350,11 @@ export const editComment = (operation, payload) => {
 
       if (token && selectedProj) {
         const req = `${operation}ImageComment`;
-        console.log('req: ', req);
-
         const res = await call({
           projId: selectedProj._id,
           request: req,
           input: payload,
         });
-        console.log('editComment - res: ', res);
         const mutation = Object.keys(res)[0];
         const comments = res[mutation].comments;
         dispatch(editCommentSuccess({ imageId: payload.imageId, comments }));
@@ -371,9 +372,6 @@ export const editTag = (operation, payload) => {
       return;
     }
     try {
-      console.log('editTag thunk - operation: ', operation);
-      console.log('editTag thunk - payload: ', payload);
-
       if (!operation || !payload) {
         const msg = `An operation (create or delete) and payload is required`;
         throw new Error(msg);
@@ -386,23 +384,15 @@ export const editTag = (operation, payload) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        const req = operation === 'create' ? 'createImageTags' : 'deleteImageTag';
-        console.log('req:', req);
+        const req = `${operation}ImageTags`;
 
-        const res = await call({
+        await call({
           projId: selectedProj._id,
           request: req,
           input: payload,
         });
-        console.log('editTag - res: ', res);
-        if (operation === 'create') {
-          // TODO: when tags are added, update the image.tags in redux state immediately (like we do with labels)
-          // TODO: then here we just call editTagSuccess with no payload (also like we do with labels)
-        } else if (operation === 'delete') {
-          const mutation = Object.keys(res)[0];
-          const tags = res[mutation].tags;
-          dispatch(editTagSuccess({ imageId: payload.imageId, tags }));
-        }
+
+        dispatch(editTagSuccess());
       }
     } catch (err) {
       console.log(`error attempting to ${operation}ImageTag: `, err);

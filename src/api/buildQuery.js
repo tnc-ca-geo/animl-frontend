@@ -694,11 +694,11 @@ const queries = {
     variables: { input: input },
   }),
 
-  deleteImageTag: (input) => ({
+  deleteImageTags: (input) => ({
     template: `
-      mutation DeleteImageTag($input: DeleteImageTagInput!) {
-        deleteImageTag(input: $input) {
-          tags
+      mutation DeleteImageTags($input: DeleteImageTagsInput!) {
+        deleteImageTags(input: $input) {
+          isOk
         }
       }
     `,
