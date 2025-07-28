@@ -151,13 +151,9 @@ export const reviewSlice = createSlice({
     },
 
     tagsAdded: (state, { payload }) => {
-      console.log('adding tags', payload);
       for (const tag of payload.tags) {
         const { imageId, tagId } = tag;
-        console.log('adding tag', tagId, 'to image', imageId);
-
         const image = findImage(state.workingImages, imageId);
-        console.log('found image: ', image);
         if (!image.tags) {
           image.tags = [tagId];
         }
