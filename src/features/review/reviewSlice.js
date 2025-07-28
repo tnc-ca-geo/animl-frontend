@@ -151,9 +151,13 @@ export const reviewSlice = createSlice({
     },
 
     tagsAdded: (state, { payload }) => {
+      console.log('adding tags', payload);
       for (const tag of payload.tags) {
         const { imageId, tagId } = tag;
+        console.log('adding tag', tagId, 'to image', imageId);
+
         const image = findImage(state.workingImages, imageId);
+        console.log('found image: ', image);
         if (!image.tags) {
           image.tags = [tagId];
         }
@@ -416,7 +420,7 @@ export const selectLabelsErrors = (state) => state.review.loadingStates.labels.e
 export const selectCommentsErrors = (state) => state.review.loadingStates.comments.errors;
 export const selectCommentsLoading = (state) => state.review.loadingStates.comments.isLoading;
 export const selectTagsErrors = (state) => state.review.loadingStates.tags.errors;
-export const selectTagsLoading = (state) => state.review.loadingStates.comments.isLoading;
+export const selectTagsLoading = (state) => state.review.loadingStates.tags.isLoading;
 export const selectLastAction = (state) => state.review.lastAction;
 export const selectLastCategoryApplied = (state) => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(

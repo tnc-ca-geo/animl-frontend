@@ -896,7 +896,8 @@ export const selectLabels = createSelector([selectSelectedProject], (proj) =>
 export const selectProjectTags = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.tags : [],
 );
-export const selectTagsLoading = (state) => state.projects.loadingStates.projectTags.isLoading;
+export const selectProjectTagsLoading = (state) =>
+  state.projects.loadingStates.projectTags.isLoading;
 export const selectProjectsLoading = (state) => state.projects.loadingStates.projects;
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;
