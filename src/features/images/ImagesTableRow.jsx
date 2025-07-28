@@ -291,11 +291,18 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
   const handleTagChange = (newValue) => {
     if (!newValue) return;
-    console.log('adding tag', newValue);
-    const tagsToAdd = selectedImages.map((image) => ({
-      imageId: image._id,
-      tagId: newValue.value || newValue,
-    }));
+    const tagsToAdd = selectedImages
+      .filter(
+        (image) => !image.tags || (image.tags && !image.tags.includes(newValue.value || newValue)),
+      )
+      .map((image) => ({
+        imageId: image._id,
+        tagId: newValue.value || newValue,
+      }));
+    if (tagsToAdd.length === 0) {
+      dispatch(addTagEnd());
+      return;
+    }
     dispatch(tagsAdded({ tags: tagsToAdd }));
   };
 
