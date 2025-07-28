@@ -150,6 +150,29 @@ export const reviewSlice = createSlice({
       state.lastAction = 'marked-empty';
     },
 
+    tagsAdded: (state, { payload }) => {
+      for (const tag of payload.tags) {
+        const { imageId, tagId } = tag;
+        const image = findImage(state.workingImages, imageId);
+        if (!image.tags) {
+          image.tags = [tagId];
+        }
+        if (!image.tags.includes(tagId)) {
+          image.tags.push(tagId);
+        }
+      }
+    },
+
+    tagsRemoved: (state, { payload }) => {
+      for (const tag of payload.tags) {
+        const { imageId, tagId } = tag;
+        const image = findImage(state.workingImages, imageId);
+        if (image.tags) {
+          image.tags = image.tags.filter((id) => id !== tagId);
+        }
+      }
+    },
+
     editLabelStart: (state) => {
       state.loadingStates.labels.isLoading = true;
       state.loadingStates.labels.operation = 'updating';
@@ -162,7 +185,6 @@ export const reviewSlice = createSlice({
     },
 
     editLabelSuccess: (state) => {
-      // NOTE: currently not doing anything with returned image
       state.loadingStates.labels.isLoading = false;
       state.loadingStates.labels.operation = null;
       state.loadingStates.labels.errors = null;
@@ -198,12 +220,10 @@ export const reviewSlice = createSlice({
       state.loadingStates.tags.errors = payload;
     },
 
-    editTagSuccess: (state, { payload }) => {
+    editTagSuccess: (state) => {
       state.loadingStates.tags.isLoading = false;
       state.loadingStates.tags.operation = null;
       state.loadingStates.tags.errors = null;
-      const image = findImage(state.workingImages, payload.imageId);
-      image.tags = payload.tags;
     },
 
     dismissLabelsError: (state, { payload }) => {
@@ -257,6 +277,8 @@ export const {
   labelsValidationReverted,
   objectsLocked,
   markedEmpty,
+  tagsAdded,
+  tagsRemoved,
   editLabelStart,
   editLabelFailure,
   editLabelSuccess,
@@ -315,9 +337,6 @@ export const editLabel = (operation, entity, payload) => {
 export const editComment = (operation, payload) => {
   return async (dispatch, getState) => {
     try {
-      console.log('editComment - operation: ', operation);
-      console.log('editComment - payload: ', payload);
-
       if (!operation || !payload) {
         const msg = `An operation (create, update, or delete) and payload is required`;
         throw new Error(msg);
@@ -331,14 +350,11 @@ export const editComment = (operation, payload) => {
 
       if (token && selectedProj) {
         const req = `${operation}ImageComment`;
-        console.log('req: ', req);
-
         const res = await call({
           projId: selectedProj._id,
           request: req,
           input: payload,
         });
-        console.log('editComment - res: ', res);
         const mutation = Object.keys(res)[0];
         const comments = res[mutation].comments;
         dispatch(editCommentSuccess({ imageId: payload.imageId, comments }));
@@ -352,10 +368,10 @@ export const editComment = (operation, payload) => {
 
 export const editTag = (operation, payload) => {
   return async (dispatch, getState) => {
+    if (payload.tags && !payload.tags.length) {
+      return;
+    }
     try {
-      console.log('editTag - operation: ', operation);
-      console.log('editTag - payload: ', payload);
-
       if (!operation || !payload) {
         const msg = `An operation (create or delete) and payload is required`;
         throw new Error(msg);
@@ -368,18 +384,15 @@ export const editTag = (operation, payload) => {
       const selectedProj = projects.find((proj) => proj.selected);
 
       if (token && selectedProj) {
-        const req = `${operation}ImageTag`;
-        console.log('req:', req);
+        const req = `${operation}ImageTags`;
 
-        const res = await call({
+        await call({
           projId: selectedProj._id,
           request: req,
           input: payload,
         });
-        console.log('editTag - res: ', res);
-        const mutation = Object.keys(res)[0];
-        const tags = res[mutation].tags;
-        dispatch(editTagSuccess({ imageId: payload.imageId, tags }));
+
+        dispatch(editTagSuccess());
       }
     } catch (err) {
       console.log(`error attempting to ${operation}ImageTag: `, err);
@@ -403,7 +416,7 @@ export const selectLabelsErrors = (state) => state.review.loadingStates.labels.e
 export const selectCommentsErrors = (state) => state.review.loadingStates.comments.errors;
 export const selectCommentsLoading = (state) => state.review.loadingStates.comments.isLoading;
 export const selectTagsErrors = (state) => state.review.loadingStates.tags.errors;
-export const selectTagsLoading = (state) => state.review.loadingStates.comments.isLoading;
+export const selectTagsLoading = (state) => state.review.loadingStates.tags.isLoading;
 export const selectLastAction = (state) => state.review.lastAction;
 export const selectLastCategoryApplied = (state) => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(

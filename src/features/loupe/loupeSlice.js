@@ -5,7 +5,8 @@ const initialState = {
   open: false,
   reviewMode: false,
   isDrawingBbox: false,
-  isAddingLabel: null,
+  isAddingLabel: null, // can be 'from-object' | 'from-image-table' | 'from-review-toolbar' | null
+  isAddingTag: null, // can be 'from-image-table' | null
   mouseEventOutsideOverlay: null,
   iterationOptions: {
     skipEmptyImages: false,
@@ -43,12 +44,23 @@ export const loupeSlice = createSlice({
     },
 
     addLabelStart: (state, { payload }) => {
-      // payload can be 'from-object' or 'all-objects
       state.isAddingLabel = payload;
     },
 
     addLabelEnd: (state) => {
       if (state.isAddingLabel) state.isAddingLabel = null;
+    },
+
+    addTagStart: (state, { payload }) => {
+      // NOTE: right now, just dispatching this from the ImageTableRow's context menu
+      // but in the future we may want to refactor the TagSelector.jsx used in the Loupe
+      // to also use React Select, so it would dispatch addTagStart from there as well.
+      // payload can be 'from-image-table' | null
+      state.isAddingTag = payload;
+    },
+
+    addTagEnd: (state) => {
+      if (state.isAddingTag) state.isAddingTag = null;
     },
 
     iterationOptionsChanged: (state, { payload }) => {
@@ -72,6 +84,8 @@ export const {
   clearMouseEventDetected,
   addLabelStart,
   addLabelEnd,
+  addTagStart,
+  addTagEnd,
   iterationOptionsChanged,
 } = loupeSlice.actions;
 
@@ -93,6 +107,7 @@ export const selectReviewMode = (state) => state.loupe.reviewMode;
 export const selectIsDrawingBbox = (state) => state.loupe.isDrawingBbox;
 export const selectMouseEventDetected = (state) => state.loupe.mouseEventOutsideOverlay;
 export const selectIsAddingLabel = (state) => state.loupe.isAddingLabel;
+export const selectIsAddingTag = (state) => state.loupe.isAddingTag;
 export const selectIterationOptions = (state) => state.loupe.iterationOptions;
 
 export default loupeSlice.reducer;
