@@ -40,6 +40,7 @@ import {
   ValueNoneIcon,
   TrashIcon,
 } from '@radix-ui/react-icons';
+import { Tag } from 'lucide-react';
 import BulkTagSelector from '../../components/BulkTagSelector.jsx';
 
 // TODO: redundant component (exists in ImagesTable)
@@ -220,9 +221,13 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
   // edit all labels
   const handleEditAllLabelsButtonClick = (e) => {
+    console.log('edit all labels clicked');
     e.stopPropagation();
     e.preventDefault();
-    if (allObjectsLocked) return;
+    if (allObjectsLocked) {
+      console.warn('Cannot edit labels when all objects are locked');
+      return;
+    }
     dispatch(addLabelStart('from-image-table'));
   };
 
@@ -353,7 +358,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
       >
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, true)}
-          disabled={isAddingLabel}
+          disabled={isAddingLabel || isAddingTag}
           css={{
             color: '$successText',
             '&[data-highlighted]': {
@@ -370,7 +375,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, false)}
-          disabled={isAddingLabel}
+          disabled={isAddingLabel || isAddingTag}
           css={{
             color: '$errorText',
             '&[data-highlighted]': {
@@ -388,7 +393,10 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
         {isAddingLabel === 'from-image-table' ? (
           <CategorySelector css={{ width: '100%' }} handleCategoryChange={handleCategoryChange} />
         ) : (
-          <ContextMenuItem onSelect={handleEditAllLabelsButtonClick}>
+          <ContextMenuItem
+            onSelect={handleEditAllLabelsButtonClick}
+            disabled={isAddingTag || allObjectsLocked}
+          >
             <ContextMenuItemIconLeft>
               <Pencil1Icon />
             </ContextMenuItemIconLeft>
@@ -396,34 +404,43 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           </ContextMenuItem>
         )}
 
-        <ContextMenuItem onSelect={handleMarkEmptyMenuItemClick} disabled={isAddingLabel}>
+        <ContextMenuItem
+          onSelect={handleMarkEmptyMenuItemClick}
+          disabled={isAddingLabel || isAddingTag}
+        >
           <ContextMenuItemIconLeft>
             <ValueNoneIcon />
           </ContextMenuItemIconLeft>
           Mark empty
         </ContextMenuItem>
 
-        <ContextMenuSeparator />
-
         {isAddingTag === 'from-image-table' ? (
           <BulkTagSelector css={{ width: '100%' }} handleTagChange={handleTagChange} />
         ) : (
-          <ContextMenuItem onSelect={handleApplyTagButtonClick}>
+          <ContextMenuItem onSelect={handleApplyTagButtonClick} disabled={isAddingLabel}>
             <ContextMenuItemIconLeft>
-              <Pencil1Icon />
+              <Tag size={15} />
             </ContextMenuItemIconLeft>
             Apply tag
           </ContextMenuItem>
         )}
 
-        <ContextMenuItem onSelect={handleUnlockMenuItemClick} disabled={isAddingLabel}>
+        <ContextMenuSeparator />
+
+        <ContextMenuItem
+          onSelect={handleUnlockMenuItemClick}
+          disabled={isAddingLabel || isAddingTag}
+        >
           <ContextMenuItemIconLeft>
             <LockOpen1Icon />
           </ContextMenuItemIconLeft>
           Unlock
         </ContextMenuItem>
 
-        <ContextMenuItem onSelect={handleDeleteImagesMenuItemClick} disabled={isAddingLabel}>
+        <ContextMenuItem
+          onSelect={handleDeleteImagesMenuItemClick}
+          disabled={isAddingLabel || isAddingTag}
+        >
           <ContextMenuItemIconLeft>
             <TrashIcon />
           </ContextMenuItemIconLeft>
