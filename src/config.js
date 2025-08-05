@@ -52,3 +52,13 @@ const globalBreakpointValues = [
 ];
 
 export const globalBreakpoints = createBreakpoints(globalBreakpointValues);
+
+export const MAPBOX_TOKEN =
+  "pk.eyJ1IjoibmF0aGFuaWVscmluZGxhdWIiLCJhIjoiY2x3N2I4MGsxMjF6eTJqbjZjeHZ1MDJ4OSJ9.aHJ_5TlLoJz_ynrikFzdpQ"
+
+export const MAP_CONFIG = {
+  style: "mapbox://styles/nathanielrindlaub/clw8kxzdk01ij01ob1jl677k2",
+  attributionControl: false,
+  center: [124, -1.98],
+  zoom: 5.5
+}
