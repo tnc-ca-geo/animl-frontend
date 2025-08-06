@@ -32,6 +32,7 @@ import {
   ContextMenuSeparator,
 } from '../../components/ContextMenu.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import {
   CheckIcon,
   Cross2Icon,
@@ -327,6 +328,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           selected={selected}
         >
           {row.cells.map((cell) => {
+            console.log('cell: ', cell);
             let scrollable = false;
             if (cell.column.Header === 'Labels') {
               const nonInvalidatedObjects = cell.value.props.objects.filter((obj) =>
@@ -341,6 +343,11 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
                 selected={selected}
                 scrollable={scrollable}
               >
+                {cell.column.Header === 'Labels' ? (
+                  <SpinnerOverlay>
+                    <SimpleSpinner />
+                  </SpinnerOverlay>
+                ) : null}
                 {cell.render('Cell')}
               </DataCell>
             );
