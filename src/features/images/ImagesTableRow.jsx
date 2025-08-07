@@ -343,7 +343,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
                 selected={selected}
                 scrollable={scrollable}
               >
-                {cell.column.Header === 'Labels' ? (
+                {row.original.awaitingPrediction === true && cell.column.Header === 'Labels' ? (
                   <SpinnerOverlay>
                     <SimpleSpinner />
                   </SpinnerOverlay>
