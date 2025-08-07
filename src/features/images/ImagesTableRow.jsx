@@ -328,7 +328,6 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           selected={selected}
         >
           {row.cells.map((cell) => {
-            console.log('cell: ', cell);
             let scrollable = false;
             if (cell.column.Header === 'Labels') {
               const nonInvalidatedObjects = cell.value.props.objects.filter((obj) =>
