@@ -34,6 +34,12 @@ import {
 import CategorySelector from '../../components/CategorySelector.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipArrow,
+  TooltipTrigger,
+} from '../../components/Tooltip.jsx';
+import {
   CheckIcon,
   Cross2Icon,
   LockOpen1Icon,
@@ -343,9 +349,17 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
                 scrollable={scrollable}
               >
                 {row.original.awaitingPrediction === true && cell.column.Header === 'Labels' ? (
-                  <SpinnerOverlay>
-                    <SimpleSpinner />
-                  </SpinnerOverlay>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SpinnerOverlay>
+                        <SimpleSpinner />
+                      </SpinnerOverlay>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" sideOffset={0}>
+                      This image is still awaiting ML prediction.
+                      <TooltipArrow />
+                    </TooltipContent>
+                  </Tooltip>
                 ) : null}
                 {cell.render('Cell')}
               </DataCell>
