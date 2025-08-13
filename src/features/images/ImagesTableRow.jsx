@@ -32,13 +32,6 @@ import {
   ContextMenuSeparator,
 } from '../../components/ContextMenu.jsx';
 import CategorySelector from '../../components/CategorySelector.jsx';
-import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipArrow,
-  TooltipTrigger,
-} from '../../components/Tooltip.jsx';
 import {
   CheckIcon,
   Cross2Icon,
@@ -336,7 +329,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           {row.cells.map((cell) => {
             let scrollable = false;
             if (cell.column.Header === 'Labels') {
-              const nonInvalidatedObjects = cell.value.props.objects.filter((obj) =>
+              const nonInvalidatedObjects = cell.value.props.children[1].props.objects.filter((obj) =>
                 obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
               );
               scrollable = nonInvalidatedObjects.length >= 3;
@@ -348,19 +341,6 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
                 selected={selected}
                 scrollable={scrollable}
               >
-                {row.original.awaitingPrediction === true && cell.column.Header === 'Labels' ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SpinnerOverlay>
-                        <SimpleSpinner />
-                      </SpinnerOverlay>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={0}>
-                      This image is still awaiting ML prediction.
-                      <TooltipArrow />
-                    </TooltipContent>
-                  </Tooltip>
-                ) : null}
                 {cell.render('Cell')}
               </DataCell>
             );
