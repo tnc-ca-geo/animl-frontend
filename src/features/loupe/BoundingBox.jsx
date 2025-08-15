@@ -272,7 +272,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger disabled={!isAuthorized}>
+      <ContextMenuTrigger disabled={!isAuthorized || awaitingPrediction}>
         <Draggable
           bounds=".image-frame"
           handle=".drag-handle"
@@ -353,7 +353,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
       >
         <ContextMenuItem
           onClick={(e) => handleValidationMenuItemClick(e, true)}
-          disabled={object.locked || awaitingPrediction}
+          disabled={object.locked}
           css={{
             color: '$successText',
             '&[data-highlighted]': {
@@ -369,7 +369,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
         </ContextMenuItem>
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, false)}
-          disabled={object.locked || awaitingPrediction}
+          disabled={object.locked}
           css={{
             color: '$errorText',
             '&[data-highlighted]': {
@@ -386,7 +386,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
         <ContextMenuItem
           className="edit-label-menu-item"
           onSelect={handleEditLabelMenuItemClick}
-          disabled={object.locked || awaitingPrediction}
+          disabled={object.locked}
         >
           <ContextMenuItemIconLeft>
             <Pencil1Icon />
@@ -394,7 +394,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
           Edit label
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem onSelect={handleUnlockMenuItemClick} disabled={!object.locked || awaitingPrediction}>
+        <ContextMenuItem onSelect={handleUnlockMenuItemClick} disabled={!object.locked}>
           <ContextMenuItemIconLeft>
             <LockOpen1Icon />
           </ContextMenuItemIconLeft>

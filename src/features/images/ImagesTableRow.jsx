@@ -122,6 +122,8 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   const selectedImages = useSelector(selectSelectedImages);
   const dispatch = useDispatch();
 
+  const awaitingPrediction = selectedImages[index]?.awaitingPrediction;
+
   const handleRowClick = useCallback(
     (e, rowIdx) => {
       if (e.shiftKey) {
@@ -329,7 +331,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           {row.cells.map((cell) => {
             let scrollable = false;
             if (cell.column.Header === 'Labels') {
-              const nonInvalidatedObjects = cell.value.props.children[1].props.objects.filter((obj) =>
+              const nonInvalidatedObjects = cell.value.props.objects.filter((obj) =>
                 obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
               );
               scrollable = nonInvalidatedObjects.length >= 3;
@@ -358,7 +360,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
       >
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, true)}
-          disabled={isAddingLabel || isAddingTag}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
           css={{
             color: '$successText',
             '&[data-highlighted]': {
@@ -375,7 +377,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, false)}
-          disabled={isAddingLabel || isAddingTag}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
           css={{
             color: '$errorText',
             '&[data-highlighted]': {
@@ -395,7 +397,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
         ) : (
           <ContextMenuItem
             onSelect={handleEditAllLabelsButtonClick}
-            disabled={isAddingTag || allObjectsLocked}
+            disabled={isAddingTag || allObjectsLocked || awaitingPrediction}
           >
             <ContextMenuItemIconLeft>
               <Pencil1Icon />
@@ -406,7 +408,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
         <ContextMenuItem
           onSelect={handleMarkEmptyMenuItemClick}
-          disabled={isAddingLabel || isAddingTag}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
         >
           <ContextMenuItemIconLeft>
             <ValueNoneIcon />
@@ -429,7 +431,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
         <ContextMenuItem
           onSelect={handleUnlockMenuItemClick}
-          disabled={isAddingLabel || isAddingTag}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
         >
           <ContextMenuItemIconLeft>
             <LockOpen1Icon />

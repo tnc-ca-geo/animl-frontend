@@ -26,7 +26,6 @@ import { selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipArrow } from '../../components/Tooltip.jsx';
 import { selectProjectsLoading } from '../projects/projectsSlice';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
@@ -362,25 +361,12 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
 
     // label pills
     const labelPills = (
-      <>
-        {workingImages[imageIndex].awaitingPrediction === true &&
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <SimpleSpinner/>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side='bottom'>
-              This image is still awaiting ML prediction.
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>}
-        <LabelPills
-          objects={workingImages[imageIndex].objects}
-          imageIndex={imageIndex}
-          focusIndex={focusIndex}
-        />
-      </>
+      <LabelPills
+        objects={workingImages[imageIndex].objects}
+        imageIndex={imageIndex}
+        focusIndex={focusIndex}
+        awaitingPrediction={workingImages[imageIndex].awaitingPrediction}
+      />
     );
 
     // date created
