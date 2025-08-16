@@ -122,7 +122,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   const selectedImages = useSelector(selectSelectedImages);
   const dispatch = useDispatch();
 
-  const awaitingPrediction = selectedImages[index]?.awaitingPrediction;
+  const awaitingPrediction = row.original.awaitingPrediction;
 
   const handleRowClick = useCallback(
     (e, rowIdx) => {

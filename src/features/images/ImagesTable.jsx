@@ -362,10 +362,10 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
     // label pills
     const labelPills = (
       <LabelPills
-        objects={workingImages[imageIndex].objects}
+        objects={img.objects}
         imageIndex={imageIndex}
         focusIndex={focusIndex}
-        awaitingPrediction={workingImages[imageIndex].awaitingPrediction}
+        awaitingPrediction={img.awaitingPrediction}
       />
     );
 
