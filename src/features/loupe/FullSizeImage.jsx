@@ -96,7 +96,6 @@ const FullSizeImage = ({ workingImages, image, focusIndex }) => {
                   objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
                   focusIndex={focusIndex}
                   setTempObject={setTempObject}
-                  awaitingPrediction={image.awaitingPrediction}
                 />
               );
             })}

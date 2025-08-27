@@ -230,7 +230,7 @@ const ImageReviewToolbar = ({
               ) : (
                 <ToolbarIconButton
                   onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked || image.awaitingPrediction}
+                  disabled={allObjectsLocked}
                 >
                   <Pencil1Icon />
                 </ToolbarIconButton>
@@ -249,7 +249,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={(e) => handleValidateAllButtonClick(e, true)}
-                disabled={allObjectsLocked || image.awaitingPrediction}
+                disabled={allObjectsLocked}
               >
                 <CheckIcon />
               </ToolbarIconButton>
@@ -263,7 +263,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={(e) => handleValidateAllButtonClick(e, false)}
-                disabled={allObjectsLocked || image.awaitingPrediction}
+                disabled={allObjectsLocked}
               >
                 <Cross2Icon />
               </ToolbarIconButton>
@@ -279,10 +279,7 @@ const ImageReviewToolbar = ({
           {/* Mark empty */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={handleMarkEmptyButtonClick}
-                disabled={image.awaitingPrediction}
-              >
+              <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
                 <ValueNoneIcon />
               </ToolbarIconButton>
             </TooltipTrigger>
@@ -304,7 +301,7 @@ const ImageReviewToolbar = ({
                 </CancelHint>
               ) : (
                 <Tooltip>
-                  <TooltipTrigger asChild disabled={isSmallScreen || image.awaitingPrediction}>
+                  <TooltipTrigger asChild disabled={isSmallScreen}>
                     <ToolbarIconButton onClick={handleAddObjectButtonClick}>
                       <GroupIcon />
                     </ToolbarIconButton>
@@ -342,7 +339,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={handleUnlockAllButtonClick}
-                disabled={allObjectsUnlocked || !hasRenderedObjects || image.awaitingPrediction}
+                disabled={allObjectsUnlocked || !hasRenderedObjects}
               >
                 <LockOpen1Icon />
               </ToolbarIconButton>

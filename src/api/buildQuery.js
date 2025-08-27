@@ -68,7 +68,6 @@ const imageFields = `
     medium
     small
   }
-  awaitingPrediction
 `;
 
 const pageInfoFields = `
