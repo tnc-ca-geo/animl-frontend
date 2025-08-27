@@ -1,0 +1,38 @@
+org: animl
+app: animl
+service: animl-frontend-infra
+
+plugins:
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  # profile: animl
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+
+resources:
+  Resources:
+    HostedZoneAnimlSite:
+      Type: AWS::Route53::HostedZone
+      Properties:
+        Name: animl-${opt:stage, self:provider.stage, 'dev'}.camera
+        HostedZoneConfig:
+          Comment: "Hosted zone for animl ${opt:stage, self:provider.stage, 'dev'}"
+
+    CertificateAnimlSite:
+      DependsOn:
+        - HostedZoneAnimlSite
+      Type: AWS::CertificateManager::Certificate
+      Properties:
+        DomainName: animl-${opt:stage, self:provider.stage, 'dev'}.camera
+        SubjectAlternativeNames:
+          - www.animl-${opt:stage, self:provider.stage, 'dev'}.camera
+        ValidationMethod: DNS
+        DomainValidationOptions:
+          - DomainName: animl-${opt:stage, self:provider.stage, 'dev'}.camera
+            HostedZoneId: !Ref HostedZoneAnimlSite
+
