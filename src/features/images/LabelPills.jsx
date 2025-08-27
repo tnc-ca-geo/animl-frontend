@@ -6,7 +6,12 @@ import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 import LabelPill from '../../components/LabelPill.jsx';
 import { SimpleSpinner } from '../../components/Spinner';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipArrow } from '../../components/Tooltip.jsx';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipArrow,
+} from '../../components/Tooltip.jsx';
 
 const ObjectPill = styled('div', {
   display: 'flex',
@@ -44,8 +49,8 @@ const LabelContainer = styled('div', {
 });
 
 const SpinnerContainer = styled('div', {
-  display: 'flex'
-})
+  display: 'flex',
+});
 
 const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => {
   const isImageFocused = imageIndex === focusIndex.image;
@@ -63,26 +68,28 @@ const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => 
 
   return (
     <LabelContainer>
-      {awaitingPrediction &&
+      {awaitingPrediction && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <SpinnerContainer>
-              <SimpleSpinner/>
+            <SpinnerContainer css={{ margin: '$1' }}>
+              <SimpleSpinner />
             </SpinnerContainer>
           </TooltipTrigger>
-          <TooltipContent side='bottom'>
-            Awaiting ML prediction.
+          <TooltipContent side="right" sideOffset={5}>
+            Awaiting ML prediction. Refresh data for latest results.
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>
-      }
+      )}
       {objects.map((object, objIndex) => {
         // TODO: find a cleaner way to do this. Maybe make it a hook?
         // We also need filtered objects in FullSizeImage component...
         // and reviewMiddleware so consider encapsulating
         let labels;
         if (object.locked) {
-          const firstValidatedLabel = object.labels.find((label) => label.validation && label.validation.validated);
+          const firstValidatedLabel = object.labels.find(
+            (label) => label.validation && label.validation.validated,
+          );
           labels = firstValidatedLabel ? [firstValidatedLabel] : [];
         } else {
           const allNonInvalLabels = object.labels.filter(
@@ -105,7 +112,11 @@ const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => 
                   return (
                     <LabelPill
                       key={label._id}
-                      focused={isImageFocused && objIndex === focusIndex.object && lblIndex === focusIndex.label}
+                      focused={
+                        isImageFocused &&
+                        objIndex === focusIndex.object &&
+                        lblIndex === focusIndex.label
+                      }
                       onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
                       color={l?.color || '#00C797'}
                       name={l?.name || 'ERROR FINDING LABEL'}
