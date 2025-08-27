@@ -119,7 +119,7 @@ const StyledResizableBox = styled(ResizableBox, {
   },
 });
 
-const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempObject }) => {
+const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempObject, awaitingPrediction }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const username = useSelector(selectUserUsername);
   const isAuthorized = hasRole(userRoles, WRITE_OBJECTS_ROLES);
@@ -272,7 +272,7 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger disabled={!isAuthorized}>
+      <ContextMenuTrigger disabled={!isAuthorized || awaitingPrediction}>
         <Draggable
           bounds=".image-frame"
           handle=".drag-handle"
@@ -280,14 +280,14 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
           onStart={onDragStart}
           onDrag={onDrag}
           onStop={onDragEnd}
-          disabled={isSmallScreen || !isAuthorized || object.locked}
+          disabled={isSmallScreen || !isAuthorized || object.locked || awaitingPrediction}
         >
           <StyledResizableBox
             width={width}
             height={height}
             minConstraints={[0, 0]}
             maxConstraints={[constraintX, constraintY]}
-            resizeHandles={isAuthorized && !object.locked ? ['sw', 'se', 'nw', 'ne'] : []}
+            resizeHandles={isAuthorized && !object.locked && !awaitingPrediction ? ['sw', 'se', 'nw', 'ne'] : []}
             handle={(location) => (
               <ResizeHandle
                 location={location}
@@ -326,13 +326,13 @@ const BoundingBox = ({ imgId, imgDims, object, objectIndex, focusIndex, setTempO
                   verticalPos={top > 30 ? 'top' : 'bottom'}
                   horizontalPos={imgDims.width - left - width < 75 ? 'right' : 'left'}
                   ref={catSelectorRef}
-                  isAuthorized={isAuthorized}
+                  isAuthorized={isAuthorized && !awaitingPrediction}
                   username={username}
                 />
               )}
               <DragHandle
                 className="drag-handle"
-                disabled={isSmallScreen || !isAuthorized || object.locked}
+                disabled={isSmallScreen || !isAuthorized || object.locked || awaitingPrediction}
               />
             </>
           </StyledResizableBox>
