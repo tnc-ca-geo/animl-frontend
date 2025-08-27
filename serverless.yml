@@ -10,7 +10,7 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   region: us-west-2
-  profile: animl
+  # profile: animl
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
@@ -21,3 +21,45 @@ custom:
     distributionFolder: build
     indexDocument: index.html
     errorDocument: index.html
+
+resources:
+  Resources:
+    CloudfrontDistributionAnimlSite:
+      # DependsOn:
+      #   - HostedZoneAnimlSite
+      #   - CertificateAnimlSite
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName: animl-frontend-${self:provider.stage}.s3.amazonaws.com
+              Id: animl-frontend-${self:provider.stage}
+              CustomOriginConfig:
+                OriginProtocolPolicy: http-only
+
+          Enabled: 'true'
+          Comment: "Cloudfront distro for animl frontend ${opt:stage, self:provider.stage, 'dev'} bucket"
+          Logging:
+            IncludeCookies: 'false'
+            Bucket: animllogs.s3.amazonaws.com
+            Prefix: animl-frontend-${opt:stage, self:provider.stage, 'dev'}
+          Aliases:
+            - animl-${opt:stage, self:provider.stage, 'dev'}.camera
+            - www.animl-${opt:stage, self:provider.stage, 'dev'}.camera
+            # - ${*}.animl-${opt:stage, self:provider.stage, 'dev'}.camera
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            TargetOriginId: animl-frontend-${self:provider.stage}
+            MinTTL: 86400 # 1 day - perhaps adjust for staging?
+            MaxTTL: 31536000 # 1 year
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: 'redirect-to-https'
+          ViewerCertificate:
+            AcmCertificateArn: !Ref CertificateAnimlSite
+            SslSupportMethod: 'sni-only'

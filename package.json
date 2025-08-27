@@ -80,12 +80,15 @@
     "preinstall": "npx npm-force-resolutions",
     "start": "vite",
     "build": "vite build",
+    "build:dev": "env-cmd -f .env.staging npm run build",
     "build:staging": "env-cmd -f .env.staging npm run build",
     "serve": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "deploy-dev": "npm run build:staging && sls client deploy --no-confirm --stage dev",
+    "deploy-dev": "npm run build:dev && sls deploy --stage dev",
+    "deploy-staging": "npm run build:staging && sls client deploy --no-confirm --stage staging",
     "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy-infra-dev": "sls deploy --stage dev"
   },
   "eslintConfig": {
     "extends": "react-app",
