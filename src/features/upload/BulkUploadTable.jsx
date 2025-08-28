@@ -119,10 +119,10 @@ const BulkUploadTable = ({ percentUploaded }) => {
 
   const dispatch = useDispatch();
 
-  // Fetch batches and continue to poll every minute
+  // Fetch batches and continue to poll every 5 seconds
   useEffect(() => {
     dispatch(fetchBatches());
-    const intervalID = setInterval(() => dispatch(fetchBatches()), 60000);
+    const intervalID = setInterval(() => dispatch(fetchBatches()), 5000);
     return () => clearInterval(intervalID);
   }, [dispatch]);
 
