@@ -25,41 +25,32 @@ custom:
 resources:
   Resources:
     CloudfrontDistributionAnimlSite:
-      # DependsOn:
-      #   - HostedZoneAnimlSite
-      #   - CertificateAnimlSite
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
           Origins:
-            - DomainName: animl-frontend-${self:provider.stage}.s3.amazonaws.com
+            - DomainName: animl-frontend-${opt:stage, self:provider.stage, 'dev'}.s3-website-us-west-2.amazonaws.com
               Id: animl-frontend-${self:provider.stage}
               CustomOriginConfig:
                 OriginProtocolPolicy: http-only
 
           Enabled: 'true'
-          Comment: "Cloudfront distro for animl frontend ${opt:stage, self:provider.stage, 'dev'} bucket"
-          Logging:
-            IncludeCookies: 'false'
-            Bucket: animllogs.s3.amazonaws.com
-            Prefix: animl-frontend-${opt:stage, self:provider.stage, 'dev'}
+          Comment: "Animl frontend - ${opt:stage, self:provider.stage, 'dev'} site"
           Aliases:
             - animl-${opt:stage, self:provider.stage, 'dev'}.camera
             - www.animl-${opt:stage, self:provider.stage, 'dev'}.camera
-            # - ${*}.animl-${opt:stage, self:provider.stage, 'dev'}.camera
+            - "*.animl-${opt:stage, self:provider.stage, 'dev'}.camera"
           DefaultCacheBehavior:
             AllowedMethods:
               - GET
               - HEAD
-              - OPTIONS
             TargetOriginId: animl-frontend-${self:provider.stage}
             MinTTL: 86400 # 1 day - perhaps adjust for staging?
             MaxTTL: 31536000 # 1 year
-            ForwardedValues:
-              QueryString: 'false'
-              Cookies:
-                Forward: none
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
             ViewerProtocolPolicy: 'redirect-to-https'
+          HttpVersion: http2
           ViewerCertificate:
-            AcmCertificateArn: !Ref CertificateAnimlSite
+            AcmCertificateArn: arn:aws:acm:us-east-1:830244800171:certificate/f7771033-aaad-4989-a570-726f570a7e5b
+            MinimumProtocolVersion: 'TLSv1.2_2021'
             SslSupportMethod: 'sni-only'
