@@ -56,8 +56,6 @@ resources:
               - GET
               - HEAD
             TargetOriginId: animl-frontend-${self:provider.stage}
-            MinTTL: 86400 # 1 day - perhaps adjust for staging?
-            MaxTTL: 31536000 # 1 year
             CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
             ViewerProtocolPolicy: 'redirect-to-https'
           HttpVersion: http2
