@@ -85,8 +85,8 @@
     "serve": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "deploy-dev": "npm run build:dev && sls client deploy --no-confirm --stage dev && sls deploy --stage dev",
-    "deploy-staging": "npm run build:staging && sls client deploy --no-confirm --stage staging",
-    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod",
+    "deploy-staging": "npm run build:staging && sls client deploy --no-confirm --stage staging  && sls deploy --stage staging",
+    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod && sls deploy --stage prod",
     "prepare": "husky"
   },
   "eslintConfig": {
