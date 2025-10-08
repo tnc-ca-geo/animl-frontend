@@ -160,10 +160,13 @@ const ProjectAndViewNav = () => {
   // fetch projects
   useEffect(() => {
     const { isLoading, noneFound, errors } = projectsLoading;
+    const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
     if (!projects.length && !isLoading && !noneFound && !errors) {
       dispatch(fetchProjects());
     }
-    if (projects.length && !selectedProj) {
+    if (!selectedProj && projIdInPath && viewIdInPath) {
+      dispatch(fetchProject(projIdInPath));
+    } else if (projects.length && !selectedProj) {
       dispatch(fetchProject(projects[0]._id)); // ensure selected project is in state
     }
   }, [projects, projectsLoading, dispatch]);
