@@ -546,8 +546,7 @@ export const fetchTask = (taskId) => {
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj && taskId) {
         const res = await call({
@@ -689,8 +688,7 @@ export const fetchStats = (filters) => {
       dispatch(getStatsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -715,8 +713,7 @@ export const fetchBurstsStats = (filters) => {
       dispatch(getBurstsStatsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -741,8 +738,7 @@ export const fetchIndependentDetectionStats = (filters, independenceInterval) =>
       dispatch(getIndependentDetectionStatsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -775,8 +771,7 @@ export const exportAnnotations = ({
       dispatch(exportAnnotationsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -805,8 +800,7 @@ export const exportErrors = ({ filters }) => {
       dispatch(exportErrorsStart({ batch: filters.batch }));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -834,8 +828,7 @@ export const editDeployments = (operation, payload) => {
       dispatch(editDeploymentsStart(payload));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -860,8 +853,7 @@ export const updateCameraSerialNumber = (payload) => {
       dispatch(updateCameraSerialNumberStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -883,8 +875,7 @@ export const deleteCamera = (payload) => {
       dispatch(updateDeleteCameraStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       if (token && selectedProj) {
         const res = await call({
           projId: selectedProj._id,
@@ -911,8 +902,7 @@ export const deleteImagesTask = ({ imageIds = [], filters = null }) => {
       dispatch(deleteImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       if (token && selectedProj) {
         if (filters !== null) {
           const res = await call({

@@ -227,8 +227,7 @@ export const fetchImages = (filters, page = 'current') => {
       dispatch(getImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const pageInfo = getState().images.pageInfo;
 
       if (token && selectedProj) {
@@ -257,8 +256,7 @@ export const fetchImagesCount = (filters) => {
       dispatch(getImagesCountStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         let res = await call({
@@ -287,8 +285,7 @@ export const fetchImageContext = (imgId) => {
       dispatch(getImageContextStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         let res = await call({
@@ -331,9 +328,7 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
+    const selectedProj = getState().projects.selectedProject;
 
     if (token && selectedProj) {
       await call({

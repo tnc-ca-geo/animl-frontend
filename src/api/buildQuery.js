@@ -169,6 +169,16 @@ const projectTagFields = `
   color
 `;
 
+const projectSimpleFields = `
+  _id
+  name
+  timezone
+  description
+  views {
+    ${viewFields}
+  }
+`;
+
 const projectFields = `
   _id
   name
@@ -193,6 +203,17 @@ const projectFields = `
 `;
 
 const queries = {
+  getProjectsSimple: (input) => ({
+    template: `
+      query GetProjects($input: QueryProjectsInput) {
+        projects(input: $input) {
+          ${projectSimpleFields}
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
   getProjects: (input) => ({
     template: `
       query GetProjects($input: QueryProjectsInput) {

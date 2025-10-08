@@ -7,9 +7,15 @@ import { clearImages } from '../images/imagesSlice.js';
 import { normalizeErrors } from '../../app/utils.js';
 
 const initialState = {
+  selectedProject: null,
   projects: [],
   modelOptions: [],
   loadingStates: {
+    project: {
+      isLoading: false,
+      operation: null /* 'fetching', 'updating', 'deleting' */,
+      errors: null,
+    },
     projects: {
       isLoading: false,
       operation: null /* 'fetching', 'updating', 'deleting' */,
@@ -74,6 +80,27 @@ export const projectsSlice = createSlice({
      * Views CRUD
      */
 
+    getProjectStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.project = ls;
+    },
+
+    getProjectFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.project = ls;
+    },
+
+    getProjectSuccess: (state, { payload }) => {
+      const noneFound = !payload.projects || payload.projects.length === 0;
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.project = ls;
+      if (noneFound) {
+        state.selectedProject = null;
+      } else {
+        state.selectedProject = payload.projects[0];
+      }
+    },
+
     getProjectsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.projects = ls;
@@ -106,20 +133,13 @@ export const projectsSlice = createSlice({
     },
 
     setSelectedProjAndView: (state, { payload }) => {
-      let selectedProj = state.projects.find((p) => p.selected);
-
       if (payload.newProjSelected) {
-        state.projects.forEach((p) => {
-          p.selected = p._id === payload.projId;
-          if (p._id === payload.projId) selectedProj = p;
-        });
-
         state.loadingStates.projects.errors = null;
         state.loadingStates.models.errors = null;
       }
 
       if (payload.newViewSelected) {
-        selectedProj.views.forEach((v) => {
+        state.selectedProject.views.forEach((v) => {
           v.selected = v._id === payload.viewId;
         });
       }
@@ -469,6 +489,9 @@ export const projectsSlice = createSlice({
 });
 
 export const {
+  getProjectStart,
+  getProjectFailure,
+  getProjectSuccess,
   getProjectsStart,
   getProjectsFailure,
   getProjectsSuccess,
@@ -529,6 +552,26 @@ export const {
   setGlobalBreakpoint,
 } = projectsSlice.actions;
 
+// fetchProject thunk, fetches specific project for more details and sets as selectedProject
+export const fetchProject = (payload) => async (dispatch) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      dispatch(getProjectStart());
+      const projects = await call({
+        request: 'getProjects',
+        ...(payload && { input: { _ids: [payload] } }),
+      });
+      dispatch(getProjectSuccess(projects));
+    }
+  } catch (err) {
+    console.log('err: ', err);
+    const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
+    dispatch(getProjectFailure(errs));
+  }
+};
+
 // fetchProjects thunk
 export const fetchProjects = (payload) => async (dispatch) => {
   try {
@@ -538,7 +581,7 @@ export const fetchProjects = (payload) => async (dispatch) => {
     if (token) {
       dispatch(getProjectsStart());
       const projects = await call({
-        request: 'getProjects',
+        request: 'getProjectsSimple',
         ...(payload && { input: payload }),
       });
       dispatch(getProjectsSuccess(projects));
@@ -578,8 +621,7 @@ export const editView = (operation, payload) => {
       dispatch(editViewStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -638,8 +680,7 @@ export const updateAutomationRules = (payload) => {
       dispatch(updateAutomationRulesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -665,8 +706,7 @@ export const fetchModels = (payload) => {
       dispatch(getModelsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -711,8 +751,7 @@ export const createProjectTag = (payload) => {
       dispatch(createProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -736,8 +775,7 @@ export const deleteProjectTag = (payload) => {
       dispatch(deleteProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -763,8 +801,7 @@ export const updateProjectTag = (payload) => {
       dispatch(updateProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -789,8 +826,7 @@ export const createProjectLabel = (payload) => {
       dispatch(createProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -814,8 +850,7 @@ export const updateProjectLabel = (payload) => {
       dispatch(updateProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -839,8 +874,7 @@ export const deleteProjectLabel = (payload) => {
       dispatch(deleteProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -875,8 +909,7 @@ export const deleteProjectLabel = (payload) => {
 
 // Selectors
 export const selectProjects = (state) => state.projects.projects;
-export const selectSelectedProject = (state) =>
-  state.projects.projects.find((proj) => proj.selected);
+export const selectSelectedProject = (state) => state.projects.selectedProject;
 export const selectSelectedProjectId = createSelector([selectSelectedProject], (proj) =>
   proj ? proj._id : null,
 );
@@ -898,6 +931,7 @@ export const selectProjectTags = createSelector([selectSelectedProject], (proj) 
 );
 export const selectProjectTagsLoading = (state) =>
   state.projects.loadingStates.projectTags.isLoading;
+export const selectProjectLoading = (state) => state.projects.loadingStates.project;
 export const selectProjectsLoading = (state) => state.projects.loadingStates.projects;
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;

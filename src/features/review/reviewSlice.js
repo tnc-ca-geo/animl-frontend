@@ -306,7 +306,7 @@ export const editLabel = (operation, entity, payload) => {
       }
 
       if (!operation || !entity || !payload) {
-        const msg = `An operation (create, update, or delete) 
+        const msg = `An operation (create, update, or delete)
           and entity are required`;
         throw new Error(msg);
       }
@@ -314,8 +314,7 @@ export const editLabel = (operation, entity, payload) => {
       dispatch(editLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
@@ -345,8 +344,7 @@ export const editComment = (operation, payload) => {
       dispatch(editCommentStart(operation));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const req = `${operation}ImageComment`;
@@ -380,8 +378,7 @@ export const editTag = (operation, payload) => {
       dispatch(editTagStart(operation));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const req = `${operation}ImageTags`;

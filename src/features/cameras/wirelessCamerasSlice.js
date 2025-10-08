@@ -177,8 +177,7 @@ export const fetchWirelessCameras = () => async (dispatch, getState) => {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const res = await call({
         projId: selectedProj._id,
         request: 'getWirelessCameras',
@@ -197,8 +196,7 @@ export const registerCamera = (payload) => {
       dispatch(registerCameraStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       if (token && selectedProj) {
         const res = await call({
@@ -221,8 +219,7 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
     dispatch(unregisterCameraStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
+    const selectedProj = getState().projects.selectedProject;
 
     if (token && selectedProj) {
       const res = await call({
@@ -243,8 +240,7 @@ export const fetchCameraImageCount = (payload) => async (dispatch, getState) => 
     dispatch(cameraImageCountStart(payload));
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
+    const selectedProj = getState().projects.selectedProject;
 
     if (token && selectedProj) {
       const res = await call({

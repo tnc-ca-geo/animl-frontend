@@ -11,6 +11,7 @@ import {
   checkboxOnlyButtonClicked,
 } from '../filters/filtersSlice';
 import {
+  selectSelectedProject,
   selectProjects,
   setSelectedProjAndView,
   saveViewSuccess,
@@ -28,7 +29,7 @@ export const enrichProjAndViewPayload = (store) => (next) => (action) => {
     // add project to payload (used in filtersSlice extraReducers)
     const projects = selectProjects(store.getState());
     const projToSelect = projects.find((proj) => proj._id === projId);
-    action.payload.project = projToSelect;
+    action.payload.project = store.getState().projects.selectedProject;
 
     // add default viewId to payload if not specified in payload
     if (!viewId) {
@@ -45,8 +46,9 @@ export const enrichProjAndViewPayload = (store) => (next) => (action) => {
     });
 
     // indicate whether there will be a view and/or project change
-    const currSelectedProj = projects.find((p) => p.selected);
-    if (currSelectedProj) {
+    const currSelectedProj = selectSelectedProject(store.getState());
+    const currSelectedView = selectSelectedView(store.getState());
+    if (currSelectedProj && currSelectedView) {
       const currSelectedView = currSelectedProj.views.find((v) => v.selected);
       action.payload.newProjSelected = currSelectedProj._id !== projId;
       action.payload.newViewSelected = currSelectedView._id !== viewId;

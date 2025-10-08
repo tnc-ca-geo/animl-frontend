@@ -4,9 +4,11 @@ import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
 import { SimpleSpinner } from '../../components/Spinner.jsx';
 import {
+  fetchProject,
   fetchProjects,
   selectProjects,
   selectSelectedProject,
+  selectProjectLoading,
   selectProjectsLoading,
   selectViews,
   selectSelectedView,
@@ -143,6 +145,7 @@ const ViewportPosition = styled('div', {
 });
 
 const ProjectAndViewNav = () => {
+  const projectLoading = useSelector(selectProjectLoading);
   const projectsLoading = useSelector(selectProjectsLoading);
   const projects = useSelector(selectProjects);
   const selectedProj = useSelector(selectSelectedProject);
@@ -160,6 +163,9 @@ const ProjectAndViewNav = () => {
     if (!projects.length && !isLoading && !noneFound && !errors) {
       dispatch(fetchProjects());
     }
+    if (projects.length && !selectedProj) {
+      dispatch(fetchProject(projects[0]._id)); // ensure selected project is in state
+    }
   }, [projects, projectsLoading, dispatch]);
 
   // push initial selected project & view to URL
@@ -169,25 +175,25 @@ const ProjectAndViewNav = () => {
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
 
-      if (projectsReady && !idsInPath && !unsavedViewChanges) {
+      if (selectedProj && projectsReady && !idsInPath && !unsavedViewChanges) {
         // TODO: check that there are projects & views in state that match the Ids
-        const projId = projIdInPath || projects[0]._id;
-        const proj = projects.find((p) => p._id === projId);
-        const defaultView = proj.views.find((v) => v.name === 'All images');
+        const projId = projIdInPath || selectedProj._id;
+        const defaultView = selectedProj.views.find((v) => v.name === 'All images');
         const viewId = viewIdInPath || defaultView._id;
         dispatch(push(`/app/${projId}/${viewId}`));
       }
     }
-  }, [projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
+  }, [selectedProj, projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
 
   // react to changes in URL & dispatch selected project and view to state
   useEffect(() => {
     if (appActive) {
       const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
+      const projectReady = !projectLoading.isLoading && selectedProj;
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
 
-      if (projectsReady && idsInPath) {
+      if (projectsReady && idsInPath && projectReady) {
         // TODO: check that there are projects & views in state that match the Ids
         dispatch(
           setSelectedProjAndView({
@@ -205,12 +211,16 @@ const ProjectAndViewNav = () => {
         }
       }
     }
-  }, [projects.length, projectsLoading, routerLocation, appActive, dispatch]);
+  }, [selectedProj, projects.length, projectsLoading, routerLocation, appActive, dispatch]);
 
   const handleProjectMenuItemClick = (projId) => {
     if (projId === selectedProj._id) return;
     const project = projects.find((p) => p._id === projId);
     const viewId = project.views.find((v) => v.name === 'All images')._id;
+
+    if (selectedProj._id !== projId) {
+      dispatch(fetchProject(projId)); // ensure selected project is in state
+    }
     dispatch(clearImages());
     dispatch(push(`/app/${projId}/${viewId}`));
   };
@@ -222,7 +232,7 @@ const ProjectAndViewNav = () => {
 
   return (
     <NavigationMenu>
-      <SimpleSpinner size="sm" display={projectsLoading.isLoading} />
+      <SimpleSpinner size="sm" display={projectsLoading.isLoading || projectLoading.isLoading} />
       {projectsLoading.noneFound && (
         <NoneFoundAlert>Rats! You don&apos;t have access to any projects yet!</NoneFoundAlert>
       )}
@@ -239,7 +249,7 @@ const ProjectAndViewNav = () => {
                   <ContentListItem
                     key={proj._id}
                     title={proj.name}
-                    selected={proj.selected}
+                    selected={proj._id === selectedProj._id}
                     onClick={() => handleProjectMenuItemClick(proj._id)}
                   >
                     {proj.description}

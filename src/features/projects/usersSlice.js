@@ -156,8 +156,7 @@ export const fetchUsers = () => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -180,8 +179,7 @@ export const updateUser = (values) => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -205,8 +203,7 @@ export const createUser = (values) => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
@@ -230,8 +227,7 @@ export const resendTempPassword = (values) => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const projId = selectedProj._id;
 
       if (token && selectedProj) {

@@ -275,8 +275,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       dispatch(uploadStart());
 
       const { file, overrideSerial } = payload;
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       const chunkSizeInMB = 100;
       const chunkSize = 1024 * 1024 * chunkSizeInMB;
@@ -432,8 +431,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       dispatch(uploadStart());
 
       const { file, overrideSerial } = payload;
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
       const uploadUrl = await call({
         request: 'createUpload',
         projId: selectedProj._id,
@@ -489,8 +487,7 @@ export const fetchBatches =
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
         dispatch(fetchBatchesStart());
-        const projects = getState().projects.projects;
-        const selectedProj = projects.find((proj) => proj.selected);
+        const selectedProj = getState().projects.selectedProject;
         const pageInfo = getState().uploads.pageInfo;
         const filter = getState().uploads.filter;
 
@@ -514,8 +511,7 @@ export const stopBatch = (id) => async (dispatch, getState) => {
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
       dispatch(stopBatchStart({ batch: id }));
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       await call({
         request: 'stopBatch',
@@ -537,8 +533,7 @@ export const redriveBatch = (id) => async (dispatch, getState) => {
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
       dispatch(redriveBatchStart({ batch: id }));
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = getState().projects.selectedProject;
 
       await call({
         request: 'redriveBatch',
