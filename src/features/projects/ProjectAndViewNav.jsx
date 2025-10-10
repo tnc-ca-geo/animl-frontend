@@ -8,6 +8,7 @@ import {
   fetchProjects,
   selectProjects,
   selectSelectedProject,
+  selectSelectedProjectId,
   selectProjectLoading,
   selectProjectsLoading,
   selectViews,
@@ -149,6 +150,7 @@ const ProjectAndViewNav = () => {
   const projectsLoading = useSelector(selectProjectsLoading);
   const projects = useSelector(selectProjects);
   const selectedProj = useSelector(selectSelectedProject);
+  const selectedProjId = useSelector(selectSelectedProjectId);
   const views = useSelector(selectViews);
   const selectedView = useSelector(selectSelectedView);
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
@@ -160,53 +162,42 @@ const ProjectAndViewNav = () => {
   // fetch projects
   useEffect(() => {
     const { isLoading, noneFound, errors } = projectsLoading;
-    const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
     if (!projects.length && !isLoading && !noneFound && !errors) {
       dispatch(fetchProjects());
     }
-    if (!selectedProj && projIdInPath && viewIdInPath) {
-      dispatch(fetchProject(projIdInPath));
-    } else if (projects.length && !selectedProj) {
-      dispatch(fetchProject(projects[0]._id)); // ensure selected project is in state
-    }
+
   }, [projects, projectsLoading, dispatch]);
 
-  // push initial selected project & view to URL
+  // react to changes in URL & fetch the selected project
   useEffect(() => {
     if (appActive) {
       const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
 
-      if (selectedProj && projectsReady && !idsInPath && !unsavedViewChanges) {
-        // TODO: check that there are projects & views in state that match the Ids
-        const projId = projIdInPath || selectedProj._id;
-        const defaultView = selectedProj.views.find((v) => v.name === 'All images');
-        const viewId = viewIdInPath || defaultView._id;
-        dispatch(push(`/app/${projId}/${viewId}`));
-      }
-    }
-  }, [selectedProj, projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
+      if (projectsReady) {
+        if (idsInPath) {
+          if (!selectedProj || projIdInPath !== selectedProj._id) {
+            console.log('project switch')
+            dispatch(fetchProject(projIdInPath));
+          }
+          else if (projIdInPath === selectedProj._id && viewIdInPath !== selectedView) {
+            console.log('view switch')
+            dispatch(
+              setSelectedProjAndView({
+                projId: selectedProj._id,
+                viewId: viewIdInPath,
+              }),
+            );
+          }
+        } else if (!selectedProj) {
+          const projId = projIdInPath || projects[0]._id;
+          dispatch(fetchProject(projId));
+          const defaultView = projects.find((p) => p._id === projId).views.find((v) => v.name === 'All images');
+          const viewId = viewIdInPath || (defaultView && defaultView._id);
+          dispatch(push(`/app/${projId}/${viewId}`));
+        }
 
-  // react to changes in URL & dispatch selected project and view to state
-  useEffect(() => {
-    if (appActive) {
-      const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
-      const projectReady = !projectLoading.isLoading && selectedProj;
-      const projectsReady = !projectsLoading.isLoading && projects.length;
-      const idsInPath = projIdInPath && viewIdInPath;
-
-      if (projectsReady && idsInPath && projectReady) {
-        // TODO: check that there are projects & views in state that match the Ids
-        dispatch(
-          setSelectedProjAndView({
-            projId: projIdInPath,
-            viewId: viewIdInPath,
-          }),
-        );
-
-        // if 'img' detected in query params,
-        // kick off pre-focused-image initialization sequence
         const query = routerLocation.query;
         if ('img' in query && validateImgId(query.img)) {
           dispatch(preFocusImageStart(query.img));
@@ -214,16 +205,29 @@ const ProjectAndViewNav = () => {
         }
       }
     }
-  }, [selectedProj, projects.length, projectsLoading, routerLocation, appActive, dispatch]);
+  }, [projects.length, projectsLoading, routerLocation, appActive, dispatch]);
 
-  const handleProjectMenuItemClick = (projId) => {
-    if (projId === selectedProj._id) return;
+
+  // react to changes in selected project and updates view in state
+  useEffect(() => {
+    const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
+    const idsInPath = projIdInPath && viewIdInPath;
+
+    console.log('new useeffect: ', projIdInPath, viewIdInPath);
+    if (selectedProjId && idsInPath) {
+      dispatch(
+        setSelectedProjAndView({
+          projId: projIdInPath,
+          viewId: viewIdInPath,
+        }),
+      );
+    }
+  }, [selectedProjId, dispatch]);
+
+  const handleProjectMenuItemClick = async (projId) => {
+    if (projId === selectedProjId) return;
     const project = projects.find((p) => p._id === projId);
     const viewId = project.views.find((v) => v.name === 'All images')._id;
-
-    if (selectedProj._id !== projId) {
-      dispatch(fetchProject(projId)); // ensure selected project is in state
-    }
     dispatch(clearImages());
     dispatch(push(`/app/${projId}/${viewId}`));
   };

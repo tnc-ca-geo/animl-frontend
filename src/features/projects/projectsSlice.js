@@ -11,9 +11,8 @@ const initialState = {
   projects: [],
   modelOptions: [],
   loadingStates: {
-    project: {
+    getProject: {
       isLoading: false,
-      operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
     },
     projects: {
@@ -81,24 +80,26 @@ export const projectsSlice = createSlice({
      */
 
     getProjectStart: (state) => {
-      const ls = { isLoading: true, operation: 'fetching', errors: null };
-      state.loadingStates.project = ls;
+      const ls = { isLoading: true, errors: null };
+      state.loadingStates.getProject = ls;
     },
 
     getProjectFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };
-      state.loadingStates.project = ls;
+      const ls = { isLoading: false, errors: payload };
+      state.loadingStates.getProject = ls;
     },
 
     getProjectSuccess: (state, { payload }) => {
+      console.log('getProjectSuccess payload: ', payload);
       const noneFound = !payload.projects || payload.projects.length === 0;
-      const ls = { isLoading: false, operation: null, errors: null };
-      state.loadingStates.project = ls;
       if (noneFound) {
         state.selectedProject = null;
       } else {
         state.selectedProject = payload.projects[0];
+        console.log('selected project set to: ', state.selectedProject._id);
       }
+      const ls = { isLoading: false, errors: null };
+      state.loadingStates.getProject = ls;
     },
 
     getProjectsStart: (state) => {
@@ -552,7 +553,7 @@ export const {
   setGlobalBreakpoint,
 } = projectsSlice.actions;
 
-// fetchProject thunk, fetches specific project for more details and sets as selectedProject
+// fetchProject thunk, fetches single project for more details and sets as selectedProject
 export const fetchProject = (payload) => async (dispatch) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
@@ -931,7 +932,7 @@ export const selectProjectTags = createSelector([selectSelectedProject], (proj) 
 );
 export const selectProjectTagsLoading = (state) =>
   state.projects.loadingStates.projectTags.isLoading;
-export const selectProjectLoading = (state) => state.projects.loadingStates.project;
+export const selectProjectLoading = (state) => state.projects.loadingStates.getProject;
 export const selectProjectsLoading = (state) => state.projects.loadingStates.projects;
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;

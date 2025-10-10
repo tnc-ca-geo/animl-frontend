@@ -25,11 +25,10 @@ import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 export const enrichProjAndViewPayload = (store) => (next) => (action) => {
   if (setSelectedProjAndView.match(action)) {
     let { projId, viewId } = action.payload;
-
     // add project to payload (used in filtersSlice extraReducers)
     const projects = selectProjects(store.getState());
     const projToSelect = projects.find((proj) => proj._id === projId);
-    action.payload.project = store.getState().projects.selectedProject;
+    action.payload.project = selectSelectedProject(store.getState());
 
     // add default viewId to payload if not specified in payload
     if (!viewId) {
@@ -99,8 +98,14 @@ export const setActiveFiltersToSelectedView = (store) => (next) => (action) => {
     store.dispatch(undoActions.clear());
 
     next(action);
+    const currFilters = selectActiveFilters(store.getState());
     const newFilters = action.payload.view.filters;
-    store.dispatch(setActiveFilters(newFilters));
+    console.log('current filters: ', currFilters);
+    console.log('new filters: ', newFilters);
+    if (!_.isEqual(currFilters, newFilters)) {
+      console.log('changing filters');
+      store.dispatch(setActiveFilters(newFilters));
+    }
   } else {
     next(action);
   }

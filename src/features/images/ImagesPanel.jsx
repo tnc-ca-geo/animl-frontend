@@ -13,7 +13,7 @@ import {
 } from './imagesSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import ImagesTable from './ImagesTable.jsx';
-import { selectGlobalBreakpoint, selectSelectedProjectId } from '../projects/projectsSlice.js';
+import { selectGlobalBreakpoint, selectSelectedProjectId, selectProjectLoading } from '../projects/projectsSlice.js';
 import { ImagesGrid } from './ImagesGrid.jsx';
 
 const StyledImagesPanel = styled('div', {
@@ -30,10 +30,12 @@ const ImagesPanel = () => {
   const hasNext = useSelector(selectHasNext);
   const imagesLoading = useSelector(selectImagesLoading);
   const imgContextLoading = useSelector(selectImageContextLoading);
+  const projectLoading = useSelector(selectProjectLoading);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (selectedProjectId && activeFilters && !imgContextLoading.isLoading) {
+    if (selectedProjectId && activeFilters && !imgContextLoading.isLoading && !projectLoading.isLoading) {
+      console.log('fetching images...');
       dispatch(fetchImages(activeFilters));
       dispatch(fetchImagesCount(activeFilters));
     }
