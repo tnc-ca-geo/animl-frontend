@@ -168,41 +168,48 @@ const ProjectAndViewNav = () => {
 
   }, [projects, projectsLoading, dispatch]);
 
-  // react to changes in URL & fetch the selected project
+  // push initial selected project & view to URL
   useEffect(() => {
     if (appActive) {
       const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
 
-      if (projectsReady) {
-        if (idsInPath) {
-          if (!selectedProj || projIdInPath !== selectedProj._id) {
-            console.log('project switch')
-            dispatch(fetchProject(projIdInPath));
-          }
-          else if (projIdInPath === selectedProj._id && viewIdInPath !== selectedView) {
-            console.log('view switch')
-            dispatch(
-              setSelectedProjAndView({
-                projId: selectedProj._id,
-                viewId: viewIdInPath,
-              }),
-            );
-          }
-        } else if (!selectedProj) {
-          const projId = projIdInPath || projects[0]._id;
-          dispatch(fetchProject(projId));
-          const defaultView = projects.find((p) => p._id === projId).views.find((v) => v.name === 'All images');
-          const viewId = viewIdInPath || (defaultView && defaultView._id);
-          dispatch(push(`/app/${projId}/${viewId}`));
-        }
+      if (projectsReady && !idsInPath && !unsavedViewChanges) {
+        // TODO: check that there are projects & views in state that match the Ids
+        const projId = projIdInPath || projects[0]._id;
+        const proj = projects.find((p) => p._id === projId);
+        const defaultView = proj.views.find((v) => v.name === 'All images');
+        const viewId = viewIdInPath || defaultView._id;
+        dispatch(push(`/app/${projId}/${viewId}`));
+      }
+    }
+  }, [projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
 
-        const query = routerLocation.query;
-        if ('img' in query && validateImgId(query.img)) {
-          dispatch(preFocusImageStart(query.img));
-          dispatch(fetchImageContext(query.img));
+  // react to changes in URL & fetch the selected project or set view
+  useEffect(() => {
+    if (appActive) {
+      const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
+      const projectsReady = !projectsLoading.isLoading && projects.length;
+      const idsInPath = projIdInPath && viewIdInPath;
+      if (projectsReady && idsInPath) {
+        if (!selectedProj || projIdInPath !== selectedProj._id) {
+          dispatch(fetchProject(projIdInPath));
         }
+        else if (!selectedView || viewIdInPath !== selectedView._id) {
+          dispatch(
+            setSelectedProjAndView({
+              projId: selectedProj._id,
+              viewId: viewIdInPath,
+            }),
+          );
+        }
+      }
+
+      const query = routerLocation.query;
+      if ('img' in query && validateImgId(query.img)) {
+        dispatch(preFocusImageStart(query.img));
+        dispatch(fetchImageContext(query.img));
       }
     }
   }, [projects.length, projectsLoading, routerLocation, appActive, dispatch]);
@@ -213,7 +220,6 @@ const ProjectAndViewNav = () => {
     const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
     const idsInPath = projIdInPath && viewIdInPath;
 
-    console.log('new useeffect: ', projIdInPath, viewIdInPath);
     if (selectedProjId && idsInPath) {
       dispatch(
         setSelectedProjAndView({

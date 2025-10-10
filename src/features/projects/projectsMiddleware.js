@@ -98,14 +98,8 @@ export const setActiveFiltersToSelectedView = (store) => (next) => (action) => {
     store.dispatch(undoActions.clear());
 
     next(action);
-    const currFilters = selectActiveFilters(store.getState());
     const newFilters = action.payload.view.filters;
-    console.log('current filters: ', currFilters);
-    console.log('new filters: ', newFilters);
-    if (!_.isEqual(currFilters, newFilters)) {
-      console.log('changing filters');
-      store.dispatch(setActiveFilters(newFilters));
-    }
+    store.dispatch(setActiveFilters(newFilters));
   } else {
     next(action);
   }

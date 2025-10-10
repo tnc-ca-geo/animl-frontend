@@ -90,13 +90,11 @@ export const projectsSlice = createSlice({
     },
 
     getProjectSuccess: (state, { payload }) => {
-      console.log('getProjectSuccess payload: ', payload);
       const noneFound = !payload.projects || payload.projects.length === 0;
       if (noneFound) {
         state.selectedProject = null;
       } else {
         state.selectedProject = payload.projects[0];
-        console.log('selected project set to: ', state.selectedProject._id);
       }
       const ls = { isLoading: false, errors: null };
       state.loadingStates.getProject = ls;

@@ -22,7 +22,6 @@ const StyledImagesPanel = styled('div', {
 });
 
 const ImagesPanel = () => {
-  const selectedProjectId = useSelector(selectSelectedProjectId);
   const activeFilters = useSelector(selectActiveFilters);
   const paginatedField = useSelector(selectPaginatedField);
   const sortAscending = useSelector(selectSortAscending);
@@ -34,13 +33,11 @@ const ImagesPanel = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (selectedProjectId && activeFilters && !imgContextLoading.isLoading && !projectLoading.isLoading) {
-      console.log('fetching images...');
+    if (activeFilters && !imgContextLoading.isLoading && !projectLoading.isLoading) {
       dispatch(fetchImages(activeFilters));
       dispatch(fetchImagesCount(activeFilters));
     }
   }, [
-    selectedProjectId,
     activeFilters,
     imgContextLoading,
     paginatedField,
