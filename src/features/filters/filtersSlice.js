@@ -114,11 +114,11 @@ export const filtersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(setSelectedProjAndView, (state, { payload }) => {
-        const selectedProject = payload.project;
-        updateAvailDepFilters(state, selectedProject.cameraConfigs);
-        updateAvailCamFilters(state, selectedProject.cameraConfigs);
-        updateAvailLabelFilters(state, selectedProject.labels);
-        updateAvailTagFilters(state, selectedProject.tags);
+        const { cameraConfigs, labels, tags } = payload.project;
+        updateAvailDepFilters(state, cameraConfigs);
+        updateAvailCamFilters(state, cameraConfigs);
+        updateAvailLabelFilters(state, labels);
+        updateAvailTagFilters(state, tags);
         // set all filters to new selected view? We're currently handling this
         // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
       })
