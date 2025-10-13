@@ -215,6 +215,19 @@ export const projectsSlice = createSlice({
       if (!viewInState) {
         proj.views.push(payload.view);
       }
+
+      if (payload.projId === state.selectedProject._id) {
+        let viewInSelectedProject = false;
+        state.selectedProject.views.forEach((view, i) => {
+          if (view._id === payload.view._id) {
+            viewInSelectedProject = true;
+            state.selectedProject.views[i] = { ...state.selectedProject.views[i], ...payload.view };
+          }
+        });
+        if (!viewInSelectedProject) {
+          state.selectedProject.views.push(payload.view);
+        }
+      }
     },
 
     deleteViewSuccess: (state, { payload }) => {

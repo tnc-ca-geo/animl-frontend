@@ -212,7 +212,7 @@ const ProjectAndViewNav = () => {
     const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
     const idsInPath = projIdInPath && viewIdInPath;
 
-    if (selectedProjId && idsInPath) {
+    if (selectedProjId === projIdInPath && idsInPath) {
       dispatch(
         setSelectedProjAndView({
           projId: projIdInPath,
