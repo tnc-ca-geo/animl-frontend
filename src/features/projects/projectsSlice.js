@@ -122,6 +122,11 @@ export const projectsSlice = createSlice({
       }
     },
 
+    dismissProjectError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.getProject.errors.splice(index, 1);
+    },
+
     dismissProjectsError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.projects.errors.splice(index, 1);
@@ -492,6 +497,7 @@ export const {
   getProjectsSuccess,
   setSelectedProjAndView,
   setUnsavedViewChanges,
+  dismissProjectError,
   dismissProjectsError,
   dismissProjectTagErrors,
   createProjectStart,
@@ -935,6 +941,7 @@ export const selectModalOpen = (state) => state.projects.modalOpen;
 export const selectModalContent = (state) => state.projects.modalContent;
 export const selectSelectedCamera = (state) => state.projects.selectedCamera;
 export const selectGlobalBreakpoint = (state) => state.projects.globalBreakpoint;
+export const selectProjectErrors = (state) => state.projects.loadingStates.getProject.errors;
 export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
 export const selectModelsErrors = (state) => state.projects.loadingStates.models.errors;

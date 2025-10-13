@@ -193,26 +193,18 @@ const ProjectAndViewNav = () => {
       const projectsReady = !projectsLoading.isLoading && projects.length;
       const idsInPath = projIdInPath && viewIdInPath;
       if (projectsReady && idsInPath) {
-        if (!selectedProj || projIdInPath !== selectedProj._id) {
+        if (!selectedProjId || projIdInPath !== selectedProjId) {
           dispatch(fetchProject(projIdInPath));
-        }
-        else if (!selectedView || viewIdInPath !== selectedView._id) {
-          dispatch(
-            setSelectedProjAndView({
-              projId: selectedProj._id,
-              viewId: viewIdInPath,
-            }),
-          );
         }
       }
 
       const query = routerLocation.query;
-      if ('img' in query && validateImgId(query.img)) {
+      if (selectedProjId && 'img' in query && validateImgId(query.img)) {
         dispatch(preFocusImageStart(query.img));
         dispatch(fetchImageContext(query.img));
       }
     }
-  }, [projects.length, projectsLoading, routerLocation, appActive, dispatch]);
+  }, [selectedProjId, projects.length, projectsLoading, routerLocation, appActive, dispatch]);
 
 
   // react to changes in selected project and updates view in state
@@ -228,7 +220,7 @@ const ProjectAndViewNav = () => {
         }),
       );
     }
-  }, [selectedProjId, dispatch]);
+  }, [selectedProjId, routerLocation, dispatch]);
 
   const handleProjectMenuItemClick = async (projId) => {
     if (projId === selectedProjId) return;
