@@ -222,7 +222,6 @@ export const projectsSlice = createSlice({
     },
 
     updateAutomationRulesSuccess: (state, { payload }) => {
-      console.log('success updating rule with payload: ', payload);
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.automationRules = ls;
       state.automationRules = payload.automationRules;
