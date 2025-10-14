@@ -64,16 +64,13 @@ const initialState = {
   modalContent: null,
   selectedCamera: null,
   globalBreakpoint: null,
+  automationRules: [],
 };
 
 export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
-    /*
-     * Views CRUD
-     */
-
     getProjectsStart: (state) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.projects = ls;
@@ -225,16 +222,35 @@ export const projectsSlice = createSlice({
     },
 
     updateAutomationRulesSuccess: (state, { payload }) => {
+      console.log('success updating rule with payload: ', payload);
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.automationRules = ls;
-      const editedAutomationRules = payload.automationRules;
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.automationRules = editedAutomationRules;
+      state.automationRules = payload.automationRules;
     },
 
     dismissAutomationRulesError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.automationRules.errors.splice(index, 1);
+    },
+
+    getAutomationRulesStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.automationRules = ls;
+    },
+
+    getAutomationRulesFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.automationRules = ls;
+    },
+
+    getAutomationRulesSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.automationRules = ls;
+      state.automationRules = payload.automationRules;
+    },
+
+    clearAutomationRules: (state) => {
+      state.automationRules = [];
     },
 
     /*
@@ -492,6 +508,10 @@ export const {
   updateAutomationRulesSuccess,
   updateAutomationRulesFailure,
   dismissAutomationRulesError,
+  getAutomationRulesStart,
+  getAutomationRulesFailure,
+  getAutomationRulesSuccess,
+  clearAutomationRules,
 
   getModelsStart,
   getModelsFailure,
@@ -654,6 +674,32 @@ export const updateAutomationRules = (payload) => {
     } catch (err) {
       console.log(`error attempting to update automation rules: `, err);
       dispatch(updateAutomationRulesFailure(err));
+    }
+  };
+};
+
+//fetchAutomationRules thunk
+export const fetchAutomationRules = () => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(getAutomationRulesStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectedProj._id;
+
+      if (token && selectedProj) {
+        const res = await call({
+          request: 'getProjectAutomationRules',
+          input: { _ids: [projId] },
+        });
+        const automationRules = res.projects[0].automationRules;
+        dispatch(getAutomationRulesSuccess({ projId, automationRules }));
+      }
+    } catch (err) {
+      console.log(`error attempting to fetch automation rules: `, err);
+      dispatch(getAutomationRulesFailure(err));
     }
   };
 };
@@ -922,5 +968,6 @@ export const selectProjectLabelsLoading = (state) => state.projects.loadingState
 export const selectManageLabelsErrors = (state) =>
   state.projects.loadingStates.projectLabels.errors;
 export const selectProjectTagErrors = (state) => state.projects.loadingStates.projectTags.errors;
+export const selectAutomationRules = (state) => state.projects.automationRules;
 
 export default projectsSlice.reducer;

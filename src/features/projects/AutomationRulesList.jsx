@@ -55,19 +55,19 @@ const RuleDescription = ({ rule, availableModels }) => {
   );
 };
 
-const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditRuleClick, setCurrentRule }) => {
+const AutomationRulesList = ({ automationRules, availableModels, onAddRuleClick, onEditRuleClick, setCurrentRule }) => {
   const automationRulesLoading = useSelector(selectAutomationRulesLoading);
   const dispatch = useDispatch();
 
   const handleRuleDeleteClick = (e) => {
     const ruleToRemove = e.currentTarget.dataset.rule;
-    const rules = project.automationRules.filter((rule) => rule._id.toString() !== ruleToRemove);
+    const rules = automationRules.filter((rule) => rule._id.toString() !== ruleToRemove);
     dispatch(updateAutomationRules({ automationRules: rules }));
   };
 
   const handleRuleEditClick = (e) => {
     const ruleToEdit = e.currentTarget.dataset.rule;
-    const rule = project.automationRules.find((r) => r._id.toString() === ruleToEdit);
+    const rule = automationRules.find((r) => r._id.toString() === ruleToEdit);
     setCurrentRule(rule);
     onEditRuleClick();
   };
@@ -81,7 +81,7 @@ const AutomationRulesList = ({ project, availableModels, onAddRuleClick, onEditR
       )}
       <div>
         <RulesList>
-          {project.automationRules.map((rule) => {
+          {automationRules.map((rule) => {
             return (
               <Rule key={rule._id}>
                 <RuleDescription rule={rule} availableModels={availableModels} />

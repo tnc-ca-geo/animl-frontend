@@ -30,6 +30,7 @@ import {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
+  clearAutomationRules,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 import {
@@ -88,7 +89,7 @@ const HydratedModal = () => {
       size: 'lg',
       fullHeight: true,
       content: <AutomationRulesForm />,
-      callBackOnClose: () => true,
+      callBackOnClose: () => dispatch(clearAutomationRules()),
     },
     'save-view-form': {
       title: 'Save View',
