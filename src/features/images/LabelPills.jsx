@@ -60,6 +60,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => 
   const handleLabelPillClick = (e, objIndex, lblIndex) => {
     // if user isn't attempting a multi-row selection, update focus
     if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      e.stopPropagation();
       const newIndex = { image: imageIndex, object: objIndex, label: lblIndex };
       dispatch(setFocus({ index: newIndex, type: 'manual' }));
       dispatch(toggleOpenLoupe(true));
