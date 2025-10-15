@@ -104,7 +104,6 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
 
   // save rule
   const handleSaveRulesSubmit = (formVals) => {
-    console.log('saving rule')
     const newRule = valsToRule(formVals);
     let newRules = [...automationRules];
     if (rule) {

@@ -107,7 +107,10 @@ const HydratedModal = () => {
       title: 'Bulk upload',
       size: 'lg',
       content: <BulkUploadForm />,
-      callBackOnClose: () => dispatch(clearErrorsExport()),
+      callBackOnClose: () => {
+        dispatch(clearErrorsExport());
+        dispatch(clearAutomationRules());
+      },
     },
     'manage-users-form': {
       title: 'Manage users',
