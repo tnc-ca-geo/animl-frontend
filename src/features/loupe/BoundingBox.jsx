@@ -147,9 +147,6 @@ const BoundingBox = ({
   } else if (object.isTemp) {
     // or object is being added
     label = { category: '', conf: 0, index: 0 };
-  } else if (objectFocused && focusIndex.label) {
-    // or obj & label are focused
-    label = object.labels[focusIndex.label];
   }
 
   const fallbackLabel = { _id: 'fallback_label', name: 'ERROR FINDING LABEL', color: '#E54D2E' };
