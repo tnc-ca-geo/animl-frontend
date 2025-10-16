@@ -232,7 +232,12 @@ const Loupe = () => {
   return (
     <StyledLoupe>
       <LoupeHeader handlePanelClose={handleCloseLoupe} closeButtonPosition="left">
-        {image && <ImageMetadata image={image} />}
+        {image && (
+          <>
+            <ImageMetadata image={image} />
+            <LoupeDropdown image={image} />
+          </>
+        )}
       </LoupeHeader>
       <LoupeBody>
         {image && (

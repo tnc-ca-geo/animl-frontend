@@ -15,25 +15,154 @@ import {
 import { FormWrapper, FormFieldWrapper, FormError } from '../../../components/Form';
 import { FormRow, FormButtons, ColorPicker } from './components';
 import { getRandomColor, getTextColor } from '../../../app/utils.js';
+import { useSelector } from 'react-redux';
+import { selectGlobalBreakpoint } from '../projectsSlice.js';
+import { globalBreakpoints } from '../../../config.js';
+import { Popover, PopoverArrow, PopoverTrigger } from '@radix-ui/react-popover';
+import { PopoverContent } from '../../../components/TooltipPopover.jsx';
+import { Palette } from 'lucide-react';
+
+const StyledSwitch = styled(SwitchRoot, {
+  marginTop: 0,
+  '@bp2': {
+    marginTop: '13px',
+  },
+});
+
+const StyledFormButtons = styled(FormButtons, {
+  margin: '0',
+  width: '100%',
+  paddingTop: '0',
+  gap: '$2',
+  '@bp2': {
+    gap: 'auto',
+    width: 'auto',
+    marginLeft: '$3',
+    marginTop: '$4',
+    paddingTop: '$3',
+    paddingBottom: '$3',
+  },
+});
+
+const StyledFormButton = styled(Button, {
+  flex: '1',
+  marginRight: '0 !important',
+  '@bp2': {
+    flex: 'unset',
+    marginRight: '$3',
+  },
+});
+
+const SmallScreenColorPicker = styled('div', {
+  width: '100%',
+  display: 'flex',
+  border: '1px solid $border',
+  borderRadius: '$1',
+  '&:focus-within': {
+    transition: 'all 0.2s ease',
+    outline: 'none',
+    boxShadow: '0 0 0 3px $gray3',
+    // borderColor: '$textDark',
+    '&:hover': {
+      boxShadow: '0 0 0 3px $blue200',
+      borderColor: '$blue500',
+    },
+  },
+});
+
+const ColorPickerPopover = styled(PopoverContent, {
+  borderRadius: '$2',
+  padding: '$2',
+  fontSize: '$3',
+  lineHeight: 1,
+  backgroundColor: '$hiContrast',
+  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  color: '$textMedium',
+});
+
+const StyledFormRow = styled(FormRow, {
+  display: 'flex',
+  flexDirection: 'column',
+  '@bp2': {
+    flexDirection: 'row',
+  },
+});
+
+const StyledField = styled(Field, {
+  padding: '$2 !important',
+  height: 'unset',
+  width: '100%',
+  variants: {
+    focusDisabled: {
+      true: {
+        border: 'none !important',
+        '&:focus': {
+          outline: 'none !important',
+          boxShadow: 'none !important',
+        },
+      },
+      false: {
+        '&:focus': {
+          transition: 'all 0.2s ease',
+          outline: 'none',
+          boxShadow: '0 0 0 3px $gray3',
+          // borderColor: '$textDark',
+          '&:hover': {
+            boxShadow: '0 0 0 3px $blue200',
+            borderColor: '$blue500',
+          },
+        },
+      },
+    },
+  },
+});
+
+const StyledFormFieldWrapper = styled(FormFieldWrapper, {
+  marginLeft: 0,
+  marginBottom: '$2',
+  '@bp2': {
+    marginBottom: '$3',
+    marginLeft: '$3',
+  },
+});
+
+const ColorPickerButton = styled(IconButton, {
+  height: '100%',
+  aspectRatio: '1/1',
+  background: '$backgroundLight',
+  borderRadius: '$1',
+  margin: 'auto 0',
+  marginRight: '$2',
+});
+
+const StyledLabel = styled('label', {
+  marginBottom: '$1 !important',
+  '@bp2': {
+    marginBottom: '$2',
+  },
+});
 
 const LabelForm = ({ onCancel }) => {
   const { values, errors, touched, setFieldValue } = useFormikContext();
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
   return (
     <FormWrapper>
       <Form>
-        <FormRow>
-          <FormFieldWrapper css={{ position: 'relative' }}>
-            <label htmlFor="name">Name</label>
-            <Field name="name" id="name" disabled={values.ml} />
-            {values.ml && <LabelLockOverlay />}
+        <StyledFormRow>
+          <StyledFormFieldWrapper css={{ position: 'relative' }}>
+            <StyledLabel htmlFor="name">Name</StyledLabel>
+            <StyledField name="name" id="name" disabled={values.ml} />
+            {values.ml && <LabelLockOverlay shouldUsePopover={isSmallScreen} />}
             {!!errors.name && touched.name && <FormError>{errors.name}</FormError>}
-          </FormFieldWrapper>
-          <FormFieldWrapper>
-            <label htmlFor="color">Color</label>
+          </StyledFormFieldWrapper>
+          <StyledFormFieldWrapper>
+            <StyledLabel htmlFor="color">Color</StyledLabel>
             <ColorPicker>
-              <Tooltip>
-                <TooltipTrigger asChild>
+              {isSmallScreen ? (
+                <>
                   <IconButton
                     type="button"
                     aria-label="Get a new color"
@@ -53,67 +182,123 @@ const LabelForm = ({ onCancel }) => {
                   >
                     <SymbolIcon />
                   </IconButton>
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={5}>
-                  Get a new color
-                  <TooltipArrow />
-                </TooltipContent>
-              </Tooltip>
+                  <Popover>
+                    <SmallScreenColorPicker>
+                      <StyledField name="color" id="color" focusDisabled={true} />
+                      <PopoverTrigger asChild>
+                        <ColorPickerButton variant="ghost">
+                          <Palette />
+                        </ColorPickerButton>
+                      </PopoverTrigger>
+                      <ColorPickerPopover
+                        side="top"
+                        sideOffset={5}
+                        css={{
+                          maxWidth: 324,
+                          padding: '$2',
+                          color: '$textMedium',
+                          backgroundColor: 'white',
+                        }}
+                      >
+                        <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+                        {defaultColors.map((color) => (
+                          <ColorSwatch
+                            key={color}
+                            css={{ backgroundColor: color }}
+                            type="button"
+                            onClick={() => setFieldValue('color', `${color}`)}
+                          />
+                        ))}
+                        <PopoverArrow style={{ fill: 'white' }} />
+                      </ColorPickerPopover>
+                    </SmallScreenColorPicker>
+                  </Popover>
+                </>
+              ) : (
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <IconButton
+                        type="button"
+                        aria-label="Get a new color"
+                        size="md"
+                        onClick={() => setFieldValue('color', `#${getRandomColor()}`)}
+                        css={{
+                          backgroundColor: values.color,
+                          borderColor: values.color,
+                          color: getTextColor(values.color),
+                          '&:hover': {
+                            borderColor: values.color,
+                          },
+                          '&:active': {
+                            borderColor: '$border',
+                          },
+                        }}
+                      >
+                        <SymbolIcon />
+                      </IconButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={5}>
+                      Get a new color
+                      <TooltipArrow />
+                    </TooltipContent>
+                  </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Field name="color" id="color" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  sideOffset={5}
-                  css={{
-                    maxWidth: 324,
-                    padding: '$2',
-                    color: '$textMedium',
-                    backgroundColor: 'white',
-                  }}
-                >
-                  <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
-                  {defaultColors.map((color) => (
-                    <ColorSwatch
-                      key={color}
-                      css={{ backgroundColor: color }}
-                      type="button"
-                      onClick={() => setFieldValue('color', `${color}`)}
-                    />
-                  ))}
-                  <TooltipArrow css={{ fill: 'white' }} />
-                </TooltipContent>
-              </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Field name="color" id="color" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      sideOffset={5}
+                      css={{
+                        maxWidth: 324,
+                        padding: '$2',
+                        color: '$textMedium',
+                        backgroundColor: 'white',
+                      }}
+                    >
+                      <div style={{ paddingBottom: '3px' }}>Choose from default colors:</div>
+                      {defaultColors.map((color) => (
+                        <ColorSwatch
+                          key={color}
+                          css={{ backgroundColor: color }}
+                          type="button"
+                          onClick={() => setFieldValue('color', `${color}`)}
+                        />
+                      ))}
+                      <TooltipArrow css={{ fill: 'white' }} />
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )}
             </ColorPicker>
             {!!errors.color && touched.color && <FormError>{errors.color}</FormError>}
-          </FormFieldWrapper>
-          <FormFieldWrapper>
-            <label htmlFor="label-enabled">
+          </StyledFormFieldWrapper>
+          <StyledFormFieldWrapper>
+            <StyledLabel htmlFor="label-enabled">
               Enabled
               <InfoIcon tooltipContent={<ReviewerEnabledHelp />} side="top" />
-            </label>
-            <SwitchRoot
+            </StyledLabel>
+            <StyledSwitch
               id="enabled"
               checked={values.reviewerEnabled}
               onCheckedChange={(enabled) => setFieldValue('reviewerEnabled', enabled)}
-              css={{ marginTop: '13px' }}
             >
               <SwitchThumb />
-            </SwitchRoot>
-          </FormFieldWrapper>
-          <FormButtons>
-            <Button size="small" type="submit" disabled={!values.name}>
+            </StyledSwitch>
+          </StyledFormFieldWrapper>
+          <StyledFormButtons>
+            <StyledFormButton size="small" type="submit" disabled={!values.name}>
               Save
-            </Button>
-            <Button size="small" type="button" onClick={onCancel}>
+            </StyledFormButton>
+            <StyledFormButton size="small" type="button" onClick={onCancel}>
               Cancel
-            </Button>
-          </FormButtons>
-        </FormRow>
+            </StyledFormButton>
+          </StyledFormButtons>
+        </StyledFormRow>
       </Form>
     </FormWrapper>
   );
@@ -182,25 +367,50 @@ const Overlay = styled('div', {
   justifyContent: 'flex-end',
 });
 
-const LabelLockOverlay = () => (
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <Overlay>
-        <LockIcon />
-      </Overlay>
-    </TooltipTrigger>
-    <TooltipContent
-      side="top"
-      sideOffset={5}
-      css={{
-        maxWidth: 324,
-      }}
-    >
-      You can&apos;t edit this label&apos;s name because it is managed by a machine learning model,
-      but you can change it&apos;s color and enable/disable it.
-      <TooltipArrow />
-    </TooltipContent>
-  </Tooltip>
-);
+const LabelLockOverlay = ({ shouldUsePopover = false }) => {
+  return (
+    <>
+      {shouldUsePopover ? (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Overlay css={{ top: '35px', height: 'auto' }}>
+              <LockIcon />
+            </Overlay>
+          </PopoverTrigger>
+          <PopoverContent
+            side="top"
+            sideOffset={5}
+            style={{
+              maxWidth: 324,
+            }}
+          >
+            You can&apos;t edit this label&apos;s name because it is managed by a machine learning
+            model, but you can change it&apos;s color and enable/disable it.
+            <PopoverArrow />
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Overlay>
+              <LockIcon />
+            </Overlay>
+          </TooltipTrigger>
+          <TooltipContent
+            side="top"
+            sideOffset={5}
+            css={{
+              maxWidth: 324,
+            }}
+          >
+            You can&apos;t edit this label&apos;s name because it is managed by a machine learning
+            model, but you can change it&apos;s color and enable/disable it.
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </>
+  );
+};
 
 export default LabelForm;
