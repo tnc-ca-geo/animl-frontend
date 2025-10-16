@@ -402,7 +402,6 @@ export const editTag = (operation, payload) => {
 };
 
 // Actions only used in middlewares:
-export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
 export const objectsManuallyUnlocked = createAction('review/objectsManuallyUnlocked');
 export const markedEmptyReverted = createAction('review/markedEmptyReverted');
