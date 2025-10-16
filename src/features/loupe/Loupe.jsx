@@ -23,6 +23,7 @@ import ImageReviewToolbar from './ImageReviewToolbar.jsx';
 import ShareImageButton from './ShareImageButton';
 import { ImageTagsToolbar } from './ImageTagsToolbar.jsx';
 import { ImageMetadata } from './ImageMetadata.jsx';
+import LoupeDropdown from './LoupeDropdown.jsx';
 
 const ImagePane = styled('div', {
   // display: 'flex',
@@ -231,7 +232,12 @@ const Loupe = () => {
   return (
     <StyledLoupe>
       <LoupeHeader handlePanelClose={handleCloseLoupe} closeButtonPosition="left">
-        {image && <ImageMetadata image={image} />}
+        {image && (
+          <>
+            <ImageMetadata image={image} />
+            <LoupeDropdown image={image} />
+          </>
+        )}
       </LoupeHeader>
       <LoupeBody>
         {image && (
