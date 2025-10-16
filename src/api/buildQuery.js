@@ -3,7 +3,7 @@
 const wirelessCameraFields = `
   _id
   make
-  model 
+  model
   projRegistrations {
     _id
     projectId
@@ -64,6 +64,11 @@ const imageFields = `
   imageWidth
   tags
   reviewed
+  url {
+    medium
+    small
+  }
+  awaitingPrediction
 `;
 
 const pageInfoFields = `
@@ -143,6 +148,8 @@ const automationRuleFields = `
     type
     alertRecipients
     mlModel
+    country
+    admin1Region
     confThreshold
     categoryConfig
   }
@@ -182,7 +189,7 @@ const projectFields = `
   tags {
     ${projectTagFields}
   }
-  availableMLModels 
+  availableMLModels
 `;
 
 const queries = {
@@ -381,7 +388,7 @@ const queries = {
     },
   }),
 
-  getStats: ({ filters }) => ({
+  getStats: ({ filters, aggregationLevel, independenceInterval }) => ({
     template: `
       query GetStats($input: QueryStatsInput!) {
         stats(input: $input) {
@@ -390,7 +397,7 @@ const queries = {
       }
     `,
     variables: {
-      input: { filters },
+      input: { filters, aggregationLevel, independenceInterval },
     },
   }),
 
@@ -677,22 +684,22 @@ const queries = {
     variables: { input: input },
   }),
 
-  createImageTag: (input) => ({
+  createImageTags: (input) => ({
     template: `
-      mutation CreateImageTag($input: CreateImageTagInput!) {
-        createImageTag(input: $input) {
-          tags
+      mutation CreateImageTags($input: CreateImageTagsInput!) {
+        createImageTags(input: $input) {
+          isOk
         }
       }
     `,
     variables: { input: input },
   }),
 
-  deleteImageTag: (input) => ({
+  deleteImageTags: (input) => ({
     template: `
-      mutation DeleteImageTag($input: DeleteImageTagInput!) {
-        deleteImageTag(input: $input) {
-          tags 
+      mutation DeleteImageTags($input: DeleteImageTagsInput!) {
+        deleteImageTags(input: $input) {
+          isOk
         }
       }
     `,
