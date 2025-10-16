@@ -3,16 +3,10 @@ import { clearImages } from '../images/imagesSlice';
 
 const initialState = {
   open: false,
-  reviewMode: false,
   isDrawingBbox: false,
   isAddingLabel: null, // can be 'from-object' | 'from-image-table' | 'from-review-toolbar' | null
   isAddingTag: null, // can be 'from-image-table' | null
   mouseEventOutsideOverlay: null,
-  iterationOptions: {
-    skipEmptyImages: false,
-    skipLockedObjects: false,
-    // skipInvalidatedLabels: false,
-  },
 };
 
 export const loupeSlice = createSlice({
@@ -21,10 +15,6 @@ export const loupeSlice = createSlice({
   reducers: {
     toggleOpenLoupe: (state, { payload }) => {
       state.open = payload;
-    },
-
-    reviewModeToggled: (state) => {
-      state.reviewMode = !state.reviewMode;
     },
 
     drawBboxStart: (state) => {
@@ -62,10 +52,6 @@ export const loupeSlice = createSlice({
     addTagEnd: (state) => {
       if (state.isAddingTag) state.isAddingTag = null;
     },
-
-    iterationOptionsChanged: (state, { payload }) => {
-      state.iterationOptions = payload;
-    },
   },
 
   extraReducers: (builder) => {
@@ -77,7 +63,6 @@ export const loupeSlice = createSlice({
 
 export const {
   toggleOpenLoupe,
-  reviewModeToggled,
   drawBboxStart,
   drawBboxEnd,
   mouseEventDetected,
@@ -86,7 +71,6 @@ export const {
   addLabelEnd,
   addTagStart,
   addTagEnd,
-  iterationOptionsChanged,
 } = loupeSlice.actions;
 
 // editLabel thunk
@@ -103,11 +87,9 @@ export const copyUrlToClipboard = (url) => {
 
 // Selectors
 export const selectLoupeOpen = (state) => state.loupe.open;
-export const selectReviewMode = (state) => state.loupe.reviewMode;
 export const selectIsDrawingBbox = (state) => state.loupe.isDrawingBbox;
 export const selectMouseEventDetected = (state) => state.loupe.mouseEventOutsideOverlay;
 export const selectIsAddingLabel = (state) => state.loupe.isAddingLabel;
 export const selectIsAddingTag = (state) => state.loupe.isAddingTag;
-export const selectIterationOptions = (state) => state.loupe.iterationOptions;
 
 export default loupeSlice.reducer;

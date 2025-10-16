@@ -57,10 +57,11 @@ const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => 
   const dispatch = useDispatch();
   const projectLabels = useSelector(selectLabels);
 
-  const handleLabelPillClick = (e, objIndex, lblIndex) => {
+  const handlePillClick = (e, objIndex) => {
     // if user isn't attempting a multi-row selection, update focus
     if (!e.shiftKey && !e.metaKey && !e.ctrlKey) {
-      const newIndex = { image: imageIndex, object: objIndex, label: lblIndex };
+      e.stopPropagation();
+      const newIndex = { image: imageIndex, object: objIndex, label: null };
       dispatch(setFocus({ index: newIndex, type: 'manual' }));
       dispatch(toggleOpenLoupe(true));
     }
@@ -105,6 +106,7 @@ const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => 
                 key={object._id}
                 focused={isImageFocused && objIndex === focusIndex.object}
                 locked={object.locked}
+                onClick={(e) => handlePillClick(e, objIndex)}
               >
                 {labels.map((label) => {
                   const lblIndex = object.labels.indexOf(label);
@@ -117,7 +119,6 @@ const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => 
                         objIndex === focusIndex.object &&
                         lblIndex === focusIndex.label
                       }
-                      onClick={(e) => handleLabelPillClick(e, objIndex, lblIndex)}
                       color={l?.color || '#00C797'}
                       name={l?.name || 'ERROR FINDING LABEL'}
                     />
