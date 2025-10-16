@@ -12,10 +12,9 @@ import {
   markedEmpty,
   objectsManuallyUnlocked,
   incrementImage,
-  incrementFocusIndex,
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
-import { toggleOpenLoupe, selectReviewMode, drawBboxStart, addLabelStart } from './loupeSlice.js';
+import { toggleOpenLoupe, drawBboxStart, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
@@ -38,9 +37,10 @@ const LoupeBody = styled('div', {
   // display: 'grid',
   // $7 - height of panel header
   // $8 - height of nav bar
+  // 1px - border
   // 98px - height of toolbar plus height of 2 borders
-  height: 'calc(100vh - $7 - $8 - 145px)',
-  backgroundColor: '$hiContrast',
+  height: 'calc(100vh - $7 - $8 - 145px - 1px)',
+  backgroundColor: '$backgroundBlack',
 });
 
 const LoupeHeader = styled(PanelHeader, {
@@ -79,19 +79,6 @@ const Loupe = () => {
   const image = workingImages[focusIndex.image];
   const dispatch = useDispatch();
   const projectTags = useSelector(selectProjectTags);
-
-  // // track reivew mode
-  // const reviewMode = useSelector(selectReviewMode);
-  // const handleToggleReviewMode = (e) => {
-  //   dispatch(reviewModeToggled());
-  //   e.currentTarget.blur();
-  // };
-
-  // // review mode settings modal
-  // const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
-  // const handleToggleReviewSettings = () => {
-  //   setReviewSettingsOpen(!reviewSettingsOpen);
-  // };
 
   const validateLabels = (validated) => {
     const labelsToValidate = [];
@@ -181,13 +168,12 @@ const Loupe = () => {
   };
 
   const handleIncrementClick = (delta) => {
-    reviewMode ? dispatch(incrementFocusIndex(delta)) : dispatch(incrementImage(delta));
+    dispatch(incrementImage(delta));
   };
 
   // Listen for hotkeys
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
-  const reviewMode = useSelector(selectReviewMode);
   const handleKeyDown = useCallback(
     (e) => {
       // ignore if keydown event is from focused input or textarea
@@ -205,7 +191,7 @@ const Loupe = () => {
             : null;
 
       if (delta) {
-        reviewMode ? dispatch(incrementFocusIndex(delta)) : dispatch(incrementImage(delta));
+        dispatch(incrementImage(delta));
       }
 
       // ctrl-z/shift-ctrl-z (undo/redo)
@@ -227,15 +213,12 @@ const Loupe = () => {
       }
 
       // // handle ctrl-a (add object)
-      // if (reviewMode) {
-      //   let charCode = String.fromCharCode(e.which).toLowerCase();
-      //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
-      //     e.stopPropagation();
-      //     dispatch(drawBboxStart());
-      //   }
+      // if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
+      //   e.stopPropagation();
+      //   dispatch(drawBboxStart());
       // }
     },
-    [dispatch, image, reviewMode],
+    [dispatch, image],
   );
 
   useEffect(() => {
@@ -248,33 +231,7 @@ const Loupe = () => {
   return (
     <StyledLoupe>
       <LoupeHeader handlePanelClose={handleCloseLoupe} closeButtonPosition="left">
-        {image && (
-          <ImageMetadata image={image} />
-        )}
-        {/*<div>
-          Label review
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewMode}
-          >
-            <FontAwesomeIcon
-              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-            />
-          </IconButton>
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewSettings}
-          >
-            <FontAwesomeIcon
-              icon={['fas', 'cog']}
-            />
-          </IconButton>
-          {reviewSettingsOpen && 
-            <ReviewSettingsForm
-              handleModalToggle={handleToggleReviewSettings}
-            />
-          }
-        </div>*/}
+        {image && <ImageMetadata image={image} />}
       </LoupeHeader>
       <LoupeBody>
         {image && (

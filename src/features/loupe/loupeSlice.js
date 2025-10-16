@@ -3,15 +3,10 @@ import { clearImages } from '../images/imagesSlice';
 
 const initialState = {
   open: false,
-  reviewMode: false,
   isDrawingBbox: false,
-  isAddingLabel: null,
+  isAddingLabel: null, // can be 'from-object' | 'from-image-table' | 'from-review-toolbar' | null
+  isAddingTag: null, // can be 'from-image-table' | null
   mouseEventOutsideOverlay: null,
-  iterationOptions: {
-    skipEmptyImages: false,
-    skipLockedObjects: false,
-    // skipInvalidatedLabels: false,
-  },
 };
 
 export const loupeSlice = createSlice({
@@ -20,10 +15,6 @@ export const loupeSlice = createSlice({
   reducers: {
     toggleOpenLoupe: (state, { payload }) => {
       state.open = payload;
-    },
-
-    reviewModeToggled: (state) => {
-      state.reviewMode = !state.reviewMode;
     },
 
     drawBboxStart: (state) => {
@@ -43,7 +34,6 @@ export const loupeSlice = createSlice({
     },
 
     addLabelStart: (state, { payload }) => {
-      // payload can be 'from-object' or 'all-objects
       state.isAddingLabel = payload;
     },
 
@@ -51,8 +41,16 @@ export const loupeSlice = createSlice({
       if (state.isAddingLabel) state.isAddingLabel = null;
     },
 
-    iterationOptionsChanged: (state, { payload }) => {
-      state.iterationOptions = payload;
+    addTagStart: (state, { payload }) => {
+      // NOTE: right now, just dispatching this from the ImageTableRow's context menu
+      // but in the future we may want to refactor the TagSelector.jsx used in the Loupe
+      // to also use React Select, so it would dispatch addTagStart from there as well.
+      // payload can be 'from-image-table' | null
+      state.isAddingTag = payload;
+    },
+
+    addTagEnd: (state) => {
+      if (state.isAddingTag) state.isAddingTag = null;
     },
   },
 
@@ -65,14 +63,14 @@ export const loupeSlice = createSlice({
 
 export const {
   toggleOpenLoupe,
-  reviewModeToggled,
   drawBboxStart,
   drawBboxEnd,
   mouseEventDetected,
   clearMouseEventDetected,
   addLabelStart,
   addLabelEnd,
-  iterationOptionsChanged,
+  addTagStart,
+  addTagEnd,
 } = loupeSlice.actions;
 
 // editLabel thunk
@@ -89,10 +87,9 @@ export const copyUrlToClipboard = (url) => {
 
 // Selectors
 export const selectLoupeOpen = (state) => state.loupe.open;
-export const selectReviewMode = (state) => state.loupe.reviewMode;
 export const selectIsDrawingBbox = (state) => state.loupe.isDrawingBbox;
 export const selectMouseEventDetected = (state) => state.loupe.mouseEventOutsideOverlay;
 export const selectIsAddingLabel = (state) => state.loupe.isAddingLabel;
-export const selectIterationOptions = (state) => state.loupe.iterationOptions;
+export const selectIsAddingTag = (state) => state.loupe.isAddingTag;
 
 export default loupeSlice.reducer;

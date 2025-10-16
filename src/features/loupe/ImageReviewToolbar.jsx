@@ -14,41 +14,56 @@ import {
   ChatBubbleIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
-import { labelsAdded } from '../review/reviewSlice.js';
+import {
+  labelsAdded,
+  setMobileCategorySelectorFocus,
+  setMobileCommentFocusIndex,
+} from '../review/reviewSlice.js';
 import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import {
   hasRole,
+  WRITE_OBJECTS_ROLES,
   READ_COMMENT_ROLES,
   WRITE_COMMENT_ROLES,
-  WRITE_OBJECTS_ROLES,
 } from '../auth/roles.js';
 import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
+import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
+import CategorySelector from '../../components/CategorySelector.jsx';
 import {
   Tooltip,
   TooltipContent,
   TooltipArrow,
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
-import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
-import CategorySelector from '../../components/CategorySelector.jsx';
-import {
-  Root as PopoverRoot,
-  PopoverPortal,
-  PopoverContent,
-  PopoverTrigger,
-  PopoverArrow,
-} from '@radix-ui/react-popover';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
+import { globalBreakpoints } from '../../config.js';
 import { CommentsPopover } from './CommentsPopover.jsx';
+import ShareImageButton from './ShareImageButton.jsx';
+
+const Badge = styled('div', {
+  position: 'absolute',
+  top: 1,
+  left: 18,
+  background: indigo.indigo4,
+  fontSize: '$1',
+  fontWeight: '$5',
+  color: indigo.indigo11,
+  padding: '2px $1',
+  borderRadius: '$2',
+});
 
 const Toolbar = styled('div', {
   display: 'flex',
   justifyContent: 'space-between',
   padding: '$2',
-  width: '100%',
-  minWidth: 'max-content',
   borderBottom: '1px solid $border',
+  width: '100dvw',
+  '@bp1': {
+    width: '100%',
+    minWidth: 'max-content',
+  },
 });
 
 export const itemStyles = {
@@ -77,9 +92,9 @@ const Separator = styled('div', {
   margin: '0 10px',
 });
 
-const ToolbarIconButton = styled(Button, {
+export const ToolbarIconButton = styled(Button, {
   ...itemStyles,
-  backgroundColor: 'white',
+  backgroundColor: '$background',
   marginLeft: 2,
   '&:first-child': { marginLeft: 0 },
   '&[data-state=on]': {
@@ -110,27 +125,6 @@ const CancelHint = styled('div', {
   },
 });
 
-const StyledPopoverContent = styled(PopoverContent, {
-  zIndex: '$4',
-});
-
-const StyledPopoverArrow = styled(PopoverArrow, {
-  zIndex: 200,
-  fill: '$backgroundLight',
-});
-
-const Badge = styled('div', {
-  position: 'absolute',
-  top: 1,
-  left: 18,
-  background: indigo.indigo4,
-  fontSize: '$1',
-  fontWeight: '$5',
-  color: indigo.indigo11,
-  padding: '2px $1',
-  borderRadius: '$2',
-});
-
 const ImageReviewToolbar = ({
   image,
   lastAction,
@@ -148,6 +142,10 @@ const ImageReviewToolbar = ({
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
+  // On mobile, each image in a single column has its own instanc of an
+  // image review toolbar so when the redux state is updated, all of the
+  // toolbars respond to the change.  This local state scopes the
+  // behavior to the toolbar where the action occurred.
   const [catSelectorOpen, setCatSelectorOpen] = useState(isAddingLabel === 'from-review-toolbar');
   useEffect(() => {
     setCatSelectorOpen(isAddingLabel === 'from-review-toolbar');
@@ -170,7 +168,11 @@ const ImageReviewToolbar = ({
 
   const handleEditAllLabelsButtonClick = (e) => {
     e.stopPropagation();
-    dispatch(addLabelStart('from-review-toolbar'));
+    if (isSmallScreen) {
+      dispatch(setMobileCategorySelectorFocus({ imageId: image._id, objectId: null }));
+    } else {
+      dispatch(addLabelStart('from-review-toolbar'));
+    }
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
@@ -181,47 +183,52 @@ const ImageReviewToolbar = ({
       obj.labels.some((lbl) => lbl.validation === null || lbl.validation.validated),
     );
 
-  const [isCommentsPopoverOpen, setIsCommentsPopoverOpen] = useState(false);
-  const [isCommentsActionMenuOpen, setIsCommentsActionMenuOpen] = useState(false);
-  const onClickOutsideComments = () => {
-    if (!isCommentsActionMenuOpen) {
-      setIsCommentsPopoverOpen(false);
-    }
-  };
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
-  // Close popover when changing images using keyboard
-  useEffect(() => {
-    setIsCommentsPopoverOpen(false);
-  }, [image._id]);
+  const toolbarScrollCss = isSmallScreen
+    ? catSelectorOpen
+      ? { overflowX: 'unset' }
+      : { overflowX: 'scroll' }
+    : {};
 
   return (
-    <Toolbar>
+    <Toolbar
+      // overflow x is needed because the toolbar is too wide on mobile
+      // overflow x automatically sets overflow y which hides the
+      // category menu
+      css={toolbarScrollCss}
+    >
       {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
         <AnnotationControls>
           {/* Repeat last action */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
-                <ReloadIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Repeat last action
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
+          {!isSmallScreen && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
+                    <ReloadIcon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Repeat last action
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
 
-          <Separator />
+              <Separator />
+            </>
+          )}
 
           {/* Edit */}
           <Tooltip>
             <TooltipTrigger asChild>
-              {catSelectorOpen ? (
+              {!isSmallScreen && catSelectorOpen ? (
                 <CategorySelector handleCategoryChange={handleCategoryChange} />
               ) : (
                 <ToolbarIconButton
                   onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked}
+                  disabled={allObjectsLocked || image.awaitingPrediction}
                 >
                   <Pencil1Icon />
                 </ToolbarIconButton>
@@ -240,7 +247,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={(e) => handleValidateAllButtonClick(e, true)}
-                disabled={allObjectsLocked}
+                disabled={allObjectsLocked || image.awaitingPrediction}
               >
                 <CheckIcon />
               </ToolbarIconButton>
@@ -254,7 +261,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={(e) => handleValidateAllButtonClick(e, false)}
-                disabled={allObjectsLocked}
+                disabled={allObjectsLocked || image.awaitingPrediction}
               >
                 <Cross2Icon />
               </ToolbarIconButton>
@@ -270,7 +277,10 @@ const ImageReviewToolbar = ({
           {/* Mark empty */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleMarkEmptyButtonClick}>
+              <ToolbarIconButton
+                onClick={handleMarkEmptyButtonClick}
+                disabled={image.awaitingPrediction}
+              >
                 <ValueNoneIcon />
               </ToolbarIconButton>
             </TooltipTrigger>
@@ -283,65 +293,45 @@ const ImageReviewToolbar = ({
           <Separator />
 
           {/* Add object */}
-          {isDrawingBbox ? (
-            <CancelHint>
-              <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
-              <span style={{ paddingBottom: '2px' }}>to cancel</span>
-            </CancelHint>
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                  <GroupIcon />
-                </ToolbarIconButton>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Add object
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
+          {!isSmallScreen && (
+            <>
+              {isDrawingBbox ? (
+                <CancelHint>
+                  <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
+                  <span style={{ paddingBottom: '2px' }}>to cancel</span>
+                </CancelHint>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild disabled={isSmallScreen || image.awaitingPrediction}>
+                    <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                      <GroupIcon />
+                    </ToolbarIconButton>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" sideOffset={5}>
+                    Add object
+                    <TooltipArrow />
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <Separator />
+            </>
           )}
 
-          <Separator />
-
           {/* Comments */}
-          <Tooltip>
-            <PopoverRoot open={isCommentsPopoverOpen}>
-              <TooltipTrigger
-                asChild
-                disabled={
-                  !hasRole(userRoles, READ_COMMENT_ROLES) ||
-                  !hasRole(userRoles, WRITE_COMMENT_ROLES)
-                }
-              >
-                <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>
-                  <ToolbarIconButton css={{ position: 'relative' }}>
-                    <ChatBubbleIcon />
-                    {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
-                  </ToolbarIconButton>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Add comments
-                <TooltipArrow />
-              </TooltipContent>
-              <PopoverPortal>
-                <StyledPopoverContent
-                  side="top"
-                  sideOffset={25}
-                  onPointerDownOutside={() => onClickOutsideComments()}
-                >
-                  <CommentsPopover
-                    onClose={() => setIsCommentsPopoverOpen(false)}
-                    onChangeActionMenu={setIsCommentsActionMenuOpen}
-                    comments={image.comments}
-                    imageId={image._id}
-                  />
-                  <StyledPopoverArrow />
-                </StyledPopoverContent>
-              </PopoverPortal>
-            </PopoverRoot>
-          </Tooltip>
+          {isSmallScreen ? (
+            <ToolbarIconButton
+              disabled={
+                !hasRole(userRoles, READ_COMMENT_ROLES) || !hasRole(userRoles, WRITE_COMMENT_ROLES)
+              }
+              css={{ position: 'relative' }}
+              onClick={() => dispatch(setMobileCommentFocusIndex(image._id))}
+            >
+              <ChatBubbleIcon />
+              {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+            </ToolbarIconButton>
+          ) : (
+            <CommentsPopover image={image} userRoles={userRoles} />
+          )}
 
           <Separator />
 
@@ -350,7 +340,7 @@ const ImageReviewToolbar = ({
             <TooltipTrigger asChild>
               <ToolbarIconButton
                 onClick={handleUnlockAllButtonClick}
-                disabled={allObjectsUnlocked || !hasRenderedObjects}
+                disabled={allObjectsUnlocked || !hasRenderedObjects || image.awaitingPrediction}
               >
                 <LockOpen1Icon />
               </ToolbarIconButton>
@@ -360,37 +350,47 @@ const ImageReviewToolbar = ({
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
+
+          {/* On mobile, include the share button as well */}
+          {isSmallScreen && (
+            <>
+              <Separator />
+              <ShareImageButton imageId={image._id} />
+            </>
+          )}
         </AnnotationControls>
       )}
 
       {/* Increment/Decrement */}
-      <IncrementControls>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <IconButton
-                variant="ghost"
-                size="med"
-                onClick={() => handleIncrementClick('decrement')}
-              >
-                <ChevronLeftIcon />
-              </IconButton>
-              <IconButton
-                variant="ghost"
-                size="med"
-                onClick={() => handleIncrementClick('increment')}
-              >
-                <ChevronRightIcon />
-              </IconButton>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5}>
-            Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
-            <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      </IncrementControls>
+      {handleIncrementClick !== undefined && (
+        <IncrementControls>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <IconButton
+                  variant="ghost"
+                  size="med"
+                  onClick={() => handleIncrementClick('decrement')}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+                <IconButton
+                  variant="ghost"
+                  size="med"
+                  onClick={() => handleIncrementClick('increment')}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={5}>
+              Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
+              <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+        </IncrementControls>
+      )}
     </Toolbar>
   );
 };

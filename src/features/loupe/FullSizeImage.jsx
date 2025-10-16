@@ -96,6 +96,7 @@ const FullSizeImage = ({ workingImages, image, focusIndex }) => {
                   objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
                   focusIndex={focusIndex}
                   setTempObject={setTempObject}
+                  awaitingPrediction={image.awaitingPrediction}
                 />
               );
             })}
@@ -113,7 +114,7 @@ const FullSizeImage = ({ workingImages, image, focusIndex }) => {
           }*/}
         </ImageFrame>
       )}
-      <FullImage ref={imgEl} src={image.url} onLoad={() => handleImgLoaded()} />
+      <FullImage ref={imgEl} src={image.url.medium} onLoad={() => handleImgLoaded()} />
     </ImageContainer>
   );
 };

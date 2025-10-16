@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { styled } from '../../theme/stitches.config';
 import { mauve } from '@radix-ui/colors';
 import { ImageTag } from './ImageTag.jsx';
 import { TagSelector } from '../../components/TagSelector.jsx';
-import { editTag } from '../review/reviewSlice.js';
+import { tagsAdded, tagsRemoved } from '../review/reviewSlice.js';
 import { useDispatch } from 'react-redux';
 
 const Toolbar = styled('div', {
@@ -38,6 +38,7 @@ const ScrollContainer = styled('div', {
   top: 0,
   padding: '$2 0',
   scrollbarWidth: 'none',
+  paddingRight: '$2',
 });
 
 const Separator = styled('div', {
@@ -64,30 +65,15 @@ const orderUnaddedTags = (unaddedTags) => {
 export const ImageTagsToolbar = ({ image, projectTags }) => {
   const dispatch = useDispatch();
 
-  const [imageTags, setImageTags] = useState(getImageTagInfo(image.tags ?? [], projectTags));
-  const [unaddedTags, setUnaddedTags] = useState(
-    orderUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags)),
-  );
-
-  // image._id -> when the enlarged image changes
-  // projectTags -> so that newly added project tags show up without refreshing
-  useEffect(() => {
-    setImageTags(getImageTagInfo(image.tags ?? [], projectTags));
-    setUnaddedTags(orderUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags)));
-  }, [image._id, projectTags]);
+  const imageTags = getImageTagInfo(image.tags ?? [], projectTags);
+  const unaddedTags = orderUnaddedTags(getUnaddedTags(image.tags ?? [], projectTags));
 
   const onDeleteTag = (tagId) => {
     const deleteTagDto = {
       tagId: tagId,
       imageId: image._id,
     };
-    const idx = imageTags.findIndex((t) => t._id === tagId);
-    if (idx >= 0) {
-      const removed = imageTags.splice(idx, 1);
-      setImageTags([...imageTags]);
-      setUnaddedTags(orderUnaddedTags([...unaddedTags, ...removed]));
-    }
-    dispatch(editTag('delete', deleteTagDto));
+    dispatch(tagsRemoved({ tags: [deleteTagDto] }));
   };
 
   const onAddTag = (tag) => {
@@ -95,13 +81,7 @@ export const ImageTagsToolbar = ({ image, projectTags }) => {
       tagId: tag._id,
       imageId: image._id,
     };
-    const idx = unaddedTags.findIndex((t) => t._id === tag._id);
-    if (idx >= 0) {
-      setImageTags([...imageTags, tag]);
-      unaddedTags.splice(idx, 1);
-      setUnaddedTags(orderUnaddedTags([...unaddedTags]));
-    }
-    dispatch(editTag('create', addTagDto));
+    dispatch(tagsAdded({ tags: [addTagDto] }));
   };
 
   return (

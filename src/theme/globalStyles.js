@@ -39,6 +39,7 @@ const globalStyles = globalCss({
     },
     '.DateRangePicker_picker': {
       zIndex: '$5',
+      pointerEvents: 'auto',
     },
     '.DateRangePickerInput_clearDates_default:focus': {
       backgroundColor: '$gray3',

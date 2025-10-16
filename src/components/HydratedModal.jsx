@@ -62,7 +62,7 @@ const HydratedModal = () => {
 
   const modalContentMap = {
     'stats-modal': {
-      title: 'Stats',
+      title: 'Stats Dashboard',
       size: 'lg',
       content: <ImagesStatsModal />,
       callBackOnClose: () => dispatch(clearStats()),
@@ -85,7 +85,8 @@ const HydratedModal = () => {
     },
     'automation-rules-form': {
       title: 'Configure Automation Rules',
-      size: 'md',
+      size: 'lg',
+      fullHeight: true,
       content: <AutomationRulesForm />,
       callBackOnClose: () => true,
     },

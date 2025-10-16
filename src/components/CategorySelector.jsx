@@ -5,8 +5,10 @@ import Select, { createFilter } from 'react-select';
 import {
   selectSelectedProject,
   selectProjectLabelsLoading,
+  selectGlobalBreakpoint,
 } from '../features/projects/projectsSlice.js';
 import { addLabelEnd } from '../features/loupe/loupeSlice.js';
+import { globalBreakpoints } from '../config.js';
 
 const StyledCategorySelector = styled(Select, {
   width: '155px',
@@ -58,6 +60,19 @@ const StyledCategorySelector = styled(Select, {
   },
 });
 
+// Compare function for alphabetical order
+export const compareLabelNames = (lbl1Name, lbl2Name) => {
+  lbl1Name = lbl1Name.toLowerCase();
+  lbl2Name = lbl2Name.toLowerCase();
+  if (lbl1Name < lbl2Name) {
+    return -1;
+  } else if (lbl1Name > lbl2Name) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 const CategorySelector = forwardRef(function CategorySelector(
   { css, handleCategoryChange, handleCategorySelectorBlur, menuPlacement = 'top' },
   ref,
@@ -68,15 +83,19 @@ const CategorySelector = forwardRef(function CategorySelector(
     value: category._id,
     label: category.name,
   });
-  const selectedProject = useSelector(selectSelectedProject);
-  const enabledLabels = selectedProject
-    ? selectedProject.labels.filter((lbl) => lbl.reviewerEnabled)
-    : [];
+  const enabledLabels = useSelector(selectSelectedProject).labels.filter(
+    (lbl) => lbl.reviewerEnabled,
+  );
+  const options = enabledLabels
+    .sort((lbl1, lbl2) => compareLabelNames(lbl1.name, lbl2.name))
+    .map(createOption);
 
-  const options = enabledLabels.map(createOption);
   const dispatch = useDispatch();
 
   const defaultHandleBlur = () => dispatch(addLabelEnd());
+
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   return (
     <StyledCategorySelector
@@ -95,6 +114,7 @@ const CategorySelector = forwardRef(function CategorySelector(
       onChange={handleCategoryChange}
       onBlur={handleCategorySelectorBlur || defaultHandleBlur}
       options={options}
+      maxMenuHeight={isSmallScreen ? 200 : undefined}
     />
   );
 });
