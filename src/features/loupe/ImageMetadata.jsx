@@ -70,7 +70,6 @@ const MetadataPane = styled('div', {
   },
 });
 
-
 const formatDeploymentMobile = (depName, cameraId) =>
   depName === 'default' ? `${cameraId} (default)` : depName;
 
