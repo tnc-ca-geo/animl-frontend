@@ -10,7 +10,7 @@ import {
   createProjectTag,
   deleteProjectTag,
   selectProjectTags,
-  selectTagsLoading,
+  selectProjectTagsLoading,
   updateProjectTag,
 } from '../projectsSlice';
 
@@ -47,7 +47,7 @@ export const ManageTagsModal = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [tagToDelete, setTagToDelete] = useState('');
 
-  const isLoading = useSelector(selectTagsLoading);
+  const isLoading = useSelector(selectProjectTagsLoading);
 
   const onConfirmEdit = (tagId, tagName, tagColor) => {
     console.log('edit', tagId, tagName, tagColor);

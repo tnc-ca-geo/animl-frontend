@@ -59,14 +59,14 @@ const StyledContent = styled(DialogPrimitive.Content, {
       sm: {
         width: '95dvw',
         '@bp1': {
-          width: '30vw',
+          width: '30dvw',
           minWidth: '430px',
         },
       },
       md: {
         width: '95dvw',
         '@bp1': {
-          width: '60vw',
+          width: '60dvw',
         },
       },
       lg: {

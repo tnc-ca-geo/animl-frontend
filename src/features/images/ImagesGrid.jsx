@@ -4,7 +4,6 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { VariableSizeGrid } from 'react-window';
 import { Image } from '../../components/Image.jsx';
-import FullSizeImage from '../loupe/FullSizeImage.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFocusChangeType, selectFocusIndex } from '../review/reviewSlice.js';
 import { useEffectAfterMount } from '../../app/utils.js';
@@ -14,7 +13,11 @@ import { selectProjectsLoading } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
 import { FloatingToolbar } from './FloatingToolbar.jsx';
-import { ImageMetadata } from '../loupe/ImageMetadata.jsx';
+import { SmallScreensLoupe } from '../loupe/SmallScreensLoupe.jsx';
+import { selectUserCurrentRoles } from '../auth/authSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { CommentsDialog } from '../loupe/CommentsDialog.jsx';
+import { CategorySelectorDialog } from '../../components/CategorySelectorDialog.jsx';
 
 export const colCounts = {
   single: 1,
@@ -35,17 +38,14 @@ const GridImage = ({ uniqueId, imgUrl, onClickImage, style }) => {
   return <ImageWrapper key={uniqueId} onClick={() => onClickImage()} src={imgUrl} style={style} />;
 };
 
-const FullSizedImageWrapper = styled('div', {
-  display: 'grid',
-  placeItems: 'center',
-  overflow: 'hidden',
-});
-
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const focusIndex = useSelector(selectFocusIndex);
   const projectsLoading = useSelector(selectProjectsLoading);
   const imagesLoading = useSelector(selectImagesLoading);
+  const userRoles = useSelector(selectUserCurrentRoles);
+
+  const hasObjectEditRole = hasRole(userRoles, WRITE_OBJECTS_ROLES);
 
   const gridRef = useRef(null);
   const infiniteLoaderRef = useRef(null);
@@ -128,16 +128,14 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       const clickImage = () => onClickImage(idx);
       if (colCount === colCounts.single) {
         return (
-          <FullSizedImageWrapper key={uniqueRowId} style={style}>
-            <ImageMetadata image={img} />
-            <FullSizeImage
-              key={uniqueRowId}
-              workingImages={workingImages}
-              image={img}
-              focusIndex={{ image: idx }}
-              css={{ height: '100%', width: '100%', objectFit: 'contain' }}
-            />
-          </FullSizedImageWrapper>
+          <SmallScreensLoupe
+            key={uniqueRowId}
+            style={style}
+            idx={idx}
+            image={img}
+            workingImages={workingImages}
+            shouldShowToolbar={hasObjectEditRole}
+          />
         );
       } else {
         return (
@@ -145,7 +143,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
           // <div key={uniqueRowId} style={style}>{idx} ({rowIndex}/{columnIndex})</div>
           <GridImage
             uniqueId={uniqueRowId}
-            imgUrl={colCount === colCounts.single ? img.url : img.thumbUrl}
+            imgUrl={colCount === colCounts.single ? img.url.medium : img.url.small}
             onClickImage={clickImage}
             style={style}
           />
@@ -161,7 +159,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       const end = start + colCount;
 
       let tallest = 0;
-      for (let i = 0; i < end; i++) {
+      for (let i = start; i < end; i++) {
         const h = workingImages[i]?.imageHeight ?? defaultWidth * heightModifier;
         const w = workingImages[i]?.imageWidth ?? defaultWidth;
         const scalingFactor = defaultWidth / w;
@@ -172,6 +170,10 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
       }
 
       if (colCount === colCounts.single) {
+        // Image height + toolbar height
+        if (hasObjectEditRole) {
+          tallest += 98;
+        }
         // Height of metadata bar
         tallest += 40;
       }
@@ -252,7 +254,9 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
                         ref(grid);
                         gridRef.current = grid;
                       }}
-                      height={height}
+                      // Autosizer is consistently setting the height to be
+                      // 1 px taller than its parent
+                      height={height - 1}
                       width={width}
                       columnCount={colCount}
                       columnWidth={() => calcColWidth(width)}
@@ -287,6 +291,8 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
               );
             }}
           </AutoSizer>
+          <CommentsDialog />
+          <CategorySelectorDialog />
         </>
       )}
     </>

@@ -29,6 +29,18 @@ import {
 import { DeleteImagesProgressBar } from '../images/DeleteImagesProgressBar.jsx';
 import PermanentActionConfirmation from '../../components/PermanentActionConfirmation.jsx';
 import Callout from '../../components/Callout.jsx';
+import { styled } from '../../theme/stitches.config.js';
+
+const ButtonRow = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '$2',
+  '@bp2': {
+    justifyContent: 'flex-end',
+    gap: 25,
+    flexDirection: 'row',
+  },
+});
 
 const DeleteCameraAlert = () => {
   const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
@@ -127,7 +139,7 @@ const DeleteCameraAlert = () => {
               setConfirmed={setConfirmedDelete}
             />
           </div>
-          <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
+          <ButtonRow>
             <Button
               type="button"
               size="small"
@@ -155,7 +167,7 @@ const DeleteCameraAlert = () => {
             >
               Yes, delete
             </Button>
-          </div>
+          </ButtonRow>
         </AlertContent>
       </AlertPortal>
     </Alert>

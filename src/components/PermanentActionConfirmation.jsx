@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { FieldRow, StandAloneInput } from './Form.jsx';
+import { styled } from '../theme/stitches.config.js';
+
+const StyledField = styled(StandAloneInput, {
+  padding: '$2',
+  '@bp2': {
+    padding: '$3',
+  },
+});
 
 const PermanentActionConfirmation = ({ text, setConfirmed }) => {
   const [value, setValue] = useState('');
@@ -15,7 +23,7 @@ const PermanentActionConfirmation = ({ text, setConfirmed }) => {
         field:
       </p>
       <FieldRow>
-        <StandAloneInput
+        <StyledField
           type="text"
           value={value}
           onChange={(e) => {

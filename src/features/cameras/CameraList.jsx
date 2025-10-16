@@ -364,6 +364,11 @@ export const SelectedCount = styled('span', {
 export const Label = styled('span', {
   marginRight: '$4',
 
+  flex: 1,
+  '@bp1': {
+    flex: 'unset',
+  },
+
   variants: {
     bold: {
       true: {

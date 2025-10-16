@@ -10,12 +10,13 @@ import {
   labelsRemoved,
   markedEmpty,
   markedEmptyReverted,
+  tagsAdded,
+  tagsRemoved,
 } from './reviewSlice';
 import { findObject } from '../../app/utils';
 
 export const undoMiddleware = createUndoMiddleware({
   revertingActions: {
-
     // labelsAdded
     [labelsAdded.toString()]: {
       action: (action) => {
@@ -33,9 +34,9 @@ export const undoMiddleware = createUndoMiddleware({
             objId,
             lblId,
             oldValidation,
-            oldLocked
+            oldLocked,
           };
-        })
+        });
         return labelsValidationReverted({ labels });
       },
       createArgs: (state, action) => {
@@ -46,7 +47,7 @@ export const undoMiddleware = createUndoMiddleware({
           return { oldValidation: label.validation, oldLocked: object.locked };
         });
         return oldLabelsState;
-      }
+      },
     },
 
     // bboxUpdated
@@ -55,21 +56,25 @@ export const undoMiddleware = createUndoMiddleware({
         return bboxUpdated({
           imgId: action.payload.imgId,
           objId: action.payload.objId,
-          bbox: oldBbox
-        })
+          bbox: oldBbox,
+        });
       },
-      createArgs: (state, action) => { 
+      createArgs: (state, action) => {
         const workingImages = selectWorkingImages(state);
         const { imgId, objId } = action.payload;
         const object = findObject(workingImages, imgId, objId);
         return { oldBbox: object.bbox };
-      }
+      },
     },
 
     // objectsManuallyUnlocked
     [objectsManuallyUnlocked.toString()]: {
       action: (action) => {
-        const objects = action.payload.objects.map(({ imgId, objId }) => ({ imgId, objId, locked: true }));
+        const objects = action.payload.objects.map(({ imgId, objId }) => ({
+          imgId,
+          objId,
+          locked: true,
+        }));
         return objectsLocked({ objects });
       },
     },
@@ -81,5 +86,11 @@ export const undoMiddleware = createUndoMiddleware({
       },
     },
 
-  }
+    // tagsAdded
+    [tagsAdded.toString()]: {
+      action: (action) => {
+        return tagsRemoved(action.payload);
+      },
+    },
+  },
 });

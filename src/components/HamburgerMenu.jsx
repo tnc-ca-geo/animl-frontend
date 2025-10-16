@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import Button from './Button.jsx';
 import IconButton from './IconButton.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserCurrentRoles } from '../features/auth/authSlice.js';
 import {
   selectModalOpen,
   selectSelectedProject,
@@ -14,6 +13,7 @@ import {
   setModalOpen,
 } from '../features/projects/projectsSlice.js';
 import { WRITE_PROJECT_ROLES, hasRole } from '../features/auth/roles.js';
+import { selectUserCurrentRoles } from '../features/auth/authSlice.js';
 
 const openOverlayAnimation = keyframes({
   from: { opacity: 0 },

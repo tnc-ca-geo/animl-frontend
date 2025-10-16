@@ -4,13 +4,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import Select, { createFilter } from 'react-select';
 import {
   selectSelectedProject,
-  selectProjectLabelsLoading,
+  selectProjectTagsLoading,
   selectGlobalBreakpoint,
 } from '../features/projects/projectsSlice.js';
-import { addLabelEnd } from '../features/loupe/loupeSlice.js';
+import { addTagEnd } from '../features/loupe/loupeSlice.js';
 import { globalBreakpoints } from '../config.js';
 
-const StyledCategorySelector = styled(Select, {
+const StyledBulkTagSelector = styled(Select, {
   width: '155px',
   fontFamily: '$mono',
   fontSize: '$2',
@@ -60,45 +60,29 @@ const StyledCategorySelector = styled(Select, {
   },
 });
 
-// Compare function for alphabetical order
-export const compareLabelNames = (lbl1Name, lbl2Name) => {
-  lbl1Name = lbl1Name.toLowerCase();
-  lbl2Name = lbl2Name.toLowerCase();
-  if (lbl1Name < lbl2Name) {
-    return -1;
-  } else if (lbl1Name > lbl2Name) {
-    return 1;
-  } else {
-    return 0;
-  }
-};
-
-const CategorySelector = forwardRef(function CategorySelector(
-  { css, handleCategoryChange, handleCategorySelectorBlur, menuPlacement = 'top' },
+const BulkTagSelector = forwardRef(function BulkTagSelector(
+  { css, handleTagChange, handleBulkTagSelectorBlur, menuPlacement = 'top' },
   ref,
 ) {
   // update selector options when new labels become available
-  const labelsLoading = useSelector(selectProjectLabelsLoading);
-  const createOption = (category) => ({
-    value: category._id,
-    label: category.name,
+  const projectTagsLoading = useSelector(selectProjectTagsLoading);
+  const createOption = (tag) => ({
+    value: tag._id,
+    label: tag.name,
   });
-  const enabledLabels = useSelector(selectSelectedProject).labels.filter(
-    (lbl) => lbl.reviewerEnabled,
-  );
-  const options = enabledLabels
-    .sort((lbl1, lbl2) => compareLabelNames(lbl1.name, lbl2.name))
-    .map(createOption);
-
+  // TODO: for bulk tag selector we can't see if the tag is already applied to the image,
+  // so test what happens if we try to add a tag that is already applied to the image.
+  const tags = useSelector(selectSelectedProject).tags;
+  const options = tags.map(createOption);
   const dispatch = useDispatch();
 
-  const defaultHandleBlur = () => dispatch(addLabelEnd());
+  const defaultHandleBlur = () => dispatch(addTagEnd());
 
   const currentBreakpoint = useSelector(selectGlobalBreakpoint);
   const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   return (
-    <StyledCategorySelector
+    <StyledBulkTagSelector
       ref={ref}
       css={css}
       autoFocus
@@ -109,14 +93,14 @@ const CategorySelector = forwardRef(function CategorySelector(
       classNamePrefix="react-select"
       menuPlacement={menuPlacement}
       filterOption={createFilter({ matchFrom: 'start' })}
-      isLoading={labelsLoading.isLoading}
-      isDisabled={labelsLoading.isLoading}
-      onChange={handleCategoryChange}
-      onBlur={handleCategorySelectorBlur || defaultHandleBlur}
+      isLoading={projectTagsLoading.isLoading}
+      isDisabled={projectTagsLoading.isLoading}
+      onChange={handleTagChange}
+      onBlur={handleBulkTagSelectorBlur || defaultHandleBlur}
       options={options}
       maxMenuHeight={isSmallScreen ? 200 : undefined}
     />
   );
 });
 
-export default CategorySelector;
+export default BulkTagSelector;

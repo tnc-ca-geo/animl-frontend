@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Select from 'react-select';
 import { FormError } from './Form';
+import InfoIcon from './InfoIcon';
 
 // TODO: refactor using radix select primative.
 // I don't love the incongruous approach to styling react-select forces
@@ -72,6 +73,7 @@ const customStyles = {
 const SelectField = ({
   name,
   label,
+  tooltip,
   value,
   options,
   onChange,
@@ -95,11 +97,14 @@ const SelectField = ({
     ...{ valueContainer: valueContainerStyles(isSearchable ?? false) },
   };
 
-  console.log(styles);
-
   return (
     <div>
-      {label && <label htmlFor={name}>{label}</label>}
+      {label && (
+        <label htmlFor={name}>
+          {label}
+          {tooltip && <InfoIcon tooltipContent={tooltip} />}
+        </label>
+      )}
       <Select
         styles={styles}
         inputId={name}

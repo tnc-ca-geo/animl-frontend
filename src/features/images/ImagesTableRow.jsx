@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
@@ -9,6 +9,9 @@ import {
   selectIsAddingLabel,
   addLabelStart,
   addLabelEnd,
+  selectIsAddingTag,
+  addTagStart,
+  addTagEnd,
 } from '../loupe/loupeSlice.js';
 import {
   setFocus,
@@ -18,6 +21,7 @@ import {
   markedEmpty,
   objectsManuallyUnlocked,
   selectSelectedImages,
+  tagsAdded,
 } from '../review/reviewSlice.js';
 import {
   ContextMenu,
@@ -36,6 +40,8 @@ import {
   ValueNoneIcon,
   TrashIcon,
 } from '@radix-ui/react-icons';
+import { Tag } from 'lucide-react';
+import BulkTagSelector from '../../components/BulkTagSelector.jsx';
 
 // TODO: redundant component (exists in ImagesTable)
 const TableRow = styled('div', {
@@ -116,6 +122,8 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   const selectedImages = useSelector(selectSelectedImages);
   const dispatch = useDispatch();
 
+  const awaitingPrediction = row.original.awaitingPrediction;
+
   const handleRowClick = useCallback(
     (e, rowIdx) => {
       if (e.shiftKey) {
@@ -150,12 +158,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
   // TODO: also, can we move this logic higher up the component tree?
   // Seems crazy to stick it in every row component
 
-  // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
-  const [catSelectorOpen, setCatSelectorOpen] = useState(isAddingLabel === 'from-image-table');
-  useEffect(() => {
-    setCatSelectorOpen(isAddingLabel === 'from-image-table');
-  }, [isAddingLabel]);
 
   const handleCategoryChange = (newValue) => {
     if (!newValue) return;
@@ -220,9 +223,13 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
   // edit all labels
   const handleEditAllLabelsButtonClick = (e) => {
+    console.log('edit all labels clicked');
     e.stopPropagation();
     e.preventDefault();
-    if (allObjectsLocked) return;
+    if (allObjectsLocked) {
+      console.warn('Cannot edit labels when all objects are locked');
+      return;
+    }
     dispatch(addLabelStart('from-image-table'));
   };
 
@@ -280,6 +287,33 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
     }
   };
 
+  // bulk apply tag
+  const isAddingTag = useSelector(selectIsAddingTag);
+
+  const handleApplyTagButtonClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(addTagStart('from-image-table'));
+  };
+
+  const handleTagChange = (newValue) => {
+    if (!newValue) return;
+    const tagsToAdd = selectedImages
+      .filter(
+        (image) => !image.tags || (image.tags && !image.tags.includes(newValue.value || newValue)),
+      )
+      .map((image) => ({
+        imageId: image._id,
+        tagId: newValue.value || newValue,
+      }));
+    if (tagsToAdd.length === 0) {
+      dispatch(addTagEnd());
+      return;
+    }
+    dispatch(tagsAdded({ tags: tagsToAdd }));
+  };
+
+  // delete images
   const handleDeleteImagesMenuItemClick = () => {
     dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteImagesByFilter: false }));
   };
@@ -316,14 +350,17 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
         </TableRow>
       </ContextMenuTrigger>
       <ContextMenuContent
-        onCloseAutoFocus={() => dispatch(addLabelEnd())}
+        onCloseAutoFocus={() => {
+          dispatch(addLabelEnd());
+          dispatch(addTagEnd());
+        }}
         css={{ overflow: 'visible' }}
         sideOffset={5}
         align="end"
       >
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, true)}
-          disabled={isAddingLabel}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
           css={{
             color: '$successText',
             '&[data-highlighted]': {
@@ -340,7 +377,7 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
 
         <ContextMenuItem
           onSelect={(e) => handleValidationMenuItemClick(e, false)}
-          disabled={isAddingLabel}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
           css={{
             color: '$errorText',
             '&[data-highlighted]': {
@@ -355,10 +392,13 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           Invalidate
         </ContextMenuItem>
 
-        {catSelectorOpen ? (
+        {isAddingLabel === 'from-image-table' ? (
           <CategorySelector css={{ width: '100%' }} handleCategoryChange={handleCategoryChange} />
         ) : (
-          <ContextMenuItem onSelect={handleEditAllLabelsButtonClick}>
+          <ContextMenuItem
+            onSelect={handleEditAllLabelsButtonClick}
+            disabled={isAddingTag || allObjectsLocked || awaitingPrediction}
+          >
             <ContextMenuItemIconLeft>
               <Pencil1Icon />
             </ContextMenuItemIconLeft>
@@ -366,23 +406,43 @@ const ImagesTableRow = ({ row, index, focusIndex, style, selectedImageIndices })
           </ContextMenuItem>
         )}
 
-        <ContextMenuItem onSelect={handleMarkEmptyMenuItemClick} disabled={isAddingLabel}>
+        <ContextMenuItem
+          onSelect={handleMarkEmptyMenuItemClick}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
+        >
           <ContextMenuItemIconLeft>
             <ValueNoneIcon />
           </ContextMenuItemIconLeft>
           Mark empty
         </ContextMenuItem>
 
+        {isAddingTag === 'from-image-table' ? (
+          <BulkTagSelector css={{ width: '100%' }} handleTagChange={handleTagChange} />
+        ) : (
+          <ContextMenuItem onSelect={handleApplyTagButtonClick} disabled={isAddingLabel}>
+            <ContextMenuItemIconLeft>
+              <Tag size={15} />
+            </ContextMenuItemIconLeft>
+            Apply tag
+          </ContextMenuItem>
+        )}
+
         <ContextMenuSeparator />
 
-        <ContextMenuItem onSelect={handleUnlockMenuItemClick} disabled={isAddingLabel}>
+        <ContextMenuItem
+          onSelect={handleUnlockMenuItemClick}
+          disabled={isAddingLabel || isAddingTag || awaitingPrediction}
+        >
           <ContextMenuItemIconLeft>
             <LockOpen1Icon />
           </ContextMenuItemIconLeft>
           Unlock
         </ContextMenuItem>
 
-        <ContextMenuItem onSelect={handleDeleteImagesMenuItemClick} disabled={isAddingLabel}>
+        <ContextMenuItem
+          onSelect={handleDeleteImagesMenuItemClick}
+          disabled={isAddingLabel || isAddingTag}
+        >
           <ContextMenuItemIconLeft>
             <TrashIcon />
           </ContextMenuItemIconLeft>

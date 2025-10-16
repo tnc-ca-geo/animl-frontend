@@ -15,14 +15,25 @@ import { shortenedField } from '../../app/utils.js';
 const ItemValue = styled('div', {
   fontSize: '$3',
   fontFamily: '$sourceSansPro',
-  color: '$textDark',
+  fontWeight: '$4',
+  color: '$textExtraLight',
+  '@bp1': {
+    color: '$textDark',
+    fontWeight: '$3',
+  },
 });
 
 const ItemLabel = styled('div', {
   fontSize: '$1',
   color: '$textLight',
   fontFamily: '$mono',
-  marginBottom: '$1',
+  marginTop: '$1',
+  fontWeight: '$4',
+  '@bp1': {
+    marginBottom: '$1',
+    marginTop: 'unset',
+    fontWeight: '$3',
+  },
 });
 
 const StyledItem = styled('div', {
@@ -50,13 +61,18 @@ const MetadataPane = styled('div', {
   zIndex: '$4',
   fontWeight: '$2',
   width: '100%',
-  boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
+  backgroundColor: '$hiContrast',
   '@bp1': {
     paddingRight: '$2',
     boxShadow: 'unset',
     zIndex: 'unset',
+    backgroundColor: 'unset',
   },
 });
+
+
+const formatDeploymentMobile = (depName, cameraId) =>
+  depName === 'default' ? `${cameraId} (default)` : depName;
 
 const ImageMetadataField = ({ isSmallScreen, label, displayValue, fullValue }) => {
   const alwaysOpen = !isSmallScreen;
@@ -99,6 +115,7 @@ export const ImageMetadata = ({ image }) => {
   const fullDateCreated = DateTime.fromISO(image.dateTimeOriginal).toLocaleString(
     DateTime.DATETIME_MED_WITH_SECONDS,
   );
+
   const dateCreated = isSmallScreen
     ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
     : fullDateCreated;
@@ -106,15 +123,20 @@ export const ImageMetadata = ({ image }) => {
   const cameraId = isSmallScreen ? shortenedField(image.cameraId) : image.cameraId;
 
   const deploymentName = isSmallScreen
-    ? shortenedField(image.deploymentName)
+    ? formatDeploymentMobile(image.deploymentName, image.cameraId)
     : image.deploymentName;
 
-  const metadataItems = [
-    { label: 'Date created', displayValue: dateCreated, fullValue: fullDateCreated },
-    { label: 'Camera', displayValue: cameraId, fullValue: image.cameraId },
-    { label: 'Deployment', displayValue: deploymentName, fullValue: image.deploymentName },
-    { label: 'File name', displayValue: filename, fullValue: image.originalFileName },
-  ];
+  const metadataItems = isSmallScreen
+    ? [
+        { label: 'Date created', displayValue: dateCreated, fullValue: fullDateCreated },
+        { label: 'Deployment', displayValue: deploymentName, fullValue: image.deploymentName },
+      ]
+    : [
+        { label: 'Date created', displayValue: dateCreated, fullValue: fullDateCreated },
+        { label: 'Camera', displayValue: cameraId, fullValue: image.cameraId },
+        { label: 'Deployment', displayValue: deploymentName, fullValue: image.deploymentName },
+        { label: 'File name', displayValue: filename, fullValue: image.originalFileName },
+      ];
 
   return (
     <MetadataPane>
