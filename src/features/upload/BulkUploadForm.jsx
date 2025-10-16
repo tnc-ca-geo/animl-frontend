@@ -177,7 +177,7 @@ const BulkUploadForm = () => {
   }, [percentUploaded, reset, dispatch]);
 
   return (
-    <div>
+    automationRules && (<div>
       <FormWrapper>
         <Formik
           onSubmit={(values) => handleSubmit(values)}
@@ -256,7 +256,7 @@ const BulkUploadForm = () => {
         upload={upload}
         warnings={warnings}
       />
-    </div>
+    </div>)
   );
 };
 
