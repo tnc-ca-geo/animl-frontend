@@ -116,18 +116,14 @@ const BulkUploadForm = () => {
   const percentUploaded = Math.round(progress * 100);
   const [alertOpen, setAlertOpen] = useState(false);
   const [warnings, setWarnings] = useState([]);
-  const [hasImageAddedAutoRule, setHasImageAddedAutoRule] = useState(false);
   const dispatch = useDispatch();
   const automationRules = useSelector(selectAutomationRules);
+  const hasImageAddedAutoRule = automationRules.some(
+    (rule) => rule.event.type === 'image-added' && rule.action.type === 'run-inference');
 
   useEffect(() => {
     dispatch(fetchAutomationRules());
   }, []);
-
-  useEffect(() => {
-    setHasImageAddedAutoRule(automationRules.some((rule) =>
-      rule.event.type === 'image-added' && rule.action.type === 'run-inference'));
-  }, [automationRules]);
 
   const upload = (values) => {
     const fileSize = values.zipFile.size;
