@@ -13,6 +13,10 @@ const initialState = {
     label: null,
   },
   mobileCommentFocusIndex: null,
+  mobileCategorySelectorFocus: {
+    imageId: null,
+    objectId: null,
+  },
   selectedImageIndices: [],
   focusChangeType: null,
   loadingStates: {
@@ -50,6 +54,10 @@ export const reviewSlice = createSlice({
 
     setMobileCommentFocusIndex: (state, { payload }) => {
       state.mobileCommentFocusIndex = payload;
+    },
+
+    setMobileCategorySelectorFocus: (state, { payload }) => {
+      state.mobileCategorySelectorFocus = payload;
     },
 
     setSelectedImageIndices: (state, { payload }) => {
@@ -268,6 +276,7 @@ export const reviewSlice = createSlice({
 export const {
   setFocus,
   setMobileCommentFocusIndex,
+  setMobileCategorySelectorFocus,
   setSelectedImageIndices,
   bboxUpdated,
   objectsRemoved,
@@ -402,7 +411,6 @@ export const editTag = (operation, payload) => {
 };
 
 // Actions only used in middlewares:
-export const incrementFocusIndex = createAction('review/incrementFocusIndex');
 export const incrementImage = createAction('review/incrementImage');
 export const objectsManuallyUnlocked = createAction('review/objectsManuallyUnlocked');
 export const markedEmptyReverted = createAction('review/markedEmptyReverted');
@@ -410,6 +418,8 @@ export const markedEmptyReverted = createAction('review/markedEmptyReverted');
 export const selectWorkingImages = (state) => state.review.workingImages;
 export const selectFocusIndex = (state) => state.review.focusIndex;
 export const selectMobileCommentFocusIndex = (state) => state.review.mobileCommentFocusIndex;
+export const selectMobileCategorySelectorFocus = (state) =>
+  state.review.mobileCategorySelectorFocus;
 export const selectSelectedImageIndices = (state) => state.review.selectedImageIndices;
 export const selectFocusChangeType = (state) => state.review.focusChangeType;
 export const selectLabelsErrors = (state) => state.review.loadingStates.labels.errors;

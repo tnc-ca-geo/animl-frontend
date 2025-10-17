@@ -12,10 +12,9 @@ import {
   markedEmpty,
   objectsManuallyUnlocked,
   incrementImage,
-  incrementFocusIndex,
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
-import { toggleOpenLoupe, selectReviewMode, drawBboxStart, addLabelStart } from './loupeSlice.js';
+import { toggleOpenLoupe, drawBboxStart, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
@@ -81,19 +80,6 @@ const Loupe = () => {
   const image = workingImages[focusIndex.image];
   const dispatch = useDispatch();
   const projectTags = useSelector(selectProjectTags);
-
-  // // track reivew mode
-  // const reviewMode = useSelector(selectReviewMode);
-  // const handleToggleReviewMode = (e) => {
-  //   dispatch(reviewModeToggled());
-  //   e.currentTarget.blur();
-  // };
-
-  // // review mode settings modal
-  // const [reviewSettingsOpen, setReviewSettingsOpen] = useState(false);
-  // const handleToggleReviewSettings = () => {
-  //   setReviewSettingsOpen(!reviewSettingsOpen);
-  // };
 
   const validateLabels = (validated) => {
     const labelsToValidate = [];
@@ -183,13 +169,12 @@ const Loupe = () => {
   };
 
   const handleIncrementClick = (delta) => {
-    reviewMode ? dispatch(incrementFocusIndex(delta)) : dispatch(incrementImage(delta));
+    dispatch(incrementImage(delta));
   };
 
   // Listen for hotkeys
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
-  const reviewMode = useSelector(selectReviewMode);
   const handleKeyDown = useCallback(
     (e) => {
       // ignore if keydown event is from focused input or textarea
@@ -207,7 +192,7 @@ const Loupe = () => {
             : null;
 
       if (delta) {
-        reviewMode ? dispatch(incrementFocusIndex(delta)) : dispatch(incrementImage(delta));
+        dispatch(incrementImage(delta));
       }
 
       // ctrl-z/shift-ctrl-z (undo/redo)
@@ -229,15 +214,12 @@ const Loupe = () => {
       }
 
       // // handle ctrl-a (add object)
-      // if (reviewMode) {
-      //   let charCode = String.fromCharCode(e.which).toLowerCase();
-      //   if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
-      //     e.stopPropagation();
-      //     dispatch(drawBboxStart());
-      //   }
+      // if ((e.ctrlKey || e.metaKey) && charCode === 'a') {
+      //   e.stopPropagation();
+      //   dispatch(drawBboxStart());
       // }
     },
-    [dispatch, image, reviewMode],
+    [dispatch, image],
   );
 
   useEffect(() => {
@@ -256,30 +238,6 @@ const Loupe = () => {
             <LoupeDropdown image={image} />
           </>
         )}
-        {/*<div>
-          Label review
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewMode}
-          >
-            <FontAwesomeIcon
-              icon={ reviewMode ? ['fas', 'toggle-on'] : ['fas', 'toggle-off'] }
-            />
-          </IconButton>
-          <IconButton
-            variant='ghost'
-            onClick={handleToggleReviewSettings}
-          >
-            <FontAwesomeIcon
-              icon={['fas', 'cog']}
-            />
-          </IconButton>
-          {reviewSettingsOpen && 
-            <ReviewSettingsForm
-              handleModalToggle={handleToggleReviewSettings}
-            />
-          }
-        </div>*/}
       </LoupeHeader>
       <LoupeBody>
         {image && (
