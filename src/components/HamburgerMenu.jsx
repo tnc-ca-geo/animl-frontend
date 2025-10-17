@@ -5,6 +5,13 @@ import { Menu, X, ExternalLinkIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from './Button.jsx';
 import IconButton from './IconButton.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  selectModalOpen,
+  selectSelectedProject,
+  setModalContent,
+  setModalOpen,
+} from '../features/projects/projectsSlice.js';
 
 const openOverlayAnimation = keyframes({
   from: { opacity: 0 },
@@ -94,7 +101,7 @@ const Overlay = styled(Dialog.Overlay, {
 });
 
 const Content = styled(Dialog.Content, {
-  zIndex: '$6',
+  zIndex: '$5',
   width: '100vw',
   height: '80dvh',
   position: 'fixed',
@@ -152,8 +159,47 @@ const LinkWithIcon = styled('span', {
   },
 });
 
+const InternalButton = styled('div', {
+  ...linkStyles,
+  '&:hover': {
+    cursor: 'pointer',
+    color: '$gray12',
+    borderBottom: '1px solid $gray7',
+  },
+  variants: {
+    disabled: {
+      true: {
+        color: '$gray5',
+        '&:hover': {
+          pointerEvents: 'none',
+          cursor: 'auto',
+        },
+      },
+      false: {},
+    },
+  },
+});
+
+const ModalTrigger = ({ text, disabled, handleClick }) => {
+  const onClick = disabled ? () => {} : handleClick;
+
+  return (
+    <InternalButton disabled={disabled} onClick={onClick}>
+      {text}
+    </InternalButton>
+  );
+};
+
 export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
+  const modalOpen = useSelector(selectModalOpen);
+  const selectedProject = useSelector(selectSelectedProject);
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleModalToggle = (content) => {
+    dispatch(setModalOpen(!modalOpen));
+    dispatch(setModalContent(content));
+  };
 
   return (
     <MenuRoot onOpenChange={(newState) => setIsOpen(newState)}>
@@ -170,6 +216,11 @@ export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
                     Documentation
                   </A>
                 </Dialog.Close>
+                <ModalTrigger
+                  disabled={!selectedProject}
+                  handleClick={() => handleModalToggle('camera-admin-modal')}
+                  text={'Manage cameras'}
+                />
                 <Dialog.Close asChild>
                   <SignOut onClick={signOut}>Sign out</SignOut>
                 </Dialog.Close>
