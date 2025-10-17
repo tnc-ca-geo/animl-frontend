@@ -21,7 +21,7 @@ import {
 } from '../../components/AlertDialog';
 import Callout from '../../components/Callout';
 import * as Progress from '@radix-ui/react-progress';
-import { selectSelectedProject } from '../projects/projectsSlice';
+import { fetchAutomationRules, selectAutomationRules } from '../projects/projectsSlice';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { green, red } from '@radix-ui/colors';
 import { uploadFile, uploadMultipartFile, selectUploadsLoading } from './uploadSlice';
@@ -112,15 +112,18 @@ const SerialNumberOverrideHelp = () => (
 );
 
 const BulkUploadForm = () => {
-  const selectedProject = useSelector(selectSelectedProject);
   const { isLoading, progress } = useSelector(selectUploadsLoading);
   const percentUploaded = Math.round(progress * 100);
   const [alertOpen, setAlertOpen] = useState(false);
   const [warnings, setWarnings] = useState([]);
   const dispatch = useDispatch();
-  const hasImageAddedAutoRule = selectedProject.automationRules.some(
-    (rule) => rule.event.type === 'image-added' && rule.action.type === 'run-inference',
-  );
+  const automationRules = useSelector(selectAutomationRules);
+  const hasImageAddedAutoRule = automationRules.some(
+    (rule) => rule.event.type === 'image-added' && rule.action.type === 'run-inference');
+
+  useEffect(() => {
+    dispatch(fetchAutomationRules());
+  }, []);
 
   const upload = (values) => {
     const fileSize = values.zipFile.size;
@@ -170,7 +173,7 @@ const BulkUploadForm = () => {
   }, [percentUploaded, reset, dispatch]);
 
   return (
-    <div>
+    automationRules && (<div>
       <FormWrapper>
         <Formik
           onSubmit={(values) => handleSubmit(values)}
@@ -249,7 +252,7 @@ const BulkUploadForm = () => {
         upload={upload}
         warnings={warnings}
       />
-    </div>
+    </div>)
   );
 };
 

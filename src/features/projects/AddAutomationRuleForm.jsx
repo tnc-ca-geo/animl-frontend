@@ -90,7 +90,7 @@ const GeofencingTooltip = () => (
   </div>
 );
 
-const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule }) => {
+const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
   const modelsLoading = useSelector(selectModelsLoadingState);
@@ -105,14 +105,14 @@ const AddAutomationRuleForm = ({ project, availableModels, hideAddRuleForm, rule
   // save rule
   const handleSaveRulesSubmit = (formVals) => {
     const newRule = valsToRule(formVals);
-    let newRules = [...project.automationRules];
+    let newRules = [...automationRules];
     if (rule) {
       // we're updating an existing rule
-      const ruleIndex = project.automationRules.findIndex((r) => r._id === rule._id);
+      const ruleIndex = automationRules.findIndex((r) => r._id === rule._id);
       newRules[ruleIndex] = newRule;
     } else {
       // we're creating a new rule
-      newRules = project.automationRules.concat(newRule);
+      newRules = newRules.concat(newRule);
     }
     dispatch(updateAutomationRules({ automationRules: newRules }));
     hideAddRuleForm();

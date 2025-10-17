@@ -177,9 +177,6 @@ const projectFields = `
   views {
     ${viewFields}
   }
-  automationRules {
-    ${automationRuleFields}
-  }
   cameraConfigs {
     ${cameraConfigFields}
   }
@@ -192,12 +189,30 @@ const projectFields = `
   availableMLModels
 `;
 
+const projectAutomationRuleFields = `
+  _id
+  automationRules {
+    ${automationRuleFields}
+  }
+`;
+
 const queries = {
   getProjects: (input) => ({
     template: `
       query GetProjects($input: QueryProjectsInput) {
         projects(input: $input) {
           ${projectFields}
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  getProjectAutomationRules: (input) => ({
+    template: `
+      query GetProjects($input: QueryProjectsInput) {
+        projects(input: $input) {
+          ${projectAutomationRuleFields}
         }
       }
     `,
