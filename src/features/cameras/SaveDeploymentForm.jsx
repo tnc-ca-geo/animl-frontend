@@ -170,7 +170,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
 
   return (
     <div>
-      {depsLoading.isLoading || true && (
+      {depsLoading.isLoading && (
         <FixedSpinnerOverlay>
           <SimpleSpinner />
         </FixedSpinnerOverlay>
