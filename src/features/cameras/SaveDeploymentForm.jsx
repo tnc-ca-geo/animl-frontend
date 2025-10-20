@@ -75,6 +75,17 @@ const FormHeader = styled('div', {
   },
 });
 
+const FixedSpinnerOverlay = styled(SpinnerOverlay, {
+  position: 'fixed',
+  top: '$7',
+  height: 'calc(100% - $7)',
+  '@bp2': {
+    position: 'absolute',
+    height: '100%',
+    top: 0
+  }
+});
+
 const newDeploymentSchema = Yup.object().shape({
   name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('A name is required'),
   description: Yup.string().min(2, 'Too Short!').max(500, 'Too Long!'),
@@ -159,10 +170,10 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
 
   return (
     <div>
-      {depsLoading.isLoading && (
-        <SpinnerOverlay>
+      {depsLoading.isLoading || true && (
+        <FixedSpinnerOverlay>
           <SimpleSpinner />
-        </SpinnerOverlay>
+        </FixedSpinnerOverlay>
       )}
       <FormHeader>
         {operation === 'createDeployment' ? (
