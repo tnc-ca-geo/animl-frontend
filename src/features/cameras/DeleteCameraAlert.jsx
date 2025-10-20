@@ -9,7 +9,7 @@ import {
   selectDeleteCameraLoading,
 } from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { selectSelectedCamera, setSelectedCamera } from '../projects/projectsSlice.js';
+import { selectGlobalBreakpoint, selectSelectedCamera, setSelectedCamera } from '../projects/projectsSlice.js';
 import {
   fetchCameraImageCount,
   selectCameraImageCount,
@@ -18,7 +18,7 @@ import {
   selectDeleteCameraAlertStatus,
   setDeleteCameraAlertStatus,
 } from './wirelessCamerasSlice.js';
-import { ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT } from '../../config.js';
+import { ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT, globalBreakpoints } from '../../config.js';
 import {
   Alert,
   AlertPortal,
@@ -29,6 +29,22 @@ import {
 import { DeleteImagesProgressBar } from '../images/DeleteImagesProgressBar.jsx';
 import PermanentActionConfirmation from '../../components/PermanentActionConfirmation.jsx';
 import Callout from '../../components/Callout.jsx';
+import { styled } from '../../theme/stitches.config.js';
+
+const ButtonRow = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '$2',
+  '@bp2': {
+    justifyContent: 'flex-end',
+    gap: 25,
+    flexDirection: 'row',
+  },
+});
+
+const ScrollableAlertContent = styled(AlertContent, {
+  overflowY: 'scroll'
+});
 
 const DeleteCameraAlert = () => {
   const deleteCameraLoading = useSelector(selectDeleteCameraLoading);
@@ -65,11 +81,14 @@ const DeleteCameraAlert = () => {
     }
   }, [deleteCameraLoading, dispatch]);
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
   return (
     <Alert open={isAlertOpen}>
       <AlertPortal>
         <AlertOverlay />
-        <AlertContent>
+        <ScrollableAlertContent>
           {(deleteCameraLoading.isLoading || imageCountLoading) && (
             <SpinnerOverlay>
               <SimpleSpinner />
@@ -127,10 +146,10 @@ const DeleteCameraAlert = () => {
               setConfirmed={setConfirmedDelete}
             />
           </div>
-          <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
+          <ButtonRow>
             <Button
               type="button"
-              size="small"
+              size={isSmallScreen ? 'large' : 'small'}
               disabled={deleteCameraLoading.isLoading}
               onClick={handleCancelDelete}
             >
@@ -138,7 +157,7 @@ const DeleteCameraAlert = () => {
             </Button>
             <Button
               type="submit"
-              size="small"
+              size={isSmallScreen ? 'large' : 'small'}
               disabled={
                 deleteCameraLoading.isLoading ||
                 imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ||
@@ -155,8 +174,8 @@ const DeleteCameraAlert = () => {
             >
               Yes, delete
             </Button>
-          </div>
-        </AlertContent>
+          </ButtonRow>
+        </ScrollableAlertContent>
       </AlertPortal>
     </Alert>
   );
