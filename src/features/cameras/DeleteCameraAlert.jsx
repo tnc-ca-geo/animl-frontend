@@ -9,7 +9,7 @@ import {
   selectDeleteCameraLoading,
 } from '../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { selectSelectedCamera, setSelectedCamera } from '../projects/projectsSlice.js';
+import { selectGlobalBreakpoint, selectSelectedCamera, setSelectedCamera } from '../projects/projectsSlice.js';
 import {
   fetchCameraImageCount,
   selectCameraImageCount,
@@ -18,7 +18,7 @@ import {
   selectDeleteCameraAlertStatus,
   setDeleteCameraAlertStatus,
 } from './wirelessCamerasSlice.js';
-import { ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT } from '../../config.js';
+import { ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT, globalBreakpoints } from '../../config.js';
 import {
   Alert,
   AlertPortal,
@@ -40,6 +40,10 @@ const ButtonRow = styled('div', {
     gap: 25,
     flexDirection: 'row',
   },
+});
+
+const ScrollableAlertContent = styled(AlertContent, {
+  overflowY: 'scroll'
 });
 
 const DeleteCameraAlert = () => {
@@ -77,11 +81,14 @@ const DeleteCameraAlert = () => {
     }
   }, [deleteCameraLoading, dispatch]);
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
   return (
     <Alert open={isAlertOpen}>
       <AlertPortal>
         <AlertOverlay />
-        <AlertContent>
+        <ScrollableAlertContent>
           {(deleteCameraLoading.isLoading || imageCountLoading) && (
             <SpinnerOverlay>
               <SimpleSpinner />
@@ -142,7 +149,7 @@ const DeleteCameraAlert = () => {
           <ButtonRow>
             <Button
               type="button"
-              size="small"
+              size={isSmallScreen ? 'large' : 'small'}
               disabled={deleteCameraLoading.isLoading}
               onClick={handleCancelDelete}
             >
@@ -150,7 +157,7 @@ const DeleteCameraAlert = () => {
             </Button>
             <Button
               type="submit"
-              size="small"
+              size={isSmallScreen ? 'large' : 'small'}
               disabled={
                 deleteCameraLoading.isLoading ||
                 imageCount > ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT ||
@@ -168,7 +175,7 @@ const DeleteCameraAlert = () => {
               Yes, delete
             </Button>
           </ButtonRow>
-        </AlertContent>
+        </ScrollableAlertContent>
       </AlertPortal>
     </Alert>
   );
