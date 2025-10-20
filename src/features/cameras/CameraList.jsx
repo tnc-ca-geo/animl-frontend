@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DateTime } from 'luxon';
 import { styled } from '../../theme/stitches.config';
 import {
   DropdownMenu,
@@ -23,18 +22,13 @@ import {
   setDeleteCameraAlertStatus,
 } from './wirelessCamerasSlice';
 import {
+  selectGlobalBreakpoint,
   selectSelectedProjectId,
   setModalContent,
   setSelectedCamera,
 } from '../projects/projectsSlice.js';
 import IconButton from '../../components/IconButton';
-import {
-  Cross2Icon,
-  Pencil1Icon,
-  DotsHorizontalIcon,
-  ChevronRightIcon,
-  ChevronDownIcon,
-} from '@radix-ui/react-icons';
+import { DotsHorizontalIcon, ChevronRightIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { StandAloneInput as Input } from '../../components/Form';
 import { Camera, MapPin, IdCard, Trash2, Unlink, Link } from 'lucide-react';
 import { indigo } from '@radix-ui/colors';
@@ -46,66 +40,14 @@ import {
   WRITE_DEPLOYMENTS_ROLES,
 } from '../auth/roles';
 import DeleteCameraAlert from './DeleteCameraAlert.jsx';
+import { globalBreakpoints } from '../../config.js';
+import { DeploymentItem } from './DeploymentItem.jsx';
 
 const StyledCameraList = styled('div', {
   border: '1px solid $border',
   maxHeight: '50vh',
   overflowY: 'scroll',
   borderRadius: '$1',
-});
-
-const DepButtons = styled('div', {
-  minWidth: '50px',
-  placeSelf: 'end',
-});
-
-const DateDash = styled('span', {
-  paddingLeft: '$2',
-  paddingRight: '$2',
-});
-
-const Date = styled('span', {
-  width: '120px',
-  variants: {
-    type: {
-      start: {
-        textAlign: 'right',
-      },
-      end: {
-        textAlign: 'left',
-      },
-    },
-  },
-});
-
-const Bookend = styled('span', {
-  fontStyle: 'italic',
-  color: '$textMedium',
-});
-
-const DepDates = styled('div', {
-  placeSelf: 'center',
-  display: 'flex',
-  alignItems: 'center',
-  color: '$textDark',
-});
-
-const DepName = styled('div', {
-  display: 'flex',
-  alignItems: 'center',
-  width: 250,
-});
-
-const DeploymentItem = styled('div', {
-  fontSize: '$3',
-  marginLeft: '$9',
-  display: 'grid',
-  gridTemplateColumns: 'auto auto auto',
-  alignContent: 'center',
-  color: '$textDark',
-  '&:not(:last-child)': {
-    borderBottom: '1px solid $gray6',
-  },
 });
 
 const StyledActiveState = styled('div', {
@@ -205,13 +147,29 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
       cam.deployments.some((dep) => dep.name.includes(cameraFilter)),
   );
 
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
+
+  const inputCss = isSmallScreen
+    ? {
+        width: '100%',
+        height: 40,
+        padding: '$0 $3',
+      }
+    : {
+        width: 320,
+        height: 40,
+        padding: '$0 $3',
+        marginRight: '$3',
+      };
+
   return (
     <>
       {cameras.length > 0 && (
         <>
           <CameraFilter>
             <Input
-              css={{ width: 320, height: 40, padding: '$0 $3', marginRight: '$3' }}
+              css={inputCss}
               placeholder="Filter by Camera Serial Number or Deployment..."
               value={cameraFilter}
               onChange={(e) => setCameraFilter(e.target.value)}
@@ -353,58 +311,15 @@ const CameraList = ({ cameras, handleSaveDepClick, handleDeleteDepClick }) => {
                   </>
                 }
               >
-                {cam.deployments.map((dep) => {
-                  let depName = dep.name === 'default' ? `${cam._id} (default)` : dep.name;
-                  depName = depName.length > 23 ? `${depName.slice(0, 23)}...` : depName;
-                  return (
-                    <DeploymentItem key={dep._id}>
-                      <DepName>
-                        <MapPin size={14} style={{ marginRight: '12px' }} />
-                        {depName}
-                      </DepName>
-                      <DepDates>
-                        <Date type="start">
-                          {dep.startDate ? format(dep.startDate) : <Bookend>dawn of time</Bookend>}
-                        </Date>
-                        <DateDash>-</DateDash>
-                        <Date type="end">
-                          {dep.endDate ? format(dep.endDate) : <Bookend>today</Bookend>}
-                        </Date>
-                      </DepDates>
-                      {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
-                        <DepButtons>
-                          <IconButton
-                            variant="ghost"
-                            size="small"
-                            css={{ marginRight: '$1' }}
-                            onClick={() =>
-                              handleSaveDepClick({
-                                cameraId: cam._id,
-                                deployment: dep,
-                              })
-                            }
-                            disabled={dep.editable === false}
-                          >
-                            <Pencil1Icon />
-                          </IconButton>
-                          <IconButton
-                            variant="ghost"
-                            size="small"
-                            onClick={() =>
-                              handleDeleteDepClick({
-                                cameraId: cam._id,
-                                deployment: dep,
-                              })
-                            }
-                            disabled={dep.editable === false}
-                          >
-                            <Cross2Icon />
-                          </IconButton>
-                        </DepButtons>
-                      )}
-                    </DeploymentItem>
-                  );
-                })}
+                {cam.deployments.map((dep) => (
+                  <DeploymentItem
+                    key={dep._id}
+                    deployment={dep}
+                    cameraId={cam._id}
+                    handleDelete={handleDeleteDepClick}
+                    handleSave={handleSaveDepClick}
+                  />
+                ))}
               </CameraItem>
             ))}
             {filteredCameras.length === 0 && <NoCamerasFound>No cameras found.</NoCamerasFound>}
@@ -448,6 +363,11 @@ export const SelectedCount = styled('span', {
 
 export const Label = styled('span', {
   marginRight: '$4',
+
+  flex: 1,
+  '@bp1': {
+    flex: 'unset',
+  },
 
   variants: {
     bold: {
@@ -527,9 +447,5 @@ const CameraItem = (props) => {
     </div>
   );
 };
-
-function format(date) {
-  return DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT);
-}
 
 export default CameraList;

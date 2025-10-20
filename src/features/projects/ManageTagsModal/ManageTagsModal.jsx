@@ -28,6 +28,10 @@ const AddNewTagButton = styled(Button, {
   marginRight: 0,
   marginLeft: 'auto',
   marginTop: '$3',
+  width: '100%',
+  '@bp2': {
+    width: 'auto',
+  },
 });
 
 const EditTagContainer = styled('div', {

@@ -6,7 +6,7 @@ import { EditTag } from './EditTag';
 
 const Container = styled('div', {
   paddingTop: '$2',
-  borderBottom: '1px solid $border'
+  borderBottom: '1px solid $border',
 });
 
 const Inner = styled('div', {
@@ -23,14 +23,17 @@ const TagName = styled('div', {
   fontWeight: 'bold',
   fontSize: '$2',
   display: 'grid',
-  placeItems: 'center'
+  placeItems: 'center',
 });
 
 const Actions = styled('div', {
   marginRight: 0,
   marginLeft: 'auto',
   display: 'flex',
-  gap: '$3'
+  gap: '$2',
+  '@bp2': {
+    gap: '$3',
+  },
 });
 
 export const EditableTag = ({
@@ -39,7 +42,7 @@ export const EditableTag = ({
   currentColor,
   allTagNames,
   onConfirmEdit,
-  onDelete
+  onDelete,
 }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(currentColor);
@@ -47,36 +50,32 @@ export const EditableTag = ({
   const onEdit = (newName, newColor) => {
     onConfirmEdit(id, newName, newColor);
     setIsEditOpen(false);
-  }
+  };
 
   return (
     <Container>
       <Inner>
-        <TagName css={{ 
-          borderColor: previewColor,
-          backgroundColor: `${previewColor}1A`,
-        }}>
-          { currentName }
+        <TagName
+          css={{
+            borderColor: previewColor,
+            backgroundColor: `${previewColor}1A`,
+          }}
+        >
+          {currentName}
         </TagName>
         <Actions>
-          <IconButton
-            variant='ghost'
-            onClick={() => setIsEditOpen(true)}
-          >
+          <IconButton variant="ghost" onClick={() => setIsEditOpen(!isEditOpen)}>
             <Pencil1Icon />
           </IconButton>
-          <IconButton
-            variant='ghost'
-            onClick={() => onDelete(id)}
-          >
+          <IconButton variant="ghost" onClick={() => onDelete(id)}>
             <TrashIcon />
           </IconButton>
         </Actions>
       </Inner>
 
       {/* Tag edit form */}
-      { isEditOpen &&
-        <EditTag 
+      {isEditOpen && (
+        <EditTag
           id={id}
           currentName={currentName}
           currentColor={currentColor}
@@ -85,7 +84,7 @@ export const EditableTag = ({
           onSubmit={(_id, newName, newColor) => onEdit(newName, newColor)}
           onCancel={() => setIsEditOpen(false)}
         />
-      }
+      )}
     </Container>
   );
-}
+};

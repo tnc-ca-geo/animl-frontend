@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import {
@@ -18,6 +18,21 @@ import {
   selectCameraSerialNumberLoading,
 } from '../tasks/tasksSlice.js';
 import Callout from '../../components/Callout.jsx';
+import { styled } from '../../theme/stitches.config.js';
+
+const StyledField = styled(Field, {
+  padding: '$2 !important',
+  '@bp2': {
+    padding: '$3',
+  },
+});
+
+const StyledButton = styled(Button, {
+  width: '100%',
+  '@bp2': {
+    width: 'unset',
+  },
+});
 
 const updateSerialNumberSchema = Yup.object().shape({
   serialNumber: Yup.string().matches(
@@ -95,7 +110,7 @@ const UpdateCameraSerialNumberForm = () => {
             <Form>
               <FieldRow>
                 <FormFieldWrapper>
-                  <Field
+                  <StyledField
                     name="serialNumber"
                     id="serialNumber"
                     onKeyUp={() => {
@@ -147,9 +162,9 @@ const UpdateCameraSerialNumberForm = () => {
                 </Callout>
               )}
               <ButtonRow>
-                <Button type="submit" size="large" disabled={!isValid || !dirty}>
+                <StyledButton type="submit" size="large" disabled={!isValid || !dirty}>
                   Update
-                </Button>
+                </StyledButton>
               </ButtonRow>
             </Form>
           )}

@@ -89,6 +89,7 @@ const CategorySelector = forwardRef(function CategorySelector(
   const options = enabledLabels
     .sort((lbl1, lbl2) => compareLabelNames(lbl1.name, lbl2.name))
     .map(createOption);
+
   const dispatch = useDispatch();
 
   const defaultHandleBlur = () => dispatch(addLabelEnd());
