@@ -21,6 +21,7 @@ const StyledFieldRow = styled(FieldRow, {
   flexDirection: 'column',
   '@bp2': {
     flexDirection: 'row',
+    gap: '$3',
   },
 });
 

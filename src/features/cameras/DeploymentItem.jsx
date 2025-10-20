@@ -46,6 +46,9 @@ const DepButtons = styled('div', {
 const DepName = styled('div', {
   display: 'flex',
   alignItems: 'center',
+  '@bp2': {
+    width: '250px'
+  }
 });
 
 const DepDates = styled('div', {
@@ -54,13 +57,13 @@ const DepDates = styled('div', {
   display: 'grid',
   gridTemplateColumns: '1fr auto 1fr',
   '@bp2': {
-    display: 'flex',
     alignItems: 'center',
   },
 });
 
 const Date = styled('span', {
   '@bp2': {
+    minWidth: '50px',
     fontFamily: 'unset',
   },
   fontFamily: '$sourceSansPro',
