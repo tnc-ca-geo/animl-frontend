@@ -85,14 +85,6 @@ export const labelMiddleware = (store) => (next) => (action) => {
     }
 
     store.dispatch(addLabelEnd());
-
-    // TODO: not sure what to do about this now that we're supporting adding
-    // multiple labels at once:
-
-    // const newIndex = objIsTemp ? { object: 0, label: 0 } : { label: 0 };
-    // store.dispatch(setFocus({ index: newIndex, type: 'auto' }));
-    // const reviewMode = selectReviewMode(store.getState());
-    // if (reviewMode) store.dispatch(incrementFocusIndex('increment'));
   } else if (labelsRemoved.match(action)) {
     /* labelsRemoved */
     for (const { imgId, objId, newLabel } of action.payload.labels) {
@@ -128,8 +120,6 @@ export const labelMiddleware = (store) => (next) => (action) => {
     }
 
     next(action);
-
-    // store.dispatch(incrementFocusIndex('increment')); // increment focus?
   } else if (labelsValidated.match(action)) {
     /* labelsValidated */
     next(action);

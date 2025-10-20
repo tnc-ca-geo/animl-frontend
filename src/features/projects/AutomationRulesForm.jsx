@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectSelectedProject } from './projectsSlice';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAutomationRules, selectAutomationRules, selectSelectedProject } from './projectsSlice';
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
@@ -10,6 +10,12 @@ const AutomationRulesForm = () => {
   const availableModels = selectedProject.availableMLModels;
   const [showAddRuleForm, setShowAddRuleForm] = useState(false);
   const [currentRule, setCurrentRule] = useState();
+  const automationRules = useSelector(selectAutomationRules);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAutomationRules());
+  }, []);
 
   const handleAddRuleClick = () => {
     setCurrentRule(null);
@@ -20,17 +26,17 @@ const AutomationRulesForm = () => {
 
   return (
     <div>
-      {availableModels.length && selectedProject ? (
+      {availableModels.length && selectedProject && automationRules ? (
         showAddRuleForm ? (
           <AddAutomationRuleForm
-            project={selectedProject}
+            automationRules={automationRules}
             availableModels={availableModels}
             hideAddRuleForm={hideAddRuleForm}
             rule={currentRule}
           />
         ) : (
           <AutomationRulesList
-            project={selectedProject}
+            automationRules={automationRules}
             availableModels={availableModels}
             onAddRuleClick={handleAddRuleClick}
             onEditRuleClick={handleEditRuleClick}
