@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { selectGlobalBreakpoint } from '../projects/projectsSlice';
 import { globalBreakpoints } from '../../config';
 import { Tooltip, TooltipArrow, TooltipContent, TooltipTrigger } from '../../components/Tooltip';
-import { shortenedField } from '../../app/utils';
 import { selectUserCurrentRoles } from '../auth/authSlice';
 import { DateTime } from 'luxon';
 
@@ -20,17 +19,20 @@ const ItemValue = styled('div', {
 
 const Bookend = styled('span', {
   fontStyle: 'italic',
-  color: '$textMedium',
+  '@bp2': {
+    color: '$textMedium',
+  }
 });
 
 const DepItem = styled('div', {
   fontSize: '$3',
   marginLeft: '0',
+  gridTemplateColumns: 'auto auto',
   '@bp2': {
     marginLeft: '$9',
+    gridTemplateColumns: 'auto auto auto',
   },
   display: 'grid',
-  gridTemplateColumns: 'auto auto auto',
   alignContent: 'center',
   color: '$textDark',
   '&:not(:last-child)': {
@@ -99,10 +101,6 @@ export const DeploymentItem = ({ deployment, cameraId, handleDelete, handleSave 
 
   const deploymentName = deployment.name === 'default' ? `${cameraId} (default)` : deployment.name;
 
-  const dawnOfTime = isSmallScreen ? '' : 'dawn of time';
-
-  const today = isSmallScreen ? '' : 'today';
-
   return (
     <DepItem key={deployment._id}>
       <DepName>
@@ -111,11 +109,21 @@ export const DeploymentItem = ({ deployment, cameraId, handleDelete, handleSave 
           <Tooltip onOpenChange={setIsOpen} open={alwaysOpen || isOpen}>
             <TooltipTrigger asChild>
               <ItemValue onClick={() => setIsOpen(!isOpen)}>
-                {shortenedField(deploymentName)}
+                { deploymentName }
               </ItemValue>
             </TooltipTrigger>
             <TooltipContent>
-              {deploymentName}
+                <Date type="start">
+                  {deployment.startDate ? (
+                    formatDate(deployment.startDate)
+                  ) : (
+                      <Bookend>dawn of time</Bookend>
+                    )}
+                </Date>
+                <DateDash>-</DateDash>
+                <Date type="end">
+                  {deployment.endDate ? formatDate(deployment.endDate) : <Bookend>today</Bookend>}
+                </Date>
               <TooltipArrow />
             </TooltipContent>
           </Tooltip>
@@ -123,19 +131,21 @@ export const DeploymentItem = ({ deployment, cameraId, handleDelete, handleSave 
           deploymentName
         )}
       </DepName>
-      <DepDates>
-        <Date type="start">
-          {deployment.startDate ? (
-            formatDate(deployment.startDate)
-          ) : (
-            <Bookend>{dawnOfTime}</Bookend>
-          )}
-        </Date>
-        <DateDash>-</DateDash>
-        <Date type="end">
-          {deployment.endDate ? formatDate(deployment.endDate) : <Bookend>{today}</Bookend>}
-        </Date>
-      </DepDates>
+      { !isSmallScreen && (
+        <DepDates>
+          <Date type="start">
+            {deployment.startDate ? (
+              formatDate(deployment.startDate)
+            ) : (
+                <Bookend>dawn of time</Bookend>
+              )}
+          </Date>
+          <DateDash>-</DateDash>
+          <Date type="end">
+            {deployment.endDate ? formatDate(deployment.endDate) : <Bookend>today</Bookend>}
+          </Date>
+        </DepDates>
+      )}
       {hasRole(userRoles, WRITE_DEPLOYMENTS_ROLES) && (
         <DepButtons>
           <IconButton
