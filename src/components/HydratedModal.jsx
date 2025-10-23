@@ -11,6 +11,8 @@ import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
 import BulkUploadForm from '../features/upload/BulkUploadForm.jsx';
 import UpdateCameraSerialNumberForm from '../features/cameras/UpdateCameraSerialNumberForm.jsx';
+import EditImageTimestampModal from '../features/images/EditImageTimestampModal.jsx';
+import { selectActiveFilters } from '../features/filters/filtersSlice.js';
 import {
   clearStats,
   clearExport,
@@ -30,6 +32,8 @@ import {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
+  setSelectedImage,
+  selectSelectedImage,
   clearAutomationRules,
 } from '../features/projects/projectsSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
@@ -43,6 +47,8 @@ const HydratedModal = () => {
   const dispatch = useDispatch();
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
+  const activeFilters = useSelector(selectActiveFilters);
+  const selectedImage = useSelector(selectSelectedImage);
 
   // loading states of async tasks
   const statsLoading = useSelector(selectStatsLoading);
@@ -138,6 +144,15 @@ const HydratedModal = () => {
       content: <ManageLabelsAndTagsModal tab={manageTagsAndLabelsTab} />,
       callBackOnClose: () => {
         setManageTagsAndLabelsTab('labels');
+        return true;
+      },
+    },
+    'edit-image-timestamp-form': {
+      title: 'Edit image timestamp',
+      size: 'md',
+      content: <EditImageTimestampModal filters={activeFilters} image={selectedImage} />,
+      callBackOnClose: () => {
+        dispatch(setSelectedImage(null));
         return true;
       },
     },
