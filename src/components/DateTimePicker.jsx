@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment-timezone';
 import { timeZonesNames } from '@vvo/tzdb';
 import { styled } from '../theme/stitches.config.js';
+import { StandAloneInput } from './Form.jsx';
 import SelectField from './SelectField.jsx';
 
 const Container = styled('div', {
@@ -10,38 +11,9 @@ const Container = styled('div', {
   gap: '$3',
 });
 
-const DateTimeSection = styled('div', {
-  width: '100%',
-});
-
-const TimezoneSection = styled('div', {
-  width: '100%',
-});
-
-const Label = styled('label', {
+const DateTimeInput = styled(StandAloneInput, {
   fontSize: '$3',
-  fontWeight: '$5',
-  color: '$textDark',
-  marginBottom: '$2',
-  display: 'block',
-});
-
-const DateTimeInput = styled('input', {
-  fontSize: '$3',
-  fontFamily: '$sourceSansPro',
-  color: '$textMedium',
   padding: '$2 $3',
-  boxSizing: 'border-box',
-  border: '1px solid',
-  borderColor: '$border',
-  backgroundColor: '#FFFFFF',
-  borderRadius: '$1',
-  width: '100%',
-  '&:focus': {
-    outline: 'none',
-    borderColor: '$blue500',
-    boxShadow: '0 0 0 1px $blue500',
-  },
   '&::-webkit-calendar-picker-indicator': {
     cursor: 'pointer',
   },
@@ -75,8 +47,8 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
 
   return (
     <Container>
-      <DateTimeSection>
-        <Label htmlFor="datetime-input">Date and Time</Label>
+      <div>
+        <label htmlFor="datetime-input">Date and Time</label>
         <DateTimeInput
           id="datetime-input"
           type="datetime-local"
@@ -84,9 +56,9 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
           value={formatForInput(datetime)}
           onChange={handleChange}
         />
-      </DateTimeSection>
+      </div>
 
-      <TimezoneSection>
+      <div>
         <SelectField
           name="timezone"
           label="Timezone"
@@ -96,7 +68,7 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
           isSearchable={true}
           menuPlacement="auto"
         />
-      </TimezoneSection>
+      </div>
     </Container>
   );
 };
