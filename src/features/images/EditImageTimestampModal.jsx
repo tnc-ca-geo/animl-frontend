@@ -32,24 +32,39 @@ const RadioLabel = styled('span', {
 const timestampSchema = Yup.object().shape({
   applyTo: Yup.string().required(),
   datetime: Yup.date().required('Date and time are required'),
+  timezone: Yup.object().shape({
+    value: Yup.string().required(),
+    label: Yup.string().required(),
+  }).required('Timezone is required'),
 });
 
-const EditImageTimestampModal = ({ handleClose, image }) => {
+const EditImageTimestampModal = ({ handleClose, image, filters }) => {
 
   // Parse current date/time for initial values
   // If we have an image with a dateTimeOriginal, use that; otherwise use current time
   const imageDate = image?.dateTimeOriginal ? new Date(image.dateTimeOriginal) : new Date();
 
+  // Default timezone - use image timezone if available, otherwise UTC
+  const defaultTz = image?.timezone || 'UTC';
+
   const initialValues = {
-    applyTo: 'filtered',
+    applyTo: 'single',
     datetime: imageDate,
+    timezone: { value: defaultTz, label: defaultTz },
   };
 
   const handleSubmit = (values) => {
     console.log('Timestamp to apply:', values.datetime.toISOString());
+    console.log('Timezone:', values.timezone.value);
     console.log('Apply to:', values.applyTo);
-    console.log('Image ID:', image?._id);
-    console.log('Image deployment:', image?.deploymentId);
+
+    if (values.applyTo === 'filtered') {
+      console.log('Current filters:', filters);
+    } else if (values.applyTo === 'deployment') {
+      console.log('Deployment ID:', image?.deploymentId);
+    } else if (values.applyTo === 'single') {
+      console.log('Image ID:', image?._id);
+    }
 
     // TODO: Dispatch action to update image timestamp(s)
     // This would typically dispatch a Redux action or call an API
@@ -66,13 +81,10 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
       >
         {({ values, setFieldValue, isValid }) => (
           <Form>
-            <HelperText>
+            <HelperText css={{ padding: 0, marginBottom: '$3' }}>
               <p>
-                Set the date and time of the selected image using the timestamp fields below.
-              </p>
-              <p>
-                Select an option below to apply changes to all currently filtered images
-                {image?.deploymentId && ', all images in the deployment,'} or to this single image.
+                Set the date and time of the selected image or collection of images selected below.
+                Applying this change to a collection will shift timestamps by a proportional offset.
               </p>
             </HelperText>
 
@@ -80,14 +92,12 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
               <RadioButton
                 type="radio"
                 name="applyTo"
-                value="filtered"
-                checked={values.applyTo === 'filtered'}
-                onChange={() => setFieldValue('applyTo', 'filtered')}
+                value="single"
+                checked={values.applyTo === 'single'}
+                onChange={() => setFieldValue('applyTo', 'single')}
               />
-              <RadioLabel onClick={() => setFieldValue('applyTo', 'filtered')}>
-                Edit the timestamp for all currently filtered images. The
-                date and time for all filtered images will be shifted
-                proportionally.
+              <RadioLabel onClick={() => setFieldValue('applyTo', 'single')}>
+                Edit the timestamp for this image only
               </RadioLabel>
 
               {image?.deploymentId && (
@@ -100,9 +110,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
                     onChange={() => setFieldValue('applyTo', 'deployment')}
                   />
                   <RadioLabel onClick={() => setFieldValue('applyTo', 'deployment')}>
-                    Edit the timestamp for all images within the same deployment. The
-                    date and time for all images in the deployment will be shifted
-                    proportionally.
+                    Edit the timestamp for all images within the same deployment
                   </RadioLabel>
                 </>
               )}
@@ -110,18 +118,20 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
               <RadioButton
                 type="radio"
                 name="applyTo"
-                value="single"
-                checked={values.applyTo === 'single'}
-                onChange={() => setFieldValue('applyTo', 'single')}
+                value="filtered"
+                checked={values.applyTo === 'filtered'}
+                onChange={() => setFieldValue('applyTo', 'filtered')}
               />
-              <RadioLabel onClick={() => setFieldValue('applyTo', 'single')}>
-                Edit the timestamp for this image only
+              <RadioLabel onClick={() => setFieldValue('applyTo', 'filtered')}>
+                Edit the timestamp for all currently filtered images
               </RadioLabel>
             </RadioGroup>
 
             <DateTimePicker
               datetime={values.datetime}
+              timezone={values.timezone}
               onDateTimeChange={(newDateTime) => setFieldValue('datetime', newDateTime)}
+              onTimezoneChange={(newTimezone) => setFieldValue('timezone', newTimezone)}
             />
 
             <ButtonRow>

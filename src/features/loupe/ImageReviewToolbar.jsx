@@ -13,7 +13,6 @@ import {
   ChevronRightIcon,
   ChatBubbleIcon,
 } from '@radix-ui/react-icons';
-import { Clock } from 'lucide-react';
 import IconButton from '../../components/IconButton.jsx';
 import {
   labelsAdded,
@@ -28,12 +27,7 @@ import {
   READ_COMMENT_ROLES,
   WRITE_COMMENT_ROLES,
 } from '../auth/roles.js';
-import {
-  setModalOpen,
-  setModalContent,
-  setSelectedImage,
-  selectGlobalBreakpoint,
-} from '../projects/projectsSlice.js';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
@@ -179,13 +173,6 @@ const ImageReviewToolbar = ({
     } else {
       dispatch(addLabelStart('from-review-toolbar'));
     }
-  };
-
-  const handleEditTimestampButtonClick = (e) => {
-    e.stopPropagation();
-    dispatch(setSelectedImage(image));
-    dispatch(setModalOpen(true));
-    dispatch(setModalContent('edit-image-timestamp-form'));
   };
 
   const allObjectsLocked = image.objects && image.objects.every((obj) => obj.locked);
@@ -345,21 +332,6 @@ const ImageReviewToolbar = ({
           ) : (
             <CommentsPopover image={image} userRoles={userRoles} />
           )}
-
-          <Separator />
-
-          {/* Edit Timestamp */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton onClick={handleEditTimestampButtonClick}>
-                <Clock size={15} />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Edit image timestamp
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
 
           <Separator />
 

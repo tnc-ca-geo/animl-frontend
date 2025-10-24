@@ -1,6 +1,22 @@
 import React from 'react';
 import moment from 'moment-timezone';
+import { timeZonesNames } from '@vvo/tzdb';
 import { styled } from '../theme/stitches.config.js';
+import SelectField from './SelectField.jsx';
+
+const Container = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '$3',
+});
+
+const DateTimeSection = styled('div', {
+  width: '100%',
+});
+
+const TimezoneSection = styled('div', {
+  width: '100%',
+});
 
 const Label = styled('label', {
   fontSize: '$3',
@@ -31,18 +47,17 @@ const DateTimeInput = styled('input', {
   },
 });
 
-const HelperText = styled('div', {
-  fontSize: '$2',
-  color: '$textLight',
-  marginTop: '$2',
-});
+const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange }) => {
+  const tzOptions = [
+    { value: 'UTC', label: 'UTC' },
+    ...timeZonesNames.map((tz) => ({ value: tz, label: tz }))
+  ];
 
-const DateTimePicker = ({ datetime, onDateTimeChange }) => {
   // Convert datetime to format for datetime-local input (YYYY-MM-DDTHH:mm:ss)
   const formatForInput = (date) => {
     if (!date) return '';
     const m = moment(date);
-    // Format: YYYY-MM-DDTHH:mm:ss
+    // Format: YYYY-MM-DDTHH:mm:ss (local time for the input)
     return m.format('YYYY-MM-DDTHH:mm:ss');
   };
 
@@ -50,25 +65,39 @@ const DateTimePicker = ({ datetime, onDateTimeChange }) => {
     const value = e.target.value;
     if (!value) return;
 
-    // Parse the datetime-local value and convert to Date
-    const newDateTime = moment(value).toDate();
+    // Parse the datetime string AS IF it's in the selected timezone
+    // The datetime-local input gives us "YYYY-MM-DDTHH:mm:ss"
+    // We interpret this in the context of the selected timezone
+    const tz = timezone?.value || 'UTC';
+    const newDateTime = moment.tz(value, tz).toDate();
     onDateTimeChange(newDateTime);
   };
 
   return (
-    <>
-      <Label htmlFor="datetime-input">Date and Time</Label>
-      <DateTimeInput
-        id="datetime-input"
-        type="datetime-local"
-        step="1"
-        value={formatForInput(datetime)}
-        onChange={handleChange}
-      />
-      <HelperText>
-        Type or use the picker to select date and time
-      </HelperText>
-    </>
+    <Container>
+      <DateTimeSection>
+        <Label htmlFor="datetime-input">Date and Time</Label>
+        <DateTimeInput
+          id="datetime-input"
+          type="datetime-local"
+          step="1"
+          value={formatForInput(datetime)}
+          onChange={handleChange}
+        />
+      </DateTimeSection>
+
+      <TimezoneSection>
+        <SelectField
+          name="timezone"
+          label="Timezone"
+          value={timezone}
+          onChange={(name, value) => onTimezoneChange(value)}
+          options={tzOptions}
+          isSearchable={true}
+          menuPlacement="auto"
+        />
+      </TimezoneSection>
+    </Container>
   );
 };
 

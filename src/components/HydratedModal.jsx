@@ -148,8 +148,8 @@ const HydratedModal = () => {
       },
     },
     'edit-image-timestamp-form': {
-      title: 'Edit image timestamp',
-      size: 'md',
+      title: 'Edit Image Timestamp',
+      size: 'sm',
       content: <EditImageTimestampModal filters={activeFilters} image={selectedImage} />,
       callBackOnClose: () => {
         dispatch(setSelectedImage(null));
