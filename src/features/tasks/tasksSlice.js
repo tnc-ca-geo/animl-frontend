@@ -80,6 +80,11 @@ const initialState = {
       isLoading: false,
       errors: null,
     },
+    setTimestampOffset: {
+      taskId: null,
+      isLoading: false,
+      errors: null,
+    },
   },
   imagesStats: null,
   burstsStats: null,
@@ -467,6 +472,45 @@ export const tasksSlice = createSlice({
       state.loadingStates.deleteProjectLabel.taskId = null;
       state.loadingStates.deleteProjectLabel.errors.splice(index, 1);
     },
+
+    // set timestamp offset
+
+    setTimestampOffsetStart: (state) => {
+      let ls = state.loadingStates.setTimestampOffset;
+      ls.taskId = null;
+      ls.isLoading = true;
+      ls.errors = null;
+    },
+
+    setTimestampOffsetUpdate: (state, { payload }) => {
+      state.loadingStates.setTimestampOffset.taskId = payload.taskId;
+    },
+
+    setTimestampOffsetSuccess: (state) => {
+      let ls = state.loadingStates.setTimestampOffset;
+      ls.taskId = null;
+      ls.isLoading = false;
+      ls.errors = null;
+    },
+
+    setTimestampOffsetFailure: (state, { payload }) => {
+      let ls = state.loadingStates.setTimestampOffset;
+      ls.isLoading = false;
+      // Handle both task failure (payload.task.output.error) and API error (payload)
+      ls.errors = payload.task?.output?.error
+        ? [payload.task.output.error]
+        : [payload];
+    },
+
+    clearSetTimestampOffsetTask: (state) => {
+      state.loadingStates.setTimestampOffset = initialState.loadingStates.setTimestampOffset;
+    },
+
+    dismissSetTimestampOffsetError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.setTimestampOffset.taskId = null;
+      state.loadingStates.setTimestampOffset.errors.splice(index, 1);
+    },
   },
 });
 
@@ -538,6 +582,13 @@ export const {
   deleteProjectLabelTaskSuccess,
   deleteProjectLabelTaskFailure,
   dismissDeleteProjectLabelTaskError,
+
+  setTimestampOffsetStart,
+  setTimestampOffsetUpdate,
+  setTimestampOffsetSuccess,
+  setTimestampOffsetFailure,
+  clearSetTimestampOffsetTask,
+  dismissSetTimestampOffsetError,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -666,6 +717,22 @@ export const fetchTask = (taskId) => {
                 dispatch(fetchProjects({ _ids: [selectedProj._id] }));
               },
               FAIL: (res) => dispatch(deleteProjectLabelTaskFailure(res)),
+            },
+            SetTimestampOffsetBatch: {
+              COMPLETE: () => {
+                const filters = getState().filters.activeFilters;
+                dispatch(setTimestampOffsetSuccess());
+                dispatch(fetchImages(filters));
+              },
+              FAIL: (res) => dispatch(setTimestampOffsetFailure(res)),
+            },
+            SetTimestampOffsetByFilter: {
+              COMPLETE: () => {
+                const filters = getState().filters.activeFilters;
+                dispatch(setTimestampOffsetSuccess());
+                dispatch(fetchImages(filters));
+              },
+              FAIL: (res) => dispatch(setTimestampOffsetFailure(res)),
             },
           };
 
@@ -936,6 +1003,44 @@ export const deleteImagesTask = ({ imageIds = [], filters = null }) => {
   };
 };
 
+// set timestamp offset thunk
+export const setTimestampOffsetTask = ({ imageIds = [], filters = null, offsetMs }) => {
+  /**
+   * Sets timestamp offset for images by either imageIds or by filters
+   * @param {Array} imageIds - array of image ids (for single image or batch)
+   * @param {Object} filters - filters to apply timestamp offset by
+   * @param {Number} offsetMs - offset in milliseconds to apply
+   */
+  return async (dispatch, getState) => {
+    try {
+      dispatch(setTimestampOffsetStart());
+      const currentUser = await Auth.currentAuthenticatedUser();
+      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+      const projects = getState().projects.projects;
+      const selectedProj = projects.find((proj) => proj.selected);
+      if (token && selectedProj) {
+        if (filters !== null) {
+          const res = await call({
+            projId: selectedProj._id,
+            request: 'setTimestampOffsetByFilterTask',
+            input: { filters, offsetMs },
+          });
+          dispatch(setTimestampOffsetUpdate({ taskId: res.setTimestampOffsetByFilterTask._id }));
+        } else {
+          const res = await call({
+            projId: selectedProj._id,
+            request: 'setTimestampOffsetBatchTask',
+            input: { imageIds, offsetMs },
+          });
+          dispatch(setTimestampOffsetUpdate({ taskId: res.setTimestampOffsetBatchTask._id }));
+        }
+      }
+    } catch (err) {
+      dispatch(setTimestampOffsetFailure(err));
+    }
+  };
+};
+
 export const selectImagesStats = (state) => state.tasks.imagesStats;
 export const selectStatsLoading = (state) => state.tasks.loadingStates.stats;
 export const selectStatsErrors = (state) => state.tasks.loadingStates.stats.errors;
@@ -961,6 +1066,10 @@ export const selectDeleteProjectLabelLoading = (state) =>
   state.tasks.loadingStates.deleteProjectLabel;
 export const selectDeleteProjectLabelErrors = (state) =>
   state.tasks.loadingStates.deleteProjectLabel.errors;
+export const selectSetTimestampOffsetLoading = (state) =>
+  state.tasks.loadingStates.setTimestampOffset;
+export const selectSetTimestampOffsetErrors = (state) =>
+  state.tasks.loadingStates.setTimestampOffset.errors;
 
 export const selectBurstsStats = (state) => state.tasks.burstsStats;
 export const selectBurstsStatsLoading = (state) => state.tasks.loadingStates.burstsStats;

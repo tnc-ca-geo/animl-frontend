@@ -304,6 +304,46 @@ const queries = {
     };
   },
 
+  setTimestampOffsetBatchTask: ({ imageIds, offsetMs }) => {
+    return {
+      template: `
+        mutation SetTimestampOffsetBatchTask($input: SetTimestampOffsetBatchTaskInput!) {
+          setTimestampOffsetBatchTask(input: $input) {
+            _id
+            type
+            status
+          }
+        }
+      `,
+      variables: {
+        input: {
+          imageIds,
+          offsetMs,
+        },
+      },
+    };
+  },
+
+  setTimestampOffsetByFilterTask: ({ filters, offsetMs }) => {
+    return {
+      template: `
+        mutation SetTimestampOffsetByFilterTask($input: SetTimestampOffsetByFilterTaskInput!) {
+          setTimestampOffsetByFilterTask(input: $input) {
+            _id
+            type
+            status
+          }
+        }
+      `,
+      variables: {
+        input: {
+          filters,
+          offsetMs,
+        },
+      },
+    };
+  },
+
   getImages: ({ filters, pageInfo, page }) => ({
     template: `
       query GetImages($input: QueryImagesInput!) {

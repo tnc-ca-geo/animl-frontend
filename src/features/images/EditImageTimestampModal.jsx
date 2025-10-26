@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import DateTimePicker from '../../components/DateTimePicker.jsx';
+import {
+  setTimestampOffsetTask,
+  fetchTask,
+  selectSetTimestampOffsetLoading,
+} from '../tasks/tasksSlice.js';
+import { selectActiveFilters } from '../filters/filtersSlice.js';
 
 const RadioGroup = styled('div', {
   display: 'grid',
@@ -38,7 +45,11 @@ const timestampSchema = Yup.object().shape({
   }).required('Timezone is required'),
 });
 
-const EditImageTimestampModal = ({ handleClose, image, filters }) => {
+const EditImageTimestampModal = ({ handleClose, image }) => {
+  const dispatch = useDispatch();
+  const activeFilters = useSelector(selectActiveFilters);
+  const setTimestampOffsetLoading = useSelector(selectSetTimestampOffsetLoading);
+  const taskStartedRef = useRef(false);
 
   // Parse current date/time for initial values
   // If we have an image with a dateTimeOriginal, use that; otherwise use current time
@@ -53,23 +64,76 @@ const EditImageTimestampModal = ({ handleClose, image, filters }) => {
     timezone: { value: defaultTz, label: defaultTz },
   };
 
-  const handleSubmit = (values) => {
-    console.log('Timestamp to apply:', values.datetime.toISOString());
-    console.log('Timezone:', values.timezone.value);
-    console.log('Apply to:', values.applyTo);
-
-    if (values.applyTo === 'filtered') {
-      console.log('Current filters:', filters);
-    } else if (values.applyTo === 'deployment') {
-      console.log('Deployment ID:', image?.deploymentId);
-    } else if (values.applyTo === 'single') {
-      console.log('Image ID:', image?._id);
+  // Track when task starts
+  useEffect(() => {
+    if (setTimestampOffsetLoading.isLoading && setTimestampOffsetLoading.taskId) {
+      taskStartedRef.current = true;
     }
+  }, [setTimestampOffsetLoading.isLoading, setTimestampOffsetLoading.taskId]);
 
-    // TODO: Dispatch action to update image timestamp(s)
-    // This would typically dispatch a Redux action or call an API
+  // Poll for task completion
+  useEffect(() => {
+    if (setTimestampOffsetLoading.isLoading && setTimestampOffsetLoading.taskId) {
+      dispatch(fetchTask(setTimestampOffsetLoading.taskId));
+    }
+  }, [setTimestampOffsetLoading, dispatch]);
 
-    handleClose();
+  // Close modal when task completes successfully
+  useEffect(() => {
+    if (
+      taskStartedRef.current &&
+      !setTimestampOffsetLoading.isLoading &&
+      setTimestampOffsetLoading.taskId === null &&
+      !setTimestampOffsetLoading.errors
+    ) {
+      handleClose();
+    }
+  }, [
+    setTimestampOffsetLoading.isLoading,
+    setTimestampOffsetLoading.taskId,
+    setTimestampOffsetLoading.errors,
+    handleClose,
+  ]);
+
+  const handleSubmit = (values) => {
+    // Calculate offset in milliseconds
+    // The offset is the difference between the new timestamp and the original image timestamp
+    const originalTimestamp = new Date(image.dateTimeOriginal).getTime();
+    const newTimestamp = values.datetime.getTime();
+    const offsetMs = newTimestamp - originalTimestamp;
+
+    if (values.applyTo === 'single') {
+      // Apply to single image using batch task
+      dispatch(
+        setTimestampOffsetTask({
+          imageIds: [image._id],
+          filters: null,
+          offsetMs,
+        })
+      );
+    } else if (values.applyTo === 'deployment') {
+      // Apply to all images in deployment using filter task
+      const deploymentFilters = {
+        ...activeFilters,
+        deployments: [image.deploymentId],
+      };
+      dispatch(
+        setTimestampOffsetTask({
+          imageIds: [],
+          filters: deploymentFilters,
+          offsetMs,
+        })
+      );
+    } else if (values.applyTo === 'filtered') {
+      // Apply to all currently filtered images
+      dispatch(
+        setTimestampOffsetTask({
+          imageIds: [],
+          filters: activeFilters,
+          offsetMs,
+        })
+      );
+    }
   };
 
   return (
@@ -151,8 +215,12 @@ const EditImageTimestampModal = ({ handleClose, image, filters }) => {
               >
                 Cancel
               </Button>
-              <Button type="submit" size="large" disabled={!isValid}>
-                Save changes
+              <Button
+                type="submit"
+                size="large"
+                disabled={!isValid || setTimestampOffsetLoading.isLoading}
+              >
+                {setTimestampOffsetLoading.isLoading ? 'Saving...' : 'Save changes'}
               </Button>
             </ButtonRow>
           </Form>
