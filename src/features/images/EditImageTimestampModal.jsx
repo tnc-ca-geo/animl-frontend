@@ -52,8 +52,8 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   const taskStartedRef = useRef(false);
 
   // Parse current date/time for initial values
-  // If we have an image with a dateTimeOriginal, use that; otherwise use current time
-  const imageDate = image?.dateTimeOriginal ? new Date(image.dateTimeOriginal) : new Date();
+  // Use adjusted datetime (resolver returns adjusted or falls back to original)
+  const imageDate = image?.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
 
   // Default timezone - use image timezone if available, otherwise UTC
   const defaultTz = image?.timezone || 'UTC';

@@ -46,6 +46,7 @@ const objectFields = `
 const imageFields = `
   _id
   dateTimeOriginal
+  dateTimeAdjusted
   timezone
   dateAdded
   cameraId
