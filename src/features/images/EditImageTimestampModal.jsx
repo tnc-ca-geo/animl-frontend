@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import DateTimePicker from '../../components/DateTimePicker.jsx';
+import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import {
   setTimestampOffsetTask,
   fetchTask,
@@ -138,6 +139,11 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
 
   return (
     <FormWrapper>
+      {setTimestampOffsetLoading.isLoading && (
+        <SpinnerOverlay>
+          <SimpleSpinner />
+        </SpinnerOverlay>
+      )}
       <Formik
         initialValues={initialValues}
         validationSchema={timestampSchema}
