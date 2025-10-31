@@ -25,11 +25,9 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
     ...timeZonesNames.map((tz) => ({ value: tz, label: tz }))
   ];
 
-  // Convert datetime to format for datetime-local input (YYYY-MM-DDTHH:mm:ss)
   const formatForInput = (date) => {
     if (!date) return '';
     const m = moment(date);
-    // Format: YYYY-MM-DDTHH:mm:ss (local time for the input)
     return m.format('YYYY-MM-DDTHH:mm:ss');
   };
 
@@ -37,9 +35,6 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
     const value = e.target.value;
     if (!value) return;
 
-    // Parse the datetime string AS IF it's in the selected timezone
-    // The datetime-local input gives us "YYYY-MM-DDTHH:mm:ss"
-    // We interpret this in the context of the selected timezone
     const tz = timezone?.value || 'UTC';
     const newDateTime = moment.tz(value, tz).toDate();
     onDateTimeChange(newDateTime);

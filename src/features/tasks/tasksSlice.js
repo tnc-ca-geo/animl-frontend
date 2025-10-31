@@ -1008,7 +1008,7 @@ export const setTimestampOffsetTask = ({ imageIds = [], filters = null, offsetMs
   /**
    * Sets timestamp offset for images by either imageIds or by filters
    * @param {Array} imageIds - array of image ids (for single image or batch)
-   * @param {Object} filters - filters to apply timestamp offset by
+   * @param {Object} filters - filters on which to apply offset
    * @param {Number} offsetMs - offset in milliseconds to apply
    */
   return async (dispatch, getState) => {

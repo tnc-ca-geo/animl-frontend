@@ -11,6 +11,7 @@ import {
   setTimestampOffsetTask,
   fetchTask,
   selectSetTimestampOffsetLoading,
+  clearSetTimestampOffsetTask,
 } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 
@@ -52,11 +53,15 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   const setTimestampOffsetLoading = useSelector(selectSetTimestampOffsetLoading);
   const taskStartedRef = useRef(false);
 
-  // Parse current date/time for initial values
-  // Use adjusted datetime (resolver returns adjusted or falls back to original)
+  // Clean up task state when modal unmounts
+  useEffect(() => {
+    return () => {
+      dispatch(clearSetTimestampOffsetTask());
+    };
+  }, [dispatch]);
+
   const imageDate = image?.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
 
-  // Default timezone - use image timezone if available, otherwise UTC
   const defaultTz = image?.timezone || 'UTC';
 
   const initialValues = {
@@ -97,14 +102,11 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   ]);
 
   const handleSubmit = (values) => {
-    // Calculate offset in milliseconds
-    // The offset is the difference between the new timestamp and the original image timestamp
     const originalTimestamp = new Date(image.dateTimeOriginal).getTime();
     const newTimestamp = values.datetime.getTime();
     const offsetMs = newTimestamp - originalTimestamp;
 
     if (values.applyTo === 'single') {
-      // Apply to single image using batch task
       dispatch(
         setTimestampOffsetTask({
           imageIds: [image._id],
@@ -113,9 +115,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
         })
       );
     } else if (values.applyTo === 'deployment') {
-      // Apply to all images in deployment using filter task
       const deploymentFilters = {
-        ...activeFilters,
         deployments: [image.deploymentId],
       };
       dispatch(
@@ -126,7 +126,6 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
         })
       );
     } else if (values.applyTo === 'filtered') {
-      // Apply to all currently filtered images
       dispatch(
         setTimestampOffsetTask({
           imageIds: [],
