@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import Button from '../../components/Button.jsx';
 import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
 import DateTimePicker from '../../components/DateTimePicker.jsx';
+import Callout from '../../components/Callout.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import {
   setTimestampOffsetTask,
@@ -41,10 +42,6 @@ const RadioLabel = styled('span', {
 const timestampSchema = Yup.object().shape({
   applyTo: Yup.string().required(),
   datetime: Yup.date().required('Date and time are required'),
-  timezone: Yup.object().shape({
-    value: Yup.string().required(),
-    label: Yup.string().required(),
-  }).required('Timezone is required'),
 });
 
 const EditImageTimestampModal = ({ handleClose, image }) => {
@@ -61,13 +58,13 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   }, [dispatch]);
 
   const imageDate = image?.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
-
-  const defaultTz = image?.timezone || 'UTC';
+  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const imageTimezone = image?.timezone || 'UTC';
+  const timezonesMatch = browserTimezone === imageTimezone;
 
   const initialValues = {
     applyTo: 'single',
     datetime: imageDate,
-    timezone: { value: defaultTz, label: defaultTz },
   };
 
   // Track when task starts
@@ -196,11 +193,29 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
               </RadioLabel>
             </RadioGroup>
 
+            <Callout type="info" title="Check deployment timezone">
+              <p>
+                Is <strong>{imageTimezone}</strong> the correct timezone for{' '}
+                <strong>{image?.deploymentName || 'this deployment'}</strong>? Before adjusting
+                the Created Date, make sure the Deployment&apos;s timezone is set correctly. If it&apos;s
+                inaccurate, changing the Deployment&apos;s timezone may fix the Created Date.
+              </p>
+            </Callout>
+
+            {!timezonesMatch && (
+              <Callout type="info" title="Account for your current timezone">
+                <p>
+                  Animl displays timestamps in the timezone your browser is currently in{' '}
+                  (<strong>{browserTimezone}</strong>). If the timestamps in Animl don&apos;t match
+                  the timestamps in your image, it may be because you are in a different timezone
+                  than this image&apos;s Deployment (<strong>{imageTimezone}</strong>).
+                </p>
+              </Callout>
+            )}
+
             <DateTimePicker
               datetime={values.datetime}
-              timezone={values.timezone}
               onDateTimeChange={(newDateTime) => setFieldValue('datetime', newDateTime)}
-              onTimezoneChange={(newTimezone) => setFieldValue('timezone', newTimezone)}
             />
 
             <ButtonRow>

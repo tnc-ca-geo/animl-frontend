@@ -1,9 +1,7 @@
 import React from 'react';
 import moment from 'moment-timezone';
-import { timeZonesNames } from '@vvo/tzdb';
 import { styled } from '../theme/stitches.config.js';
 import { StandAloneInput } from './Form.jsx';
-import SelectField from './SelectField.jsx';
 
 const Container = styled('div', {
   display: 'flex',
@@ -19,12 +17,7 @@ const DateTimeInput = styled(StandAloneInput, {
   },
 });
 
-const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange }) => {
-  const tzOptions = [
-    { value: 'UTC', label: 'UTC' },
-    ...timeZonesNames.map((tz) => ({ value: tz, label: tz }))
-  ];
-
+const DateTimePicker = ({ datetime, onDateTimeChange }) => {
   const formatForInput = (date) => {
     if (!date) return '';
     const m = moment(date);
@@ -35,8 +28,7 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
     const value = e.target.value;
     if (!value) return;
 
-    const tz = timezone?.value || 'UTC';
-    const newDateTime = moment.tz(value, tz).toDate();
+    const newDateTime = moment(value).toDate();
     onDateTimeChange(newDateTime);
   };
 
@@ -50,18 +42,6 @@ const DateTimePicker = ({ datetime, timezone, onDateTimeChange, onTimezoneChange
           step="1"
           value={formatForInput(datetime)}
           onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <SelectField
-          name="timezone"
-          label="Timezone"
-          value={timezone}
-          onChange={(name, value) => onTimezoneChange(value)}
-          options={tzOptions}
-          isSearchable={true}
-          menuPlacement="auto"
         />
       </div>
     </Container>
