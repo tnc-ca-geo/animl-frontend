@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik, Form } from 'formik';
 import { styled } from '@stitches/react';
@@ -16,13 +16,6 @@ const ManageUsersEditForm = () => {
   const selectedUser = useSelector(selectSelectedUser);
 
   const { username, roles } = users.find(({ username }) => selectedUser === username);
-
-  // handle closing form
-  useEffect(() => {
-    return () => {
-      dispatch(cancel());
-    };
-  }, [dispatch]);
 
   return (
     <FormWrapper>
