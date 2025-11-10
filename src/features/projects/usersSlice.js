@@ -81,8 +81,6 @@ export const usersSlice = createSlice({
       state.loadingStates.users = ls;
       state.mode = 'list';
 
-      console.log('addUserSuccess payload: ', payload);
-
       state.users = [
         ...state.users,
         {
@@ -90,8 +88,6 @@ export const usersSlice = createSlice({
           username: payload.username,
         },
       ];
-
-      console.log('users: ', state.users);
     },
 
     addUserFailure: (state, { payload }) => {
@@ -117,6 +113,7 @@ export const usersSlice = createSlice({
     cancel: (state) => {
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.users = ls;
+      state.selectedUser = null;
       state.mode = 'list';
     },
 
