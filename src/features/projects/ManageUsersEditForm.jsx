@@ -19,7 +19,10 @@ const ManageUsersEditForm = () => {
 
   return (
     <FormWrapper>
-      <Formik initialValues={{ username, roles }} onSubmit={(values) => dispatch(updateUser(values))}>
+      <Formik
+        initialValues={{ username, roles }}
+        onSubmit={(values) => dispatch(updateUser(values))}
+      >
         {({ values, setFieldValue }) => (
           <Form>
             <FormSubheader>Edit user: {username}</FormSubheader>
@@ -41,7 +44,10 @@ const ManageUsersEditForm = () => {
                           setFieldValue('roles', vals);
                         }}
                       />
-                      <CheckboxLabel checked={values.roles.includes('member')} active={values.roles.includes('member')}>
+                      <CheckboxLabel
+                        checked={values.roles.includes('member')}
+                        active={values.roles.includes('member')}
+                      >
                         Manager
                       </CheckboxLabel>
                     </label>
@@ -60,7 +66,10 @@ const ManageUsersEditForm = () => {
                           setFieldValue('roles', vals);
                         }}
                       />
-                      <CheckboxLabel checked={values.roles.includes('member')} active={values.roles.includes('member')}>
+                      <CheckboxLabel
+                        checked={values.roles.includes('member')}
+                        active={values.roles.includes('member')}
+                      >
                         Member
                       </CheckboxLabel>
                     </label>

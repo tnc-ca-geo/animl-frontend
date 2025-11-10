@@ -5,14 +5,21 @@ import { styled } from '@stitches/react';
 import * as Yup from 'yup';
 
 import { createUser, cancel } from './usersSlice.js';
-import { FormWrapper, FormSubheader, FieldRow, FormFieldWrapper, FormError, ButtonRow } from '../../components/Form';
+import {
+  FormWrapper,
+  FormSubheader,
+  FieldRow,
+  FormFieldWrapper,
+  FormError,
+  ButtonRow,
+} from '../../components/Form';
 import Checkbox from '../../components/Checkbox';
 import { CheckboxLabel } from '../../components/CheckboxLabel';
 import { CheckboxWrapper } from '../../components/CheckboxWrapper';
 import Button from '../../components/Button';
 
 const createUserSchema = Yup.object().shape({
-  username: Yup.string().email('Enter an email address').required("Enter the user's email address."),
+  email: Yup.string().email('Enter an email address').required("Enter the user's email address."),
   roles: Yup.array().min(1, 'Select at least one role').required('Select at least one role'),
 });
 
@@ -22,7 +29,7 @@ const ManageUsersAddForm = () => {
   return (
     <FormWrapper>
       <Formik
-        initialValues={{ username: '', roles: [] }}
+        initialValues={{ email: '', roles: [] }}
         validationSchema={createUserSchema}
         onSubmit={(values) => dispatch(createUser(values))}
       >
@@ -32,9 +39,9 @@ const ManageUsersAddForm = () => {
 
             <FieldRow>
               <FormFieldWrapper>
-                <label htmlFor="username">E-Mail</label>
-                <Field type="email" name="username" id="username" />
-                {!!errors.username && touched.username && <FormError>{errors.username}</FormError>}
+                <label htmlFor="email">E-Mail</label>
+                <Field type="email" name="email" id="email" />
+                {!!errors.email && touched.email && <FormError>{errors.email}</FormError>}
               </FormFieldWrapper>
             </FieldRow>
             <FieldRow>
