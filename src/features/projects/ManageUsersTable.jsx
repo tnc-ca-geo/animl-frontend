@@ -39,13 +39,14 @@ const ManageUsersTable = () => {
   }, []);
 
   const userSorted = useMemo(
-    () => [...users].sort((u1, u2) => (u1.email.toLowerCase() > u2.email.toLowerCase() ? 1 : -1)),
+    () =>
+      [...users].sort((u1, u2) => (u1.username.toLowerCase() > u2.username.toLowerCase() ? 1 : -1)),
     [users],
   );
 
-  const handleResendTempPassword = (email) => {
-    dispatch(resendTempPassword({ username: email }));
-    setUsersClicked([...usersClicked, email]);
+  const handleResendTempPassword = (username) => {
+    dispatch(resendTempPassword({ username }));
+    setUsersClicked([...usersClicked, username]);
   };
 
   return (
@@ -65,9 +66,9 @@ const ManageUsersTable = () => {
             </tr>
           </thead>
           <tbody>
-            {userSorted.map(({ email, roles, status }) => (
-              <TableRow key={email}>
-                <TableCell>{email}</TableCell>
+            {userSorted.map(({ username, roles, status }) => (
+              <TableRow key={username}>
+                <TableCell>{username}</TableCell>
                 <TableCell>{roles.join(', ')}</TableCell>
                 {hasRole(currentUserRoles, MANAGE_USERS_ROLES) && (
                   <TableCell>
@@ -76,7 +77,7 @@ const ManageUsersTable = () => {
                         <IconButton
                           variant="ghost"
                           size="med"
-                          onClick={() => dispatch(editUser(email))}
+                          onClick={() => dispatch(editUser(username))}
                         >
                           <Pencil1Icon />
                         </IconButton>
@@ -92,10 +93,10 @@ const ManageUsersTable = () => {
                           <IconButton
                             variant="ghost"
                             size="med"
-                            onClick={() => handleResendTempPassword(email)}
-                            disabled={usersClicked.includes(email) && !hasErrors}
+                            onClick={() => handleResendTempPassword(username)}
+                            disabled={usersClicked.includes(username) && !hasErrors}
                           >
-                            {usersClicked.includes(email) && !hasErrors ? (
+                            {usersClicked.includes(username) && !hasErrors ? (
                               <CheckIcon />
                             ) : (
                               <ResetIcon />
