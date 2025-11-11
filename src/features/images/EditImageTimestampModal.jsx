@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { Formik, Form } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import moment from 'moment-timezone';
 import Button from '../../components/Button.jsx';
-import { FormWrapper, ButtonRow, HelperText } from '../../components/Form.jsx';
-import DateTimePicker from '../../components/DateTimePicker.jsx';
+import { FormWrapper, ButtonRow, HelperText, StandAloneInput } from '../../components/Form.jsx';
+import DatePickerWithFormik from '../../components/DatePicker.jsx';
 import Callout from '../../components/Callout.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import {
@@ -39,9 +40,42 @@ const RadioLabel = styled('span', {
   cursor: 'pointer',
 });
 
+const DateTimeRow = styled('div', {
+  display: 'flex',
+  gap: '$3',
+  marginBottom: '$3',
+});
+
+const DateTimeField = styled('div', {
+  flex: 1,
+  '& .SingleDatePicker': {
+    width: '100%',
+  },
+  '& .SingleDatePickerInput': {
+    width: '100%',
+  },
+  '& .DateInput': {
+    width: '100%',
+  },
+  '& .DateInput_input': {
+    width: '100%',
+    fontFamily: '$mono',
+    fontWeight: '$2',
+  },
+});
+
+const TimeInput = styled(StandAloneInput, {
+  fontSize: '$3',
+  padding: '$2 $3',
+  width: '100%',
+  fontFamily: '$mono',
+  fontWeight: '$2',
+});
+
 const timestampSchema = Yup.object().shape({
   applyTo: Yup.string().required(),
-  datetime: Yup.date().required('Date and time are required'),
+  startDate: Yup.date().required('Date is required'),
+  time: Yup.string().required('Time is required'),
 });
 
 const EditImageTimestampModal = ({ handleClose, image }) => {
@@ -57,14 +91,15 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
     };
   }, [dispatch]);
 
-  const imageDate = image?.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
+  const imageDateTime = image?.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const imageTimezone = image?.timezone || 'UTC';
   const timezonesMatch = browserTimezone === imageTimezone;
 
   const initialValues = {
     applyTo: 'single',
-    datetime: imageDate,
+    startDate: moment(imageDateTime).toISOString(),
+    time: moment(imageDateTime).format('HH:mm:ss'),
   };
 
   // Track when task starts
@@ -100,7 +135,15 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
 
   const handleSubmit = (values) => {
     const originalTimestamp = new Date(image.dateTimeOriginal).getTime();
-    const newTimestamp = values.datetime.getTime();
+
+    // Combine date and time
+    const [hours, minutes, seconds] = values.time.split(':').map(Number);
+    const newDateTime = moment(values.startDate)
+      .hour(hours)
+      .minute(minutes)
+      .second(seconds || 0)
+      .toDate();
+    const newTimestamp = newDateTime.getTime();
     const offsetMs = newTimestamp - originalTimestamp;
 
     if (values.applyTo === 'single') {
@@ -213,10 +256,23 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
               </Callout>
             )}
 
-            <DateTimePicker
-              datetime={values.datetime}
-              onDateTimeChange={(newDateTime) => setFieldValue('datetime', newDateTime)}
-            />
+            <DateTimeRow>
+              <DateTimeField>
+                <label htmlFor="startDate">Date</label>
+                <Field component={DatePickerWithFormik} />
+              </DateTimeField>
+
+              <DateTimeField>
+                <label htmlFor="time">Time</label>
+                <TimeInput
+                  id="time"
+                  type="time"
+                  step="1"
+                  value={values.time}
+                  onChange={(e) => setFieldValue('time', e.target.value)}
+                />
+              </DateTimeField>
+            </DateTimeRow>
 
             <ButtonRow>
               <Button
