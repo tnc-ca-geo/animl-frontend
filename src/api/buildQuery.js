@@ -46,6 +46,7 @@ const objectFields = `
 const imageFields = `
   _id
   dateTimeOriginal
+  dateTimeAdjusted
   timezone
   dateAdded
   cameraId
@@ -299,6 +300,46 @@ const queries = {
       variables: {
         input: {
           filters: filters,
+        },
+      },
+    };
+  },
+
+  setTimestampOffsetBatchTask: ({ imageIds, offsetMs }) => {
+    return {
+      template: `
+        mutation SetTimestampOffsetBatchTask($input: SetTimestampOffsetBatchTaskInput!) {
+          setTimestampOffsetBatchTask(input: $input) {
+            _id
+            type
+            status
+          }
+        }
+      `,
+      variables: {
+        input: {
+          imageIds,
+          offsetMs,
+        },
+      },
+    };
+  },
+
+  setTimestampOffsetByFilterTask: ({ filters, offsetMs }) => {
+    return {
+      template: `
+        mutation SetTimestampOffsetByFilterTask($input: SetTimestampOffsetByFilterTaskInput!) {
+          setTimestampOffsetByFilterTask(input: $input) {
+            _id
+            type
+            status
+          }
+        }
+      `,
+      variables: {
+        input: {
+          filters,
+          offsetMs,
         },
       },
     };

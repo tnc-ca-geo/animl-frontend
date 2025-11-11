@@ -63,6 +63,7 @@ const initialState = {
   modalOpen: false,
   modalContent: null,
   selectedCamera: null,
+  selectedImage: null,
   globalBreakpoint: null,
   automationRules: [],
 };
@@ -447,6 +448,10 @@ export const projectsSlice = createSlice({
       state.selectedCamera = payload;
     },
 
+    setSelectedImage: (state, { payload }) => {
+      state.selectedImage = payload;
+    },
+
     setGlobalBreakpoint: (state, { payload }) => {
       state.globalBreakpoint = payload;
     },
@@ -544,6 +549,7 @@ export const {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
+  setSelectedImage,
 
   setGlobalBreakpoint,
 } = projectsSlice.actions;
@@ -950,6 +956,7 @@ export const selectModelsLoadingState = (state) => state.projects.loadingStates.
 export const selectModalOpen = (state) => state.projects.modalOpen;
 export const selectModalContent = (state) => state.projects.modalContent;
 export const selectSelectedCamera = (state) => state.projects.selectedCamera;
+export const selectSelectedImage = (state) => state.projects.selectedImage;
 export const selectGlobalBreakpoint = (state) => state.projects.globalBreakpoint;
 export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
