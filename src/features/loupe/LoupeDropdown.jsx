@@ -14,7 +14,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import DeleteImagesAlert from '../images/DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 import { selectFocusIndex, setSelectedImageIndices } from '../review/reviewSlice.js';
-import { setModalOpen, setModalContent, setSelectedImage } from '../projects/projectsSlice.js';
+import { setModalOpen, setModalContent } from '../projects/projectsSlice.js';
 import { Trash2, Clock } from 'lucide-react';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
@@ -33,7 +33,6 @@ const LoupeDropdown = ({ image }) => {
   };
 
   const handleEditTimestampClick = () => {
-    dispatch(setSelectedImage(image));
     dispatch(setModalOpen(true));
     dispatch(setModalContent('edit-image-timestamp-form'));
   };

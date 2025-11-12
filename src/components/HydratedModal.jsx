@@ -32,10 +32,9 @@ import {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
-  setSelectedImage,
-  selectSelectedImage,
   clearAutomationRules,
 } from '../features/projects/projectsSlice';
+import { selectFocusIndex, selectWorkingImages } from '../features/review/reviewSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 import {
   ManageLabelsAndTagsModal,
@@ -48,7 +47,9 @@ const HydratedModal = () => {
   const modalOpen = useSelector(selectModalOpen);
   const modalContent = useSelector(selectModalContent);
   const activeFilters = useSelector(selectActiveFilters);
-  const selectedImage = useSelector(selectSelectedImage);
+  const focusIndex = useSelector(selectFocusIndex);
+  const workingImages = useSelector(selectWorkingImages);
+  const selectedImage = workingImages[focusIndex.image];
 
   // loading states of async tasks
   const statsLoading = useSelector(selectStatsLoading);
@@ -149,12 +150,9 @@ const HydratedModal = () => {
     },
     'edit-image-timestamp-form': {
       title: 'Edit Image Timestamp',
-      size: 'sm',
+      size: 'md',
       content: <EditImageTimestampModal filters={activeFilters} image={selectedImage} />,
-      callBackOnClose: () => {
-        dispatch(setSelectedImage(null));
-        return true;
-      },
+      callBackOnClose: () => true,
     },
   };
 
