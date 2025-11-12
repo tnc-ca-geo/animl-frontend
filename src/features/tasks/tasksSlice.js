@@ -496,10 +496,27 @@ export const tasksSlice = createSlice({
     setTimestampOffsetFailure: (state, { payload }) => {
       let ls = state.loadingStates.setTimestampOffset;
       ls.isLoading = false;
+
       // Handle both task failure (payload.task.output.error) and API error (payload)
-      ls.errors = payload.task?.output?.error
-        ? [payload.task.output.error]
-        : [payload];
+      const error = payload.task?.output?.error || payload;
+
+      // GraphQL errors come in an array
+      if (Array.isArray(payload)) {
+        ls.errors = payload.map(err => ({
+          message: err.message || 'An error occurred',
+          extensions: {
+            code: err.extensions?.code || 'UNKNOWN_ERROR'
+          }
+        }));
+      } else {
+        // Single error case (network, auth issues, etc)
+        ls.errors = [{
+          message: error.message || error.toString(),
+          extensions: {
+            code: error.extensions?.code || error.code || 'UNKNOWN_ERROR'
+          }
+        }];
+      }
     },
 
     clearSetTimestampOffsetTask: (state) => {

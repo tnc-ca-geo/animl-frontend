@@ -91,9 +91,19 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
     };
   }, [dispatch]);
 
-  const imageDateTime = image?.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
+  // If no image is provided, show a message. This should never happen but I managed
+  // to trigger this state while testing.
+  if (!image) {
+    return (
+      <FormWrapper>
+        <HelperText>No image selected. Please select an image first.</HelperText>
+      </FormWrapper>
+    );
+  }
+
+  const imageDateTime = image.dateTimeAdjusted ? new Date(image.dateTimeAdjusted) : new Date();
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const imageTimezone = image?.timezone || 'UTC';
+  const imageTimezone = image.timezone || 'UTC';
   const timezonesMatch = browserTimezone === imageTimezone;
 
   const initialValues = {
