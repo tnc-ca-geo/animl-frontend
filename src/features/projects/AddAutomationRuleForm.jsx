@@ -260,7 +260,6 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                         label: `${model}`,
                       }))}
                       isSearchable={false}
-                      // maxMenuHeight={'250px'}
                     />
                   </FormFieldWrapper>
                 )}
