@@ -238,7 +238,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                     <SelectField
                       name="action.model"
                       label="Model"
-                      menuPlacement="top"
+                      menuPlacement="bottom"
                       value={values.action.model}
                       onChange={(name, value) => {
                         setFieldValue(name, value);
@@ -260,6 +260,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                         label: `${model}`,
                       }))}
                       isSearchable={false}
+                      // maxMenuHeight={'250px'}
                     />
                   </FormFieldWrapper>
                 )}

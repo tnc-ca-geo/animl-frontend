@@ -161,6 +161,7 @@ const ExportModal = () => {
           onChange={(_, { value }) => setTimezone(value)}
           isMulti={false}
           onBlur={() => {}}
+          maxMenuHeight={'150px'}
         />
         <br />
         <label style={{ display: 'flex', flexDirection: 'row' }}>

@@ -71,6 +71,7 @@ const SelectField = ({
   touched,
   isSearchable,
   isMulti,
+  maxMenuHeight,
   menuPlacement = 'bottom',
 }) => {
   const handleChange = (value) => {
@@ -101,6 +102,7 @@ const SelectField = ({
         classNamePrefix="react-select"
         isSearchable={isSearchable}
         isMulti={isMulti}
+        maxMenuHeight={maxMenuHeight}
         menuPlacement={menuPlacement}
       />
       {!!error && touched && <FormError>{error}</FormError>}

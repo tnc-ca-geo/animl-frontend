@@ -188,6 +188,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                     touched={touched.timezone}
                     options={tzOptions}
                     isSearchable={true}
+                    maxMenuHeight={'200px'}
                   />
                 </FormFieldWrapper>
               </FieldRow>
