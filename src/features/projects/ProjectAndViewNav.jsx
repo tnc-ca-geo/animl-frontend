@@ -136,6 +136,7 @@ const NavigationMenuTriggerText = styled('span', {
   WebkitBoxOrient: 'vertical',
   overflowY: 'hidden',
   textOverflow: 'ellipsis',
+  lineHeight: '18px',
 });
 
 const MenuTitle = styled('div', {
