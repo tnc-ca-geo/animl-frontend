@@ -10,7 +10,7 @@ import InfoIcon from './InfoIcon';
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
-    height: '55px',
+    minHeight: '55px',
     boxSizing: 'border-box',
     border: '1px solid',
     borderColor: 'var(--colors-border) !important',
@@ -71,7 +71,8 @@ const SelectField = ({
   touched,
   isSearchable,
   isMulti,
-  menuPlacement = 'bottom',
+  maxMenuHeight = 400,
+  menuPlacement = 'auto',
 }) => {
   const handleChange = (value) => {
     onChange(name, value);
@@ -101,6 +102,7 @@ const SelectField = ({
         classNamePrefix="react-select"
         isSearchable={isSearchable}
         isMulti={isMulti}
+        maxMenuHeight={maxMenuHeight}
         menuPlacement={menuPlacement}
       />
       {!!error && touched && <FormError>{error}</FormError>}
