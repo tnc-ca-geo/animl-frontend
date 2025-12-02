@@ -91,6 +91,11 @@ const LinkText = styled('p', {
   color: '$textMedium',
   lineHeight: 1.4,
   fontWeight: 'initial',
+  display: '-webkit-box',
+  WebkitLineClamp: 3,
+  WebkitBoxOrient: 'vertical',
+  overflowY: 'clip',
+  textOverflow: 'ellipsis',
 });
 
 const ContentListItem = React.forwardRef(function ContentListItem(
@@ -123,6 +128,15 @@ const NavigationMenuTriggerViews = styled(NavigationMenuTriggerWithCaret, {
       },
     },
   },
+});
+
+const NavigationMenuTriggerText = styled('span', {
+  display: '-webkit-box',
+  WebkitLineClamp: 1,
+  WebkitBoxOrient: 'vertical',
+  overflowY: 'hidden',
+  textOverflow: 'ellipsis',
+  lineHeight: '18px',
 });
 
 const MenuTitle = styled('div', {
@@ -230,12 +244,14 @@ const ProjectAndViewNav = () => {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTriggerWithCaret onPointerMove={(e) => e.preventDefault()}>
-              {selectedProj.name}
+              <NavigationMenuTriggerText>
+                {selectedProj.name}
+              </NavigationMenuTriggerText>
             </NavigationMenuTriggerWithCaret>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Projects</MenuTitle>
               <ContentList layout="one">
-                {projects.map((proj) => (
+                {projects.toSorted((a, b) => a.name.localeCompare(b.name)).map((proj) => (
                   <ContentListItem
                     key={proj._id}
                     title={proj.name}
@@ -254,12 +270,14 @@ const ProjectAndViewNav = () => {
               onPointerMove={(e) => e.preventDefault()}
               edited={unsavedViewChanges}
             >
-              {selectedView.name}
+              <NavigationMenuTriggerText>
+                {selectedView.name}
+              </NavigationMenuTriggerText>
             </NavigationMenuTriggerViews>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Views</MenuTitle>
               <ContentList layout="two">
-                {views.map((view) => (
+                {views.toSorted((a, b) => a.name.localeCompare(b.name)).map((view) => (
                   <ContentListItem
                     key={view._id}
                     title={view.name}

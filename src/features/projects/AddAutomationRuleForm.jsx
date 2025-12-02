@@ -227,7 +227,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                     error={_.has(errors, 'action.type.value') && errors.action.type.value}
                     touched={touched.action}
                     options={[
-                      { value: 'run-inference', label: 'Run inference' },
+                      { value: 'run-inference', label: 'Request machine learning prediction' },
                       { value: 'send-alert', label: 'Send alert' },
                     ]}
                     isSearchable={false}
@@ -369,7 +369,7 @@ function ruleToVals(rule) {
   const mapValueToLabel = {
     'image-added': 'Image added',
     'label-added': 'Label added',
-    'run-inference': 'Run inference',
+    'run-inference': 'Request machine learning prediction',
     'send-alert': 'Send alert',
   };
 
