@@ -69,13 +69,14 @@ const ExportModal = () => {
     setAggregateObjects(!aggregateObjects);
   };
 
-
   const handleExportButtonClick = (e) => {
     const { isLoading, errors, noneFound } = exportLoading;
     const noErrors = !errors || errors.length === 0;
     if (!noneFound && !isLoading && noErrors) {
       const format = e.target.dataset.format;
-      dispatch(exportAnnotations({ format, filters, timezone, includeNonReviewed, aggregateObjects }));
+      dispatch(
+        exportAnnotations({ format, filters, timezone, includeNonReviewed, aggregateObjects }),
+      );
     }
   };
 
@@ -161,7 +162,7 @@ const ExportModal = () => {
           onChange={(_, { value }) => setTimezone(value)}
           isMulti={false}
           onBlur={() => {}}
-          maxMenuHeight={'150px'}
+          maxMenuHeight={200}
         />
         <br />
         <label style={{ display: 'flex', flexDirection: 'row' }}>

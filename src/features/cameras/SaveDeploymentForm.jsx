@@ -178,9 +178,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                       // take current start date, shift it (while preserving local time)
                       // to new timezone, format as ISO string and set it imperatively
                       const startDate = moment(values.startDate).tz(previousTZ);
-                      console.log('curr startDate: ', startDate.toISOString());
                       const newStartDate = startDate.tz(newTZ, true);
-                      console.log('new startDate: ', newStartDate.toISOString());
                       setFieldValue('startDate', newStartDate.toISOString());
                     }}
                     onBlur={setFieldTouched}
@@ -188,7 +186,7 @@ const SaveDeploymentForm = ({ project, cameraId, deployment, handleClose }) => {
                     touched={touched.timezone}
                     options={tzOptions}
                     isSearchable={true}
-                    maxMenuHeight={'200px'}
+                    maxMenuHeight={300}
                   />
                 </FormFieldWrapper>
               </FieldRow>

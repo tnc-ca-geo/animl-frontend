@@ -71,8 +71,8 @@ const SelectField = ({
   touched,
   isSearchable,
   isMulti,
-  maxMenuHeight,
-  menuPlacement = 'bottom',
+  maxMenuHeight = 400,
+  menuPlacement = 'auto',
 }) => {
   const handleChange = (value) => {
     onChange(name, value);
