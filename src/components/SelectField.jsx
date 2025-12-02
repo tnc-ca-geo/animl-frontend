@@ -10,7 +10,7 @@ import InfoIcon from './InfoIcon';
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
-    height: '55px',
+    minHeight: '55px',
     boxSizing: 'border-box',
     border: '1px solid',
     borderColor: 'var(--colors-border) !important',
