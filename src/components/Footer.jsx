@@ -21,11 +21,8 @@ const Footer = () => {
       </a>
       <div>
         <p>
-          Questions? Feedback? Interested in using Animl for your camera
-          trapping projects?{' '}
-          <a href="mailto:nathaniel.rindlaub@TNC.ORG?subject=Animl inquiry">
-            Contact us
-          </a>
+          Questions? Feedback? Interested in using Animl for your camera trapping projects?{' '}
+          <a href="mailto:animl@tnc.org?subject=Animl inquiry">Contact us</a>
         </p>
       </div>
       <p>© Copyright {year} The Nature Conservancy</p>
