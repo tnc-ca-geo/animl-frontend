@@ -213,7 +213,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                   <SelectField
                     name="action.type"
                     label="Action"
-                    menuPlacement="top"
+                    menuPlacement="bottom"
                     value={values.action.type}
                     onChange={(name, value) => {
                       setFieldValue(name, value);
