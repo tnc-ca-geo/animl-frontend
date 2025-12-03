@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
@@ -31,17 +31,12 @@ const SuccessToast = () => {
   const enrichedSuccesses = [
     enrichSuccesses(projectSuccessNotifs, 'projects'),
   ];
-  console.log('Enriched Successes: ', enrichedSuccesses);
+
+  // flattens all arrays into a single array
   const successNotifs = enrichedSuccesses.reduce(
     (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
     [],
   );
-  console.log('Successes: ', successNotifs);
-
-  const [open, setOpen] = useState(successNotifs && successNotifs.length);
-  useEffect(() => {
-    setOpen(successNotifs && successNotifs.length);
-  }, [setOpen, successNotifs]);
 
   const handleDismiss = (successNotif) => {
     dispatch(dismissSuccessMsgs[successNotif.entity](successNotif.index));
@@ -51,7 +46,7 @@ const SuccessToast = () => {
     <>
       {successNotifs &&
         successNotifs.map((successNotif, i) => (
-          <Toast key={i} open={open} duration={4000}>
+          <Toast key={i} duration={4000} onOpenChange={(() => handleDismiss(successNotif))}>
             <ToastTitle variant="green" css={{ marginBottom: 0 }}>
               {successNotif.title}
             </ToastTitle>
@@ -59,7 +54,7 @@ const SuccessToast = () => {
               <div>{successNotif.msg}</div>
             </ToastDescription>
             <ToastAction asChild altText="Dismiss">
-              <IconButton variant="ghost" onClick={(() => handleDismiss(successNotif))}>
+              <IconButton variant="ghost" >
                 <Cross2Icon />
               </IconButton>
             </ToastAction>

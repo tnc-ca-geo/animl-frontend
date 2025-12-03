@@ -125,6 +125,7 @@ const ErrorToast = () => {
     [],
   );
 
+  // commenting for visibility during PR review
   const [open, setOpen] = useState(errors && errors.length);
   useEffect(() => {
     setOpen(errors && errors.length);
