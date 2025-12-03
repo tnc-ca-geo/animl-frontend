@@ -16,6 +16,7 @@ const initialState = {
     errors: null,
     noneFound: false,
   },
+  successNotifs: [],
   isDeleteCameraAlertOpen: false,
 };
 
@@ -65,6 +66,10 @@ export const wirelessCamerasSlice = createSlice({
         errors: null,
         noneFound: payload.wirelessCameras.length === 0,
       };
+      state.successNotifs.push({
+        title: 'Camera Registered',
+        message: 'Camera successfully registered!',
+      });
       // TODO: make the cameras update update more surgical?
       // i.e. ONLY return the new/updated Camera source record and merge it
       // into existing cameras (like we do with Views), and only return the
@@ -128,6 +133,10 @@ export const wirelessCamerasSlice = createSlice({
 
     setDeleteCameraAlertStatus: (state, { payload }) => {
       state.isDeleteCameraAlertOpen = payload.isOpen;
+    },
+
+    dismissCameraSuccessNotif: (state, { index }) => {
+      state.successNotifs.splice(index, 1);
     },
   },
 
@@ -269,5 +278,6 @@ export const selectCameraImageCountLoading = (state) =>
   state.wirelessCameras.cameraImageCount.isLoading;
 export const selectDeleteCameraAlertStatus = (state) =>
   state.wirelessCameras.isDeleteCameraAlertOpen;
+export const selectCameraSuccessNotifs = (state) => state.wirelessCameras.successNotifs;
 
 export default wirelessCamerasSlice.reducer;
