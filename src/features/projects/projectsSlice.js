@@ -234,7 +234,8 @@ export const projectsSlice = createSlice({
       state.successNotifs.push({
         title: 'Automation Rules Updated',
         message:
-          'Automation rule successfully updated! Note: It will only apply to future images uploaded.',
+          'Automation rule successfully updated! Note: these changes will only affect image processing going forward. ' +
+          'Images that are already in your Project will not be re-processed.',
       });
     },
 
