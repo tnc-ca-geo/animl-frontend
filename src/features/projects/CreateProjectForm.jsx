@@ -85,7 +85,7 @@ const CreateProjectForm = () => {
             availableMLModels: [],
           }}
           validationSchema={createProjectSchema}
-          onSubmit={(values) => dispatch(createProject(values))}
+          onSubmit={(values, { resetForm }) => dispatch(createProject(values, resetForm))}
         >
           {({ values, errors, isValid, touched, setFieldTouched, setFieldValue }) => (
             <Form>

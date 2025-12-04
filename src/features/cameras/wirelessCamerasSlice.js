@@ -201,7 +201,7 @@ export const fetchWirelessCameras = () => async (dispatch, getState) => {
 };
 
 // registerCamera thunk
-export const registerCamera = (payload) => {
+export const registerCamera = (payload, resetFormCallback) => {
   return async (dispatch, getState) => {
     try {
       dispatch(registerCameraStart());
@@ -217,6 +217,7 @@ export const registerCamera = (payload) => {
           input: payload,
         });
         dispatch(registerCameraSuccess(res.registerCamera));
+        resetFormCallback();
       }
     } catch (err) {
       console.log(`error(s) attempting to register camera: `, err);

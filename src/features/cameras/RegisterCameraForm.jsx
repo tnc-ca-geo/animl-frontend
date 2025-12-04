@@ -30,8 +30,8 @@ const RegisterCameraForm = () => {
   const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({ value: m, label: m }));
   const dispatch = useDispatch();
 
-  const handleRegisterCameraSubmit = (formVals) => {
-    dispatch(registerCamera({ cameraId: formVals.cameraId, make: formVals.make.value }));
+  const handleRegisterCameraSubmit = (formVals, resetForm) => {
+    dispatch(registerCamera({ cameraId: formVals.cameraId, make: formVals.make.value }, resetForm));
   };
 
   return (
@@ -43,7 +43,7 @@ const RegisterCameraForm = () => {
             make: makeOptions[0],
           }}
           validationSchema={registerCameraSchema}
-          onSubmit={(values) => handleRegisterCameraSubmit(values)}
+          onSubmit={(values, { resetForm }) => handleRegisterCameraSubmit(values, resetForm)}
         >
           {({ values, errors, touched, isValid, dirty, setFieldValue, setFieldTouched }) => (
             <Form>

@@ -510,7 +510,6 @@ export const {
   createProjectSuccess,
   createProjectFailure,
   dismissCreateProjectError,
-  dismissStateMsg,
 
   editViewStart,
   saveViewSuccess,
@@ -585,7 +584,7 @@ export const fetchProjects = (payload) => async (dispatch) => {
   }
 };
 
-export const createProject = (payload) => async (dispatch) => {
+export const createProject = (payload, resetFormCallback) => async (dispatch) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -597,6 +596,7 @@ export const createProject = (payload) => async (dispatch) => {
         input: payload,
       });
       dispatch(createProjectSuccess(project));
+      resetFormCallback();
     }
   } catch (err) {
     console.log('err: ', err);
