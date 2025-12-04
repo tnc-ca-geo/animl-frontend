@@ -58,7 +58,10 @@ const initialState = {
       errors: null,
     },
   },
-  successNotifs: [],
+  successNotif: {
+    title: '',
+    message: '',
+  },
   unsavedViewChanges: false,
   modalOpen: false,
   modalContent: null,
@@ -143,10 +146,10 @@ export const projectsSlice = createSlice({
       state.loadingStates.createProject = ls;
 
       state.projects = [...state.projects, project];
-      state.successNotifs.push({
+      state.successNotifs = {
         title: 'Created Project',
         message: 'Project created successfully!',
-      });
+      };
     },
 
     createProjectFailure: (state, { payload }) => {
@@ -194,10 +197,10 @@ export const projectsSlice = createSlice({
       if (!viewInState) {
         proj.views.push(payload.view);
       }
-      state.successNotifs.push({
+      state.successNotif = {
         title: 'View Saved',
         message: 'View successfully saved!',
-      });
+      };
     },
 
     deleteViewSuccess: (state, { payload }) => {
@@ -231,12 +234,12 @@ export const projectsSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.automationRules = ls;
       state.automationRules = payload.automationRules;
-      state.successNotifs.push({
+      state.successNotif = {
         title: 'Automation Rules Updated',
         message:
           'Automation rule successfully updated! Note: these changes will only affect image processing going forward. ' +
           'Images that are already in your Project will not be re-processed.',
-      });
+      };
     },
 
     dismissAutomationRulesError: (state, { payload }) => {
@@ -447,8 +450,11 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags.errors.splice(index, 1);
     },
 
-    dismissProjectSuccessNotif: (state, { index }) => {
-      state.successNotifs.splice(index, 1);
+    dismissProjectSuccessNotif: (state) => {
+      state.successNotif = {
+        title: '',
+        message: '',
+      };
     },
 
     setModalOpen: (state, { payload }) => {
@@ -983,6 +989,6 @@ export const selectManageLabelsErrors = (state) =>
   state.projects.loadingStates.projectLabels.errors;
 export const selectProjectTagErrors = (state) => state.projects.loadingStates.projectTags.errors;
 export const selectAutomationRules = (state) => state.projects.automationRules;
-export const selectProjectSuccessNotifs = (state) => state.projects.successNotifs;
+export const selectProjectSuccessNotif = (state) => state.projects.successNotif;
 
 export default projectsSlice.reducer;
