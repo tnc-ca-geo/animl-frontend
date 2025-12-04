@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { timeZonesNames } from '@vvo/tzdb';
-import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { styled } from '../../theme/stitches.config.js';
 import {
@@ -15,14 +14,10 @@ import {
 } from '../../components/Form';
 import Button from '../../components/Button.jsx';
 import SelectField from '../../components/SelectField.jsx';
-import { Toast, ToastTitle, ToastAction, ToastViewport } from '../../components/Toast';
-import IconButton from '../../components/IconButton';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 
 import {
   createProject,
-  selectCreateProjectState,
-  dismissStateMsg,
   fetchModelOptions,
   selectModelOptions,
   selectCreateProjectLoading,
@@ -55,7 +50,6 @@ const createProjectSchema = Yup.object().shape({
 
 const CreateProjectForm = () => {
   const dispatch = useDispatch();
-  const stateMsg = useSelector(selectCreateProjectState);
   const mlModels = useSelector(selectModelOptions);
   const createProjectIsLoading = useSelector(selectCreateProjectLoading);
   const mlModelsOptionsIsLoading = useSelector(selectModelOptionsLoading);
@@ -91,7 +85,7 @@ const CreateProjectForm = () => {
             availableMLModels: [],
           }}
           validationSchema={createProjectSchema}
-          onSubmit={(values) => dispatch(createProject(values))}
+          onSubmit={(values, { resetForm }) => dispatch(createProject(values, resetForm))}
         >
           {({ values, errors, isValid, touched, setFieldTouched, setFieldValue }) => (
             <Form>
@@ -154,25 +148,6 @@ const CreateProjectForm = () => {
                   Save
                 </Button>
               </ButtonRow>
-              {stateMsg && (
-                <>
-                  <Toast
-                    open={!!stateMsg}
-                    duration={2000}
-                    onOpenChange={() => dispatch(dismissStateMsg())}
-                  >
-                    <ToastTitle variant="green" css={{ marginBottom: 0 }}>
-                      {stateMsg}
-                    </ToastTitle>
-                    <ToastAction asChild altText="Dismiss">
-                      <IconButton variant="ghost">
-                        <Cross2Icon />
-                      </IconButton>
-                    </ToastAction>
-                  </Toast>
-                  <ToastViewport />
-                </>
-              )}
             </Form>
           )}
         </Formik>

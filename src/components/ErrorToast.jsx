@@ -125,6 +125,7 @@ const ErrorToast = () => {
     [],
   );
 
+  // this should be revisited as per: https://github.com/tnc-ca-geo/animl-frontend/issues/411
   const [open, setOpen] = useState(errors && errors.length);
   useEffect(() => {
     setOpen(errors && errors.length);

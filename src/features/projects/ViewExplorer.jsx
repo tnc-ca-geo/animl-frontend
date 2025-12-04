@@ -9,6 +9,7 @@ import ImagesPanel from '../images/ImagesPanel.jsx';
 import Loupe from '../loupe/Loupe.jsx';
 import ErrorToast from '../../components/ErrorToast.jsx';
 import HydratedModal from '../../components/HydratedModal.jsx';
+import SuccessToast from '../../components/SuccessToast.jsx';
 import { selectGlobalBreakpoint } from './projectsSlice.js';
 import { globalBreakpoints } from '../../config.js';
 
@@ -50,6 +51,7 @@ const ViewExplorer = () => {
       {isLargeScreen && loupeOpen && <Loupe />}
       <HydratedModal />
       <ErrorToast />
+      <SuccessToast />
     </ViewExplorerWrapper>
   );
 };

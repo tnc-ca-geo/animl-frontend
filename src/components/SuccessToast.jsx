@@ -1,0 +1,80 @@
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Cross2Icon } from '@radix-ui/react-icons';
+import IconButton from './IconButton';
+import { Toast, ToastTitle, ToastDescription, ToastAction, ToastViewport } from './Toast';
+import {
+  selectProjectSuccessNotifs,
+  dismissProjectSuccessNotif,
+} from '../features/projects/projectsSlice';
+import {
+  selectCameraSuccessNotifs,
+  dismissCameraSuccessNotif,
+} from '../features/cameras/wirelessCamerasSlice';
+import {
+  selectTaskSuccessNotifs,
+  dismissTaskSuccessNotif
+} from '../features/tasks/tasksSlice';
+
+const SuccessToast = () => {
+  const dispatch = useDispatch();
+  const projectSuccessNotifs = useSelector(selectProjectSuccessNotifs);
+  const cameraSuccessNotifs = useSelector(selectCameraSuccessNotifs);
+  const taskSuccessNotifs = useSelector(selectTaskSuccessNotifs);
+
+  const enrichedSuccesses = [
+    enrichSuccesses(projectSuccessNotifs, 'projects'),
+    enrichSuccesses(cameraSuccessNotifs, 'cameras'),
+    enrichSuccesses(taskSuccessNotifs, 'tasks'),
+  ];
+
+  // flattens all arrays into a single array
+  const successNotifs = enrichedSuccesses.reduce(
+    (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
+    [],
+  );
+
+  const handleDismiss = (successNotif) => {
+    dispatch(dismissSuccessMsgs[successNotif.entity](successNotif.index));
+  }
+
+  return (
+    <>
+      {successNotifs &&
+        successNotifs.map((successNotif, i) => (
+          <Toast key={i} duration={4000} onOpenChange={(() => handleDismiss(successNotif))}>
+            <ToastTitle variant="green" css={{ marginBottom: 0 }}>
+              {successNotif.title}
+            </ToastTitle>
+            <ToastDescription asChild>
+              <div>{successNotif.msg}</div>
+            </ToastDescription>
+            <ToastAction asChild altText="Dismiss">
+              <IconButton variant="ghost" >
+                <Cross2Icon />
+              </IconButton>
+            </ToastAction>
+          </Toast>
+      ))}
+      <ToastViewport />
+    </>
+  );
+};
+
+const dismissSuccessMsgs = {
+  projects: (index) => dismissProjectSuccessNotif(index),
+  cameras: (index) => dismissCameraSuccessNotif(index),
+  tasks: (index) => dismissTaskSuccessNotif(index),
+};
+
+function enrichSuccesses(successNotifs, entity) {
+  if (!successNotifs || !successNotifs.length) return;
+  return successNotifs.map(({ title, message }, index) => ({
+    entity: entity,
+    title: title,
+    msg: message,
+    index: index,
+  }));
+}
+
+export default SuccessToast;
