@@ -11,13 +11,15 @@ import {
   dismissProjectSuccessNotif,
 } from '../features/projects/projectsSlice';
 import {
-
+  selectCameraSuccessNotifs,
+  dismissCameraSuccessNotif,
 } from '../features/cameras/wirelessCamerasSlice';
 import {
 
 } from '../features/images/imagesSlice';
 import {
-
+  selectTaskSuccessNotifs,
+  dismissTaskSuccessNotif
 } from '../features/tasks/tasksSlice';
 import {
 
@@ -27,9 +29,13 @@ import { } from '../features/projects/usersSlice';
 const SuccessToast = () => {
   const dispatch = useDispatch();
   const projectSuccessNotifs = useSelector(selectProjectSuccessNotifs);
+  const cameraSuccessNotifs = useSelector(selectCameraSuccessNotifs);
+  const taskSuccessNotifs = useSelector(selectTaskSuccessNotifs);
 
   const enrichedSuccesses = [
     enrichSuccesses(projectSuccessNotifs, 'projects'),
+    enrichSuccesses(cameraSuccessNotifs, 'cameras'),
+    enrichSuccesses(taskSuccessNotifs, 'tasks'),
   ];
 
   // flattens all arrays into a single array
@@ -67,6 +73,8 @@ const SuccessToast = () => {
 
 const dismissSuccessMsgs = {
   projects: (index) => dismissProjectSuccessNotif(index),
+  cameras: (index) => dismissCameraSuccessNotif(index),
+  tasks: (index) => dismissTaskSuccessNotif(index),
 };
 
 function enrichSuccesses(successNotifs, entity) {

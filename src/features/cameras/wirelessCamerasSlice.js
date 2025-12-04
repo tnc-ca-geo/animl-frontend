@@ -177,6 +177,7 @@ export const {
   cameraImageCountError,
 
   setDeleteCameraAlertStatus,
+  dismissCameraSuccessNotif,
 } = wirelessCamerasSlice.actions;
 
 // fetchWirelessCameras thunk
