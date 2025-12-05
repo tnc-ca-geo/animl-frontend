@@ -2,25 +2,25 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
-import { Toast, ToastTitle, ToastDescription, ToastAction, ToastViewport } from './Toast';
+import { Toast, ToastTitle, ToastDescription, ToastClose, ToastViewport } from './Toast';
 import {
-  selectProjectSuccessNotifs,
+  selectProjectSuccessNotif,
   dismissProjectSuccessNotif,
 } from '../features/projects/projectsSlice';
 import {
-  selectCameraSuccessNotifs,
+  selectCameraSuccessNotif,
   dismissCameraSuccessNotif,
 } from '../features/cameras/wirelessCamerasSlice';
 import {
-  selectTaskSuccessNotifs,
+  selectTaskSuccessNotif,
   dismissTaskSuccessNotif
 } from '../features/tasks/tasksSlice';
 
 const SuccessToast = () => {
   const dispatch = useDispatch();
-  const projectSuccessNotifs = useSelector(selectProjectSuccessNotifs);
-  const cameraSuccessNotifs = useSelector(selectCameraSuccessNotifs);
-  const taskSuccessNotifs = useSelector(selectTaskSuccessNotifs);
+  const projectSuccessNotifs = useSelector(selectProjectSuccessNotif);
+  const cameraSuccessNotifs = useSelector(selectCameraSuccessNotif);
+  const taskSuccessNotifs = useSelector(selectTaskSuccessNotif);
 
   const enrichedSuccesses = [
     enrichSuccesses(projectSuccessNotifs, 'projects'),
@@ -28,32 +28,28 @@ const SuccessToast = () => {
     enrichSuccesses(taskSuccessNotifs, 'tasks'),
   ];
 
-  // flattens all arrays into a single array
-  const successNotifs = enrichedSuccesses.reduce(
-    (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
-    [],
-  );
+  const successNotifs = enrichedSuccesses.filter(notif => notif !== null);
 
   const handleDismiss = (successNotif) => {
-    dispatch(dismissSuccessMsgs[successNotif.entity](successNotif.index));
+    dispatch(dismissSuccessMsgs[successNotif.entity]());
   }
 
   return (
     <>
       {successNotifs &&
         successNotifs.map((successNotif, i) => (
-          <Toast key={i} duration={4000} onOpenChange={(() => handleDismiss(successNotif))}>
+          <Toast key={i} duration={successNotif.durationMs} onOpenChange={(() => handleDismiss(successNotif))}>
             <ToastTitle variant="green" css={{ marginBottom: 0 }}>
               {successNotif.title}
             </ToastTitle>
             <ToastDescription asChild>
               <div>{successNotif.msg}</div>
             </ToastDescription>
-            <ToastAction asChild altText="Dismiss">
+            <ToastClose asChild>
               <IconButton variant="ghost" >
                 <Cross2Icon />
               </IconButton>
-            </ToastAction>
+            </ToastClose>
           </Toast>
       ))}
       <ToastViewport />
@@ -62,19 +58,19 @@ const SuccessToast = () => {
 };
 
 const dismissSuccessMsgs = {
-  projects: (index) => dismissProjectSuccessNotif(index),
-  cameras: (index) => dismissCameraSuccessNotif(index),
-  tasks: (index) => dismissTaskSuccessNotif(index),
+  projects: () => dismissProjectSuccessNotif(),
+  cameras: () => dismissCameraSuccessNotif(),
+  tasks: () => dismissTaskSuccessNotif(),
 };
 
-function enrichSuccesses(successNotifs, entity) {
-  if (!successNotifs || !successNotifs.length) return;
-  return successNotifs.map(({ title, message }, index) => ({
+function enrichSuccesses({title, message, durationMs}, entity) {
+  if (title === '' || message === '') return null;
+  return {
     entity: entity,
     title: title,
     msg: message,
-    index: index,
-  }));
+    durationMs: durationMs || 4000,
+  };
 }
 
 export default SuccessToast;
