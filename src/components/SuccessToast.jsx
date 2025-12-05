@@ -28,25 +28,17 @@ const SuccessToast = () => {
     enrichSuccesses(taskSuccessNotifs, 'tasks'),
   ];
 
-  // flattens all arrays into a single array
-  // const successNotifs = enrichedSuccesses.reduce(
-  //   (acc, curr) => (curr && curr.length ? acc.concat(curr) : acc),
-  //   [],
-  // );
   const successNotifs = enrichedSuccesses.filter(notif => notif !== null);
 
-  console.log('Rendering SuccessToast with notifs:', successNotifs);
-
   const handleDismiss = (successNotif) => {
-    console.log('dismissing success notif:', successNotif);
-    dispatch(dismissSuccessMsgs[successNotif.entity]({id: successNotif.id}));
+    dispatch(dismissSuccessMsgs[successNotif.entity]());
   }
 
   return (
     <>
       {successNotifs &&
         successNotifs.map((successNotif, i) => (
-          <Toast key={i} duration={4000} onOpenChange={(() => handleDismiss(successNotif))}>
+          <Toast key={i} duration={successNotif.durationMs} onOpenChange={(() => handleDismiss(successNotif))}>
             <ToastTitle variant="green" css={{ marginBottom: 0 }}>
               {successNotif.title}
             </ToastTitle>
@@ -71,12 +63,13 @@ const dismissSuccessMsgs = {
   tasks: () => dismissTaskSuccessNotif(),
 };
 
-function enrichSuccesses({title, message}, entity) {
+function enrichSuccesses({title, message, durationMs}, entity) {
   if (title === '' || message === '') return null;
   return {
     entity: entity,
     title: title,
     msg: message,
+    durationMs: durationMs || 4000,
   };
 }
 

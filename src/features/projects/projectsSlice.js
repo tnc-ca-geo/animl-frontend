@@ -61,6 +61,7 @@ const initialState = {
   successNotif: {
     title: '',
     message: '',
+    durationMs: null,
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -239,6 +240,7 @@ export const projectsSlice = createSlice({
         message:
           'Automation rule successfully updated! Note: these changes will only affect image processing going forward. ' +
           'Images that are already in your Project will not be re-processed.',
+        durationMs: 6000,
       };
     },
 
