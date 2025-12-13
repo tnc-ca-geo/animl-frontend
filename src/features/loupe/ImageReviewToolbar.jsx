@@ -27,6 +27,7 @@ import {
   READ_COMMENT_ROLES,
   WRITE_COMMENT_ROLES,
 } from '../auth/roles.js';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
@@ -37,7 +38,6 @@ import {
   TooltipArrow,
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
-import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 import { globalBreakpoints } from '../../config.js';
 import { CommentsPopover } from './CommentsPopover.jsx';
 import ShareImageButton from './ShareImageButton.jsx';

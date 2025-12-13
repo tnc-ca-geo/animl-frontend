@@ -48,6 +48,7 @@ const DatePickerWithFormik = ({
         enableOutsideDays={true}
         isOutsideRange={() => false}
         openDirection={openDirection}
+        appendToBody={true}
       />
     </div>
   );
