@@ -16,6 +16,10 @@ const initialState = {
     errors: null,
     noneFound: false,
   },
+  successNotif: {
+    title: '',
+    message: '',
+  },
   isDeleteCameraAlertOpen: false,
 };
 
@@ -64,6 +68,10 @@ export const wirelessCamerasSlice = createSlice({
         operation: null,
         errors: null,
         noneFound: payload.wirelessCameras.length === 0,
+      };
+      state.successNotif = {
+        title: 'Camera Registered',
+        message: 'Camera successfully registered!',
       };
       // TODO: make the cameras update update more surgical?
       // i.e. ONLY return the new/updated Camera source record and merge it
@@ -129,6 +137,13 @@ export const wirelessCamerasSlice = createSlice({
     setDeleteCameraAlertStatus: (state, { payload }) => {
       state.isDeleteCameraAlertOpen = payload.isOpen;
     },
+
+    dismissCameraSuccessNotif: (state) => {
+      state.successNotif = {
+        title: '',
+        message: '',
+      };
+    },
   },
 
   extraReducers: (builder) => {
@@ -168,6 +183,7 @@ export const {
   cameraImageCountError,
 
   setDeleteCameraAlertStatus,
+  dismissCameraSuccessNotif,
 } = wirelessCamerasSlice.actions;
 
 // fetchWirelessCameras thunk
@@ -191,7 +207,7 @@ export const fetchWirelessCameras = () => async (dispatch, getState) => {
 };
 
 // registerCamera thunk
-export const registerCamera = (payload) => {
+export const registerCamera = (payload, resetFormCallback) => {
   return async (dispatch, getState) => {
     try {
       dispatch(registerCameraStart());
@@ -207,6 +223,7 @@ export const registerCamera = (payload) => {
           input: payload,
         });
         dispatch(registerCameraSuccess(res.registerCamera));
+        resetFormCallback();
       }
     } catch (err) {
       console.log(`error(s) attempting to register camera: `, err);
@@ -269,5 +286,6 @@ export const selectCameraImageCountLoading = (state) =>
   state.wirelessCameras.cameraImageCount.isLoading;
 export const selectDeleteCameraAlertStatus = (state) =>
   state.wirelessCameras.isDeleteCameraAlertOpen;
+export const selectCameraSuccessNotif = (state) => state.wirelessCameras.successNotif;
 
 export default wirelessCamerasSlice.reducer;

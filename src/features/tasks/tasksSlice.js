@@ -91,6 +91,10 @@ const initialState = {
   independentDetectionStats: null,
   annotationsExport: null,
   errorsExport: null,
+  successNotif: {
+    title: '',
+    message: '',
+  },
 };
 
 export const tasksSlice = createSlice({
@@ -318,6 +322,10 @@ export const tasksSlice = createSlice({
       let ls = state.loadingStates.deployments;
       ls.isLoading = false;
       ls.errors = null;
+      state.successNotifs = {
+        title: 'Deployments Updated',
+        message: 'Deployment successfully updated!',
+      };
     },
 
     editDeploymentsFailure: (state, { payload }) => {
@@ -528,6 +536,13 @@ export const tasksSlice = createSlice({
       state.loadingStates.setTimestampOffset.taskId = null;
       state.loadingStates.setTimestampOffset.errors.splice(index, 1);
     },
+
+    dismissTaskSuccessNotif: (state) => {
+      state.successNotifs = {
+        title: '',
+        message: '',
+      };
+    },
   },
 });
 
@@ -606,6 +621,8 @@ export const {
   setTimestampOffsetFailure,
   clearSetTimestampOffsetTask,
   dismissSetTimestampOffsetError,
+  
+  dismissTaskSuccessNotif,
 } = tasksSlice.actions;
 
 // fetchTask thunk
@@ -1093,5 +1110,6 @@ export const selectBurstsStatsLoading = (state) => state.tasks.loadingStates.bur
 export const selectIndependentDetectionStats = (state) => state.tasks.independentDetectionStats;
 export const selectIndependentDetectionStatsLoading = (state) =>
   state.tasks.loadingStates.independentDetectionStats;
+export const selectTaskSuccessNotif = (state) => state.tasks.successNotif;
 
 export default tasksSlice.reducer;

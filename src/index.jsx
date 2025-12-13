@@ -5,7 +5,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { Theme } from '@radix-ui/themes';
 import store, { history } from './app/store';
-import App from './app/App.jsx'
+import App from './app/App.jsx';
 import './assets/fontawesome';
 import '@radix-ui/themes/styles.css';
 
@@ -15,16 +15,15 @@ const render = () => {
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <Authenticator.Provider>
-            <Theme style={{ zIndex: 'auto' }}>
+            <Theme style={{ zIndex: 'auto', overflowX: 'hidden' }}>
               <App />
             </Theme>
           </Authenticator.Provider>
         </ConnectedRouter>
       </Provider>
     </React.StrictMode>,
-    document.getElementById('root')
+    document.getElementById('root'),
   );
 };
 
 render();
-

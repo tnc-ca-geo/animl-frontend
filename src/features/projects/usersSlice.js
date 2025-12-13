@@ -85,7 +85,7 @@ export const usersSlice = createSlice({
         ...state.users,
         {
           ...payload,
-          email: payload.username,
+          username: payload.username,
         },
       ];
     },
@@ -113,6 +113,7 @@ export const usersSlice = createSlice({
     cancel: (state) => {
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.users = ls;
+      state.selectedUser = null;
       state.mode = 'list';
     },
 
@@ -210,12 +211,13 @@ export const createUser = (values) => {
       const projId = selectedProj._id;
 
       if (token && selectedProj) {
+        const username = values.email.toLowerCase();
         await call({
           projId,
           request: 'createUser',
-          input: values,
+          input: { username: username, roles: values.roles },
         });
-        dispatch(addUserSuccess(values));
+        dispatch(addUserSuccess({ ...values, username: username }));
       }
     } catch (err) {
       dispatch(addUserFailure(err));

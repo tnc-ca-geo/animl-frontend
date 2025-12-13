@@ -20,7 +20,6 @@ const initialState = {
       isLoading: false,
       operation: null,
       errors: null,
-      stateMsg: null,
     },
     views: {
       isLoading: false,
@@ -58,6 +57,11 @@ const initialState = {
       operation: null,
       errors: null,
     },
+  },
+  successNotif: {
+    title: '',
+    message: '',
+    durationMs: null,
   },
   unsavedViewChanges: false,
   modalOpen: false,
@@ -129,7 +133,7 @@ export const projectsSlice = createSlice({
     },
 
     createProjectStart: (state) => {
-      const ls = { isLoading: true, operation: 'fetching', errors: null, stateMsg: null };
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.createProject = ls;
     },
 
@@ -139,26 +143,24 @@ export const projectsSlice = createSlice({
         isLoading: false,
         operation: null,
         errors: null,
-        stateMsg: `Successfully created project ${project.name}`,
       };
       state.loadingStates.createProject = ls;
 
       state.projects = [...state.projects, project];
+      state.successNotifs = {
+        title: 'Created Project',
+        message: 'Project created successfully!',
+      };
     },
 
     createProjectFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload, stateMsg: null };
+      const ls = { isLoading: false, operation: null, errors: payload };
       state.loadingStates.createProject = ls;
     },
 
     dismissCreateProjectError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.createProject.errors.splice(index, 1);
-    },
-
-    dismissStateMsg: (state) => {
-      const ls = { isLoading: false, operation: null, errors: null, stateMsg: null };
-      state.loadingStates.createProject = ls;
     },
 
     /*
@@ -178,7 +180,11 @@ export const projectsSlice = createSlice({
     // TODO AUTH - instead of passing in projectId to payload, we could also
     // just search all views in all projects for the project Id
     saveViewSuccess: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: null };
+      const ls = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+      };
       state.loadingStates.views = ls;
 
       let viewInState = false;
@@ -192,6 +198,10 @@ export const projectsSlice = createSlice({
       if (!viewInState) {
         proj.views.push(payload.view);
       }
+      state.successNotif = {
+        title: 'View Saved',
+        message: 'View successfully saved!',
+      };
     },
 
     deleteViewSuccess: (state, { payload }) => {
@@ -225,6 +235,13 @@ export const projectsSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.automationRules = ls;
       state.automationRules = payload.automationRules;
+      state.successNotif = {
+        title: 'Automation Rules Updated',
+        message:
+          'Automation rule successfully updated! Note: these changes will only affect image processing going forward. ' +
+          'Images that are already in your Project will not be re-processed.',
+        durationMs: 6000,
+      };
     },
 
     dismissAutomationRulesError: (state, { payload }) => {
@@ -435,6 +452,13 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectTags.errors.splice(index, 1);
     },
 
+    dismissProjectSuccessNotif: (state) => {
+      state.successNotif = {
+        title: '',
+        message: '',
+      };
+    },
+
     setModalOpen: (state, { payload }) => {
       state.modalOpen = payload;
     },
@@ -495,7 +519,6 @@ export const {
   createProjectSuccess,
   createProjectFailure,
   dismissCreateProjectError,
-  dismissStateMsg,
 
   editViewStart,
   saveViewSuccess,
@@ -544,6 +567,7 @@ export const {
   setModalOpen,
   setModalContent,
   setSelectedCamera,
+  dismissProjectSuccessNotif,
 
   setGlobalBreakpoint,
 } = projectsSlice.actions;
@@ -569,7 +593,7 @@ export const fetchProjects = (payload) => async (dispatch) => {
   }
 };
 
-export const createProject = (payload) => async (dispatch) => {
+export const createProject = (payload, resetFormCallback) => async (dispatch) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -581,6 +605,7 @@ export const createProject = (payload) => async (dispatch) => {
         input: payload,
       });
       dispatch(createProjectSuccess(project));
+      resetFormCallback();
     }
   } catch (err) {
     console.log('err: ', err);
@@ -954,8 +979,6 @@ export const selectGlobalBreakpoint = (state) => state.projects.globalBreakpoint
 export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
 export const selectModelsErrors = (state) => state.projects.loadingStates.models.errors;
-export const selectCreateProjectState = (state) =>
-  state.projects.loadingStates.createProject.stateMsg;
 export const selectCreateProjectsErrors = (state) =>
   state.projects.loadingStates.createProject.errors;
 export const selectCreateProjectLoading = (state) =>
@@ -968,5 +991,6 @@ export const selectManageLabelsErrors = (state) =>
   state.projects.loadingStates.projectLabels.errors;
 export const selectProjectTagErrors = (state) => state.projects.loadingStates.projectTags.errors;
 export const selectAutomationRules = (state) => state.projects.automationRules;
+export const selectProjectSuccessNotif = (state) => state.projects.successNotif;
 
 export default projectsSlice.reducer;
