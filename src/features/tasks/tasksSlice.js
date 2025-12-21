@@ -21,6 +21,13 @@ import {
   clearCameraImageCount,
 } from '../cameras/wirelessCamerasSlice.js';
 
+export const TASK_STATUS = {
+  IDLE: 'idle',
+  IN_PROGRESS: 'in_progress',
+  SUCCESS: 'success',
+  ERROR: 'error',
+};
+
 const initialState = {
   loadingStates: {
     stats: {
@@ -81,8 +88,8 @@ const initialState = {
       errors: null,
     },
     setTimestampOffset: {
+      status: TASK_STATUS.IDLE,
       taskId: null,
-      isLoading: false,
       errors: null,
     },
   },
@@ -485,8 +492,8 @@ export const tasksSlice = createSlice({
 
     setTimestampOffsetStart: (state) => {
       let ls = state.loadingStates.setTimestampOffset;
+      ls.status = TASK_STATUS.IN_PROGRESS;
       ls.taskId = null;
-      ls.isLoading = true;
       ls.errors = null;
     },
 
@@ -496,14 +503,14 @@ export const tasksSlice = createSlice({
 
     setTimestampOffsetSuccess: (state) => {
       let ls = state.loadingStates.setTimestampOffset;
+      ls.status = TASK_STATUS.SUCCESS;
       ls.taskId = null;
-      ls.isLoading = false;
       ls.errors = null;
     },
 
     setTimestampOffsetFailure: (state, { payload }) => {
       let ls = state.loadingStates.setTimestampOffset;
-      ls.isLoading = false;
+      ls.status = TASK_STATUS.ERROR;
 
       // Handle both task failure (payload.task.output.error) and API error (payload)
       const error = payload.task?.output?.error || payload;

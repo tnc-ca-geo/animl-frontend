@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
@@ -14,6 +14,7 @@ import {
   fetchTask,
   selectSetTimestampOffsetLoading,
   clearSetTimestampOffsetTask,
+  TASK_STATUS,
 } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 
@@ -82,7 +83,6 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   const dispatch = useDispatch();
   const activeFilters = useSelector(selectActiveFilters);
   const setTimestampOffsetLoading = useSelector(selectSetTimestampOffsetLoading);
-  const taskStartedRef = useRef(false);
 
   // Clean up task state when modal unmounts
   useEffect(() => {
@@ -112,36 +112,19 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
     time: moment(imageDateTime).format('HH:mm:ss'),
   };
 
-  // Track when task starts
-  useEffect(() => {
-    if (setTimestampOffsetLoading.isLoading && setTimestampOffsetLoading.taskId) {
-      taskStartedRef.current = true;
-    }
-  }, [setTimestampOffsetLoading.isLoading, setTimestampOffsetLoading.taskId]);
-
   // Poll for task completion
   useEffect(() => {
-    if (setTimestampOffsetLoading.isLoading && setTimestampOffsetLoading.taskId) {
+    if (setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS && setTimestampOffsetLoading.taskId) {
       dispatch(fetchTask(setTimestampOffsetLoading.taskId));
     }
   }, [setTimestampOffsetLoading, dispatch]);
 
   // Close modal when task completes successfully
   useEffect(() => {
-    if (
-      taskStartedRef.current &&
-      !setTimestampOffsetLoading.isLoading &&
-      setTimestampOffsetLoading.taskId === null &&
-      !setTimestampOffsetLoading.errors
-    ) {
+    if (setTimestampOffsetLoading.status === TASK_STATUS.SUCCESS) {
       handleClose();
     }
-  }, [
-    setTimestampOffsetLoading.isLoading,
-    setTimestampOffsetLoading.taskId,
-    setTimestampOffsetLoading.errors,
-    handleClose,
-  ]);
+  }, [setTimestampOffsetLoading.status, handleClose]);
 
   const handleSubmit = (values) => {
     const originalTimestamp = new Date(image.dateTimeOriginal).getTime();
@@ -188,7 +171,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
 
   return (
     <FormWrapper>
-      {setTimestampOffsetLoading.isLoading && (
+      {setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
@@ -304,9 +287,9 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
               <Button
                 type="submit"
                 size="large"
-                disabled={!isValid || setTimestampOffsetLoading.isLoading}
+                disabled={!isValid || setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS}
               >
-                {setTimestampOffsetLoading.isLoading ? 'Saving...' : 'Save changes'}
+                {setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS ? 'Saving...' : 'Save changes'}
               </Button>
             </ButtonRow>
           </Form>
