@@ -127,16 +127,15 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   }, [setTimestampOffsetLoading.status, handleClose]);
 
   const handleSubmit = (values) => {
-    const originalTimestamp = new Date(image.dateTimeOriginal).getTime();
+    const originalTimestamp = moment(image.dateTimeOriginal).valueOf();
 
     // Combine date and time
     const [hours, minutes, seconds] = values.time.split(':').map(Number);
-    const newDateTime = moment(values.startDate)
+    const newTimestamp = moment(values.startDate)
       .hour(hours)
       .minute(minutes)
       .second(seconds || 0)
-      .toDate();
-    const newTimestamp = newDateTime.getTime();
+      .valueOf();
     const offsetMs = newTimestamp - originalTimestamp;
 
     if (values.applyTo === 'single') {
