@@ -117,12 +117,12 @@ export const ImageMetadata = ({ image }) => {
 
   const filename = isSmallScreen ? shortenedField(image.originalFileName) : image.originalFileName;
 
-  const fullDateCreated = DateTime.fromISO(image.dateTimeOriginal).toLocaleString(
+  const fullDateCreated = DateTime.fromISO(image.dateTimeAdjusted).toLocaleString(
     DateTime.DATETIME_MED_WITH_SECONDS,
   );
 
   const dateCreated = isSmallScreen
-    ? DateTime.fromISO(image.dateTimeOriginal).toLocaleString(DateTime.DATETIME_SHORT)
+    ? DateTime.fromISO(image.dateTimeAdjusted).toLocaleString(DateTime.DATETIME_SHORT)
     : fullDateCreated;
 
   const cameraId = isSmallScreen ? shortenedField(image.cameraId) : image.cameraId;

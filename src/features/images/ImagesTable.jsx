@@ -369,8 +369,8 @@ function makeRows(workingImages, focusIndex, selectedImageIndices) {
       />
     );
 
-    // date created
-    const dtOriginal = DateTime.fromISO(img.dateTimeOriginal).toLocaleString(
+    // date created (use adjusted datetime)
+    const dtOriginal = DateTime.fromISO(img.dateTimeAdjusted).toLocaleString(
       DateTime.DATETIME_SHORT_WITH_SECONDS,
     );
 

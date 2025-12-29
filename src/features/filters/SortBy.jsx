@@ -28,13 +28,13 @@ export const SortBy = () => {
     <Accordion label="Sort" expandedDefault={false} expandOnHeaderClick={true}>
       <SortCheckbox
         label="Date created: newest to oldest"
-        isCurrentSort={isCurrentSort('dateTimeOriginal', true)}
-        handleSortChanged={() => handleSortChanged('dateTimeOriginal', true)}
+        isCurrentSort={isCurrentSort('dateTimeAdjusted', true)}
+        handleSortChanged={() => handleSortChanged('dateTimeAdjusted', true)}
       />
       <SortCheckbox
         label="Date created: oldest to newest"
-        isCurrentSort={isCurrentSort('dateTimeOriginal', false)}
-        handleSortChanged={() => handleSortChanged('dateTimeOriginal', false)}
+        isCurrentSort={isCurrentSort('dateTimeAdjusted', false)}
+        handleSortChanged={() => handleSortChanged('dateTimeAdjusted', false)}
       />
       <SortCheckbox
         label="Date added: newest to oldest"

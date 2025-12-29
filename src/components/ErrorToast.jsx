@@ -52,6 +52,8 @@ import {
   dismissDeleteImagesError,
   selectDeleteProjectLabelErrors,
   dismissDeleteProjectLabelTaskError,
+  selectSetTimestampOffsetErrors,
+  dismissSetTimestampOffsetError,
 } from '../features/tasks/tasksSlice';
 import {
   selectRedriveBatchErrors,
@@ -89,6 +91,7 @@ const ErrorToast = () => {
   const projectTagErrors = useSelector(selectProjectTagErrors);
   const deleteImagesErrors = useSelector(selectDeleteImagesErrors);
   const deleteProjectLabelErrors = useSelector(selectDeleteProjectLabelErrors);
+  const setTimestampOffsetErrors = useSelector(selectSetTimestampOffsetErrors);
 
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -118,6 +121,7 @@ const ErrorToast = () => {
     enrichErrors(deleteCameraErrors, 'Error Deleting Camera', 'deleteCamera'),
     enrichErrors(deleteImagesErrors, 'Error Deleting Images', 'deleteImages'),
     enrichErrors(deleteProjectLabelErrors, 'Error Deleting Label', 'deleteProjectLabel'),
+    enrichErrors(setTimestampOffsetErrors, 'Error Updating Timestamp', 'setTimestampOffset'),
   ];
 
   const errors = enrichedErrors.reduce(
@@ -187,6 +191,7 @@ const dismissErrorActions = {
   deleteCamera: (i) => dismissDeleteCameraError(i),
   deleteImages: (i) => dismissDeleteImagesError(i),
   deleteProjectLabel: (i) => dismissDeleteProjectLabelTaskError(i),
+  setTimestampOffset: (i) => dismissSetTimestampOffsetError(i),
 };
 
 function enrichErrors(errors, title, entity) {

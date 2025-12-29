@@ -33,7 +33,7 @@ const initialState = {
   },
   pageInfo: {
     limit: IMAGE_QUERY_LIMITS[2],
-    paginatedField: 'dateTimeOriginal',
+    paginatedField: 'dateTimeAdjusted',
     sortAscending: false,
     previous: null,
     hasPrevious: null,
@@ -143,7 +143,7 @@ export const imagesSlice = createSlice({
     sortChanged: (state, { payload }) => {
       if (!payload.length) return;
       const fieldMappings = {
-        dtOriginal: 'dateTimeOriginal',
+        dtOriginal: 'dateTimeAdjusted',
         dtAdded: 'dateAdded',
       };
       const sortAscending = !payload[0].desc;

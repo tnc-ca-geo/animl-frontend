@@ -14,7 +14,8 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import DeleteImagesAlert from '../images/DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 import { selectFocusIndex, setSelectedImageIndices } from '../review/reviewSlice.js';
-import { Trash2 } from 'lucide-react';
+import { setModalOpen, setModalContent } from '../projects/projectsSlice.js';
+import { Trash2, Clock } from 'lucide-react';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -31,6 +32,11 @@ const LoupeDropdown = ({ image }) => {
     dispatch(setDeleteImagesAlertStatus({ openStatus: true, deleteImagesByFilter: false }));
   };
 
+  const handleEditTimestampClick = () => {
+    dispatch(setModalOpen(true));
+    dispatch(setModalContent('edit-image-timestamp-form'));
+  };
+
   return (
     <DropdownMenu>
       <StyledDropdownMenuTrigger asChild>
@@ -39,6 +45,12 @@ const LoupeDropdown = ({ image }) => {
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
+        <DropdownMenuItem onSelect={handleEditTimestampClick}>
+          <DropdownMenuItemIconLeft>
+            <Clock size={15} />
+          </DropdownMenuItemIconLeft>
+          Edit Image Timestamp
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={handleDeleteImageItemClick}>
           <DropdownMenuItemIconLeft>
             <Trash2 size={15} />
