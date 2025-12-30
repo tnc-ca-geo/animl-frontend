@@ -2,6 +2,13 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { Formik, Form, Field } from 'formik';
+import {
+  RadioGroup,
+  RadioItemWrapper,
+  RadioItem,
+  RadioIndicator,
+  RadioLabel,
+} from '../../components/RadioGroup.jsx';
 import * as Yup from 'yup';
 import moment from 'moment-timezone';
 import Button from '../../components/Button.jsx';
@@ -17,29 +24,6 @@ import {
   TASK_STATUS,
 } from '../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
-
-const RadioGroup = styled('div', {
-  display: 'grid',
-  gridTemplateColumns: '20px 1fr',
-  columnGap: '12px',
-  rowGap: '16px',
-  marginBottom: '$5',
-  width: '100%',
-});
-
-const RadioButton = styled('input', {
-  margin: 0,
-  marginTop: '3px',
-  cursor: 'pointer',
-  justifySelf: 'start',
-});
-
-const RadioLabel = styled('span', {
-  color: '$textMedium',
-  fontSize: '$3',
-  lineHeight: '1.5',
-  cursor: 'pointer',
-});
 
 const DateTimeRow = styled('div', {
   display: 'flex',
@@ -114,7 +98,10 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
 
   // Poll for task completion
   useEffect(() => {
-    if (setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS && setTimestampOffsetLoading.taskId) {
+    if (
+      setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS &&
+      setTimestampOffsetLoading.taskId
+    ) {
       dispatch(fetchTask(setTimestampOffsetLoading.taskId));
     }
   }, [setTimestampOffsetLoading, dispatch]);
@@ -144,7 +131,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
           imageIds: [image._id],
           filters: null,
           offsetMs,
-        })
+        }),
       );
     } else if (values.applyTo === 'deployment') {
       const deploymentFilters = {
@@ -155,7 +142,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
           imageIds: [],
           filters: deploymentFilters,
           offsetMs,
-        })
+        }),
       );
     } else if (values.applyTo === 'filtered') {
       dispatch(
@@ -163,7 +150,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
           imageIds: [],
           filters: activeFilters,
           offsetMs,
-        })
+        }),
       );
     }
   };
@@ -183,65 +170,66 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
         {({ values, setFieldValue, isValid }) => (
           <Form>
             <HelperText css={{ padding: 0, marginBottom: '$3' }}>
-              <p>
-                Set the date and time of the selected image or collection of images selected below.
-                Applying this change to a collection will shift timestamps by a proportional offset.
-              </p>
+              Set the date and time of the selected image or collection of images selected below.
+              Applying this change to a collection will shift timestamps by a proportional offset.
             </HelperText>
 
-            <RadioGroup role="group">
-              <RadioButton
-                type="radio"
-                name="applyTo"
-                value="single"
-                checked={values.applyTo === 'single'}
-                onChange={() => setFieldValue('applyTo', 'single')}
-              />
-              <RadioLabel onClick={() => setFieldValue('applyTo', 'single')}>
-                Edit the timestamp for this image only
-              </RadioLabel>
+            <RadioGroup
+              onValueChange={(value) => setFieldValue('applyTo', value)}
+              value={values.applyTo}
+              role="radiogroup"
+            >
+              <RadioItemWrapper>
+                <RadioItem name="applyTo" value="single" checked={values.applyTo === 'single'}>
+                  <RadioIndicator />
+                </RadioItem>
+                <RadioLabel onClick={() => setFieldValue('applyTo', 'single')}>
+                  Edit the timestamp for this image only
+                </RadioLabel>
+              </RadioItemWrapper>
 
               {image?.deploymentId && (
                 <>
-                  <RadioButton
-                    type="radio"
-                    name="applyTo"
-                    value="deployment"
-                    checked={values.applyTo === 'deployment'}
-                    onChange={() => setFieldValue('applyTo', 'deployment')}
-                  />
-                  <RadioLabel onClick={() => setFieldValue('applyTo', 'deployment')}>
-                    Edit the timestamp for all images within the same deployment
-                  </RadioLabel>
+                  <RadioItemWrapper>
+                    <RadioItem
+                      name="applyTo"
+                      value="deployment"
+                      checked={values.applyTo === 'deployment'}
+                    >
+                      <RadioIndicator />
+                    </RadioItem>
+                    <RadioLabel onClick={() => setFieldValue('applyTo', 'deployment')}>
+                      Edit the timestamp for all images within the same deployment
+                    </RadioLabel>
+                  </RadioItemWrapper>
                 </>
               )}
 
-              <RadioButton
-                type="radio"
-                name="applyTo"
-                value="filtered"
-                checked={values.applyTo === 'filtered'}
-                onChange={() => setFieldValue('applyTo', 'filtered')}
-              />
-              <RadioLabel onClick={() => setFieldValue('applyTo', 'filtered')}>
-                Edit the timestamp for all currently filtered images
-              </RadioLabel>
+              <RadioItemWrapper>
+                <RadioItem name="applyTo" value="filtered" checked={values.applyTo === 'filtered'}>
+                  <RadioIndicator />
+                </RadioItem>
+                <RadioLabel onClick={() => setFieldValue('applyTo', 'filtered')}>
+                  Edit the timestamp for all currently filtered images
+                </RadioLabel>
+              </RadioItemWrapper>
             </RadioGroup>
 
             <Callout type="info" title="Check deployment timezone">
               <p>
                 Is <strong>{imageTimezone}</strong> the correct timezone for{' '}
-                <strong>{image?.deploymentName || 'this deployment'}</strong>? Before adjusting
-                the Created Date, make sure the Deployment&apos;s timezone is set correctly. If it&apos;s
-                inaccurate, changing the Deployment&apos;s timezone may fix the Created Date.
+                <strong>{image?.deploymentName || 'this deployment'}</strong>? Before adjusting the
+                Created Date, make sure the Deployment&apos;s timezone is set correctly. If
+                it&apos;s inaccurate, changing the Deployment&apos;s timezone may fix the Created
+                Date.
               </p>
             </Callout>
 
             {!timezonesMatch && (
               <Callout type="info" title="Account for your current timezone">
                 <p>
-                  Animl displays timestamps in the timezone your browser is currently in{' '}
-                  (<strong>{browserTimezone}</strong>). If the timestamps in Animl don&apos;t match
+                  Animl displays timestamps in the timezone your browser is currently in (
+                  <strong>{browserTimezone}</strong>). If the timestamps in Animl don&apos;t match
                   the timestamps in your image, it may be because you are in a different timezone
                   than this image&apos;s Deployment (<strong>{imageTimezone}</strong>).
                 </p>
@@ -288,7 +276,9 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
                 size="large"
                 disabled={!isValid || setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS}
               >
-                {setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS ? 'Saving...' : 'Save changes'}
+                {setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS
+                  ? 'Saving...'
+                  : 'Save changes'}
               </Button>
             </ButtonRow>
           </Form>
