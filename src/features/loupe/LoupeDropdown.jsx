@@ -16,6 +16,7 @@ import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 import { selectFocusIndex, setSelectedImageIndices } from '../review/reviewSlice.js';
 import { setModalOpen, setModalContent } from '../projects/projectsSlice.js';
 import { Trash2, Clock } from 'lucide-react';
+import { ENABLE_TIMESTAMP_OFFSET } from '../../config';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -45,12 +46,14 @@ const LoupeDropdown = ({ image }) => {
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent sideOffset={5}>
-        <DropdownMenuItem onSelect={handleEditTimestampClick}>
-          <DropdownMenuItemIconLeft>
-            <Clock size={15} />
-          </DropdownMenuItemIconLeft>
-          Edit Image Timestamp
-        </DropdownMenuItem>
+        {ENABLE_TIMESTAMP_OFFSET && (
+          <DropdownMenuItem onSelect={handleEditTimestampClick}>
+            <DropdownMenuItemIconLeft>
+              <Clock size={15} />
+            </DropdownMenuItemIconLeft>
+            Edit Image Timestamp
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onSelect={handleDeleteImageItemClick}>
           <DropdownMenuItemIconLeft>
             <Trash2 size={15} />
