@@ -61,6 +61,9 @@ const timestampSchema = Yup.object().shape({
   time: Yup.string().required('Time is required'),
 });
 
+const formatDeploymentName = (depName, cameraId) =>
+  depName === 'default' ? `${cameraId} (default)` : depName;
+
 const EditImageTimestampModal = ({ handleClose, image }) => {
   const dispatch = useDispatch();
   const activeFilters = useSelector(selectActiveFilters);
@@ -87,6 +90,9 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const imageTimezone = image.timezone || 'UTC';
   const timezonesMatch = browserTimezone === imageTimezone;
+  const deploymentName = image.deploymentName
+    ? formatDeploymentName(image.deploymentName, image.cameraId)
+    : 'this deployment';
 
   const initialValues = {
     applyTo: 'single',
@@ -168,8 +174,10 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
         {({ values, setFieldValue, isValid }) => (
           <Form>
             <HelperText css={{ padding: 0, marginBottom: '$3' }}>
-              Set the date and time of the selected image or collection of images selected below.
-              Applying this change to a collection will shift timestamps by a proportional offset.
+              If a camera&apos;s clock wasn&apos;t configured correctly or the image&apos;s metadata
+              was corrupted, you may need to adjust the date and time of your images manually. If
+              you choose to apply this change to a collection of images, their timestamps will shift
+              by a proportional offset.
             </HelperText>
 
             <RadioGroup
@@ -197,7 +205,7 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
                       <RadioIndicator />
                     </RadioItem>
                     <RadioLabel onClick={() => setFieldValue('applyTo', 'deployment')}>
-                      Edit the timestamp for all images within the same deployment
+                      Edit the timestamp for all images within the same Deployment
                     </RadioLabel>
                   </RadioItemWrapper>
                 </>
@@ -212,27 +220,6 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
                 </RadioLabel>
               </RadioItemWrapper>
             </RadioGroup>
-
-            <Callout type="info" title="Check deployment timezone">
-              <p>
-                Is <strong>{imageTimezone}</strong> the correct timezone for{' '}
-                <strong>{image?.deploymentName || 'this deployment'}</strong>? Before adjusting the
-                Created Date, make sure the Deployment&apos;s timezone is set correctly. If
-                it&apos;s inaccurate, changing the Deployment&apos;s timezone may fix the Created
-                Date.
-              </p>
-            </Callout>
-
-            {!timezonesMatch && (
-              <Callout type="info" title="Account for your current timezone">
-                <p>
-                  Animl displays timestamps in the timezone your browser is currently in (
-                  <strong>{browserTimezone}</strong>). If the timestamps in Animl don&apos;t match
-                  the timestamps in your image, it may be because you are in a different timezone
-                  than this image&apos;s Deployment (<strong>{imageTimezone}</strong>).
-                </p>
-              </Callout>
-            )}
 
             <DateTimeRow>
               <DateTimeField>
@@ -251,6 +238,34 @@ const EditImageTimestampModal = ({ handleClose, image }) => {
                 />
               </DateTimeField>
             </DateTimeRow>
+
+            <Callout type="info" title="Check deployment timezone">
+              <p>
+                Is <strong>{imageTimezone}</strong> the correct timezone for the{' '}
+                <strong>{deploymentName}</strong> Deployment? Before adjusting the Created Date,
+                make sure the Deployment&apos;s timezone is set correctly. If it&apos;s inaccurate,
+                <a
+                  href="https://docs.animl.camera/fundamentals/camera-and-deployment-management#creating-deleting-updating-deployments"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {' '}
+                  changing the Deployment&apos;s timezone
+                </a>{' '}
+                may fix the Created Date.
+              </p>
+            </Callout>
+
+            {!timezonesMatch && (
+              <Callout type="info" title="Account for your current timezone">
+                <p>
+                  Animl displays timestamps in the timezone your browser is currently in (
+                  <strong>{browserTimezone}</strong>). If the timestamps in Animl don&apos;t match
+                  the timestamps in your image, it may be because you are in a different timezone
+                  than this image&apos;s Deployment (<strong>{imageTimezone}</strong>).
+                </p>
+              </Callout>
+            )}
 
             <ButtonRow>
               <Button

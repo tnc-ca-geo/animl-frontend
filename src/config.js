@@ -24,7 +24,7 @@ export const SUPPORTED_WIRELESS_CAMS = [
 ];
 
 export const IN_MAINTENANCE_MODE = false;
-export const ENABLE_TIMESTAMP_OFFSET = true;
+export const ENABLE_TIMESTAMP_OFFSET = false;
 
 export const GA_CONFIG = {
   trackingId: 'G-V6NSBLL83L',
