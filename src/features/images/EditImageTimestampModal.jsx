@@ -51,8 +51,8 @@ const TimeInput = styled(StandAloneInput, {
   fontSize: '$3',
   padding: '$2 $3',
   width: '100%',
-  fontFamily: '$mono',
   fontWeight: '$2',
+  height: '52px',
 });
 
 const timestampSchema = Yup.object().shape({
