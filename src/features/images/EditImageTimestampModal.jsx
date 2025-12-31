@@ -44,8 +44,6 @@ const DateTimeField = styled('div', {
   },
   '& .DateInput_input': {
     width: '100%',
-    fontFamily: '$mono',
-    fontWeight: '$2',
   },
 });
 
