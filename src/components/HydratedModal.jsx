@@ -25,6 +25,8 @@ import {
   selectCameraSerialNumberLoading,
   clearCameraSerialNumberTask,
   selectDeleteImagesLoading,
+  selectSetTimestampOffsetLoading,
+  TASK_STATUS,
 } from '../features/tasks/tasksSlice.js';
 import {
   selectModalOpen,
@@ -58,14 +60,15 @@ const HydratedModal = () => {
   const deploymentsLoading = useSelector(selectDeploymentsLoading);
   const cameraSerialNumberLoading = useSelector(selectCameraSerialNumberLoading);
   const deleteImagesLoading = useSelector(selectDeleteImagesLoading);
+  const setTimestampOffsetLoading = useSelector(selectSetTimestampOffsetLoading);
   const asyncTaskLoading =
     statsLoading.isLoading ||
     annotationsExportLoading.isLoading ||
     errorsExportLoading.isLoading ||
     deploymentsLoading.isLoading ||
     cameraSerialNumberLoading.isLoading ||
-    deleteImagesLoading.isLoading;
-
+    deleteImagesLoading.isLoading ||
+    setTimestampOffsetLoading.status === TASK_STATUS.IN_PROGRESS;
   const [manageTagsAndLabelsTab, setManageTagsAndLabelsTab] = useState('labels');
 
   const modalContentMap = {
