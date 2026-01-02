@@ -33,6 +33,12 @@ const globalStyles = globalCss({
     '.DateInput_input__focused': {
       borderBottomColor: '$blue600',
     },
+    '.DateInput_fang': {
+      display: 'none',
+    },
+    '.DayPicker': {
+      height: '340px',
+    },
     '.DateRangePicker_picker': {
       zIndex: '$5',
       pointerEvents: 'auto',
@@ -40,6 +46,11 @@ const globalStyles = globalCss({
     '.SingleDatePicker_picker': {
       zIndex: '$5',
       pointerEvents: 'auto',
+      margin: '6px 1px',
+    },
+    '.SingleDatePickerInput__withBorder': {
+      borderRadius: 'none',
+      border: 'none',
     },
     '.DateRangePickerInput_clearDates_default:focus': {
       backgroundColor: '$gray3',
