@@ -15,7 +15,7 @@ import DeleteImagesAlert from '../images/DeleteImagesAlert.jsx';
 import { setDeleteImagesAlertStatus } from '../images/imagesSlice';
 import { selectFocusIndex, setSelectedImageIndices } from '../review/reviewSlice.js';
 import { setModalOpen, setModalContent } from '../projects/projectsSlice.js';
-import { Trash2, Clock } from 'lucide-react';
+import { Trash2, Clock, Download } from 'lucide-react';
 
 const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   position: 'absolute',
@@ -37,6 +37,15 @@ const LoupeDropdown = ({ image }) => {
     dispatch(setModalContent('edit-image-timestamp-form'));
   };
 
+  const handleDownloadImageClick = () => {
+    const link = document.createElement('a');
+    link.href = image.url.original;
+    link.download = `image_${image._id}.${image.fileTypeExtension || 'jpg'}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <DropdownMenu>
       <StyledDropdownMenuTrigger asChild>
@@ -51,7 +60,22 @@ const LoupeDropdown = ({ image }) => {
           </DropdownMenuItemIconLeft>
           Edit Image Timestamp
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleDeleteImageItemClick}>
+        <DropdownMenuItem onSelect={handleDownloadImageClick}>
+          <DropdownMenuItemIconLeft>
+            <Download size={15} />
+          </DropdownMenuItemIconLeft>
+          Download image
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={handleDeleteImageItemClick}
+          css={{
+            color: '$errorText',
+            '&[data-highlighted]': {
+              backgroundColor: '$errorBase',
+              color: '$errorBg',
+            },
+          }}
+        >
           <DropdownMenuItemIconLeft>
             <Trash2 size={15} />
           </DropdownMenuItemIconLeft>
