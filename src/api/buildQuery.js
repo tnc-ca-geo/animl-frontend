@@ -68,6 +68,7 @@ const imageFields = `
   url {
     medium
     small
+    original
   }
   awaitingPrediction
 `;
