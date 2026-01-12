@@ -233,7 +233,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                     isSearchable={false}
                   />
                 </FormFieldWrapper>
-                {values.action.type.value === 'run-inference' && (
+                {models && values.action.type.value === 'run-inference' && (
                   <FormFieldWrapper>
                     <SelectField
                       name="action.model"
@@ -255,11 +255,13 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                       onBlur={setFieldTouched}
                       error={_.has(errors, 'action.model.value') && errors.action.model.value}
                       touched={touched.action}
-                      options={availableModels.map((model) => ({
-                        value: model,
-                        label: `${model}`,
+                      options={models.map((model) => ({
+                        value: model._id,
+                        label: `${model._id}`,
+                        isDisabled: values.event.type.value === 'image-added' && model.expectsCrops === true,
                       }))}
                       isSearchable={false}
+                      tooltip={"Only models that allow full-image processing are available when when the trigger is \"Image added.\""}
                     />
                   </FormFieldWrapper>
                 )}
