@@ -9,6 +9,7 @@ import {
   selectMLModels,
   fetchModels,
   selectModelsLoadingState,
+  selectLabels,
 } from './projectsSlice.js';
 import SelectField from '../../components/SelectField.jsx';
 import Button from '../../components/Button.jsx';
@@ -94,6 +95,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
   const modelsLoading = useSelector(selectModelsLoadingState);
+  const currLabels = useSelector(selectLabels)
 
   // fetch model source records
   useEffect(() => {
@@ -121,7 +123,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
   // discard rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
 
-  // countries for speceiesnet geofencing (ISO 3166-1 alpha-3 codes)
+  // countries for speciesnet geofencing (ISO 3166-1 alpha-3 codes)
   const countryOptions = useMemo(() => {
     return [
       { value: null, label: 'None' },
@@ -202,6 +204,11 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                       name="event.label"
                       value={values.event.label ? values.event.label : ''}
                     />
+                    {values.event.label&& !currLabels.some((label) => label.name === values.event.label) && touched.event.label ? (
+                      <FormError>
+                        {"This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule."}
+                      </FormError>
+                    ) : null}
                     <ErrorMessage component={FormError} name="event.label" />
                   </FormFieldWrapper>
                 )}
