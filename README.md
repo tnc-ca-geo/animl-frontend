@@ -63,7 +63,9 @@ Builds the app for deployment and deploys it to dev/production environment.<br /
 
 4. Add the registered domain name and subdomains in the serverless.yaml file as the `Aliases`.
 
-5. Deploy the animl-frontend code to AWS s3 and creating the corresponding AWS Cloudfront Distribution by running `npm run deploy-dev` in the root directory of the frontend repo.
+5. Deploy the animl-frontend code to AWS s3 and create the corresponding AWS Cloudfront Distribution by running `npm run deploy-dev` in the root directory of the frontend repo.
+
+6. Copy the new cloudfront url to Route 53 as a new record for the alias.
 
 ## Prod deployment
 
