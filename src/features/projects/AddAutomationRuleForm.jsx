@@ -8,6 +8,7 @@ import {
   updateAutomationRules,
   selectMLModels,
   fetchModels,
+  selectAutomationRules,
   selectModelsLoadingState,
 } from './projectsSlice.js';
 import SelectField from '../../components/SelectField.jsx';
@@ -90,10 +91,11 @@ const GeofencingTooltip = () => (
   </div>
 );
 
-const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleForm, rule }) => {
+const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
   const modelsLoading = useSelector(selectModelsLoadingState);
+  const automationRules = useSelector(selectAutomationRules);
 
   // fetch model source records
   useEffect(() => {
