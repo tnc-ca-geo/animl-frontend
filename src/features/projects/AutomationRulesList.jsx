@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { updateAutomationRules, selectAutomationRulesLoading } from './projectsSlice.js';
+import { updateAutomationRules, selectAutomationRulesLoading, selectAutomationRules } from './projectsSlice.js';
 import IconButton from '../../components/IconButton.jsx';
 import Button from '../../components/Button.jsx';
 import { ButtonRow } from '../../components/Form.jsx';
@@ -55,7 +55,8 @@ const RuleDescription = ({ rule, availableModels }) => {
   );
 };
 
-const AutomationRulesList = ({ automationRules, availableModels, onAddRuleClick, onEditRuleClick, setCurrentRule }) => {
+const AutomationRulesList = ({ availableModels, onAddRuleClick, onEditRuleClick, setCurrentRule }) => {
+  const automationRules = useSelector(selectAutomationRules);
   const automationRulesLoading = useSelector(selectAutomationRulesLoading);
   const dispatch = useDispatch();
 

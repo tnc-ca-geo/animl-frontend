@@ -29,14 +29,12 @@ const AutomationRulesForm = () => {
       {availableModels.length && selectedProject && automationRules ? (
         showAddRuleForm ? (
           <AddAutomationRuleForm
-            automationRules={automationRules}
             availableModels={availableModels}
             hideAddRuleForm={hideAddRuleForm}
             rule={currentRule}
           />
         ) : (
           <AutomationRulesList
-            automationRules={automationRules}
             availableModels={availableModels}
             onAddRuleClick={handleAddRuleClick}
             onEditRuleClick={handleEditRuleClick}

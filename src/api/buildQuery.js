@@ -419,6 +419,7 @@ const queries = {
               name
               taxonomy
             }
+            expectsCrops
           }
         }
       `,
