@@ -45,7 +45,7 @@ const PanelHeader = (props) => (
     <PanelTitle>
       {props.title && props.title}
       {props.tooltipContent &&
-        <InfoIcon tooltipContent={props.tooltipContent} side='bottom' />
+        <InfoIcon tooltipContent={props.tooltipContent} side='bottom' maxWidth={'350px'} />
       }
     </PanelTitle>
     { props.children }

@@ -283,6 +283,7 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                       tooltip={values.event.type.value === 'image-added' ?
                         "Only models that allow full-image processing are available when when the trigger is \"Image added.\"":
                         "Only models that are trained on image crops are available when the trigger is \"Label added.\""}
+                      tooltipMaxWidth={'350px'}
                     />
                   </FormFieldWrapper>
                 )}

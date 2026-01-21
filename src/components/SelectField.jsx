@@ -63,6 +63,7 @@ const SelectField = ({
   name,
   label,
   tooltip,
+  tooltipMaxWidth,
   value,
   options,
   onChange,
@@ -87,7 +88,7 @@ const SelectField = ({
       {label && (
         <label htmlFor={name}>
           {label}
-          {tooltip && <InfoIcon tooltipContent={tooltip} />}
+          {tooltip && <InfoIcon tooltipContent={tooltip} maxWidth={tooltipMaxWidth} side="bottom"/>}
         </label>
       )}
       <Select
