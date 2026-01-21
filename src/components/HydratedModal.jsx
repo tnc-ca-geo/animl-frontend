@@ -96,7 +96,7 @@ const HydratedModal = () => {
     },
     'automation-rules-form': {
       title: 'Configure Automation Rules',
-      titleTooltip: 'These rules only apply to images going forward. If you have existing images, they will not be re-processed when you update these rules.',
+      titleTooltip: 'Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.',
       size: 'lg',
       fullHeight: true,
       content: <AutomationRulesForm />,

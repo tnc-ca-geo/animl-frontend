@@ -149,19 +149,20 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
   }, []);
 
   const validateLabel = (val) => {
-    let rulesLabels = [];
-    automationRules.forEach((r) => {
+    console.log('validating label:', val);
+    for (const r of automationRules) {
       // only allow labels that are predicted by models used in prior rules
       if (r.action.type === 'run-inference') {
-        const model = models.find((m) => m._id === r.action.mlModel);
-        if (model) {
-          rulesLabels = rulesLabels.concat(model.categories.map((cat) => cat.name));
-        }
+        for (const cat in r.action.categoryConfig) {
+          console.log(cat, r.action.categoryConfig[cat]);
+          if (!r.action.categoryConfig[cat].disabled && cat === val) {
+            return; // valid label
+          }
+        };
       }
-    });
-    if (!rulesLabels.includes(val)) {
-      return "This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.";
     }
+
+    return "This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.";
   }
 
   return (
@@ -277,10 +278,13 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                       options={models.map((model) => ({
                         value: model._id,
                         label: `${model._id}`,
-                        isDisabled: values.event.type.value === 'image-added' && model.expectsCrops === true,
+                        isDisabled: (values.event.type.value === 'image-added' && model.expectsCrops === true)||
+                                   (values.event.type.value === 'label-added' && model.expectsCrops === false),
                       }))}
                       isSearchable={false}
-                      tooltip={"Only models that allow full-image processing are available when when the trigger is \"Image added.\""}
+                      tooltip={values.event.type.value === 'image-added' ?
+                        "Only models that allow full-image processing are available when when the trigger is \"Image added.\"":
+                        "Only models that are trained on image crops are available when the trigger is \"Label added.\""}
                     />
                   </FormFieldWrapper>
                 )}

@@ -410,7 +410,7 @@ const CurrentPastToggle = () => {
       <ToggleGroupItem value="CURRENT" aria-label="Current uploads">
         Current uploads
       </ToggleGroupItem>
-      <ToggleGroupItem value="PAST" aria-label="Past uploads">
+      <ToggleGroupItem value="COMPLETED" aria-label="Past uploads">
         Past uploads
       </ToggleGroupItem>
     </ToggleGroupRoot>
