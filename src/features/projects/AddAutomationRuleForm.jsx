@@ -149,12 +149,10 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
   }, []);
 
   const validateLabel = (val) => {
-    console.log('validating label:', val);
     for (const r of automationRules) {
       // only allow labels that are predicted by models used in prior rules
       if (r.action.type === 'run-inference') {
         for (const cat in r.action.categoryConfig) {
-          console.log(cat, r.action.categoryConfig[cat]);
           if (!r.action.categoryConfig[cat].disabled && cat === val) {
             return; // valid label
           }
