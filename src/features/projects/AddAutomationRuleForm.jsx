@@ -8,6 +8,7 @@ import {
   updateAutomationRules,
   selectMLModels,
   fetchModels,
+  selectAutomationRules,
   selectModelsLoadingState,
 } from './projectsSlice.js';
 import SelectField from '../../components/SelectField.jsx';
@@ -90,10 +91,11 @@ const GeofencingTooltip = () => (
   </div>
 );
 
-const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleForm, rule }) => {
+const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
   const modelsLoading = useSelector(selectModelsLoadingState);
+  const automationRules = useSelector(selectAutomationRules);
 
   // fetch model source records
   useEffect(() => {
@@ -121,7 +123,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
   // discard rule
   const handleDiscardRuleClick = () => hideAddRuleForm();
 
-  // countries for speceiesnet geofencing (ISO 3166-1 alpha-3 codes)
+  // countries for speciesnet geofencing (ISO 3166-1 alpha-3 codes)
   const countryOptions = useMemo(() => {
     return [
       { value: null, label: 'None' },
@@ -145,6 +147,21 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
         })),
     ];
   }, []);
+
+  const validateLabel = (val) => {
+    for (const r of automationRules) {
+      // only allow labels that are predicted by models used in prior rules
+      if (r.action.type === 'run-inference') {
+        for (const cat in r.action.categoryConfig) {
+          if (!r.action.categoryConfig[cat].disabled && cat === val) {
+            return; // valid label
+          }
+        };
+      }
+    }
+
+    return "This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.";
+  }
 
   return (
     <>
@@ -201,6 +218,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                       id="event-label"
                       name="event.label"
                       value={values.event.label ? values.event.label : ''}
+                      validate={validateLabel}
                     />
                     <ErrorMessage component={FormError} name="event.label" />
                   </FormFieldWrapper>
@@ -233,7 +251,7 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                     isSearchable={false}
                   />
                 </FormFieldWrapper>
-                {values.action.type.value === 'run-inference' && (
+                {models && values.action.type.value === 'run-inference' && (
                   <FormFieldWrapper>
                     <SelectField
                       name="action.model"
@@ -255,11 +273,17 @@ const AddAutomationRuleForm = ({ automationRules, availableModels, hideAddRuleFo
                       onBlur={setFieldTouched}
                       error={_.has(errors, 'action.model.value') && errors.action.model.value}
                       touched={touched.action}
-                      options={availableModels.map((model) => ({
-                        value: model,
-                        label: `${model}`,
+                      options={models.map((model) => ({
+                        value: model._id,
+                        label: `${model._id}`,
+                        isDisabled: (values.event.type.value === 'image-added' && model.expectsCrops === true)||
+                                   (values.event.type.value === 'label-added' && model.expectsCrops === false),
                       }))}
                       isSearchable={false}
+                      tooltip={values.event.type.value === 'image-added' ?
+                        "Only models that allow full-image processing are available when when the trigger is \"Image added.\"":
+                        "Only models that are trained on image crops are available when the trigger is \"Label added.\""}
+                      tooltipMaxWidth={'350px'}
                     />
                   </FormFieldWrapper>
                 )}

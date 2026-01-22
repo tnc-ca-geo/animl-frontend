@@ -172,7 +172,7 @@ const BulkUploadTable = ({ percentUploaded }) => {
           <SimpleSpinner />
         </SpinnerOverlay>
       )}
-      <CurrentCompletedToggle />
+      <CurrentPastToggle />
       <Table>
         <thead>
           <tr>
@@ -391,7 +391,7 @@ const getStatusMessage = (status, batch) => {
   return <StatusMessage loading={loading}>{statusMsg}</StatusMessage>;
 };
 
-const CurrentCompletedToggle = () => {
+const CurrentPastToggle = () => {
   const batchFilter = useSelector(selectBatchFilter);
   const dispatch = useDispatch();
 
@@ -399,7 +399,7 @@ const CurrentCompletedToggle = () => {
     <ToggleGroupRoot
       type="single"
       value={batchFilter}
-      aria-label="Filter current or completed uploads"
+      aria-label="Filter current or past uploads"
       onValueChange={(value) => {
         if (value) {
           dispatch(filterBatches(value));
@@ -410,8 +410,8 @@ const CurrentCompletedToggle = () => {
       <ToggleGroupItem value="CURRENT" aria-label="Current uploads">
         Current uploads
       </ToggleGroupItem>
-      <ToggleGroupItem value="COMPLETED" aria-label="Completed uploads">
-        Completed uploads
+      <ToggleGroupItem value="COMPLETED" aria-label="Past uploads">
+        Past uploads
       </ToggleGroupItem>
     </ToggleGroupRoot>
   );

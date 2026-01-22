@@ -96,6 +96,7 @@ const HydratedModal = () => {
     },
     'automation-rules-form': {
       title: 'Configure Automation Rules',
+      titleTooltip: 'Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.',
       size: 'lg',
       fullHeight: true,
       content: <AutomationRulesForm />,
@@ -176,6 +177,7 @@ const HydratedModal = () => {
       open={modalOpen}
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}
+      titleTooltip={modalContent && modalContentMap[modalContent].titleTooltip}
       size={modalContent && modalContentMap[modalContent].size}
       fullHeight={modalContent && modalContentMap[modalContent].fullHeight}
     >
