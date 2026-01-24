@@ -149,19 +149,35 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
   }, []);
 
   const validateLabel = (val) => {
+    // only allow labels that are predicted by models used in prior rules
     for (const r of automationRules) {
-      // only allow labels that are predicted by models used in prior rules
       if (r.action.type === 'run-inference') {
         for (const cat in r.action.categoryConfig) {
-          if (!r.action.categoryConfig[cat].disabled && cat === val) {
-            return; // valid label
+          if (!r.action.categoryConfig[cat].disabled) {
+            // check label name match
+            if (cat === val) {
+              console.log('valid label by name match:', val);
+              return; // valid label
+            }
+            // check label taxonomy match
+            if (models) {
+              const model = models.find((m) => m._id === r.action.mlModel);
+              if (model) {
+                for (const modelCat of model.categories) {
+                  if (modelCat.taxonomy && modelCat.taxonomy.includes(val)) {
+                    console.log('valid label by taxonomy match:', val);
+                    return; // valid label
+                  }
+                }
+              }
+            }
           }
-        };
+        }
       }
     }
 
-    return "This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.";
-  }
+    return 'This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.';
+  };
 
   return (
     <>
@@ -276,13 +292,18 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                       options={models.map((model) => ({
                         value: model._id,
                         label: `${model._id}`,
-                        isDisabled: (values.event.type.value === 'image-added' && model.expectsCrops === true)||
-                                   (values.event.type.value === 'label-added' && model.expectsCrops === false),
+                        isDisabled:
+                          (values.event.type.value === 'image-added' &&
+                            model.expectsCrops === true) ||
+                          (values.event.type.value === 'label-added' &&
+                            model.expectsCrops === false),
                       }))}
                       isSearchable={false}
-                      tooltip={values.event.type.value === 'image-added' ?
-                        "Only models that allow full-image processing are available when when the trigger is \"Image added.\"":
-                        "Only models that are trained on image crops are available when the trigger is \"Label added.\""}
+                      tooltip={
+                        values.event.type.value === 'image-added'
+                          ? 'Only models that allow full-image processing are available when when the trigger is "Image added."'
+                          : 'Only models that are trained on image crops are available when the trigger is "Label added."'
+                      }
                       tooltipMaxWidth={'350px'}
                     />
                   </FormFieldWrapper>
