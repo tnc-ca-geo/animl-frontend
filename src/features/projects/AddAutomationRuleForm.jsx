@@ -175,26 +175,25 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
     ];
   }, []);
 
+  // only allow labels that are predicted by models used in prior rules
   const [triggerModel, setTriggerModel] = useState(null); // model that produces the label that triggers the rule
   const validateTriggerLabel = (val) => {
-    // only allow labels that are predicted by models used in prior rules
     for (const r of automationRules) {
       if (r.action.type === 'run-inference') {
         for (const cat in r.action.categoryConfig) {
           if (!r.action.categoryConfig[cat].disabled) {
             // check label name match
             if (cat === val) {
-              console.log('valid label by name match:', val);
               setTriggerModel(r.action.mlModel);
               return; // valid label
             }
+
             // check label taxonomy match
             if (models) {
               const model = models.find((m) => m._id === r.action.mlModel);
               if (model) {
                 for (const modelCat of model.categories) {
                   if (modelCat.taxonomy && modelCat.taxonomy.includes(val)) {
-                    console.log('valid label by taxonomy match:', val);
                     setTriggerModel(r.action.mlModel);
                     return; // valid label
                   }
