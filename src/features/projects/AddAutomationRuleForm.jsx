@@ -22,6 +22,7 @@ import {
   FormError,
   FieldValidationMessage,
 } from '../../components/Form.jsx';
+import InfoIcon from '../../components/InfoIcon.jsx';
 import CategoryConfigList from './CategoryConfigList.jsx';
 import { SpinnerOverlay, SimpleSpinner } from '../../components/Spinner.jsx';
 import { CheckIcon } from '@radix-ui/react-icons';
@@ -103,6 +104,17 @@ const GeofencingTooltip = () => (
   <div style={{ maxWidth: '200px' }}>
     Select a country to limit the results to species that occur in that region. If no country is
     selected, no geographic filtering will be applied.
+  </div>
+);
+
+const LabelTriggerTooltip = () => (
+  <div style={{ maxWidth: '300px' }}>
+    <p>Enter a label that is predicted by one of your prior automation rules.</p>
+    <p>
+      If you are using a model that has taxonomic-aware labels – such as SpeciesNet - you can use a
+      higher-order taxon (e.g., &quot;rattus&quot;, &quot;rodentia&quot;, or &quot;mammalia&quot;)
+      to trigger events when any of its descendants are detected.
+    </p>
   </div>
 );
 
@@ -247,12 +259,17 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                 </FormFieldWrapper>
                 {values.event.type.value === 'label-added' && (
                   <FormFieldWrapper css={{ flexGrow: '0' }}>
-                    <label htmlFor="event-label">Label</label>
+                    <label htmlFor="event-label">
+                      Label or taxon
+                      <InfoIcon tooltipContent={<LabelTriggerTooltip />} />
+                    </label>
                     <Field
                       id="event-label"
                       name="event.label"
                       value={values.event.label ? values.event.label : ''}
+                      placeholder="e.g. 'rat' or 'rodentia'..."
                       validate={validateTriggerLabel}
+                      tooltipMaxWidth={'350px'}
                     />
                     <ErrorMessage component={FormError} name="event.label" />
                     {touched.event?.label && !errors.event?.label ? (
@@ -261,7 +278,10 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                           <CheckIcon />
                         </SuccessIcon>
                         Valid trigger. This label is predicted by{' '}
-                        <span style={{ fontWeight: 'bold', margin: '0 4px' }}>{triggerModel}</span>.
+                        <span style={{ fontWeight: 'bold', marginLeft: '4px' }}>
+                          {triggerModel}
+                        </span>
+                        .
                       </FieldValidationMessage>
                     ) : null}
                   </FormFieldWrapper>
