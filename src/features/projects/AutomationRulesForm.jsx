@@ -53,7 +53,6 @@ export const AutomationRulesForm = () => {
 };
 
 const TitleContainer = styled('div', {
-  marginLeft: '$2',
   display: 'flex',
   alignItems: 'center',
   flex: '1'
