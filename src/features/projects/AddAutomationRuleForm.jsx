@@ -109,7 +109,7 @@ const GeofencingTooltip = () => (
 
 const LabelTriggerTooltip = () => (
   <div style={{ maxWidth: '300px' }}>
-    <p>Enter a label that is predicted by one of your prior automation rules.</p>
+    <p>Enter a label that is predicted by a model in one of your prior automation rules.</p>
     <p>
       If you are using a model that has taxonomic-aware labels – such as SpeciesNet - you can use a
       higher-order taxon (e.g., &quot;rattus&quot;, &quot;rodentia&quot;, or &quot;mammalia&quot;)

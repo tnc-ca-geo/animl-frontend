@@ -8,7 +8,7 @@ const PanelTitle = styled('div', {
   // marginLeft: '$2',
   display: 'flex',
   alignItems: 'center',
-  flex: '1'
+  flex: '1',
 });
 
 const ClosePanelButton = styled(IconButton, {
@@ -21,9 +21,9 @@ const ClosePanelButton = styled(IconButton, {
       },
       right: {
         right: 0,
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 const StyledHeader = styled('div', {
@@ -44,15 +44,16 @@ const PanelHeader = (props) => (
   <StyledHeader className={props.className}>
     <PanelTitle>
       {props.title && props.title}
-      {props.tooltipContent &&
-        <InfoIcon tooltipContent={props.tooltipContent} side='bottom' maxWidth={'350px'} />
-      }
+      {props.tooltipContent && (
+        <InfoIcon tooltipContent={props.tooltipContent} side="bottom" maxWidth={'350px'} />
+      )}
     </PanelTitle>
-    { props.children }
+    {props.children}
     <ClosePanelButton
       position={props.closeButtonPosition || 'right'}
-      variant='ghost'
-      onClick={() => props.handlePanelClose()}>
+      variant="ghost"
+      onClick={() => props.handlePanelClose()}
+    >
       <Cross2Icon />
     </ClosePanelButton>
   </StyledHeader>

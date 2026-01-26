@@ -11,9 +11,16 @@ const InfoIcon = ({ tooltipContent, side, maxWidth }) => {
   const StyledTooltipContent = styled(TooltipContent, {
     maxWidth: maxWidth || null,
     margin: '0px 15px',
-    color: 'white',
+    color: '$loContrast',
+    fontWeight: '$3',
     p: {
-      color: 'white',
+      color: '$loContrast',
+    },
+    'p:first-child': {
+      marginTop: 0,
+    },
+    'p:last-child': {
+      marginBottom: 0,
     },
   });
 
