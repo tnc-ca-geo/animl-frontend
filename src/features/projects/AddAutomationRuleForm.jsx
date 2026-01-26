@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { styled } from '@stitches/react';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -19,9 +20,24 @@ import {
   ButtonRow,
   FormFieldWrapper,
   FormError,
+  FieldValidationMessage,
 } from '../../components/Form.jsx';
+import InfoIcon from '../../components/InfoIcon.jsx';
 import CategoryConfigList from './CategoryConfigList.jsx';
 import { SpinnerOverlay, SimpleSpinner } from '../../components/Spinner.jsx';
+import { CheckIcon } from '@radix-ui/react-icons';
+
+const SuccessIcon = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '$4',
+  height: '$4',
+  marginRight: '$2',
+  borderRadius: '50%',
+  color: '$successText',
+  backgroundColor: '$successBg',
+});
 
 const emptyRule = {
   name: '',
@@ -91,6 +107,17 @@ const GeofencingTooltip = () => (
   </div>
 );
 
+const LabelTriggerTooltip = () => (
+  <div style={{ maxWidth: '300px' }}>
+    <p>Enter a label that is predicted by a model in one of your prior automation rules.</p>
+    <p>
+      If you are using a model that has taxonomic-aware labels – such as SpeciesNet - you can use a
+      higher-order taxon (e.g., &quot;rattus&quot;, &quot;rodentia&quot;, or &quot;mammalia&quot;)
+      to trigger events when any of its descendants are detected.
+    </p>
+  </div>
+);
+
 const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
   const dispatch = useDispatch();
   const models = useSelector(selectMLModels);
@@ -148,20 +175,38 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
     ];
   }, []);
 
-  const validateLabel = (val) => {
+  // only allow labels that are predicted by models used in prior rules
+  const [triggerModel, setTriggerModel] = useState(null); // model that produces the label that triggers the rule
+  const validateTriggerLabel = (val) => {
     for (const r of automationRules) {
-      // only allow labels that are predicted by models used in prior rules
       if (r.action.type === 'run-inference') {
         for (const cat in r.action.categoryConfig) {
-          if (!r.action.categoryConfig[cat].disabled && cat === val) {
-            return; // valid label
+          if (!r.action.categoryConfig[cat].disabled) {
+            // check label name match
+            if (cat === val) {
+              setTriggerModel(r.action.mlModel);
+              return; // valid label
+            }
+
+            // check label taxonomy match
+            if (models) {
+              const model = models.find((m) => m._id === r.action.mlModel);
+              if (model) {
+                for (const modelCat of model.categories) {
+                  if (modelCat.taxonomy && modelCat.taxonomy.includes(val)) {
+                    setTriggerModel(r.action.mlModel);
+                    return; // valid label
+                  }
+                }
+              }
+            }
           }
-        };
+        }
       }
     }
 
-    return "This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.";
-  }
+    return 'This label is not predicted by any models used in your prior rules. Please check the list of labels available by navigating to that Automation Rule.';
+  };
 
   return (
     <>
@@ -213,14 +258,31 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                 </FormFieldWrapper>
                 {values.event.type.value === 'label-added' && (
                   <FormFieldWrapper css={{ flexGrow: '0' }}>
-                    <label htmlFor="event-label">Label</label>
+                    <label htmlFor="event-label">
+                      Label or taxon
+                      <InfoIcon tooltipContent={<LabelTriggerTooltip />} />
+                    </label>
                     <Field
                       id="event-label"
                       name="event.label"
                       value={values.event.label ? values.event.label : ''}
-                      validate={validateLabel}
+                      placeholder="e.g. 'rat' or 'rodentia'..."
+                      validate={validateTriggerLabel}
+                      tooltipMaxWidth={'350px'}
                     />
                     <ErrorMessage component={FormError} name="event.label" />
+                    {touched.event?.label && !errors.event?.label ? (
+                      <FieldValidationMessage>
+                        <SuccessIcon>
+                          <CheckIcon />
+                        </SuccessIcon>
+                        Valid trigger. This label is predicted by{' '}
+                        <span style={{ fontWeight: 'bold', marginLeft: '4px' }}>
+                          {triggerModel}
+                        </span>
+                        .
+                      </FieldValidationMessage>
+                    ) : null}
                   </FormFieldWrapper>
                 )}
               </FieldRow>
@@ -276,13 +338,18 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                       options={models.map((model) => ({
                         value: model._id,
                         label: `${model._id}`,
-                        isDisabled: (values.event.type.value === 'image-added' && model.expectsCrops === true)||
-                                   (values.event.type.value === 'label-added' && model.expectsCrops === false),
+                        isDisabled:
+                          (values.event.type.value === 'image-added' &&
+                            model.expectsCrops === true) ||
+                          (values.event.type.value === 'label-added' &&
+                            model.expectsCrops === false),
                       }))}
                       isSearchable={false}
-                      tooltip={values.event.type.value === 'image-added' ?
-                        "Only models that allow full-image processing are available when when the trigger is \"Image added.\"":
-                        "Only models that are trained on image crops are available when the trigger is \"Label added.\""}
+                      tooltip={
+                        values.event.type.value === 'image-added'
+                          ? 'Only models that allow full-image processing are available when when the trigger is "Image added."'
+                          : 'Only models that are trained on image crops are available when the trigger is "Label added."'
+                      }
                       tooltipMaxWidth={'350px'}
                     />
                   </FormFieldWrapper>
