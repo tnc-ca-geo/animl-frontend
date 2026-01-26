@@ -5,7 +5,7 @@ import { Modal } from './Modal.jsx';
 import ImagesStatsModal from '../features/images/ImagesStatsModal.jsx';
 import ExportModal from '../features/images/ExportModal.jsx';
 import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
-import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
+import { AutomationRulesForm, AutomationRulesFormTitle } from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
@@ -95,8 +95,12 @@ const HydratedModal = () => {
       },
     },
     'automation-rules-form': {
-      title: 'Configure Automation Rules',
-      titleTooltip: 'Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.',
+      title: (
+        <AutomationRulesFormTitle
+          title='Configure Automation Rules'
+          tooltipContent='Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.'
+        />
+      ),
       size: 'lg',
       fullHeight: true,
       content: <AutomationRulesForm />,

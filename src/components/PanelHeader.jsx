@@ -2,13 +2,9 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
-import InfoIcon from './InfoIcon.jsx';
 
-const PanelTitle = styled('div', {
-  // marginLeft: '$2',
-  display: 'flex',
-  alignItems: 'center',
-  flex: '1',
+const PanelTitle = styled('span', {
+  flex: '1'
 });
 
 const ClosePanelButton = styled(IconButton, {
@@ -42,13 +38,12 @@ const StyledHeader = styled('div', {
 
 const PanelHeader = (props) => (
   <StyledHeader className={props.className}>
-    <PanelTitle>
-      {props.title && props.title}
-      {props.tooltipContent && (
-        <InfoIcon tooltipContent={props.tooltipContent} side="bottom" maxWidth={'350px'} />
-      )}
-    </PanelTitle>
-    {props.children}
+    {props.title &&
+      <PanelTitle>
+        {props.title}
+      </PanelTitle>
+    }
+    { props.children }
     <ClosePanelButton
       position={props.closeButtonPosition || 'right'}
       variant="ghost"

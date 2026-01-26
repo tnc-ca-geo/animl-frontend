@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { styled } from '../../theme/stitches.config';
 import { fetchAutomationRules, selectAutomationRules, selectSelectedProject } from './projectsSlice';
 import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
+import InfoIcon from '../../components/InfoIcon';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
-const AutomationRulesForm = () => {
+export const AutomationRulesForm = () => {
   const selectedProject = useSelector(selectSelectedProject);
   const availableModels = selectedProject.availableMLModels;
   const [showAddRuleForm, setShowAddRuleForm] = useState(false);
@@ -50,4 +52,20 @@ const AutomationRulesForm = () => {
   );
 };
 
-export default AutomationRulesForm;
+const TitleContainer = styled('div', {
+  marginLeft: '$2',
+  display: 'flex',
+  alignItems: 'center',
+  flex: '1'
+});
+
+export const AutomationRulesFormTitle = ({ title, tooltipContent }) => {
+  return (
+    <TitleContainer>
+      {title && title}
+      {tooltipContent &&
+        <InfoIcon tooltipContent={tooltipContent} side='bottom' maxWidth={'350px'} />
+      }
+    </TitleContainer>
+  );
+};
