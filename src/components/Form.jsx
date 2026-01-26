@@ -90,6 +90,14 @@ export const FormError = styled('div', {
   marginTop: '$2',
 });
 
+export const FieldValidationMessage = styled('div', {
+  color: '$successText',
+  fontSize: '$3',
+  marginTop: '$2',
+  display: 'flex',
+  alignItems: 'center',
+});
+
 export const HelperText = styled('div', {
   padding: '$3',
   color: '$textDark',

@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { styled } from '@stitches/react';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -19,9 +20,23 @@ import {
   ButtonRow,
   FormFieldWrapper,
   FormError,
+  FieldValidationMessage,
 } from '../../components/Form.jsx';
 import CategoryConfigList from './CategoryConfigList.jsx';
 import { SpinnerOverlay, SimpleSpinner } from '../../components/Spinner.jsx';
+import { CheckIcon } from '@radix-ui/react-icons';
+
+const SuccessIcon = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '$4',
+  height: '$4',
+  marginRight: '$2',
+  borderRadius: '50%',
+  color: '$successText',
+  backgroundColor: '$successBg',
+});
 
 const emptyRule = {
   name: '',
@@ -148,7 +163,8 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
     ];
   }, []);
 
-  const validateLabel = (val) => {
+  const [triggerModel, setTriggerModel] = useState(null); // model that produces the label that triggers the rule
+  const validateTriggerLabel = (val) => {
     // only allow labels that are predicted by models used in prior rules
     for (const r of automationRules) {
       if (r.action.type === 'run-inference') {
@@ -157,6 +173,7 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
             // check label name match
             if (cat === val) {
               console.log('valid label by name match:', val);
+              setTriggerModel(r.action.mlModel);
               return; // valid label
             }
             // check label taxonomy match
@@ -166,6 +183,7 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                 for (const modelCat of model.categories) {
                   if (modelCat.taxonomy && modelCat.taxonomy.includes(val)) {
                     console.log('valid label by taxonomy match:', val);
+                    setTriggerModel(r.action.mlModel);
                     return; // valid label
                   }
                 }
@@ -234,9 +252,18 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
                       id="event-label"
                       name="event.label"
                       value={values.event.label ? values.event.label : ''}
-                      validate={validateLabel}
+                      validate={validateTriggerLabel}
                     />
                     <ErrorMessage component={FormError} name="event.label" />
+                    {touched.event?.label && !errors.event?.label ? (
+                      <FieldValidationMessage>
+                        <SuccessIcon>
+                          <CheckIcon />
+                        </SuccessIcon>
+                        Valid trigger. This label is predicted by{' '}
+                        <span style={{ fontWeight: 'bold', margin: '0 4px' }}>{triggerModel}</span>.
+                      </FieldValidationMessage>
+                    ) : null}
                   </FormFieldWrapper>
                 )}
               </FieldRow>
