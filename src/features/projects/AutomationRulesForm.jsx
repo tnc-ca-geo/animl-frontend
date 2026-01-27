@@ -5,7 +5,7 @@ import AddAutomationRuleForm from './AddAutomationRuleForm';
 import AutomationRulesList from './AutomationRulesList';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
 
-export const AutomationRulesForm = () => {
+const AutomationRulesForm = () => {
   const selectedProject = useSelector(selectSelectedProject);
   const availableModels = selectedProject.availableMLModels;
   const [showAddRuleForm, setShowAddRuleForm] = useState(false);
