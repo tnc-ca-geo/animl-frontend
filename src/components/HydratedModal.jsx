@@ -5,7 +5,7 @@ import { Modal } from './Modal.jsx';
 import ImagesStatsModal from '../features/images/ImagesStatsModal.jsx';
 import ExportModal from '../features/images/ExportModal.jsx';
 import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
-import { AutomationRulesForm } from '../features/projects/AutomationRulesForm.jsx';
+import AutomationRulesForm from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
