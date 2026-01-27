@@ -97,7 +97,7 @@ const HydratedModal = () => {
     },
     'automation-rules-form': {
       title: 'Configure Automation Rules',
-      headerTooltip: 'Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.',
+      titleTooltip: 'Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.',
       size: 'lg',
       fullHeight: true,
       content: <AutomationRulesForm />,
@@ -141,7 +141,7 @@ const HydratedModal = () => {
     },
     'manage-tags-and-labels-form': {
       title: `Manage ${manageTagsAndLabelsTab}`,
-      headerTooltip: <TagsVsLabelsHelp />,
+      titleTooltip: <TagsVsLabelsHelp />,
       headerContent: (
         <ManageLabelsAndTagsModalSwitch
           tab={manageTagsAndLabelsTab}
@@ -180,7 +180,7 @@ const HydratedModal = () => {
       open={modalOpen}
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}
-      headerTooltip={modalContent && modalContentMap[modalContent].headerTooltip}
+      titleTooltip={modalContent && modalContentMap[modalContent].titleTooltip}
       headerContent={modalContent && modalContentMap[modalContent].headerContent}
       size={modalContent && modalContentMap[modalContent].size}
       fullHeight={modalContent && modalContentMap[modalContent].fullHeight}

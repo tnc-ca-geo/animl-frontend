@@ -107,11 +107,11 @@ export const DialogTitle = StyledTitle;
 export const DialogDescription = StyledDescription;
 export const DialogClose = DialogPrimitive.Close;
 
-export const Modal = ({ open, handleModalToggle, size, fullHeight, title, headerTooltip, headerContent, children }) => {
+export const Modal = ({ open, handleModalToggle, size, fullHeight, title, headerTooltip: titleTooltip, headerContent, children }) => {
   return (
     <Dialog open={open} onOpenChange={() => handleModalToggle()}>
       <DialogContent size={size} fullHeight={fullHeight}>
-        <PanelHeader title={title} tooltipContent={headerTooltip} headerContent={headerContent} handlePanelClose={handleModalToggle} />
+        <PanelHeader title={title} tooltipContent={titleTooltip} headerContent={headerContent} handlePanelClose={handleModalToggle} />
         <ModalBody fullHeight={fullHeight}>
           {React.Children.map(children, (child) =>
             React.cloneElement(child, {
