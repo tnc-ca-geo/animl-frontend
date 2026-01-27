@@ -183,9 +183,9 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
         for (const cat in r.action.categoryConfig) {
           if (!r.action.categoryConfig[cat].disabled) {
             // check label name match
-            if (cat === val) {
+            if (cat.toLowerCase() === val.toLowerCase()) {
               setTriggerModel(r.action.mlModel);
-              return; // valid label
+              return;
             }
 
             // check label taxonomy match
@@ -193,9 +193,12 @@ const AddAutomationRuleForm = ({ availableModels, hideAddRuleForm, rule }) => {
               const model = models.find((m) => m._id === r.action.mlModel);
               if (model) {
                 for (const modelCat of model.categories) {
-                  if (modelCat.taxonomy && modelCat.taxonomy.includes(val)) {
+                  if (
+                    modelCat.taxonomy &&
+                    modelCat.taxonomy.toLowerCase().split(';').includes(val.toLowerCase())
+                  ) {
                     setTriggerModel(r.action.mlModel);
-                    return; // valid label
+                    return;
                   }
                 }
               }
