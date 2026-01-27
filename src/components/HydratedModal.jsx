@@ -5,7 +5,7 @@ import { Modal } from './Modal.jsx';
 import ImagesStatsModal from '../features/images/ImagesStatsModal.jsx';
 import ExportModal from '../features/images/ExportModal.jsx';
 import CameraAdminModal from '../features/cameras/CameraAdminModal.jsx';
-import { AutomationRulesForm, AutomationRulesFormTitle } from '../features/projects/AutomationRulesForm.jsx';
+import { AutomationRulesForm } from '../features/projects/AutomationRulesForm.jsx';
 import SaveViewForm from '../features/projects/SaveViewForm.jsx';
 import DeleteViewForm from '../features/projects/DeleteViewForm.jsx';
 import ManageUsersModal from '../features/projects/ManageUsersModal.jsx';
@@ -39,8 +39,9 @@ import {
 import { selectFocusIndex, selectWorkingImages } from '../features/review/reviewSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 import {
+  TagsVsLabelsHelp,
   ManageLabelsAndTagsModal,
-  ManageLabelsAndTagsModalTitle,
+  ManageLabelsAndTagsModalSwitch,
 } from '../features/projects/ManageTagsAndLabelsModal.jsx';
 
 // Modal populated with content
@@ -95,12 +96,8 @@ const HydratedModal = () => {
       },
     },
     'automation-rules-form': {
-      title: (
-        <AutomationRulesFormTitle
-          title='Configure Automation Rules'
-          tooltipContent='Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.'
-        />
-      ),
+      title: 'Configure Automation Rules',
+      headerTooltip: 'Note: these rules will only affect image processing going forward. Images that are already in your Project will not be re-processed.',
       size: 'lg',
       fullHeight: true,
       content: <AutomationRulesForm />,
@@ -143,8 +140,10 @@ const HydratedModal = () => {
       },
     },
     'manage-tags-and-labels-form': {
-      title: (
-        <ManageLabelsAndTagsModalTitle
+      title: `Manage ${manageTagsAndLabelsTab}`,
+      headerTooltip: <TagsVsLabelsHelp />,
+      headerContent: (
+        <ManageLabelsAndTagsModalSwitch
           tab={manageTagsAndLabelsTab}
           setTab={setManageTagsAndLabelsTab}
         />
@@ -181,7 +180,8 @@ const HydratedModal = () => {
       open={modalOpen}
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}
-      titleTooltip={modalContent && modalContentMap[modalContent].titleTooltip}
+      headerTooltip={modalContent && modalContentMap[modalContent].headerTooltip}
+      headerContent={modalContent && modalContentMap[modalContent].headerContent}
       size={modalContent && modalContentMap[modalContent].size}
       fullHeight={modalContent && modalContentMap[modalContent].fullHeight}
     >
