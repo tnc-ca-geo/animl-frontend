@@ -39,8 +39,9 @@ import {
 import { selectFocusIndex, selectWorkingImages } from '../features/review/reviewSlice';
 import { clearUsers } from '../features/projects/usersSlice.js';
 import {
+  TagsVsLabelsHelp,
   ManageLabelsAndTagsModal,
-  ManageLabelsAndTagsModalTitle,
+  ManageLabelsAndTagsModalSwitch,
 } from '../features/projects/ManageTagsAndLabelsModal.jsx';
 
 // Modal populated with content
@@ -139,8 +140,10 @@ const HydratedModal = () => {
       },
     },
     'manage-tags-and-labels-form': {
-      title: (
-        <ManageLabelsAndTagsModalTitle
+      title: `Manage ${manageTagsAndLabelsTab}`,
+      titleTooltip: <TagsVsLabelsHelp />,
+      headerContent: (
+        <ManageLabelsAndTagsModalSwitch
           tab={manageTagsAndLabelsTab}
           setTab={setManageTagsAndLabelsTab}
         />
@@ -178,6 +181,7 @@ const HydratedModal = () => {
       handleModalToggle={() => handleModalToggle(modalContent)}
       title={modalContent && modalContentMap[modalContent].title}
       titleTooltip={modalContent && modalContentMap[modalContent].titleTooltip}
+      headerContent={modalContent && modalContentMap[modalContent].headerContent}
       size={modalContent && modalContentMap[modalContent].size}
       fullHeight={modalContent && modalContentMap[modalContent].fullHeight}
     >

@@ -2,13 +2,19 @@ import React from 'react';
 import { styled } from '../theme/stitches.config';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import IconButton from './IconButton';
-import InfoIcon from './InfoIcon.jsx';
+import InfoIcon from './InfoIcon';
 
 const PanelTitle = styled('div', {
-  // marginLeft: '$2',
+  position: 'absolute',
+  left: '$3',
   display: 'flex',
   alignItems: 'center',
-  flex: '1',
+  flex: '1'
+});
+
+const PanelContent = styled('div', {
+  marginLeft: 'auto',
+  marginRight: 'auto',
 });
 
 const ClosePanelButton = styled(IconButton, {
@@ -29,7 +35,7 @@ const ClosePanelButton = styled(IconButton, {
 const StyledHeader = styled('div', {
   display: 'flex',
   alignItems: 'center',
-  // justifyContent: 'space-between',
+  justifyContent: 'space-between',
   padding: '$0 $2 $0 $3',
   height: '$7',
   borderTopLeftRadius: '$2',
@@ -42,13 +48,16 @@ const StyledHeader = styled('div', {
 
 const PanelHeader = (props) => (
   <StyledHeader className={props.className}>
-    <PanelTitle>
-      {props.title && props.title}
-      {props.tooltipContent && (
-        <InfoIcon tooltipContent={props.tooltipContent} side="bottom" maxWidth={'350px'} />
-      )}
-    </PanelTitle>
-    {props.children}
+    {props.title &&
+      <PanelTitle>
+        {props.title}
+        {props.tooltipContent &&
+          <InfoIcon tooltipContent={props.tooltipContent} side='bottom' maxWidth={'350px'} />
+        }
+      </PanelTitle>
+    }
+    {props.headerContent && <PanelContent>{props.headerContent}</PanelContent>}
+    { props.children }
     <ClosePanelButton
       position={props.closeButtonPosition || 'right'}
       variant="ghost"

@@ -2,7 +2,6 @@ import React from 'react';
 import { styled } from '../../theme/stitches.config';
 import ManageLabelsModal from './ManageLabelsModal';
 import { ManageTagsModal } from './ManageTagsModal/ManageTagsModal';
-import InfoIcon from '../../components/InfoIcon';
 
 export const ManageLabelsAndTagsModal = ({ tab = 'labels' }) => {
   return (
@@ -48,18 +47,11 @@ const TabTitle = styled('div', {
   },
 });
 
-const ModalTitle = styled('div', {
-  position: 'absolute',
-  left: '$3',
-  paddingTop: '$1',
-  paddingBottom: '$1',
-});
-
 const TagsVsLabelsContent = styled('div', {
   maxWidth: '300px',
 });
 
-const TagsVsLabelsHelp = () => (
+export const TagsVsLabelsHelp = () => (
   <TagsVsLabelsContent>
     <p>
       <a
@@ -86,17 +78,15 @@ const TagsVsLabelsHelp = () => (
   </TagsVsLabelsContent>
 );
 
-export const ManageLabelsAndTagsModalTitle = ({ tab, setTab }) => {
+export const ManageLabelsAndTagsModalSwitch = ({ tab, setTab }) => {
   return (
     <TitleContainer>
-      <ModalTitle>{`Manage ${tab}`}</ModalTitle>
       <TabTitle active={tab === 'labels'} onClick={() => setTab('labels')}>
         Labels
       </TabTitle>
       <TabTitle active={tab === 'tags'} onClick={() => setTab('tags')}>
         Tags
       </TabTitle>
-      <InfoIcon side="bottom" tooltipContent={<TagsVsLabelsHelp />} />
     </TitleContainer>
   );
 };
