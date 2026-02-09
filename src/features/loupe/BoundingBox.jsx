@@ -211,7 +211,13 @@ const BoundingBox = ({
     if (handle.indexOf('n') > -1 && top <= 0) setConstraintY(height);
     if (handle.indexOf('s') > -1 && bottom <= 0) setConstraintY(height);
 
-    const rect = { left, top, width: size.width, height: size.height };
+    // Clamp coordinates to image bounds to prevent negative bbox values (#220)
+    left = Math.max(0, left);
+    top = Math.max(0, top);
+    const clampedWidth = Math.max(1, Math.min(size.width, imgDims.width - left));
+    const clampedHeight = Math.max(1, Math.min(size.height, imgDims.height - top));
+
+    const rect = { left, top, width: clampedWidth, height: clampedHeight };
     const newBbox = absToRel(rect, imgDims);
     setBbox(newBbox);
   };
