@@ -14,6 +14,7 @@ import ImagesTableRow from './ImagesTableRow.jsx';
 import {
   sortChanged,
   selectImagesLoading,
+  selectNoneFound,
   selectPaginatedField,
   selectSortAscending,
 } from './imagesSlice';
@@ -173,6 +174,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const projectsLoading = useSelector(selectProjectsLoading);
   const imagesLoading = useSelector(selectImagesLoading);
+  const noneFound = useSelector(selectNoneFound);
   const isLoupeOpen = useSelector(selectLoupeOpen);
   const focusIndex = useSelector(selectFocusIndex);
   const scrollBarSize = useScrollbarSize();
@@ -318,7 +320,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
           <SimpleSpinner />
         </SpinnerOverlay>
       )}
-      {imagesLoading.noneFound && <RatsNoneFound />}
+      {noneFound && <RatsNoneFound />}
       {workingImages.length > 0 && (
         <Table {...getTableProps()}>
           <div style={{ height: headerHeight, width: `calc(100% - ${scrollBarSize.width}px)` }}>

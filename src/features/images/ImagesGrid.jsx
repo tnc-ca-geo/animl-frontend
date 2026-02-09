@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectFocusChangeType, selectFocusIndex } from '../review/reviewSlice.js';
 import { useEffectAfterMount } from '../../app/utils.js';
 import { sortBy } from 'lodash';
-import { selectImagesLoading, sortChanged } from './imagesSlice.js';
+import { selectImagesLoading, selectNoneFound, sortChanged } from './imagesSlice.js';
 import { selectProjectsLoading } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
@@ -43,6 +43,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
   const focusIndex = useSelector(selectFocusIndex);
   const projectsLoading = useSelector(selectProjectsLoading);
   const imagesLoading = useSelector(selectImagesLoading);
+  const noneFound = useSelector(selectNoneFound);
   const userRoles = useSelector(selectUserCurrentRoles);
 
   const hasObjectEditRole = hasRole(userRoles, WRITE_OBJECTS_ROLES);
@@ -233,7 +234,7 @@ export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
           <SimpleSpinner />
         </SpinnerOverlay>
       )}
-      {imagesLoading.noneFound && <RatsNoneFound />}
+      {noneFound && <RatsNoneFound />}
       <FloatingToolbar colCount={colCount} setColCount={changeColCount} />
       {workingImages.length > 0 && (
         <>
