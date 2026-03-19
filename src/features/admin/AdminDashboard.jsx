@@ -33,13 +33,6 @@ const Title = styled('h1', {
   margin: '0 0 $1 0',
 });
 
-const Subtitle = styled('p', {
-  fontSize: '$4',
-  fontWeight: '$2',
-  color: '$textMedium',
-  margin: 0,
-});
-
 const SpinnerWrapper = styled('div', {
   display: 'flex',
   justifyContent: 'center',

@@ -71,6 +71,7 @@ const Dot = styled('span', {
 
 const formatNumber = (n) => {
   if (n == null) return '—';
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
   return n.toLocaleString('en-US');
 };
 
@@ -93,20 +94,6 @@ const KPISummary = () => {
           <CardValue>{formatNumber(platform.totalProjects)}</CardValue>
         </Card>
         <Card>
-          <CardLabel>Total Images</CardLabel>
-          <CardValue>{formatNumber(platform.totalImages)}</CardValue>
-          <SubStat>
-            <SubStatItem>
-              <Dot color="green" />
-              {formatNumber(platform.totalImagesReviewed)} reviewed
-            </SubStatItem>
-            <SubStatItem>
-              <Dot color="orange" />
-              {formatNumber(platform.totalImagesNotReviewed)} pending
-            </SubStatItem>
-          </SubStat>
-        </Card>
-        <Card>
           <CardLabel>Total Users</CardLabel>
           <CardValue>{formatNumber(platform.totalUsers)}</CardValue>
         </Card>
@@ -118,6 +105,20 @@ const KPISummary = () => {
               <Dot color="blue" />
               {formatNumber(platform.totalWirelessCameras)} wireless
             </SubStatItem>
+          </SubStat>
+        </Card>
+        <Card>
+          <CardLabel>Total Images</CardLabel>
+          <CardValue>{formatNumber(platform.totalImages)}</CardValue>
+          <SubStat>
+            <SubStatItem>
+              <Dot color="green" />
+              {formatNumber(platform.totalImagesReviewed)} reviewed
+            </SubStatItem>
+            {/* <SubStatItem>
+              <Dot color="orange" />
+              {formatNumber(platform.totalImagesNotReviewed)} not reviewed
+            </SubStatItem> */}
           </SubStat>
         </Card>
       </Grid>
