@@ -3,6 +3,12 @@ import { useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import { selectLatestSnapshot } from './adminSlice';
 
+const Subtitle = styled('p', {
+  fontSize: '$4',
+  fontWeight: '$2',
+  color: '$textMedium',
+});
+
 const Grid = styled('div', {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -76,40 +82,46 @@ const KPISummary = () => {
   const { platform } = snapshot;
 
   return (
-    <Grid>
-      <Card>
-        <CardLabel>Total Projects</CardLabel>
-        <CardValue>{formatNumber(platform.totalProjects)}</CardValue>
-      </Card>
-      <Card>
-        <CardLabel>Total Images</CardLabel>
-        <CardValue>{formatNumber(platform.totalImages)}</CardValue>
-        <SubStat>
-          <SubStatItem>
-            <Dot color="green" />
-            {formatNumber(platform.totalImagesReviewed)} reviewed
-          </SubStatItem>
-          <SubStatItem>
-            <Dot color="orange" />
-            {formatNumber(platform.totalImagesNotReviewed)} pending
-          </SubStatItem>
-        </SubStat>
-      </Card>
-      <Card>
-        <CardLabel>Total Users</CardLabel>
-        <CardValue>{formatNumber(platform.totalUsers)}</CardValue>
-      </Card>
-      <Card>
-        <CardLabel>Total Cameras</CardLabel>
-        <CardValue>{formatNumber(platform.totalCameras)}</CardValue>
-        <SubStat>
-          <SubStatItem>
-            <Dot color="blue" />
-            {formatNumber(platform.totalWirelessCameras)} wireless
-          </SubStatItem>
-        </SubStat>
-      </Card>
-    </Grid>
+    <>
+      <Subtitle>
+        <span style={{ fontWeight: '600' }}>Last updated:</span>{' '}
+        {new Date(snapshot.snapshotDate).toLocaleString()}
+      </Subtitle>
+      <Grid>
+        <Card>
+          <CardLabel>Total Projects</CardLabel>
+          <CardValue>{formatNumber(platform.totalProjects)}</CardValue>
+        </Card>
+        <Card>
+          <CardLabel>Total Images</CardLabel>
+          <CardValue>{formatNumber(platform.totalImages)}</CardValue>
+          <SubStat>
+            <SubStatItem>
+              <Dot color="green" />
+              {formatNumber(platform.totalImagesReviewed)} reviewed
+            </SubStatItem>
+            <SubStatItem>
+              <Dot color="orange" />
+              {formatNumber(platform.totalImagesNotReviewed)} pending
+            </SubStatItem>
+          </SubStat>
+        </Card>
+        <Card>
+          <CardLabel>Total Users</CardLabel>
+          <CardValue>{formatNumber(platform.totalUsers)}</CardValue>
+        </Card>
+        <Card>
+          <CardLabel>Total Cameras</CardLabel>
+          <CardValue>{formatNumber(platform.totalCameras)}</CardValue>
+          <SubStat>
+            <SubStatItem>
+              <Dot color="blue" />
+              {formatNumber(platform.totalWirelessCameras)} wireless
+            </SubStatItem>
+          </SubStat>
+        </Card>
+      </Grid>
+    </>
   );
 };
 

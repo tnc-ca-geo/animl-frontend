@@ -57,9 +57,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     dispatch(fetchPlatformStats());
     const end = new Date().toISOString();
-    const start = new Date(
-      Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000,
-    ).toISOString();
+    const start = new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString();
     dispatch(fetchPlatformStatsHistory({ start, end }));
   }, [dispatch]);
 
@@ -69,8 +67,7 @@ const AdminDashboard = () => {
   return (
     <DashboardContainer>
       <DashboardHeader>
-        <Title>Platform Admin Dashboard</Title>
-        <Subtitle>Overview of usage and growth across all Animl projects</Subtitle>
+        <Title>Admin Dashboard</Title>
       </DashboardHeader>
       {errors && (
         <Callout type="error" title="Failed to load platform stats">
