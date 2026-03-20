@@ -12,12 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { indigo, green, orange } from '@radix-ui/colors';
-import {
-  selectHistory,
-  selectHistoryRange,
-  selectAdminFilter,
-  fetchPlatformStatsHistory,
-} from './adminSlice';
+import { selectHistory, selectHistoryRange, setHistoryRange } from './adminSlice';
 
 const Section = styled('div', {
   background: '$loContrast',
@@ -196,7 +191,6 @@ const GrowthTrends = () => {
   const dispatch = useDispatch();
   const history = useSelector(selectHistory);
   const historyRange = useSelector(selectHistoryRange);
-  const filter = useSelector(selectAdminFilter);
   const activePreset = detectActivePreset(historyRange);
 
   const [customStart, setCustomStart] = useState('');
@@ -207,22 +201,21 @@ const GrowthTrends = () => {
     (days) => {
       setShowCustom(false);
       const range = getPresetRange(days);
-      dispatch(fetchPlatformStatsHistory({ ...range, filter }));
+      dispatch(setHistoryRange({ ...range }));
     },
-    [dispatch, filter],
+    [dispatch],
   );
 
   const handleCustomApply = useCallback(() => {
     if (customStart && customEnd) {
       dispatch(
-        fetchPlatformStatsHistory({
+        setHistoryRange({
           start: new Date(customStart).toISOString(),
           end: new Date(customEnd).toISOString(),
-          filter,
         }),
       );
     }
-  }, [dispatch, customStart, customEnd, filter]);
+  }, [dispatch, customStart, customEnd]);
 
   const data = history.map((snapshot) => ({
     date: formatDate(snapshot.snapshotDate),
@@ -245,9 +238,9 @@ const GrowthTrends = () => {
               {preset.label}
             </RangeButton>
           ))}
-          <RangeButton active={showCustom} onClick={() => setShowCustom(true)}>
+          {/* <RangeButton active={showCustom} onClick={() => setShowCustom(true)}>
             Custom
-          </RangeButton>
+          </RangeButton> */}
         </RangeControls>
       </SectionHeader>
       {showCustom && (

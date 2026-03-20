@@ -9,6 +9,7 @@ import {
   selectAdminFilter,
   selectHistoryRange,
   selectLatestSnapshot,
+  setHistoryRange,
 } from './adminSlice';
 import KPISummary from './KPISummary';
 import GrowthTrends from './GrowthTrends';
@@ -62,27 +63,36 @@ const AdminDashboard = () => {
   const isInitialMount = useRef(true);
   const snapshot = useSelector(selectLatestSnapshot);
 
+  // Set historyRange on initial mount
+  useEffect(() => {
+    if (!historyRange.start || !historyRange.end) {
+      console.log('Setting default history range on initial mount');
+      const end = new Date().toISOString();
+      const start = new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString();
+      dispatch(setHistoryRange({ start, end }));
+    }
+  }, [dispatch, historyRange]);
+
   // Initial fetch on mount with default filter
   useEffect(() => {
-    const end = new Date().toISOString();
-    const start = new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    console.log('AdminDashboard mounted, fetching initial data with filter:', filter);
     dispatch(fetchPlatformStats(filter));
-    dispatch(fetchPlatformStatsHistory({ start, end, filter }));
-  }, [dispatch]);
+    dispatch(fetchPlatformStatsHistory({ filter }));
+  }, []);
 
-  // Re-fetch when filter changes (skip initial mount)
+  // Re-fetch when filter or historyRange changes (skip initial mount)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
+    console.log(
+      'AdminDashboard filter or historyRange changed, re-fetching data with filter:',
+      filter,
+    );
     dispatch(fetchPlatformStats(filter));
-    const start =
-      historyRange.start ||
-      new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString();
-    const end = historyRange.end || new Date().toISOString();
-    dispatch(fetchPlatformStatsHistory({ start, end, filter }));
-  }, [filter]);
+    dispatch(fetchPlatformStatsHistory({ filter }));
+  }, [filter, historyRange, dispatch]);
 
   const isLoading = latestLoading.isLoading || historyLoading.isLoading;
   const errors = latestLoading.errors || historyLoading.errors;
@@ -92,7 +102,7 @@ const AdminDashboard = () => {
       <DashboardHeader>
         <Title>Admin Dashboard</Title>
         <Subtitle>
-          <span style={{ fontWeight: '600' }}>Last updated:</span>{' '}
+          <span style={{ fontWeight: '600' }}>Last snapshot:</span>{' '}
           {snapshot ? new Date(snapshot.snapshotDate).toLocaleString() : 'N/A'}
         </Subtitle>
       </DashboardHeader>

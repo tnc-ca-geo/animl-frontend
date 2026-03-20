@@ -88,13 +88,13 @@ export const fetchPlatformStats = (filter) => async (dispatch) => {
 };
 
 export const fetchPlatformStatsHistory =
-  ({ start, end, filter }) =>
-  async (dispatch) => {
+  ({ filter }) =>
+  async (dispatch, getState) => {
     try {
       await Auth.currentAuthenticatedUser();
       dispatch(fetchHistoryStart());
-      dispatch(setHistoryRange({ start, end }));
-      const input = { start, end };
+      const historyRange = getState().admin.historyRange;
+      const input = { start: historyRange.start, end: historyRange.end };
       if (filter) input.filter = filter;
       const res = await call({ request: 'getPlatformStatsHistory', input });
       dispatch(fetchHistorySuccess(res.platformStatsHistory));
