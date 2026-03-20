@@ -172,7 +172,7 @@ const ProjectTable = () => {
 
   return (
     <Section>
-      <SectionTitle>Project Breakdown</SectionTitle>
+      <SectionTitle>Projects</SectionTitle>
       <Table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, hgIdx) => (

@@ -36,7 +36,7 @@ const FilterGroup = styled('div', {
 const GroupLabel = styled('span', {
   fontSize: '$2',
   fontWeight: '$4',
-  color: '$textMedium',
+  color: '$textDark',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
   marginRight: '$1',
@@ -77,7 +77,7 @@ const DashboardFilters = () => {
   return (
     <FilterBar>
       <FilterGroup>
-        <GroupLabel>Type:</GroupLabel>
+        <GroupLabel>Project Type:</GroupLabel>
         {PROJECT_TYPES.map((type) => {
           const checked = (filter.types || []).includes(type.value);
           return (
@@ -96,7 +96,7 @@ const DashboardFilters = () => {
         })}
       </FilterGroup>
       <FilterGroup>
-        <GroupLabel>Stage:</GroupLabel>
+        <GroupLabel>Project Stage:</GroupLabel>
         {PROJECT_STAGES.map((stage) => {
           const checked = (filter.stages || []).includes(stage.value);
           return (

@@ -39,7 +39,7 @@ const Title = styled('h1', {
 });
 
 const Subtitle = styled('p', {
-  fontSize: '$4',
+  fontSize: '$3',
   fontWeight: '$2',
   color: '$textMedium',
 });
