@@ -152,7 +152,7 @@ const LinkWithIcon = styled('span', {
   },
 });
 
-export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
+export const HamburgerMenu = ({ signedIn, appActive, signOut, isSuperUser }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -165,6 +165,11 @@ export const HamburgerMenu = ({ signedIn, appActive, signOut }) => {
           <Body>
             {signedIn && appActive && (
               <>
+                {isSuperUser && (
+                  <Dialog.Close asChild>
+                    <NavLink to="/admin">Admin Dashboard</NavLink>
+                  </Dialog.Close>
+                )}
                 <Dialog.Close asChild>
                   <A href="https://docs.animl.camera" target="_blank" rel="noreferrer">
                     Documentation

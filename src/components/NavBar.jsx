@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../theme/stitches.config.js';
 import { Link } from 'react-router-dom';
-import { selectUserUsername, selectUserAuthStatus } from '../features/auth/authSlice.js';
+import { selectUserUsername, selectUserAuthStatus, selectUserIsSuperUser } from '../features/auth/authSlice.js';
 import { selectRouterLocation } from '../features/images/imagesSlice.js';
 import ProjectAndViewNav from '../features/projects/ProjectAndViewNav.jsx';
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -78,6 +78,7 @@ const NavBar = () => {
   const { signOut } = useAuthenticator((context) => [context.user]);
   const authStatus = useSelector(selectUserAuthStatus);
   const user = useSelector(selectUserUsername);
+  const isSuperUser = useSelector(selectUserIsSuperUser);
   const signedIn = authStatus === 'authenticated' && user;
   const routerLocation = useSelector(selectRouterLocation);
   const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
@@ -99,6 +100,7 @@ const NavBar = () => {
         <>
           <ProjectAndViewNav />
           <NavLinks>
+            {isSuperUser && <Link to="/admin">Admin</Link>}
             <a href="https://docs.animl.camera" target="_blank" rel="noreferrer">
               Documentation
             </a>
@@ -122,7 +124,7 @@ const NavBar = () => {
           </a>
         </NavLinks>
       )}
-      <HamburgerMenu appActive={appActive} signedIn={signedIn} signOut={signOut} />
+      <HamburgerMenu appActive={appActive} signedIn={signedIn} signOut={signOut} isSuperUser={isSuperUser} />
     </StyledNav>
   );
 };

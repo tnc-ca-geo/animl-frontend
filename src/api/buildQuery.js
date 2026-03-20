@@ -1007,6 +1007,74 @@ const queries = {
     `,
     variables: { input },
   }),
+
+  getPlatformStats: (input) => ({
+    template: `
+      query GetPlatformStats($input: PlatformStatsInput) {
+        platformStats(input: $input) {
+          _id
+          snapshotDate
+          platform {
+            totalProjects
+            totalImages
+            totalImagesReviewed
+            totalImagesNotReviewed
+            totalUsers
+            totalCameras
+            totalWirelessCameras
+          }
+          projects {
+            projectId
+            projectName
+            type
+            stage
+            imageCount
+            imagesReviewed
+            imagesNotReviewed
+            cameraCount
+            wirelessCameraCount
+            userCount
+            imagesAddedSinceLastSnapshot
+          }
+        }
+      }
+    `,
+    variables: { input },
+  }),
+
+  getPlatformStatsHistory: (input) => ({
+    template: `
+      query GetPlatformStatsHistory($input: PlatformStatsHistoryInput!) {
+        platformStatsHistory(input: $input) {
+          _id
+          snapshotDate
+          platform {
+            totalProjects
+            totalImages
+            totalImagesReviewed
+            totalImagesNotReviewed
+            totalUsers
+            totalCameras
+            totalWirelessCameras
+          }
+          projects {
+            projectId
+            projectName
+            type
+            stage
+            imageCount
+            imagesReviewed
+            imagesNotReviewed
+            cameraCount
+            wirelessCameraCount
+            userCount
+            imagesAddedSinceLastSnapshot
+          }
+        }
+      }
+    `,
+    variables: { input },
+  }),
 };
 
 export default queries;
