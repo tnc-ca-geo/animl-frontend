@@ -9,6 +9,10 @@ const initialState = {
     start: null,
     end: null,
   },
+  filter: {
+    types: ['external'],
+    stages: ['production'],
+  },
   loadingStates: {
     fetchLatest: {
       isLoading: false,
@@ -52,6 +56,9 @@ export const adminSlice = createSlice({
     setHistoryRange: (state, { payload }) => {
       state.historyRange = payload;
     },
+    setFilter: (state, { payload }) => {
+      state.filter = payload;
+    },
   },
 });
 
@@ -63,14 +70,16 @@ export const {
   fetchHistorySuccess,
   fetchHistoryFailure,
   setHistoryRange,
+  setFilter,
 } = adminSlice.actions;
 
 // Thunks
-export const fetchPlatformStats = () => async (dispatch) => {
+export const fetchPlatformStats = (filter) => async (dispatch) => {
   try {
     await Auth.currentAuthenticatedUser();
     dispatch(fetchLatestStart());
-    const res = await call({ request: 'getPlatformStats' });
+    const input = filter ? { filter } : undefined;
+    const res = await call({ request: 'getPlatformStats', input });
     dispatch(fetchLatestSuccess(res.platformStats));
   } catch (err) {
     console.error('Error fetching platform stats:', err);
@@ -79,13 +88,15 @@ export const fetchPlatformStats = () => async (dispatch) => {
 };
 
 export const fetchPlatformStatsHistory =
-  ({ start, end }) =>
+  ({ start, end, filter }) =>
   async (dispatch) => {
     try {
       await Auth.currentAuthenticatedUser();
       dispatch(fetchHistoryStart());
       dispatch(setHistoryRange({ start, end }));
-      const res = await call({ request: 'getPlatformStatsHistory', input: { start, end } });
+      const input = { start, end };
+      if (filter) input.filter = filter;
+      const res = await call({ request: 'getPlatformStatsHistory', input });
       dispatch(fetchHistorySuccess(res.platformStatsHistory));
     } catch (err) {
       console.error('Error fetching platform stats history:', err);
@@ -99,5 +110,6 @@ export const selectHistory = (state) => state.admin.history;
 export const selectHistoryRange = (state) => state.admin.historyRange;
 export const selectLatestSnapshotLoading = (state) => state.admin.loadingStates.fetchLatest;
 export const selectHistoryLoading = (state) => state.admin.loadingStates.fetchHistory;
+export const selectAdminFilter = (state) => state.admin.filter;
 
 export default adminSlice.reducer;

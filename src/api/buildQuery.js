@@ -1008,10 +1008,10 @@ const queries = {
     variables: { input },
   }),
 
-  getPlatformStats: () => ({
+  getPlatformStats: (input) => ({
     template: `
-      query GetPlatformStats {
-        platformStats {
+      query GetPlatformStats($input: PlatformStatsInput) {
+        platformStats(input: $input) {
           _id
           snapshotDate
           platform {
@@ -1026,6 +1026,8 @@ const queries = {
           projects {
             projectId
             projectName
+            type
+            stage
             imageCount
             imagesReviewed
             imagesNotReviewed
@@ -1037,6 +1039,7 @@ const queries = {
         }
       }
     `,
+    variables: { input },
   }),
 
   getPlatformStatsHistory: (input) => ({
@@ -1057,6 +1060,8 @@ const queries = {
           projects {
             projectId
             projectName
+            type
+            stage
             imageCount
             imagesReviewed
             imagesNotReviewed

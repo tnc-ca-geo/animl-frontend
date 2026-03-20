@@ -12,7 +12,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { indigo, green, orange } from '@radix-ui/colors';
-import { selectHistory, selectHistoryRange, fetchPlatformStatsHistory } from './adminSlice';
+import {
+  selectHistory,
+  selectHistoryRange,
+  selectAdminFilter,
+  fetchPlatformStatsHistory,
+} from './adminSlice';
 
 const Section = styled('div', {
   background: '$loContrast',
@@ -191,6 +196,7 @@ const GrowthTrends = () => {
   const dispatch = useDispatch();
   const history = useSelector(selectHistory);
   const historyRange = useSelector(selectHistoryRange);
+  const filter = useSelector(selectAdminFilter);
   const activePreset = detectActivePreset(historyRange);
 
   const [customStart, setCustomStart] = useState('');
@@ -201,9 +207,9 @@ const GrowthTrends = () => {
     (days) => {
       setShowCustom(false);
       const range = getPresetRange(days);
-      dispatch(fetchPlatformStatsHistory(range));
+      dispatch(fetchPlatformStatsHistory({ ...range, filter }));
     },
-    [dispatch],
+    [dispatch, filter],
   );
 
   const handleCustomApply = useCallback(() => {
@@ -212,10 +218,11 @@ const GrowthTrends = () => {
         fetchPlatformStatsHistory({
           start: new Date(customStart).toISOString(),
           end: new Date(customEnd).toISOString(),
+          filter,
         }),
       );
     }
-  }, [dispatch, customStart, customEnd]);
+  }, [dispatch, customStart, customEnd, filter]);
 
   const data = history.map((snapshot) => ({
     date: formatDate(snapshot.snapshotDate),

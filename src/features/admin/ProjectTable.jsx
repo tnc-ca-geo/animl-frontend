@@ -78,6 +78,11 @@ const formatNumber = (val) => {
   return val.toLocaleString('en-US');
 };
 
+const capitalize = (str) => {
+  if (!str) return '—';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 const ProjectTable = () => {
   const snapshot = useSelector(selectLatestSnapshot);
 
@@ -85,6 +90,8 @@ const ProjectTable = () => {
     if (!snapshot?.projects) return [];
     return snapshot.projects.map((p) => ({
       projectName: p.projectName,
+      type: p.type,
+      stage: p.stage,
       imageCount: p.imageCount,
       imagesReviewed: p.imagesReviewed,
       imagesNotReviewed: p.imagesNotReviewed,
@@ -100,6 +107,16 @@ const ProjectTable = () => {
       {
         Header: 'Project',
         accessor: 'projectName',
+      },
+      {
+        Header: 'Type',
+        accessor: 'type',
+        Cell: ({ value }) => capitalize(value),
+      },
+      {
+        Header: 'Stage',
+        accessor: 'stage',
+        Cell: ({ value }) => capitalize(value),
       },
       {
         Header: 'Images',
@@ -186,7 +203,11 @@ const ProjectTable = () => {
                   <Td
                     {...cell.getCellProps()}
                     key={cell.column.id}
-                    numeric={cell.column.id !== 'projectName'}
+                    numeric={
+                      cell.column.id !== 'projectName' &&
+                      cell.column.id !== 'type' &&
+                      cell.column.id !== 'stage'
+                    }
                   >
                     {cell.render('Cell')}
                   </Td>
