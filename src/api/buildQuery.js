@@ -1028,6 +1028,13 @@ const queries = {
             projectName
             type
             stage
+            location {
+              geometry {
+                type
+                coordinates
+              }
+              name
+            }
             imageCount
             imagesReviewed
             imagesNotReviewed
@@ -1062,6 +1069,13 @@ const queries = {
             projectName
             type
             stage
+            location {
+              geometry {
+                type
+                coordinates
+              }
+              name
+            }
             imageCount
             imagesReviewed
             imagesNotReviewed

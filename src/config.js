@@ -25,6 +25,9 @@ export const SUPPORTED_WIRELESS_CAMS = [
 
 export const IN_MAINTENANCE_MODE = false;
 
+export const MAPBOX_TOKEN =
+  'pk.eyJ1IjoiYW5pbWwtYWRtaW4iLCJhIjoiY21temcwZmswMDk3cTJycTJjeTc3cGNxOCJ9.ih2Gbau3HOhbqwmdbBfzYg';
+
 export const GA_CONFIG = {
   trackingId: 'G-V6NSBLL83L',
   gaOptions: {
