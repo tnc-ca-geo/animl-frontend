@@ -4,6 +4,7 @@ import { useTable, useSortBy } from 'react-table';
 import { styled } from '../../theme/stitches.config.js';
 import { selectLatestSnapshot } from './adminSlice';
 import { TriangleUpIcon, TriangleDownIcon } from '@radix-ui/react-icons';
+import ProjectMap from './ProjectMap';
 
 const Section = styled('div', {
   background: '$loContrast',
@@ -173,6 +174,7 @@ const ProjectTable = () => {
   return (
     <Section>
       <SectionTitle>Projects</SectionTitle>
+      <ProjectMap />
       <Table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, hgIdx) => (
