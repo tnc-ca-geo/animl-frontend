@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ResizeObserver } from '@juggle/resize-observer';
+import { ObjectID } from 'bson';
 
 /*
  * Hook for skiping the useEffect run on a component's initial render
@@ -169,6 +170,20 @@ export const isImageReviewed = (image) => {
     obj.labels.some((lbl) => !lbl.validation || lbl.validation.validated),
   );
   return hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels;
+};
+
+// Factory to create breakpoints and utility methods
+/*
+ * build a GeoJSON location object from lat/lon
+ */
+export const buildLocation = (lat, lon) => {
+  return {
+    _id: new ObjectID().toString(),
+    geometry: {
+      type: 'Point',
+      coordinates: [lon, lat],
+    },
+  };
 };
 
 // Factory to create breakpoints and utility methods

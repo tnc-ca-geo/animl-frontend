@@ -176,6 +176,18 @@ const projectFields = `
   name
   timezone
   description
+  type
+  stage
+  organization
+  country
+  state_province
+  location {
+    _id
+    geometry {
+      type
+      coordinates
+    }
+  }
   views {
     ${viewFields}
   }
