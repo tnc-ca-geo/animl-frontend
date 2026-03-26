@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import MapGL, { Marker, NavigationControl } from 'react-map-gl';
+import { SearchBox } from '@mapbox/search-js-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { styled } from '../theme/stitches.config.js';
 import { MAPBOX_TOKEN } from '../config.js';
@@ -50,6 +51,35 @@ const LocationPicker = ({
   });
 
   const hasMarker = latitude !== '' && longitude !== '' && !isNaN(latitude) && !isNaN(longitude);
+
+  const handleSearchRetrieve = useCallback(
+    (res) => {
+      const feature = res?.features?.[0];
+      if (!feature) return;
+
+      const [lng, lat] = feature.geometry.coordinates;
+      setFieldValue('latitude', parseFloat(lat.toFixed(6)));
+      setFieldValue('longitude', parseFloat(lng.toFixed(6)));
+      setFieldTouched('latitude', true);
+      setFieldTouched('longitude', true);
+
+      setViewState((prev) => ({
+        ...prev,
+        longitude: lng,
+        latitude: lat,
+        zoom: 12,
+      }));
+
+      const context = feature.properties?.context;
+      if (context?.country?.name) {
+        setFieldValue('country', context.country.name);
+      }
+      if (context?.region?.name) {
+        setFieldValue('state_province', context.region.name);
+      }
+    },
+    [setFieldValue, setFieldTouched],
+  );
 
   const handleMapClick = useCallback(
     (e) => {
@@ -145,11 +175,25 @@ const LocationPicker = ({
           onMove={(e) => setViewState(e.viewState)}
           onClick={handleMapClick}
           mapboxAccessToken={MAPBOX_TOKEN}
-          mapStyle="mapbox://styles/mapbox/light-v11"
+          mapStyle="mapbox://styles/mapbox/satellite-v9"
           style={{ width: '100%', height: '100%' }}
           reuseMaps
         >
-          <NavigationControl position="top-right" />
+          <div style={{ padding: '10px' }}>
+            <SearchBox
+              accessToken={MAPBOX_TOKEN}
+              onRetrieve={handleSearchRetrieve}
+              theme={{
+                cssText: `
+
+                .Input {
+                  padding-left: 2.25em !important;
+                }
+              `,
+              }}
+            />
+          </div>
+          <NavigationControl position="bottom-right" />
           {hasMarker && (
             <Marker
               longitude={parseFloat(longitude)}

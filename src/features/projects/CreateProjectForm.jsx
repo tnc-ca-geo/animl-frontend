@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 import { timeZonesNames } from '@vvo/tzdb';
+import tzlookup from 'tz-lookup';
 
 import { styled } from '../../theme/stitches.config.js';
 import {
@@ -40,6 +41,50 @@ const Header = styled('div', {
   paddingTop: '$8',
   marginBottom: '$4',
 });
+
+const TimezoneHint = styled('div', {
+  fontSize: '$2',
+  color: '$textLight',
+  marginTop: '$1',
+  fontStyle: 'italic',
+});
+
+const TimezoneAutoFill = ({ setInferredTimezone }) => {
+  const { values, setFieldValue } = useFormikContext();
+  const timerRef = useRef(null);
+  const prevInferredRef = useRef(null);
+
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    const lat = parseFloat(values.latitude);
+    const lng = parseFloat(values.longitude);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      setInferredTimezone(null);
+      return;
+    }
+
+    timerRef.current = setTimeout(() => {
+      try {
+        const tz = tzlookup(lat, lng);
+        if (timeZonesNames.includes(tz)) {
+          setInferredTimezone(tz);
+          if (values.timezone === '' || values.timezone === prevInferredRef.current) {
+            setFieldValue('timezone', tz);
+          }
+          prevInferredRef.current = tz;
+        }
+      } catch {
+        // tz-lookup throws on out-of-bounds coordinates
+      }
+    }, 500);
+
+    return () => clearTimeout(timerRef.current);
+  }, [values.latitude, values.longitude]);
+
+  return null;
+};
 
 const typeOptions = [
   { value: 'internal', label: 'Internal' },
@@ -80,6 +125,7 @@ const CreateProjectForm = () => {
   const mlModels = useSelector(selectModelOptions);
   const createProjectIsLoading = useSelector(selectCreateProjectLoading);
   const mlModelsOptionsIsLoading = useSelector(selectModelOptionsLoading);
+  const [inferredTimezone, setInferredTimezone] = useState(null);
 
   const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const mlModelOptions = useMemo(
@@ -130,6 +176,7 @@ const CreateProjectForm = () => {
         >
           {({ values, errors, isValid, touched, setFieldTouched, setFieldValue }) => (
             <Form>
+              <TimezoneAutoFill setInferredTimezone={setInferredTimezone} />
               {/* Project identity */}
               <FieldRow>
                 <FormFieldWrapper>
@@ -185,6 +232,21 @@ const CreateProjectForm = () => {
                 </FormFieldWrapper>
               </FieldRow>
 
+              {/* Location */}
+              <FieldRow>
+                <FormFieldWrapper>
+                  <label>Location</label>
+                  <LocationPicker
+                    latitude={values.latitude}
+                    longitude={values.longitude}
+                    setFieldValue={setFieldValue}
+                    setFieldTouched={setFieldTouched}
+                    errors={errors}
+                    touched={touched}
+                  />
+                </FormFieldWrapper>
+              </FieldRow>
+
               {/* Geography */}
               <FieldRow>
                 <FormFieldWrapper>
@@ -202,6 +264,8 @@ const CreateProjectForm = () => {
                   )}
                 </FormFieldWrapper>
               </FieldRow>
+
+              {/* Timezone (after location for auto-inference) */}
               <FieldRow>
                 <FormFieldWrapper>
                   <SelectField
@@ -210,26 +274,18 @@ const CreateProjectForm = () => {
                     options={tzOptions}
                     value={tzOptions.find(({ value }) => value === values.timezone)}
                     touched={touched.timezone}
-                    onChange={(name, { value }) => setFieldValue(name, value)}
-                    onBlur={(name, { value }) => setFieldTouched(name, value)}
+                    onChange={(name, { value }) => {
+                      setFieldValue(name, value);
+                    }}
+                    onBlur={(name, { value }) => {
+                      setFieldTouched(name, value);
+                    }}
                     error={errors.timezone}
                     maxMenuHeight={300}
                   />
-                </FormFieldWrapper>
-              </FieldRow>
-
-              {/* Location */}
-              <FieldRow>
-                <FormFieldWrapper>
-                  <label>Location</label>
-                  <LocationPicker
-                    latitude={values.latitude}
-                    longitude={values.longitude}
-                    setFieldValue={setFieldValue}
-                    setFieldTouched={setFieldTouched}
-                    errors={errors}
-                    touched={touched}
-                  />
+                  {inferredTimezone && (
+                    <TimezoneHint>Timezone at current Location is: {inferredTimezone}</TimezoneHint>
+                  )}
                 </FormFieldWrapper>
               </FieldRow>
 
