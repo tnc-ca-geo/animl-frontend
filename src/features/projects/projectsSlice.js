@@ -57,6 +57,11 @@ const initialState = {
       operation: null,
       errors: null,
     },
+    updateProject: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
   },
   successNotif: {
     title: '',
@@ -161,6 +166,33 @@ export const projectsSlice = createSlice({
     dismissCreateProjectError: (state, { payload }) => {
       const index = payload;
       state.loadingStates.createProject.errors.splice(index, 1);
+    },
+
+    updateProjectStart: (state) => {
+      const ls = { isLoading: true, operation: 'updating', errors: null };
+      state.loadingStates.updateProject = ls;
+    },
+
+    updateProjectSuccess: (state, { payload }) => {
+      const { project } = payload.updateProject;
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.updateProject = ls;
+      const idx = state.projects.findIndex((p) => p._id === project._id);
+      if (idx !== -1) state.projects[idx] = project;
+      state.successNotif = {
+        title: 'Updated Project',
+        message: 'Project updated successfully!',
+      };
+    },
+
+    updateProjectFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.updateProject = ls;
+    },
+
+    dismissUpdateProjectError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.updateProject.errors.splice(index, 1);
     },
 
     /*
@@ -520,6 +552,11 @@ export const {
   createProjectFailure,
   dismissCreateProjectError,
 
+  updateProjectStart,
+  updateProjectSuccess,
+  updateProjectFailure,
+  dismissUpdateProjectError,
+
   editViewStart,
   saveViewSuccess,
   deleteViewSuccess,
@@ -610,6 +647,26 @@ export const createProject = (payload, resetFormCallback) => async (dispatch) =>
   } catch (err) {
     console.log('err: ', err);
     dispatch(createProjectFailure(err));
+  }
+};
+
+export const updateProject = (projId, diffs, successCallback) => async (dispatch) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+    if (token) {
+      dispatch(updateProjectStart());
+      const result = await call({
+        projId,
+        request: 'updateProject',
+        input: diffs,
+      });
+      dispatch(updateProjectSuccess(result));
+      if (successCallback) successCallback();
+    }
+  } catch (err) {
+    console.log('err: ', err);
+    dispatch(updateProjectFailure(err));
   }
 };
 
@@ -992,5 +1049,9 @@ export const selectManageLabelsErrors = (state) =>
 export const selectProjectTagErrors = (state) => state.projects.loadingStates.projectTags.errors;
 export const selectAutomationRules = (state) => state.projects.automationRules;
 export const selectProjectSuccessNotif = (state) => state.projects.successNotif;
+export const selectUpdateProjectLoading = (state) =>
+  state.projects.loadingStates.updateProject.isLoading;
+export const selectUpdateProjectErrors = (state) =>
+  state.projects.loadingStates.updateProject.errors;
 
 export default projectsSlice.reducer;

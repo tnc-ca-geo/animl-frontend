@@ -27,13 +27,6 @@ import {
   selectModelOptionsLoading,
 } from './projectsSlice.js';
 
-const PageWrapper = styled('div', {
-  maxWidth: '600px',
-  padding: '0 $5',
-  width: '100%',
-  margin: '0 auto',
-});
-
 const Header = styled('div', {
   fontSize: '24px',
   fontWeight: '$5',
@@ -142,13 +135,13 @@ const CreateProjectForm = () => {
   }, []);
 
   return (
-    <PageWrapper>
+    <>
       {(createProjectIsLoading || mlModelsOptionsIsLoading) && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>
       )}
-      <Header>Create project</Header>
+      <Header>Create Project</Header>
       <FormWrapper>
         <Formik
           initialValues={{
@@ -322,7 +315,7 @@ const CreateProjectForm = () => {
           )}
         </Formik>
       </FormWrapper>
-    </PageWrapper>
+    </>
   );
 };
 
