@@ -83,7 +83,7 @@ export const fetchPlatformStats = (filter) => async (dispatch) => {
     dispatch(fetchLatestSuccess(res.platformStats));
   } catch (err) {
     console.error('Error fetching platform stats:', err);
-    dispatch(fetchLatestFailure(err));
+    dispatch(fetchLatestFailure(err.message || 'Unknown error'));
   }
 };
 
@@ -100,7 +100,7 @@ export const fetchPlatformStatsHistory =
       dispatch(fetchHistorySuccess(res.platformStatsHistory));
     } catch (err) {
       console.error('Error fetching platform stats history:', err);
-      dispatch(fetchHistoryFailure(err));
+      dispatch(fetchHistoryFailure(err.message || 'Unknown error'));
     }
   };
 
