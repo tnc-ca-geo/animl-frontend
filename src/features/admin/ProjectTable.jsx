@@ -12,6 +12,9 @@ const Section = styled('div', {
   borderRadius: '$2',
   padding: '$4',
   marginBottom: '$4',
+});
+
+const TableWrapper = styled('div', {
   overflowX: 'auto',
 });
 
@@ -44,6 +47,17 @@ const Th = styled('th', {
   '&:hover': {
     color: '$textDark',
   },
+  variants: {
+    sticky: {
+      true: {
+        position: 'sticky',
+        left: 0,
+        zIndex: 1,
+        background: '$loContrast',
+        boxShadow: '2px 0 4px -2px rgba(0,0,0,0.12)',
+      },
+    },
+  },
 });
 
 const SortIconWrapper = styled('span', {
@@ -63,6 +77,18 @@ const Td = styled('td', {
       true: {
         fontFamily: '$mono',
         textAlign: 'right',
+      },
+    },
+    sticky: {
+      true: {
+        position: 'sticky',
+        left: 0,
+        zIndex: 1,
+        background: '$loContrast',
+        boxShadow: '2px 0 4px -2px rgba(0,0,0,0.12)',
+        'tr:hover &': {
+          background: '$backgroundDark',
+        },
       },
     },
   },
@@ -175,50 +201,64 @@ const ProjectTable = () => {
     <Section>
       <SectionTitle>Projects</SectionTitle>
       <ProjectMap />
-      <Table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup, hgIdx) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={hgIdx}>
-              {headerGroup.headers.map((column) => (
-                <Th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
-                  {column.render('Header')}
-                  <SortIconWrapper>
-                    {column.isSorted ? (
-                      column.isSortedDesc ? (
-                        <TriangleDownIcon />
-                      ) : (
-                        <TriangleUpIcon />
-                      )
-                    ) : null}
-                  </SortIconWrapper>
-                </Th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <Tr {...row.getRowProps()} key={row.id}>
-                {row.cells.map((cell) => (
-                  <Td
-                    {...cell.getCellProps()}
-                    key={cell.column.id}
-                    numeric={
-                      cell.column.id !== 'projectName' &&
-                      cell.column.id !== 'type' &&
-                      cell.column.id !== 'stage'
-                    }
+      <TableWrapper>
+        <Table {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup, hgIdx) => (
+              <tr {...headerGroup.getHeaderGroupProps()} key={hgIdx}>
+                {headerGroup.headers.map((column) => (
+                  <Th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    key={column.id}
+                    sticky={column.id === 'projectName'}
                   >
-                    {cell.render('Cell')}
-                  </Td>
+                    {column.render('Header')}
+                    <SortIconWrapper>
+                      {column.isSorted ? (
+                        column.isSortedDesc ? (
+                          <TriangleDownIcon />
+                        ) : (
+                          <TriangleUpIcon />
+                        )
+                      ) : null}
+                    </SortIconWrapper>
+                  </Th>
                 ))}
-              </Tr>
-            );
-          })}
-        </tbody>
-      </Table>
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              // console.log('Rendering row for project:', row.original.projectName); // Debug log
+              prepareRow(row);
+              return (
+                <Tr {...row.getRowProps()} key={row.id}>
+                  {row.cells.map((cell) => {
+                    console.log(
+                      `Rendering cell for column ${cell.column.id} with value:`,
+                      cell.value,
+                    ); // Debug log
+                    return (
+                      <Td
+                        {...cell.getCellProps()}
+                        key={cell.column.id}
+                        sticky={cell.column.id === 'projectName'}
+                        numeric={
+                          cell.column.id !== 'projectName' &&
+                          cell.column.id !== 'type' &&
+                          cell.column.id !== 'stage'
+                        }
+                      >
+                        {cell.render('Cell')}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </TableWrapper>
     </Section>
   );
 };
