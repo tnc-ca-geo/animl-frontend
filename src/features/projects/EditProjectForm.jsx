@@ -77,7 +77,7 @@ const TimezoneAutoFill = ({ setInferredTimezone }) => {
     }, 500);
 
     return () => clearTimeout(timerRef.current);
-  }, [values.latitude, values.longitude]);
+  }, [values.latitude, values.longitude, values.timezone, setFieldValue, setInferredTimezone]);
 
   return null;
 };
@@ -91,6 +91,8 @@ const stageOptions = [
   { value: 'demo', label: 'Demo' },
   { value: 'production', label: 'Production' },
 ];
+
+const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
 
 const editProjectSchema = Yup.object().shape({
   name: Yup.string().required('Enter a project name'),
@@ -224,7 +226,6 @@ const EditProjectForm = () => {
     [projects],
   );
 
-  const tzOptions = timeZonesNames.map((tz) => ({ value: tz, label: tz }));
   const mlModelOptions = useMemo(
     () =>
       mlModels.map(({ _id, description }) => ({

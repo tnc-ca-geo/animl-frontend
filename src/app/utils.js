@@ -172,7 +172,6 @@ export const isImageReviewed = (image) => {
   return hasObjs && !hasUnlockedObjs && !hasAllInvalidatedLabels;
 };
 
-// Factory to create breakpoints and utility methods
 /*
  * build a GeoJSON location object from lat/lon
  */

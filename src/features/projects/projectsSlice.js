@@ -152,7 +152,7 @@ export const projectsSlice = createSlice({
       state.loadingStates.createProject = ls;
 
       state.projects = [...state.projects, project];
-      state.successNotifs = {
+      state.successNotif = {
         title: 'Created Project',
         message: 'Project created successfully!',
       };
