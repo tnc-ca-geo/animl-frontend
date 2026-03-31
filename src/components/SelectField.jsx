@@ -74,6 +74,7 @@ const SelectField = ({
   isMulti,
   maxMenuHeight = 400,
   menuPlacement = 'auto',
+  components: customComponents,
 }) => {
   const handleChange = (value) => {
     onChange(name, value);
@@ -105,6 +106,7 @@ const SelectField = ({
         isMulti={isMulti}
         maxMenuHeight={maxMenuHeight}
         menuPlacement={menuPlacement}
+        {...(customComponents && { components: customComponents })}
       />
       {!!error && touched && <FormError>{error}</FormError>}
     </div>

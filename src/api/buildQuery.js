@@ -176,6 +176,18 @@ const projectFields = `
   name
   timezone
   description
+  type
+  stage
+  organization
+  country
+  state_province
+  location {
+    _id
+    geometry {
+      type
+      coordinates
+    }
+  }
   views {
     ${viewFields}
   }
@@ -225,6 +237,19 @@ const queries = {
     template: `
       mutation CreateProject($input: CreateProjectInput!) {
         createProject(input: $input) {
+          project {
+            ${projectFields}
+          }
+        }
+      }
+    `,
+    variables: { input: input },
+  }),
+
+  updateProject: (input) => ({
+    template: `
+      mutation UpdateProject($input: UpdateProjectInput!) {
+        updateProject(input: $input) {
           project {
             ${projectFields}
           }

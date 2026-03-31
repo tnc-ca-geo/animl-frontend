@@ -19,6 +19,7 @@ import {
 } from '../../components/Form.jsx';
 import DatePickerWithFormik from '../../components/DatePicker.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
+import { buildLocation } from '../../app/utils.js';
 
 const FormHeader = styled('div', {
   fontWeight: '$3',
@@ -272,16 +273,6 @@ const updateGloablTimezone = (tz) => {
     moment.tz.setDefault();
   }
 };
-
-function buildLocation(lat, lon) {
-  return {
-    _id: new ObjectID().toString(),
-    geometry: {
-      type: 'Point',
-      coordinates: [lon, lat],
-    },
-  };
-}
 
 function diff(formVals, deployment) {
   const depLat = deployment.location.geometry.coordinates[1];

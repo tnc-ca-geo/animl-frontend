@@ -20,6 +20,8 @@ import {
   dismissModelsError,
   selectCreateProjectsErrors,
   dismissCreateProjectError,
+  selectUpdateProjectErrors,
+  dismissUpdateProjectError,
   selectManageLabelsErrors,
   dismissManageLabelsError,
   selectProjectTagErrors,
@@ -84,6 +86,7 @@ const ErrorToast = () => {
   const redriveBatchErrors = useSelector(selectRedriveBatchErrors);
   const manageUserErrors = useSelector(selectManageUserErrors);
   const createProjectErrors = useSelector(selectCreateProjectsErrors);
+  const updateProjectErrors = useSelector(selectUpdateProjectErrors);
   const manageLabelsErrors = useSelector(selectManageLabelsErrors);
   const uploadErrors = useSelector(selectUploadErrors);
   const cameraSerialNumberErrors = useSelector(selectCameraSerialNumberErrors);
@@ -111,6 +114,7 @@ const ErrorToast = () => {
     enrichErrors(redriveBatchErrors, 'Error Retrying Failed Images in Batch', 'redriveBatch'),
     enrichErrors(manageUserErrors, 'Manage User Error', 'manageUsers'),
     enrichErrors(createProjectErrors, 'Error Creating Project', 'createProject'),
+    enrichErrors(updateProjectErrors, 'Error Updating Project', 'updateProject'),
     enrichErrors(manageLabelsErrors, 'Error Updating Label', 'manageLabels'),
     enrichErrors(uploadErrors, 'Error Uploading Images', 'upload'),
     enrichErrors(
@@ -174,6 +178,7 @@ const dismissErrorActions = {
   comments: (i) => dismissCommentsError(i),
   projects: (i) => dismissProjectsError(i),
   createProject: (i) => dismissCreateProjectError(i),
+  updateProject: (i) => dismissUpdateProjectError(i),
   views: (i) => dismissViewsError(i),
   deployments: (i) => dismissDeploymentsError(i),
   models: (i) => dismissModelsError(i),
