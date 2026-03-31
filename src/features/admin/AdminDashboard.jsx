@@ -75,7 +75,6 @@ const AdminDashboard = () => {
 
   // Initial fetch on mount with default filter
   useEffect(() => {
-    console.log('AdminDashboard mounted, fetching initial data with filter:', filter);
     dispatch(fetchPlatformStats(filter));
     dispatch(fetchPlatformStatsHistory({ filter }));
   }, []);
@@ -86,10 +85,6 @@ const AdminDashboard = () => {
       isInitialMount.current = false;
       return;
     }
-    console.log(
-      'AdminDashboard filter or historyRange changed, re-fetching data with filter:',
-      filter,
-    );
     dispatch(fetchPlatformStats(filter));
     dispatch(fetchPlatformStatsHistory({ filter }));
   }, [filter, historyRange, dispatch]);
