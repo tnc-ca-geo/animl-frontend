@@ -2,12 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
+const DEFAULT_HISTORY_DAYS = 180;
+
 const initialState = {
   latestSnapshot: null,
   history: [],
   historyRange: {
-    start: null,
-    end: null,
+    start: new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+    end: new Date().toISOString(),
   },
   filter: {
     types: ['external'],
