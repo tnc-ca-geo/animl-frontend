@@ -265,6 +265,7 @@ const CreateProjectForm = () => {
                   <SelectField
                     name="timezone"
                     label="Timezone"
+                    menuPlacement="top"
                     options={tzOptions}
                     value={tzOptions.find(({ value }) => value === values.timezone)}
                     touched={touched.timezone}
@@ -290,6 +291,7 @@ const CreateProjectForm = () => {
                     name="availableMLModels"
                     label="Available ML models"
                     options={mlModelOptions}
+                    menuPlacement="top"
                     value={mlModelOptions.filter(({ value }) =>
                       values.availableMLModels.includes(value),
                     )}
