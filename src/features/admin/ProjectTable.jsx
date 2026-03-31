@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable, useSortBy } from 'react-table';
 import { styled } from '../../theme/stitches.config.js';
 import { selectLatestSnapshot } from './adminSlice';
 import { TriangleUpIcon, TriangleDownIcon } from '@radix-ui/react-icons';
 import ProjectMap from './ProjectMap';
+import { StandAloneInput } from '../../components/Form.jsx';
 
 const Section = styled('div', {
   background: '$loContrast',
@@ -94,6 +95,18 @@ const Td = styled('td', {
   },
 });
 
+const SearchRow = styled('div', {
+  marginBottom: '$3',
+  maxWidth: '320px',
+});
+
+const EmptyStateCell = styled('td', {
+  padding: '$4 $3',
+  color: '$textMedium',
+  fontSize: '$3',
+  fontStyle: 'italic',
+});
+
 const Tr = styled('tr', {
   '&:hover': {
     backgroundColor: '$backgroundDark',
@@ -112,12 +125,13 @@ const capitalize = (str) => {
 
 const ProjectTable = () => {
   const snapshot = useSelector(selectLatestSnapshot);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const data = useMemo(() => {
     if (!snapshot?.projects) return [];
     return snapshot.projects.map((p) => ({
       projectName: p.projectName,
-      type: p.type,
+      organization: p.organization,
       stage: p.stage,
       imageCount: p.imageCount,
       imagesReviewed: p.imagesReviewed,
@@ -129,6 +143,16 @@ const ProjectTable = () => {
     }));
   }, [snapshot]);
 
+  const filteredData = useMemo(() => {
+    if (!searchQuery) return data;
+    const lowerQ = searchQuery.toLowerCase();
+    return data.filter(
+      (row) =>
+        row.projectName?.toLowerCase().includes(lowerQ) ||
+        row.organization?.toLowerCase().includes(lowerQ),
+    );
+  }, [data, searchQuery]);
+
   const columns = useMemo(
     () => [
       {
@@ -136,8 +160,8 @@ const ProjectTable = () => {
         accessor: 'projectName',
       },
       {
-        Header: 'Type',
-        accessor: 'type',
+        Header: 'Organization',
+        accessor: 'organization',
         Cell: ({ value }) => capitalize(value),
       },
       {
@@ -187,7 +211,7 @@ const ProjectTable = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
       columns,
-      data,
+      data: filteredData,
       initialState: {
         sortBy: [{ id: 'imageCount', desc: true }],
       },
@@ -201,6 +225,15 @@ const ProjectTable = () => {
     <Section>
       <SectionTitle>Projects</SectionTitle>
       <ProjectMap />
+      <SearchRow>
+        <StandAloneInput
+          type="text"
+          placeholder="Search by project or organization…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          css={{ width: 320, height: 40, padding: '$0 $3', marginRight: '$3' }}
+        />
+      </SearchRow>
       <TableWrapper>
         <Table {...getTableProps()}>
           <thead>
@@ -228,16 +261,18 @@ const ProjectTable = () => {
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
+            {rows.length === 0 && (
+              <tr>
+                <EmptyStateCell colSpan={columns.length}>
+                  No projects match &ldquo;{searchQuery}&rdquo;.
+                </EmptyStateCell>
+              </tr>
+            )}
             {rows.map((row) => {
-              // console.log('Rendering row for project:', row.original.projectName); // Debug log
               prepareRow(row);
               return (
                 <Tr {...row.getRowProps()} key={row.id}>
                   {row.cells.map((cell) => {
-                    console.log(
-                      `Rendering cell for column ${cell.column.id} with value:`,
-                      cell.value,
-                    ); // Debug log
                     return (
                       <Td
                         {...cell.getCellProps()}
@@ -245,8 +280,8 @@ const ProjectTable = () => {
                         sticky={cell.column.id === 'projectName'}
                         numeric={
                           cell.column.id !== 'projectName' &&
-                          cell.column.id !== 'type' &&
-                          cell.column.id !== 'stage'
+                          cell.column.id !== 'stage' &&
+                          cell.column.id !== 'organization'
                         }
                       >
                         {cell.render('Cell')}
