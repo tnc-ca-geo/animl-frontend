@@ -127,7 +127,7 @@ const ProjectMap = () => {
           <MapGL
             initialViewState={initialViewState}
             mapboxAccessToken={MAPBOX_TOKEN}
-            mapStyle="mapbox://styles/mapbox/light-v11"
+            mapStyle="mapbox://styles/mapbox/satellite-v9"
             style={{ width: '100%', height: '100%' }}
             reuseMaps
           >
