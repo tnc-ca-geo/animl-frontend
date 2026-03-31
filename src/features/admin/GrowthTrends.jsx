@@ -8,7 +8,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { indigo, green, orange } from '@radix-ui/colors';
@@ -105,6 +104,61 @@ const ApplyButton = styled('button', {
   },
 });
 
+const ChartControls = styled('div', {
+  display: 'flex',
+  gap: '$5',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+});
+
+const MetricToggles = styled('div', {
+  display: 'flex',
+  gap: '$2',
+  flexWrap: 'wrap',
+});
+
+const MetricToggleButton = styled('button', {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '$2',
+  padding: '$1 $3',
+  fontSize: '$3',
+  fontFamily: '$roboto',
+  border: '1px solid $border',
+  borderRadius: '$2',
+  cursor: 'pointer',
+  backgroundColor: '$loContrast',
+  color: '$textMedium',
+  transition: 'all 0.15s ease',
+  '&:hover': {
+    backgroundColor: '$backgroundDark',
+    color: '$textDark',
+  },
+  variants: {
+    active: {
+      true: {
+        backgroundColor: '$loContrast',
+        color: '$textDark',
+        borderColor: '$border',
+      },
+      false: {
+        backgroundColor: '$backgroundDark',
+        color: '$textLight',
+        borderColor: '$border',
+        opacity: 0.6,
+      },
+    },
+  },
+});
+
+const MetricColorDot = styled('span', {
+  display: 'inline-block',
+  width: '10px',
+  height: '10px',
+  borderRadius: '$round',
+  flexShrink: 0,
+});
+
 const ChartTooltipWrapper = styled('div', {
   backgroundColor: '$backgroundLight',
   borderRadius: '$1',
@@ -187,6 +241,12 @@ const toInputDate = (isoStr) => {
   return new Date(isoStr).toISOString().split('T')[0];
 };
 
+const METRICS = [
+  { key: 'Total Images', color: indigo.indigo11 },
+  { key: 'Total Projects', color: green.green11 },
+  { key: 'Total Users', color: orange.orange11 },
+];
+
 const GrowthTrends = () => {
   const dispatch = useDispatch();
   const history = useSelector(selectHistory);
@@ -196,6 +256,7 @@ const GrowthTrends = () => {
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
   const [showCustom, setShowCustom] = useState(false);
+  const [visibleMetrics, setVisibleMetrics] = useState(() => new Set(METRICS.map((m) => m.key)));
 
   const handlePresetClick = useCallback(
     (days) => {
@@ -217,6 +278,18 @@ const GrowthTrends = () => {
     }
   }, [dispatch, customStart, customEnd]);
 
+  const handleToggleMetric = useCallback((key) => {
+    setVisibleMetrics((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
+
   const data = history.map((snapshot) => ({
     date: formatDate(snapshot.snapshotDate),
     'Total Images': snapshot.platform.totalImages,
@@ -224,24 +297,46 @@ const GrowthTrends = () => {
     'Total Users': snapshot.platform.totalUsers,
   }));
 
+  const yAxisMax = data.reduce((max, row) => {
+    for (const key of visibleMetrics) {
+      if (row[key] > max) max = row[key];
+    }
+    return max;
+  }, 0);
+  const yAxisDomain = [0, visibleMetrics.size === 0 ? 1 : Math.ceil(yAxisMax * 1.1)];
+
   return (
     <Section>
       <SectionHeader>
         <SectionTitle>Growth Trends</SectionTitle>
-        <RangeControls>
-          {RANGE_PRESETS.map((preset) => (
-            <RangeButton
-              key={preset.label}
-              active={!showCustom && activePreset === preset.label}
-              onClick={() => handlePresetClick(preset.days)}
-            >
-              {preset.label}
-            </RangeButton>
-          ))}
-          {/* <RangeButton active={showCustom} onClick={() => setShowCustom(true)}>
+        <ChartControls>
+          <MetricToggles>
+            {METRICS.map((metric) => (
+              <MetricToggleButton
+                key={metric.key}
+                active={visibleMetrics.has(metric.key)}
+                onClick={() => handleToggleMetric(metric.key)}
+              >
+                <MetricColorDot css={{ backgroundColor: metric.color }} />
+                {metric.key}
+              </MetricToggleButton>
+            ))}
+          </MetricToggles>
+          <RangeControls>
+            {RANGE_PRESETS.map((preset) => (
+              <RangeButton
+                key={preset.label}
+                active={!showCustom && activePreset === preset.label}
+                onClick={() => handlePresetClick(preset.days)}
+              >
+                {preset.label}
+              </RangeButton>
+            ))}
+            {/* <RangeButton active={showCustom} onClick={() => setShowCustom(true)}>
             Custom
           </RangeButton> */}
-        </RangeControls>
+          </RangeControls>
+        </ChartControls>
       </SectionHeader>
       {showCustom && (
         <CustomDateInputs>
@@ -264,33 +359,25 @@ const GrowthTrends = () => {
           <LineChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
             <XAxis dataKey="date" tick={{ fontSize: 12 }} interval="preserveStartEnd" />
-            <YAxis tick={{ fontSize: 12 }} tickFormatter={(tick) => tick.toLocaleString('en-US')} />
+            <YAxis
+              tick={{ fontSize: 12 }}
+              tickFormatter={(tick) => tick.toLocaleString('en-US')}
+              domain={yAxisDomain}
+            />
             <Tooltip content={<ChartTooltip />} />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="Total Images"
-              stroke={indigo.indigo11}
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 5 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="Total Projects"
-              stroke={green.green11}
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 5 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="Total Users"
-              stroke={orange.orange11}
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 5 }}
-            />
+            {METRICS.map((metric) =>
+              visibleMetrics.has(metric.key) ? (
+                <Line
+                  key={metric.key}
+                  type="monotone"
+                  dataKey={metric.key}
+                  stroke={metric.color}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+              ) : null,
+            )}
           </LineChart>
         </ResponsiveContainer>
       ) : (

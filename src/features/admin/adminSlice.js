@@ -2,12 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 
+const DEFAULT_HISTORY_DAYS = 180;
+
 const initialState = {
   latestSnapshot: null,
   history: [],
   historyRange: {
-    start: null,
-    end: null,
+    start: new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+    end: new Date().toISOString(),
   },
   filter: {
     types: ['external'],
@@ -83,7 +85,7 @@ export const fetchPlatformStats = (filter) => async (dispatch) => {
     dispatch(fetchLatestSuccess(res.platformStats));
   } catch (err) {
     console.error('Error fetching platform stats:', err);
-    dispatch(fetchLatestFailure(err));
+    dispatch(fetchLatestFailure(err.message || 'Unknown error'));
   }
 };
 
@@ -100,7 +102,7 @@ export const fetchPlatformStatsHistory =
       dispatch(fetchHistorySuccess(res.platformStatsHistory));
     } catch (err) {
       console.error('Error fetching platform stats history:', err);
-      dispatch(fetchHistoryFailure(err));
+      dispatch(fetchHistoryFailure(err.message || 'Unknown error'));
     }
   };
 

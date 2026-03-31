@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
 import {
@@ -9,7 +9,6 @@ import {
   selectAdminFilter,
   selectHistoryRange,
   selectLatestSnapshot,
-  setHistoryRange,
 } from './adminSlice';
 import KPISummary from './KPISummary';
 import GrowthTrends from './GrowthTrends';
@@ -52,44 +51,16 @@ const SpinnerWrapper = styled('div', {
   padding: '$8 0',
 });
 
-const DEFAULT_HISTORY_DAYS = 180; // 6 months
-
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const latestLoading = useSelector(selectLatestSnapshotLoading);
   const historyLoading = useSelector(selectHistoryLoading);
   const filter = useSelector(selectAdminFilter);
   const historyRange = useSelector(selectHistoryRange);
-  const isInitialMount = useRef(true);
   const snapshot = useSelector(selectLatestSnapshot);
 
-  // Set historyRange on initial mount
+  // Fetch when filter or historyRange changes
   useEffect(() => {
-    if (!historyRange.start || !historyRange.end) {
-      console.log('Setting default history range on initial mount');
-      const end = new Date().toISOString();
-      const start = new Date(Date.now() - DEFAULT_HISTORY_DAYS * 24 * 60 * 60 * 1000).toISOString();
-      dispatch(setHistoryRange({ start, end }));
-    }
-  }, [dispatch, historyRange]);
-
-  // Initial fetch on mount with default filter
-  useEffect(() => {
-    console.log('AdminDashboard mounted, fetching initial data with filter:', filter);
-    dispatch(fetchPlatformStats(filter));
-    dispatch(fetchPlatformStatsHistory({ filter }));
-  }, []);
-
-  // Re-fetch when filter or historyRange changes (skip initial mount)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    console.log(
-      'AdminDashboard filter or historyRange changed, re-fetching data with filter:',
-      filter,
-    );
     dispatch(fetchPlatformStats(filter));
     dispatch(fetchPlatformStatsHistory({ filter }));
   }, [filter, historyRange, dispatch]);

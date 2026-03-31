@@ -1053,6 +1053,8 @@ const queries = {
             projectName
             type
             stage
+            organization
+            description
             location {
               geometry {
                 type
@@ -1094,6 +1096,8 @@ const queries = {
             projectName
             type
             stage
+            organization
+            description
             location {
               geometry {
                 type

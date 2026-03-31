@@ -48,6 +48,12 @@ const CheckboxItem = styled('label', {
   cursor: 'pointer',
 });
 
+const CheckboxLabelStyled = styled(CheckboxLabel, {
+  fontSize: '$3',
+  fontFamily: '$Roboto',
+  fontWeight: '$2',
+});
+
 const DashboardFilters = () => {
   const dispatch = useDispatch();
   const filter = useSelector(selectAdminFilter);
@@ -88,9 +94,9 @@ const DashboardFilters = () => {
                 indeterminate={false}
                 onChange={() => handleTypeToggle(type.value)}
               />
-              <CheckboxLabel checked={checked} active={true}>
+              <CheckboxLabelStyled checked={checked} active={true}>
                 {type.label}
-              </CheckboxLabel>
+              </CheckboxLabelStyled>
             </CheckboxItem>
           );
         })}
@@ -107,9 +113,9 @@ const DashboardFilters = () => {
                 indeterminate={false}
                 onChange={() => handleStageToggle(stage.value)}
               />
-              <CheckboxLabel checked={checked} active={true}>
+              <CheckboxLabelStyled checked={checked} active={true}>
                 {stage.label}
-              </CheckboxLabel>
+              </CheckboxLabelStyled>
             </CheckboxItem>
           );
         })}

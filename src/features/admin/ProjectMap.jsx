@@ -13,7 +13,7 @@ const MapContainer = styled('div', {
   height: '400px',
   borderRadius: '$2',
   overflow: 'hidden',
-  marginBottom: '$3',
+  marginBottom: '$4',
 });
 
 const EmptyState = styled('p', {
@@ -66,6 +66,15 @@ const PopupLabel = styled('span', {
 const PopupValue = styled('span', {
   fontFamily: '$mono',
   fontWeight: '$4',
+});
+
+const ProjectDescription = styled('p', {
+  marginTop: '$3',
+  paddingBottom: '$3',
+  color: '$textMedium',
+  fontSize: '$3',
+  fontStyle: 'italic',
+  borderBottom: '1px solid $border',
 });
 
 const capitalize = (str) => {
@@ -160,9 +169,11 @@ const ProjectMap = () => {
               >
                 <PopupContent>
                   <PopupTitle>{selectedProject.projectName}</PopupTitle>
+                  <ProjectDescription>{selectedProject.description}</ProjectDescription>
+
                   <PopupStat>
-                    <PopupLabel>Type</PopupLabel>
-                    <PopupValue>{capitalize(selectedProject.type)}</PopupValue>
+                    <PopupLabel>Organization</PopupLabel>
+                    <PopupValue>{capitalize(selectedProject.organization)}</PopupValue>
                   </PopupStat>
                   <PopupStat>
                     <PopupLabel>Stage</PopupLabel>
