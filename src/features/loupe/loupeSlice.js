@@ -73,7 +73,6 @@ export const {
   addTagEnd,
 } = loupeSlice.actions;
 
-// editLabel thunk
 export const copyUrlToClipboard = (url) => {
   return async () => {
     try {
