@@ -15,12 +15,6 @@ function onBeforeUnload(e) {
 }
 
 function updateBeforeUnloadListener() {
-  console.log(
-    'Updating beforeunload listener. Queue length:',
-    queue.length,
-    'Processing:',
-    processing,
-  );
   if (queue.length > 0 || processing) {
     window.addEventListener('beforeunload', onBeforeUnload);
   } else {
@@ -33,7 +27,6 @@ function updateBeforeUnloadListener() {
  * Returns a promise that resolves/rejects when the function completes.
  */
 export function enqueue(asyncFn) {
-  console.log('Call queued. Queue length before enqueueing:', queue.length);
   return new Promise((resolve, reject) => {
     queue.push({ asyncFn, resolve, reject });
     updateBeforeUnloadListener();
@@ -46,7 +39,6 @@ async function processQueue() {
   processing = true;
   while (queue.length > 0) {
     const { asyncFn, resolve, reject } = queue.shift();
-    console.log('Processing async function. Queue length after dequeueing:', queue.length);
     try {
       const result = await asyncFn();
       resolve(result);

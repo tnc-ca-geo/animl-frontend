@@ -339,15 +339,12 @@ export const editLabel = (operation, entity, payload) => {
       return;
     }
 
-    if (!operation || !entity || !payload) {
-      const msg = `An operation (create, update, or delete) 
-        and entity are required`;
-      dispatch(editLabelFailure(new Error(msg)));
-      return;
-    }
-    console.log(`editLabel dispatching call: ${operation} ${entity}`);
     dispatch(editLabelStart());
     try {
+      if (!operation || !entity || !payload) {
+        throw new Error(`An operation (create, update, or delete) and entity are required`);
+      }
+      console.log(`editLabel dispatching API call: ${operation} ${entity}`);
       await enqueue(async () => {
         const currentUser = await Auth.currentAuthenticatedUser();
         const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -361,7 +358,11 @@ export const editLabel = (operation, entity, payload) => {
             request: req,
             input: payload,
           });
-          console.log(`API call successful: ${operation} ${entity}`);
+          console.log(`editLabel API call successful: ${operation} ${entity}`);
+        } else {
+          const msg = `User authentication token or selected project not found`;
+          console.log(msg);
+          throw new Error(msg);
         }
       });
       dispatch(editLabelSuccess());
@@ -411,14 +412,12 @@ export const editTag = (operation, payload) => {
       return;
     }
 
-    if (!operation || !payload) {
-      const msg = `An operation (create or delete) and payload is required`;
-      dispatch(editTagFailure(new Error(msg)));
-      return;
-    }
-
     dispatch(editTagStart(operation));
     try {
+      if (!operation || !payload) {
+        throw new Error(`An operation (create or delete) and payload is required`);
+      }
+
       await enqueue(async () => {
         const currentUser = await Auth.currentAuthenticatedUser();
         const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
@@ -433,6 +432,8 @@ export const editTag = (operation, payload) => {
             request: req,
             input: payload,
           });
+        } else {
+          throw new Error(`User authentication token or selected project not found`);
         }
       });
       dispatch(editTagSuccess());
