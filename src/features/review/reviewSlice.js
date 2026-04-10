@@ -2,6 +2,7 @@ import { createSlice, createAction, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { findImage, findObject, findLabel, isImageReviewed } from '../../app/utils';
+import { enqueue } from './requestQueue';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
 
@@ -21,7 +22,7 @@ const initialState = {
   focusChangeType: null,
   loadingStates: {
     labels: {
-      isLoading: false,
+      pendingCount: 0,
       operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
     },
@@ -31,7 +32,7 @@ const initialState = {
       errors: null,
     },
     tags: {
-      isLoading: false,
+      pendingCount: 0,
       operation: null /* 'fetching', 'deleting' */,
       errors: null,
     },
@@ -182,20 +183,34 @@ export const reviewSlice = createSlice({
     },
 
     editLabelStart: (state) => {
-      state.loadingStates.labels.isLoading = true;
+      state.loadingStates.labels.pendingCount += 1;
       state.loadingStates.labels.operation = 'updating';
+      console.log('editLabelStart: pendingCount=', state.loadingStates.labels.pendingCount);
     },
 
     editLabelFailure: (state, { payload }) => {
-      state.loadingStates.labels.isLoading = false;
-      state.loadingStates.labels.operation = null;
-      state.loadingStates.labels.errors = payload;
+      state.loadingStates.labels.pendingCount = Math.max(
+        0,
+        state.loadingStates.labels.pendingCount - 1,
+      );
+      if (state.loadingStates.labels.pendingCount === 0) {
+        state.loadingStates.labels.operation = null;
+      }
+      const errors = state.loadingStates.labels.errors || [];
+      errors.push(payload);
+      state.loadingStates.labels.errors = errors;
+      console.log('editLabelFailure: pendingCount=', state.loadingStates.labels.pendingCount);
     },
 
     editLabelSuccess: (state) => {
-      state.loadingStates.labels.isLoading = false;
-      state.loadingStates.labels.operation = null;
-      state.loadingStates.labels.errors = null;
+      state.loadingStates.labels.pendingCount = Math.max(
+        0,
+        state.loadingStates.labels.pendingCount - 1,
+      );
+      if (state.loadingStates.labels.pendingCount === 0) {
+        state.loadingStates.labels.operation = null;
+      }
+      console.log('editLabelSuccess: pendingCount=', state.loadingStates.labels.pendingCount);
     },
 
     editCommentStart: (state, { payload }) => {
@@ -218,20 +233,31 @@ export const reviewSlice = createSlice({
     },
 
     editTagStart: (state, { payload }) => {
-      state.loadingStates.tags.isLoading = true;
+      state.loadingStates.tags.pendingCount += 1;
       state.loadingStates.tags.operation = payload;
     },
 
     editTagFailure: (state, { payload }) => {
-      state.loadingStates.tags.isLoading = false;
-      state.loadingStates.tags.operation = null;
-      state.loadingStates.tags.errors = payload;
+      state.loadingStates.tags.pendingCount = Math.max(
+        0,
+        state.loadingStates.tags.pendingCount - 1,
+      );
+      if (state.loadingStates.tags.pendingCount === 0) {
+        state.loadingStates.tags.operation = null;
+      }
+      const errors = state.loadingStates.tags.errors || [];
+      errors.push(payload);
+      state.loadingStates.tags.errors = errors;
     },
 
     editTagSuccess: (state) => {
-      state.loadingStates.tags.isLoading = false;
-      state.loadingStates.tags.operation = null;
-      state.loadingStates.tags.errors = null;
+      state.loadingStates.tags.pendingCount = Math.max(
+        0,
+        state.loadingStates.tags.pendingCount - 1,
+      );
+      if (state.loadingStates.tags.pendingCount === 0) {
+        state.loadingStates.tags.operation = null;
+      }
     },
 
     dismissLabelsError: (state, { payload }) => {
@@ -305,36 +331,41 @@ export const {
 // editLabel thunk
 export const editLabel = (operation, entity, payload) => {
   return async (dispatch, getState) => {
+    if (
+      (payload.updates && !payload.updates.length) ||
+      (payload.objects && !payload.objects.length) ||
+      (payload.labels && !payload.labels.length)
+    ) {
+      return;
+    }
+
+    dispatch(editLabelStart());
     try {
-      if (
-        (payload.updates && !payload.updates.length) ||
-        (payload.objects && !payload.objects.length) ||
-        (payload.labels && !payload.labels.length)
-      ) {
-        return;
-      }
-
       if (!operation || !entity || !payload) {
-        const msg = `An operation (create, update, or delete) 
-          and entity are required`;
-        throw new Error(msg);
+        throw new Error(`An operation (create, update, or delete) and entity are required`);
       }
+      console.log(`editLabel dispatching API call: ${operation} ${entity}`);
+      await enqueue(async () => {
+        const currentUser = await Auth.currentAuthenticatedUser();
+        const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+        const projects = getState().projects.projects;
+        const selectedProj = projects.find((proj) => proj.selected);
 
-      dispatch(editLabelStart());
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-
-      if (token && selectedProj) {
-        const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
-        await call({
-          projId: selectedProj._id,
-          request: req,
-          input: payload,
-        });
-        dispatch(editLabelSuccess());
-      }
+        if (token && selectedProj) {
+          const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
+          await call({
+            projId: selectedProj._id,
+            request: req,
+            input: payload,
+          });
+          console.log(`editLabel API call successful: ${operation} ${entity}`);
+        } else {
+          const msg = `User authentication token or selected project not found`;
+          console.log(msg);
+          throw new Error(msg);
+        }
+      });
+      dispatch(editLabelSuccess());
     } catch (err) {
       console.log(`error attempting to ${operation} ${entity}: `, err);
       dispatch(editLabelFailure(err));
@@ -380,29 +411,32 @@ export const editTag = (operation, payload) => {
     if (payload.tags && !payload.tags.length) {
       return;
     }
+
+    dispatch(editTagStart(operation));
     try {
       if (!operation || !payload) {
-        const msg = `An operation (create or delete) and payload is required`;
-        throw new Error(msg);
+        throw new Error(`An operation (create or delete) and payload is required`);
       }
 
-      dispatch(editTagStart(operation));
-      const currentUser = await Auth.currentAuthenticatedUser();
-      const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      await enqueue(async () => {
+        const currentUser = await Auth.currentAuthenticatedUser();
+        const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+        const projects = getState().projects.projects;
+        const selectedProj = projects.find((proj) => proj.selected);
 
-      if (token && selectedProj) {
-        const req = `${operation}ImageTags`;
+        if (token && selectedProj) {
+          const req = `${operation}ImageTags`;
 
-        await call({
-          projId: selectedProj._id,
-          request: req,
-          input: payload,
-        });
-
-        dispatch(editTagSuccess());
-      }
+          await call({
+            projId: selectedProj._id,
+            request: req,
+            input: payload,
+          });
+        } else {
+          throw new Error(`User authentication token or selected project not found`);
+        }
+      });
+      dispatch(editTagSuccess());
     } catch (err) {
       console.log(`error attempting to ${operation}ImageTag: `, err);
       dispatch(editTagFailure(err));
@@ -426,7 +460,7 @@ export const selectLabelsErrors = (state) => state.review.loadingStates.labels.e
 export const selectCommentsErrors = (state) => state.review.loadingStates.comments.errors;
 export const selectCommentsLoading = (state) => state.review.loadingStates.comments.isLoading;
 export const selectTagsErrors = (state) => state.review.loadingStates.tags.errors;
-export const selectTagsLoading = (state) => state.review.loadingStates.tags.isLoading;
+export const selectTagsLoading = (state) => state.review.loadingStates.tags.pendingCount > 0;
 export const selectLastAction = (state) => state.review.lastAction;
 export const selectLastCategoryApplied = (state) => state.review.lastCategoryApplied;
 export const selectSelectedImages = createSelector(
