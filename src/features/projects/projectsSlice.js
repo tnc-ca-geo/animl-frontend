@@ -1020,6 +1020,9 @@ export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
 export const selectLabels = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.labels : [],
 );
+export const selectCameraConfigs = createSelector([selectSelectedProject], (proj) =>
+  proj ? proj.cameraConfigs : [],
+);
 export const selectProjectTags = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.tags : [],
 );

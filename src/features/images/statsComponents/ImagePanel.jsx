@@ -6,12 +6,15 @@ import {
   fetchTask,
   selectStatsLoading,
   selectImagesStats,
+  selectImageLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../../filters/filtersSlice.js';
+import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 
 import GraphCard from './GraphCard.jsx';
 import ReviewCount from './ReviewCount.jsx';
 import ListCard from './ListCard.jsx';
+import StatsMap from './StatsMap.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
@@ -22,6 +25,9 @@ const ImagePanel = () => {
   // fetch images stats
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
+  const imageLevelStatsByDeployment = useSelector(selectImageLevelStatsByDeployment);
+  const labels = useSelector(selectLabels);
+  const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
@@ -57,6 +63,11 @@ const ImagePanel = () => {
   if (stats) {
     return (
       <>
+        <StatsMap
+          deploymentStats={imageLevelStatsByDeployment}
+          labels={labels}
+          cameraConfigs={cameraConfigs}
+        />
         <ReviewCount
           label="Images"
           count={stats.imageCount}

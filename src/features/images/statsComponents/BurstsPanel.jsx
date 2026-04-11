@@ -7,11 +7,14 @@ import {
   fetchTask,
   selectBurstsStatsLoading,
   selectBurstsStats,
+  selectBurstLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
+import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
+import StatsMap from './StatsMap.jsx';
 
 const BurstsPanel = () => {
   const dispatch = useDispatch();
@@ -19,6 +22,9 @@ const BurstsPanel = () => {
 
   const burstsStats = useSelector(selectBurstsStats);
   const burstsStatsLoading = useSelector(selectBurstsStatsLoading);
+  const burstLevelStatsByDeployment = useSelector(selectBurstLevelStatsByDeployment);
+  const labels = useSelector(selectLabels);
+  const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
     const { isLoading, errors, noneFound } = burstsStatsLoading;
@@ -54,6 +60,11 @@ const BurstsPanel = () => {
   if (burstsStats) {
     return (
       <>
+        <StatsMap
+          deploymentStats={burstLevelStatsByDeployment}
+          labels={labels}
+          cameraConfigs={cameraConfigs}
+        />
         <ReviewCount
           label="Bursts"
           count={burstsStats.burstCount}

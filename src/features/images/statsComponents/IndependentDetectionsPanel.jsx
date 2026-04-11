@@ -6,17 +6,23 @@ import {
   fetchTask,
   selectIndependentDetectionStatsLoading,
   selectIndependentDetectionStats,
+  selectDetectionsLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
+import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
+import StatsMap from './StatsMap.jsx';
 
 const IndependentDetectionsPanel = ({ independenceInterval = 30, filters }) => {
   const dispatch = useDispatch();
 
   const independentDetectionStats = useSelector(selectIndependentDetectionStats);
   const independentDetectionStatsLoading = useSelector(selectIndependentDetectionStatsLoading);
+  const detectionsLevelStatsByDeployment = useSelector(selectDetectionsLevelStatsByDeployment);
+  const labels = useSelector(selectLabels);
+  const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
     const { isLoading, errors, noneFound } = independentDetectionStatsLoading;
@@ -66,6 +72,11 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters }) => {
   if (independentDetectionStats) {
     return (
       <>
+        <StatsMap
+          deploymentStats={detectionsLevelStatsByDeployment}
+          labels={labels}
+          cameraConfigs={cameraConfigs}
+        />
         <ReviewCount
           label="Independent detections"
           count={independentDetectionStats.detectionsCount}
