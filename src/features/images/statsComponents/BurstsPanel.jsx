@@ -59,12 +59,12 @@ const BurstsPanel = () => {
           count={burstsStats.burstCount}
           countHint="The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters."
         />
-        {burstsStats['burstLabelList'] &&
-          Object.keys(burstsStats['burstLabelList']).length !== 0 && (
+        {burstsStats['burstLevelStats'] &&
+          Object.keys(burstsStats['burstLevelStats']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <GraphCard
                 label="Burst-level detections"
-                list={burstsStats.burstLabelList}
+                list={burstsStats.burstLevelStats}
                 content="For each Label, the total number of Bursts matching the current filters that have at least one Object for which that Label is their “Representative Label”. For example, if you have 2 Bursts of 3 Images and all of the Images in each Burst contain multiple pigs, their burst-level detection count would still be 2."
                 dataKey="Number of Bursts that contain at least one Object with a given “Representative Label”"
               />

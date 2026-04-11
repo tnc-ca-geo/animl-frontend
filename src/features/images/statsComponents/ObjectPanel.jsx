@@ -66,11 +66,11 @@ const ObjectPanel = () => {
           notReviewedHint="The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user"
           countHint="The total number of individual Objects found in the currently filtered Images."
         />
-        {stats['objectLabelList'] && Object.keys(stats['objectLabelList']).length !== 0 && (
+        {stats['objectLevelStats'] && Object.keys(stats['objectLevelStats']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label="Object-level detections"
-              list={stats.objectLabelList}
+              list={stats.objectLevelStats}
               content="For each Label, the total number of Objects in the currently filtered set of Images for which that Label is their “Representative Label”. For example, if you have 2 images that each contain 3 pigs, their object-level detection count would be 6. Object-level annotations are the most granular annotations that Animl stores."
               dataKey="Number Objects with a given “Representative Label”"
             />
