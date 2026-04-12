@@ -16,7 +16,7 @@ import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
 import StatsMap from './StatsMap.jsx';
 
-const BurstsPanel = () => {
+const BurstsPanel = ({ userHasBetaAccess }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -52,7 +52,7 @@ const BurstsPanel = () => {
   if (burstsStatsLoading.noneFound) {
     return (
       <NoneFoundAlert>
-        We couldn&apos;t find any images that matched this set of filters.
+        We couldn&apos;t find any bursts that matched this set of filters.
       </NoneFoundAlert>
     );
   }
@@ -60,11 +60,13 @@ const BurstsPanel = () => {
   if (burstsStats) {
     return (
       <>
-        <StatsMap
-          deploymentStats={burstLevelStatsByDeployment}
-          labels={labels}
-          cameraConfigs={cameraConfigs}
-        />
+        {userHasBetaAccess && (
+          <StatsMap
+            deploymentStats={burstLevelStatsByDeployment}
+            labels={labels}
+            cameraConfigs={cameraConfigs}
+          />
+        )}
         <ReviewCount
           label="Bursts"
           count={burstsStats.burstCount}

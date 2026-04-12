@@ -15,7 +15,7 @@ import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
 import StatsMap from './StatsMap.jsx';
 
-const IndependentDetectionsPanel = ({ independenceInterval = 30, filters }) => {
+const IndependentDetectionsPanel = ({ independenceInterval = 30, filters, userHasBetaAccess }) => {
   const dispatch = useDispatch();
 
   const independentDetectionStats = useSelector(selectIndependentDetectionStats);
@@ -64,7 +64,7 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters }) => {
   if (independentDetectionStatsLoading.noneFound) {
     return (
       <NoneFoundAlert>
-        We couldn&apos;t find any images that matched this set of filters.
+        We couldn&apos;t find any independent detections that matched this set of filters.
       </NoneFoundAlert>
     );
   }
@@ -72,11 +72,13 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters }) => {
   if (independentDetectionStats) {
     return (
       <>
-        <StatsMap
-          deploymentStats={detectionsLevelStatsByDeployment}
-          labels={labels}
-          cameraConfigs={cameraConfigs}
-        />
+        {userHasBetaAccess && (
+          <StatsMap
+            deploymentStats={detectionsLevelStatsByDeployment}
+            labels={labels}
+            cameraConfigs={cameraConfigs}
+          />
+        )}
         <ReviewCount
           label="Independent detections"
           count={independentDetectionStats.detectionsCount}

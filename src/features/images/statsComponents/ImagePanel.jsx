@@ -18,7 +18,7 @@ import StatsMap from './StatsMap.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
-const ImagePanel = () => {
+const ImagePanel = ({ userHasBetaAccess }) => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -63,11 +63,13 @@ const ImagePanel = () => {
   if (stats) {
     return (
       <>
-        <StatsMap
-          deploymentStats={imageLevelStatsByDeployment}
-          labels={labels}
-          cameraConfigs={cameraConfigs}
-        />
+        {userHasBetaAccess && (
+          <StatsMap
+            deploymentStats={imageLevelStatsByDeployment}
+            labels={labels}
+            cameraConfigs={cameraConfigs}
+          />
+        )}
         <ReviewCount
           label="Images"
           count={stats.imageCount}
