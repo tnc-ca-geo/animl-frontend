@@ -9,7 +9,7 @@ import {
   selectBurstsStats,
   selectBurstLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
-import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
+import { selectProjectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 import ReviewCount from './ReviewCount.jsx';
@@ -23,7 +23,7 @@ const BurstsPanel = ({ userHasBetaAccess }) => {
   const burstsStats = useSelector(selectBurstsStats);
   const burstsStatsLoading = useSelector(selectBurstsStatsLoading);
   const burstLevelStatsByDeployment = useSelector(selectBurstLevelStatsByDeployment);
-  const labels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
   const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const BurstsPanel = ({ userHasBetaAccess }) => {
         {userHasBetaAccess && (
           <StatsMap
             deploymentStats={burstLevelStatsByDeployment}
-            labels={labels}
+            projectLabels={projectLabels}
             cameraConfigs={cameraConfigs}
           />
         )}
@@ -80,6 +80,7 @@ const BurstsPanel = ({ userHasBetaAccess }) => {
                 list={burstsStats.burstLevelStats}
                 content="For each Label, the total number of Bursts matching the current filters that have at least one Object for which that Label is their “Representative Label”. For example, if you have 2 Bursts of 3 Images and all of the Images in each Burst contain multiple pigs, their burst-level detection count would still be 2."
                 dataKey="Number of Bursts that contain at least one Object with a given “Representative Label”"
+                projectLabels={projectLabels}
               />
             </div>
           )}

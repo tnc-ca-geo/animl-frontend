@@ -1017,7 +1017,7 @@ export const selectUnsavedViewChanges = (state) => state.projects.unsavedViewCha
 export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.mlModels : null,
 );
-export const selectLabels = createSelector([selectSelectedProject], (proj) =>
+export const selectProjectLabels = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.labels : [],
 );
 export const selectCameraConfigs = createSelector([selectSelectedProject], (proj) =>

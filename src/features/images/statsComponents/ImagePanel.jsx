@@ -9,7 +9,7 @@ import {
   selectImageLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../../filters/filtersSlice.js';
-import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
+import { selectProjectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 
 import GraphCard from './GraphCard.jsx';
 import ReviewCount from './ReviewCount.jsx';
@@ -26,7 +26,7 @@ const ImagePanel = ({ userHasBetaAccess }) => {
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
   const imageLevelStatsByDeployment = useSelector(selectImageLevelStatsByDeployment);
-  const labels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
   const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const ImagePanel = ({ userHasBetaAccess }) => {
         {userHasBetaAccess && (
           <StatsMap
             deploymentStats={imageLevelStatsByDeployment}
-            labels={labels}
+            projectLabels={projectLabels}
             cameraConfigs={cameraConfigs}
           />
         )}
@@ -86,6 +86,7 @@ const ImagePanel = ({ userHasBetaAccess }) => {
               list={stats.imageLevelStats}
               content="For each Label, the total number of Images matching the current filters that have at least one Object for which that Label is their “Representative Label”. For example, if you have 2 images that each contain 3 pigs, their image-level detection count would be 2."
               dataKey="Number Images that contain at least one Object with a given “Representative Label”"
+              projectLabels={projectLabels}
             />
           </div>
         )}

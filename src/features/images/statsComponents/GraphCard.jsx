@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from '@stitches/react';
 import {
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -53,7 +54,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const GraphCard = ({ label, list, content, dataKey }) => {
+const GraphCard = ({ label, list, content, dataKey, projectLabels = [] }) => {
   let width = 0;
   const data = [];
 
@@ -84,8 +85,13 @@ const GraphCard = ({ label, list, content, dataKey }) => {
           />
           <YAxis width={width} dataKey="name" type="category" interval={0} />
           <Tooltip content={CustomTooltip} />
-          <Legend />
-          <Bar dataKey={dataKey} fill={indigo.indigo11} maxBarSize={10} radius={[0, 15, 15, 0]} />
+          {/* <Legend /> */}
+          <Bar dataKey={dataKey} maxBarSize={10} radius={[0, 15, 15, 0]}>
+            {data.map((entry) => {
+              const projLabel = projectLabels.find((l) => l.name === entry.name);
+              return <Cell key={entry.name} fill={projLabel?.color || indigo.indigo11} />;
+            })}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </StatsCard>

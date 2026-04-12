@@ -167,7 +167,7 @@ function calcMarkerSize(count, minCount, maxCount) {
  * labels: project labels array [{ _id, name, color }]
  * size: diameter in px
  */
-function DonutMarker({ labelCounts, labels, size }) {
+function DonutMarker({ labelCounts, projectLabels, size }) {
   const entries = Object.entries(labelCounts).filter(([, v]) => v > 0);
   const total = entries.reduce((s, [, v]) => s + v, 0);
   if (total === 0) return null;
@@ -196,7 +196,7 @@ function DonutMarker({ labelCounts, labels, size }) {
     const iy2 = cy + innerR * Math.sin(startAngle);
     const largeArc = angle > Math.PI ? 1 : 0;
 
-    const projLabel = labels.find((l) => l.name === labelName);
+    const projLabel = projectLabels.find((l) => l.name === labelName);
     const color = projLabel?.color || '#aaaaaa';
 
     arcs.push(
@@ -234,7 +234,7 @@ function DonutMarker({ labelCounts, labels, size }) {
  *   labels: array of project label objects [{ _id, name, color }]
  *   cameraConfigs: project.cameraConfigs array
  */
-export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
+export default function StatsMap({ deploymentStats, projectLabels, cameraConfigs }) {
   const [popupDeployment, setPopupDeployment] = useState(null);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
 
@@ -342,7 +342,11 @@ export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
               }}
               style={{ cursor: 'pointer' }}
             >
-              <DonutMarker labelCounts={dep.labelCounts} labels={labels} size={size} />
+              <DonutMarker
+                labelCounts={dep.labelCounts}
+                projectLabels={projectLabels}
+                size={size}
+              />
             </Marker>
           );
         })}
@@ -364,7 +368,7 @@ export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
               {Object.entries(popupDeployment.labelCounts)
                 .sort(([, a], [, b]) => b - a)
                 .map(([labelName, count]) => {
-                  const projLabel = labels.find((l) => l.name === labelName);
+                  const projLabel = projectLabels.find((l) => l.name === labelName);
                   return (
                     <PopupRow key={labelName}>
                       <span>

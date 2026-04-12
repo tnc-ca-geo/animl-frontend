@@ -9,7 +9,7 @@ import {
   selectObjectLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../../filters/filtersSlice.js';
-import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
+import { selectProjectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 
 import GraphCard from './GraphCard.jsx';
 import ReviewCount from './ReviewCount.jsx';
@@ -26,7 +26,7 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
   const objectLevelStatsByDeployment = useSelector(selectObjectLevelStatsByDeployment);
-  const labels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
   const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
         {userHasBetaAccess && (
           <StatsMap
             deploymentStats={objectLevelStatsByDeployment}
-            labels={labels}
+            projectLabels={projectLabels}
             cameraConfigs={cameraConfigs}
           />
         )}
@@ -86,6 +86,7 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
               list={stats.objectLevelStats}
               content="For each Label, the total number of Objects in the currently filtered set of Images for which that Label is their “Representative Label”. For example, if you have 2 images that each contain 3 pigs, their object-level detection count would be 6. Object-level annotations are the most granular annotations that Animl stores."
               dataKey="Number Objects with a given “Representative Label”"
+              projectLabels={projectLabels}
             />
           </div>
         )}
@@ -94,6 +95,7 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
             <ListCard
               label="Reviewers"
               list={stats.objectReviewerList}
+              projectLabels={projectLabels}
               content='Each reviewer&apos;s "Reviewed Count" is the total number of Objects they have edited in some way (e.g., validated/invalidated/added a Label)'
             />
           </div>

@@ -25,7 +25,7 @@ import { addLabelStart } from './loupeSlice';
 import BoundingBoxLabel from './BoundingBoxLabel';
 import { absToRel, relToAbs } from '../../app/utils';
 import { CheckIcon, Cross2Icon, LockOpen1Icon, Pencil1Icon } from '@radix-ui/react-icons';
-import { selectGlobalBreakpoint, selectLabels } from '../projects/projectsSlice';
+import { selectGlobalBreakpoint, selectProjectLabels } from '../projects/projectsSlice';
 import { globalBreakpoints } from '../../config';
 
 const ResizeHandle = styled('div', {
@@ -150,7 +150,7 @@ const BoundingBox = ({
   }
 
   const fallbackLabel = { _id: 'fallback_label', name: 'ERROR FINDING LABEL', color: '#E54D2E' };
-  const projectLabels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
   const displayLabel = projectLabels?.find(({ _id }) => _id === label.labelId) || fallbackLabel;
   const conf = Number.parseFloat(label.conf * 100).toFixed(1);
 

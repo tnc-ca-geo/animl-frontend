@@ -8,7 +8,7 @@ import {
   selectIndependentDetectionStats,
   selectDetectionsLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
-import { selectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
+import { selectProjectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 import ReviewCount from './ReviewCount.jsx';
@@ -21,7 +21,7 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters, userHa
   const independentDetectionStats = useSelector(selectIndependentDetectionStats);
   const independentDetectionStatsLoading = useSelector(selectIndependentDetectionStatsLoading);
   const detectionsLevelStatsByDeployment = useSelector(selectDetectionsLevelStatsByDeployment);
-  const labels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
   const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters, userHa
         {userHasBetaAccess && (
           <StatsMap
             deploymentStats={detectionsLevelStatsByDeployment}
-            labels={labels}
+            projectLabels={projectLabels}
             cameraConfigs={cameraConfigs}
           />
         )}
@@ -93,6 +93,7 @@ This Independent Detection count value is the total number of independent detect
                 list={independentDetectionStats.detectionsLevelStats}
                 content="The total number of Independent Detections of a given Label"
                 dataKey="Number of Independent Detections of a given Label"
+                projectLabels={projectLabels}
               />
             </div>
           )}
