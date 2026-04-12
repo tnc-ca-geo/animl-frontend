@@ -82,10 +82,10 @@ const GraphCard = ({ label, list, content, dataKey }) => {
             allowDecimals={false}
             tickFormatter={(tick) => tick.toLocaleString('en-US')}
           />
-          <YAxis width={width} dataKey="name" type="category" scale="auto" interval={0} />
+          <YAxis width={width} dataKey="name" type="category" interval={0} />
           <Tooltip content={CustomTooltip} />
           <Legend />
-          <Bar dataKey={dataKey} fill={indigo.indigo11} />
+          <Bar dataKey={dataKey} fill={indigo.indigo11} maxBarSize={10} radius={[0, 15, 15, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </StatsCard>
