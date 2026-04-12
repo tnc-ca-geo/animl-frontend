@@ -63,13 +63,6 @@ const ImagePanel = ({ userHasBetaAccess }) => {
   if (stats) {
     return (
       <>
-        {userHasBetaAccess && (
-          <StatsMap
-            deploymentStats={imageLevelStatsByDeployment}
-            projectLabels={projectLabels}
-            cameraConfigs={cameraConfigs}
-          />
-        )}
         <ReviewCount
           label="Images"
           count={stats.imageCount}
@@ -79,6 +72,13 @@ const ImagePanel = ({ userHasBetaAccess }) => {
           notReviewedHint="The total number of Images that either have unlocked Objects that still require review or have no Objects and have not been marked empty."
           countHint="The total number of Images that match the current filters."
         />
+        {userHasBetaAccess && (
+          <StatsMap
+            deploymentStats={imageLevelStatsByDeployment}
+            projectLabels={projectLabels}
+            cameraConfigs={cameraConfigs}
+          />
+        )}
         {stats['imageLevelStats'] && Object.keys(stats['imageLevelStats']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard

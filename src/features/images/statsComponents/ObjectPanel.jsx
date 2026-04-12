@@ -63,13 +63,6 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
   if (stats) {
     return (
       <>
-        {userHasBetaAccess && (
-          <StatsMap
-            deploymentStats={objectLevelStatsByDeployment}
-            projectLabels={projectLabels}
-            cameraConfigs={cameraConfigs}
-          />
-        )}
         <ReviewCount
           label="Objects"
           count={stats.objectCount}
@@ -79,6 +72,13 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
           notReviewedHint="The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user"
           countHint="The total number of individual Objects found in the currently filtered Images."
         />
+        {userHasBetaAccess && (
+          <StatsMap
+            deploymentStats={objectLevelStatsByDeployment}
+            projectLabels={projectLabels}
+            cameraConfigs={cameraConfigs}
+          />
+        )}
         {stats['objectLevelStats'] && Object.keys(stats['objectLevelStats']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard

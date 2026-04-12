@@ -72,6 +72,12 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters, userHa
   if (independentDetectionStats) {
     return (
       <>
+        <ReviewCount
+          label="Independent detections"
+          count={independentDetectionStats.detectionsCount}
+          countHint='Given the time window or "independence interval" selected above, after an animal triggers a camera, all occurrences of that same species within the independence interval are considered part of the same "independent detection". An occurrence of a species is defined here as an instance of an Object for which that species/label is its “Representative Label”.
+This Independent Detection count value is the total number of independent detections that occurred in the currently filtered Images.'
+        />
         {userHasBetaAccess && (
           <StatsMap
             deploymentStats={detectionsLevelStatsByDeployment}
@@ -79,12 +85,6 @@ const IndependentDetectionsPanel = ({ independenceInterval = 30, filters, userHa
             cameraConfigs={cameraConfigs}
           />
         )}
-        <ReviewCount
-          label="Independent detections"
-          count={independentDetectionStats.detectionsCount}
-          countHint='Given the time window or "independence interval" selected above, after an animal triggers a camera, all occurrences of that same species within the independence interval are considered part of the same "independent detection". An occurrence of a species is defined here as an instance of an Object for which that species/label is its “Representative Label”.
-This Independent Detection count value is the total number of independent detections that occurred in the currently filtered Images.'
-        />
         {independentDetectionStats['detectionsLevelStats'] &&
           Object.keys(independentDetectionStats['detectionsLevelStats']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>

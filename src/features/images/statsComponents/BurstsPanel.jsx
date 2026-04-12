@@ -60,6 +60,11 @@ const BurstsPanel = ({ userHasBetaAccess }) => {
   if (burstsStats) {
     return (
       <>
+        <ReviewCount
+          label="Bursts"
+          count={burstsStats.burstCount}
+          countHint="The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters."
+        />
         {userHasBetaAccess && (
           <StatsMap
             deploymentStats={burstLevelStatsByDeployment}
@@ -67,11 +72,6 @@ const BurstsPanel = ({ userHasBetaAccess }) => {
             cameraConfigs={cameraConfigs}
           />
         )}
-        <ReviewCount
-          label="Bursts"
-          count={burstsStats.burstCount}
-          countHint="The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters."
-        />
         {burstsStats['burstLevelStats'] &&
           Object.keys(burstsStats['burstLevelStats']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
