@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import MapGL, { Marker, Popup, NavigationControl } from 'react-map-gl';
 import { LngLatBounds } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { TriangleAlert, X } from 'lucide-react';
 import { styled } from '../../../theme/stitches.config.js';
 import Callout from '../../../components/Callout.jsx';
 import { MAPBOX_TOKEN } from '../../../config.js';
@@ -69,6 +70,85 @@ const PopupLabelName = styled('span', {
 const PopupCount = styled('span', {
   fontFamily: '$mono',
   fontWeight: '$4',
+});
+
+const WarningButton = styled('button', {
+  position: 'absolute',
+  bottom: '$2',
+  left: '$2',
+  zIndex: 2,
+  display: 'flex',
+  alignItems: 'center',
+  gap: '$1',
+  padding: '$1 $2',
+  backgroundColor: '$warning',
+  color: '$warningText',
+  border: 'none',
+  borderRadius: '$2',
+  fontFamily: '$roboto',
+  fontSize: '$3',
+  fontWeight: '$5',
+  cursor: 'pointer',
+  boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+  '&:hover': {
+    filter: 'brightness(0.92)',
+  },
+});
+
+const WarningPanel = styled('div', {
+  position: 'absolute',
+  bottom: 'calc($2 + 32px + $2)',
+  left: '$2',
+  zIndex: 2,
+  backgroundColor: 'white',
+  borderRadius: '$2',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
+  padding: '$3',
+  minWidth: '240px',
+  maxWidth: '320px',
+  maxHeight: '260px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '$2',
+});
+
+const WarningPanelHeader = styled('div', {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: '$2',
+});
+
+const WarningPanelTitle = styled('p', {
+  fontFamily: '$roboto',
+  fontSize: '$3',
+  fontWeight: '$5',
+  color: '$textDark',
+  margin: 0,
+  lineHeight: '1.4',
+});
+
+const WarningPanelClose = styled('button', {
+  flexShrink: 0,
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  padding: '2px',
+  color: '$textMedium',
+  display: 'flex',
+  alignItems: 'center',
+  '&:hover': { color: '$textDark' },
+});
+
+const CameraIdList = styled('ul', {
+  margin: 0,
+  paddingLeft: '$4',
+  overflowY: 'auto',
+  fontFamily: '$mono',
+  fontSize: '$2',
+  color: '$textMedium',
+  lineHeight: '1.8',
+  flex: 1,
 });
 
 const MIN_SIZE = 30;
@@ -156,6 +236,7 @@ function DonutMarker({ labelCounts, labels, size }) {
  */
 export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
   const [popupDeployment, setPopupDeployment] = useState(null);
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
 
   // Join deployment stats with locations from cameraConfigs.
   // Filters out deployments without coordinates (includes default deployments).
@@ -210,6 +291,14 @@ export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
   }, [deploymentMarkers]);
 
   const isEmpty = deploymentMarkers.length === 0;
+
+  // Cameras where every deployment is the default (editable === false) — no custom deployments
+  const unconfiguredCameraIds = useMemo(() => {
+    if (!cameraConfigs) return [];
+    return cameraConfigs
+      .filter((config) => config.deployments.every((dep) => dep.editable === false))
+      .map((config) => config._id);
+  }, [cameraConfigs]);
 
   return (
     <MapContainer>
@@ -290,6 +379,41 @@ export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
           </Popup>
         )}
       </MapGL>
+      {unconfiguredCameraIds.length > 0 && (
+        <>
+          {isWarningOpen && (
+            <WarningPanel>
+              <WarningPanelHeader>
+                <WarningPanelTitle>
+                  Please create{' '}
+                  <a
+                    href="https://docs.animl.camera/fundamentals/camera-and-deployment-management"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Deployments
+                  </a>{' '}
+                  for the following Cameras and add location coordinates to visualize them on the
+                  map:
+                </WarningPanelTitle>
+                <WarningPanelClose onClick={() => setIsWarningOpen(false)}>
+                  <X size={14} />
+                </WarningPanelClose>
+              </WarningPanelHeader>
+              <CameraIdList>
+                {unconfiguredCameraIds.map((id) => (
+                  <li key={id}>{id}</li>
+                ))}
+              </CameraIdList>
+            </WarningPanel>
+          )}
+          <WarningButton onClick={() => setIsWarningOpen((o) => !o)}>
+            <TriangleAlert size={14} />
+            {unconfiguredCameraIds.length} Camera
+            {unconfiguredCameraIds.length !== 1 ? 's' : ''} not shown
+          </WarningButton>
+        </>
+      )}
     </MapContainer>
   );
 }
