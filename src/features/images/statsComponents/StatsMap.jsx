@@ -3,14 +3,14 @@ import MapGL, { Marker, Popup, NavigationControl } from 'react-map-gl';
 import { LngLatBounds } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { styled } from '../../../theme/stitches.config.js';
+import Callout from '../../../components/Callout.jsx';
 import { MAPBOX_TOKEN } from '../../../config.js';
 
 const MapContainer = styled('div', {
   width: '100%',
-  height: '400px',
+  height: '450px',
   borderRadius: '$2',
   overflow: 'hidden',
-  marginBottom: '$4',
   position: 'relative',
 });
 
@@ -20,20 +20,9 @@ const EmptyStateOverlay = styled('div', {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: 'rgba(0,0,0,0.35)',
+  backgroundColor: 'rgba(0,0,0,0.5)',
   zIndex: 1,
   pointerEvents: 'none',
-});
-
-const EmptyStateMessage = styled('p', {
-  color: 'white',
-  fontFamily: '$roboto',
-  fontSize: '$4',
-  textAlign: 'center',
-  margin: 0,
-  padding: '$4',
-  maxWidth: '320px',
-  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
 });
 
 const PopupContent = styled('div', {
@@ -226,9 +215,19 @@ export default function StatsMap({ deploymentStats, labels, cameraConfigs }) {
     <MapContainer>
       {isEmpty && (
         <EmptyStateOverlay>
-          <EmptyStateMessage>
-            Create Deployments to visualize your data on the map
-          </EmptyStateMessage>
+          <Callout type="info" title="No custom Deployments found">
+            <p>
+              Create{' '}
+              <a
+                href="https://docs.animl.camera/fundamentals/camera-and-deployment-management"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Deployments
+              </a>{' '}
+              to add lat/long coordinates and visualize your data on the map
+            </p>
+          </Callout>
         </EmptyStateOverlay>
       )}
       <MapGL
