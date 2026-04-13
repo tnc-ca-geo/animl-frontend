@@ -29,6 +29,7 @@ const AppContainer = styled('div', {
   display: 'grid',
   gridTemplateRows: 'auto 1fr',
   gridTemplateColumns: '100%',
+  height: '100vh',
 });
 
 const MainenanceMessage = styled('div', {
