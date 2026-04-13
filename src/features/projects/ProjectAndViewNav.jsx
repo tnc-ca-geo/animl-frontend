@@ -235,7 +235,7 @@ const ProjectAndViewNav = () => {
   };
 
   return (
-    <NavigationMenu>
+    <NavigationMenu css={{ justifyContent: 'center', width: '100vw' }}>
       <SimpleSpinner size="sm" display={projectsLoading.isLoading} />
       {projectsLoading.noneFound && (
         <NoneFoundAlert>Rats! You don&apos;t have access to any projects yet!</NoneFoundAlert>
@@ -244,23 +244,23 @@ const ProjectAndViewNav = () => {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTriggerWithCaret onPointerMove={(e) => e.preventDefault()}>
-              <NavigationMenuTriggerText>
-                {selectedProj.name}
-              </NavigationMenuTriggerText>
+              <NavigationMenuTriggerText>{selectedProj.name}</NavigationMenuTriggerText>
             </NavigationMenuTriggerWithCaret>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Projects</MenuTitle>
               <ContentList layout="one">
-                {projects.toSorted((a, b) => a.name.localeCompare(b.name)).map((proj) => (
-                  <ContentListItem
-                    key={proj._id}
-                    title={proj.name}
-                    selected={proj.selected}
-                    onClick={() => handleProjectMenuItemClick(proj._id)}
-                  >
-                    {proj.description}
-                  </ContentListItem>
-                ))}
+                {projects
+                  .toSorted((a, b) => a.name.localeCompare(b.name))
+                  .map((proj) => (
+                    <ContentListItem
+                      key={proj._id}
+                      title={proj.name}
+                      selected={proj.selected}
+                      onClick={() => handleProjectMenuItemClick(proj._id)}
+                    >
+                      {proj.description}
+                    </ContentListItem>
+                  ))}
               </ContentList>
             </NavigationMenuContent>
           </NavigationMenuItem>
@@ -270,23 +270,23 @@ const ProjectAndViewNav = () => {
               onPointerMove={(e) => e.preventDefault()}
               edited={unsavedViewChanges}
             >
-              <NavigationMenuTriggerText>
-                {selectedView.name}
-              </NavigationMenuTriggerText>
+              <NavigationMenuTriggerText>{selectedView.name}</NavigationMenuTriggerText>
             </NavigationMenuTriggerViews>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Views</MenuTitle>
               <ContentList layout="two">
-                {views.toSorted((a, b) => a.name.localeCompare(b.name)).map((view) => (
-                  <ContentListItem
-                    key={view._id}
-                    title={view.name}
-                    selected={view.selected}
-                    onClick={() => handleViewMenuItemClick(view._id)}
-                  >
-                    {view.description}
-                  </ContentListItem>
-                ))}
+                {views
+                  .toSorted((a, b) => a.name.localeCompare(b.name))
+                  .map((view) => (
+                    <ContentListItem
+                      key={view._id}
+                      title={view.name}
+                      selected={view.selected}
+                      onClick={() => handleViewMenuItemClick(view._id)}
+                    >
+                      {view.description}
+                    </ContentListItem>
+                  ))}
               </ContentList>
             </NavigationMenuContent>
           </NavigationMenuItem>
