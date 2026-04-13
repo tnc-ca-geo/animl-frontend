@@ -81,18 +81,14 @@ const WarningButton = styled('button', {
   alignItems: 'center',
   gap: '$1',
   padding: '$1 $2',
-  backgroundColor: '$warning',
+  backgroundColor: '$backgroundLight',
   color: '$warningText',
   border: 'none',
   borderRadius: '$2',
   fontFamily: '$roboto',
-  fontSize: '$3',
-  fontWeight: '$5',
+  fontSize: '$2',
+  fontWeight: '$4',
   cursor: 'pointer',
-  boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-  '&:hover': {
-    filter: 'brightness(0.92)',
-  },
 });
 
 const WarningPanel = styled('div', {
@@ -150,6 +146,47 @@ const CameraIdList = styled('ul', {
   lineHeight: '1.8',
   flex: 1,
 });
+
+const MapStyleSelector = styled('div', {
+  position: 'absolute',
+  top: '$2',
+  left: '$2',
+  zIndex: 2,
+  display: 'flex',
+  gap: '4px',
+});
+
+const MapStyleButton = styled('button', {
+  padding: '4px 8px',
+  fontFamily: '$roboto',
+  fontSize: '$2',
+  fontWeight: '$4',
+  border: 'none',
+  borderRadius: '$2',
+  cursor: 'pointer',
+  backgroundColor: 'rgba(0,0,0,0.45)',
+  color: 'white',
+  variants: {
+    active: {
+      true: {
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        color: '$textDark',
+        borderColor: 'transparent',
+        fontWeight: '$5',
+      },
+    },
+  },
+});
+
+const MAP_STYLES = [
+  {
+    id: 'satellite-streets',
+    label: 'Satellite',
+    url: 'mapbox://styles/mapbox/satellite-streets-v11',
+  },
+  { id: 'dark', label: 'Dark', url: 'mapbox://styles/mapbox/dark-v11' },
+  { id: 'light', label: 'Light', url: 'mapbox://styles/mapbox/light-v11' },
+];
 
 const MIN_SIZE = 30;
 const MAX_SIZE = 72;
@@ -237,6 +274,7 @@ function DonutMarker({ labelCounts, projectLabels, size }) {
 export default function StatsMap({ deploymentStats, projectLabels, cameraConfigs }) {
   const [popupDeployment, setPopupDeployment] = useState(null);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [activeStyleId, setActiveStyleId] = useState('satellite-streets');
 
   // Join deployment stats with locations from cameraConfigs.
   // Filters out deployments without coordinates (includes default deployments).
@@ -322,8 +360,9 @@ export default function StatsMap({ deploymentStats, projectLabels, cameraConfigs
       <MapGL
         initialViewState={initialViewState}
         mapboxAccessToken={MAPBOX_TOKEN}
-        mapStyle="mapbox://styles/mapbox/satellite-streets-v11"
+        mapStyle={MAP_STYLES.find((s) => s.id === activeStyleId).url}
         style={{ width: '100%', height: '100%' }}
+        logoPosition="bottom-right"
         reuseMaps
       >
         <NavigationControl position="top-right" />
@@ -383,6 +422,17 @@ export default function StatsMap({ deploymentStats, projectLabels, cameraConfigs
           </Popup>
         )}
       </MapGL>
+      <MapStyleSelector>
+        {MAP_STYLES.map((style) => (
+          <MapStyleButton
+            key={style.id}
+            active={activeStyleId === style.id}
+            onClick={() => setActiveStyleId(style.id)}
+          >
+            {style.label}
+          </MapStyleButton>
+        ))}
+      </MapStyleSelector>
       {unconfiguredCameraIds.length > 0 && (
         <>
           {isWarningOpen && (
