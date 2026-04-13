@@ -18,7 +18,7 @@ import StatsMap from './StatsMap.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
-const ImagePanel = ({ userHasBetaAccess }) => {
+const ImagePanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -72,13 +72,11 @@ const ImagePanel = ({ userHasBetaAccess }) => {
           notReviewedHint="The total number of Images that either have unlocked Objects that still require review or have no Objects and have not been marked empty."
           countHint="The total number of Images that match the current filters."
         />
-        {userHasBetaAccess && (
-          <StatsMap
-            deploymentStats={imageLevelStatsByDeployment}
-            projectLabels={projectLabels}
-            cameraConfigs={cameraConfigs}
-          />
-        )}
+        <StatsMap
+          deploymentStats={imageLevelStatsByDeployment}
+          projectLabels={projectLabels}
+          cameraConfigs={cameraConfigs}
+        />
         {stats['imageLevelStats'] && Object.keys(stats['imageLevelStats']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard

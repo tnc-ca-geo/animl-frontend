@@ -16,7 +16,7 @@ import ReviewCount from './ReviewCount.jsx';
 import GraphCard from './GraphCard.jsx';
 import StatsMap from './StatsMap.jsx';
 
-const BurstsPanel = ({ userHasBetaAccess }) => {
+const BurstsPanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -65,13 +65,11 @@ const BurstsPanel = ({ userHasBetaAccess }) => {
           count={burstsStats.burstCount}
           countHint="The total number of Bursts (images taken by a single camera within 2 seconds of one another) that match the current filters."
         />
-        {userHasBetaAccess && (
-          <StatsMap
-            deploymentStats={burstLevelStatsByDeployment}
-            projectLabels={projectLabels}
-            cameraConfigs={cameraConfigs}
-          />
-        )}
+        <StatsMap
+          deploymentStats={burstLevelStatsByDeployment}
+          projectLabels={projectLabels}
+          cameraConfigs={cameraConfigs}
+        />
         {burstsStats['burstLevelStats'] &&
           Object.keys(burstsStats['burstLevelStats']).length !== 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>

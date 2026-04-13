@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchIndependentDetectionStats } from '../tasks/tasksSlice.js';
-import { selectUserHasBetaAccess } from '../auth/authSlice.js';
 import { selectActiveFilters } from '../filters/filtersSlice.js';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -66,8 +65,6 @@ const ImagesStatsModal = () => {
   const [activePanel, setActivePanel] = useState('objects');
   const [independenceInterval, setIndependenceInterval] = useState(30);
 
-  const userHasBetaAccess = useSelector(selectUserHasBetaAccess);
-
   const filters = useSelector(selectActiveFilters);
 
   const handleIndependenceIntervalChange = (value) => {
@@ -111,12 +108,11 @@ const ImagesStatsModal = () => {
         )}
       </NavMenu>
       <StatsDash>
-        {activePanel === 'objects' && <ObjectPanel userHasBetaAccess={userHasBetaAccess} />}
-        {activePanel === 'images' && <ImagePanel userHasBetaAccess={userHasBetaAccess} />}
-        {activePanel === 'bursts' && <BurstsPanel userHasBetaAccess={userHasBetaAccess} />}
+        {activePanel === 'objects' && <ObjectPanel />}
+        {activePanel === 'images' && <ImagePanel />}
+        {activePanel === 'bursts' && <BurstsPanel />}
         {activePanel === 'independent-detections' && (
           <IndependentDetectionsPanel
-            userHasBetaAccess={userHasBetaAccess}
             independenceInterval={independenceInterval}
             filters={filters}
           />

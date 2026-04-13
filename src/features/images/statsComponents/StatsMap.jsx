@@ -214,6 +214,19 @@ function DonutMarker({ labelCounts, projectLabels, size }) {
   const cx = r;
   const cy = r;
 
+  // Single-entry: SVG arcs with coincident start/end points render nothing,
+  // so fall back to concentric circles for the donut shape.
+  if (entries.length === 1) {
+    const projLabel = projectLabels.find((l) => l.name === entries[0][0]);
+    const color = projLabel?.color || '#aaaaaa';
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+        <circle cx={cx} cy={cy} r={r} fill={color} />
+        <circle cx={cx} cy={cy} r={innerR} fill="white" />
+      </svg>
+    );
+  }
+
   // Build arc paths
   const arcs = [];
   let startAngle = -Math.PI / 2; // start at top

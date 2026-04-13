@@ -18,7 +18,7 @@ import StatsMap from './StatsMap.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
-const ObjectPanel = ({ userHasBetaAccess }) => {
+const ObjectPanel = () => {
   const dispatch = useDispatch();
   const filters = useSelector(selectActiveFilters);
 
@@ -72,13 +72,11 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
           notReviewedHint="The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user"
           countHint="The total number of individual Objects found in the currently filtered Images."
         />
-        {userHasBetaAccess && (
-          <StatsMap
-            deploymentStats={objectLevelStatsByDeployment}
-            projectLabels={projectLabels}
-            cameraConfigs={cameraConfigs}
-          />
-        )}
+        <StatsMap
+          deploymentStats={objectLevelStatsByDeployment}
+          projectLabels={projectLabels}
+          cameraConfigs={cameraConfigs}
+        />
         {stats['objectLevelStats'] && Object.keys(stats['objectLevelStats']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
@@ -95,7 +93,6 @@ const ObjectPanel = ({ userHasBetaAccess }) => {
             <ListCard
               label="Reviewers"
               list={stats.objectReviewerList}
-              projectLabels={projectLabels}
               content='Each reviewer&apos;s "Reviewed Count" is the total number of Objects they have edited in some way (e.g., validated/invalidated/added a Label)'
             />
           </div>
