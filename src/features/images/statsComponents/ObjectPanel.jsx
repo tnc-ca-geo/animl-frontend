@@ -6,12 +6,15 @@ import {
   fetchTask,
   selectStatsLoading,
   selectImagesStats,
+  selectObjectLevelStatsByDeployment,
 } from '../../tasks/tasksSlice.js';
 import { selectActiveFilters } from '../../filters/filtersSlice.js';
+import { selectProjectLabels, selectCameraConfigs } from '../../projects/projectsSlice.js';
 
 import GraphCard from './GraphCard.jsx';
 import ReviewCount from './ReviewCount.jsx';
 import ListCard from './ListCard.jsx';
+import StatsMap from './StatsMap.jsx';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner.jsx';
 import NoneFoundAlert from '../../../components/NoneFoundAlert.jsx';
 
@@ -22,6 +25,9 @@ const ObjectPanel = () => {
   // fetch images stats
   const stats = useSelector(selectImagesStats);
   const imagesStatsLoading = useSelector(selectStatsLoading);
+  const objectLevelStatsByDeployment = useSelector(selectObjectLevelStatsByDeployment);
+  const projectLabels = useSelector(selectProjectLabels);
+  const cameraConfigs = useSelector(selectCameraConfigs);
 
   useEffect(() => {
     const { isLoading, errors, noneFound } = imagesStatsLoading;
@@ -66,13 +72,19 @@ const ObjectPanel = () => {
           notReviewedHint="The total number of Objects that have not been “reviewed”, i.e., Objects that are unlocked and have ML-predicted labels that have not yet been validated or invalidated by a user"
           countHint="The total number of individual Objects found in the currently filtered Images."
         />
-        {stats['objectLabelList'] && Object.keys(stats['objectLabelList']).length !== 0 && (
+        <StatsMap
+          deploymentStats={objectLevelStatsByDeployment}
+          projectLabels={projectLabels}
+          cameraConfigs={cameraConfigs}
+        />
+        {stats['objectLevelStats'] && Object.keys(stats['objectLevelStats']).length !== 0 && (
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <GraphCard
               label="Object-level detections"
-              list={stats.objectLabelList}
+              list={stats.objectLevelStats}
               content="For each Label, the total number of Objects in the currently filtered set of Images for which that Label is their “Representative Label”. For example, if you have 2 images that each contain 3 pigs, their object-level detection count would be 6. Object-level annotations are the most granular annotations that Animl stores."
               dataKey="Number Objects with a given “Representative Label”"
+              projectLabels={projectLabels}
             />
           </div>
         )}

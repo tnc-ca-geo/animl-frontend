@@ -3,7 +3,7 @@ const enrichImages = (res, camConfigs) => {
     // map deploymentID to deployment name
     const camConfig = camConfigs.find((c) => c._id === img.cameraId);
     const deployment = camConfig
-      ? camConfig.deployments.find((d) => d._id === img.deploymentId).name
+      ? camConfig.deployments.find((d) => d._id === img.deploymentId)?.name || 'unknown'
       : 'unknown';
     img.deploymentName = deployment;
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectLabels } from '../projects/projectsSlice.js';
+import { selectProjectLabels } from '../projects/projectsSlice.js';
 import { setFocus } from '../review/reviewSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 import LabelPill from '../../components/LabelPill.jsx';
@@ -55,7 +55,7 @@ const SpinnerContainer = styled('div', {
 const LabelPills = ({ objects, imageIndex, focusIndex, awaitingPrediction }) => {
   const isImageFocused = imageIndex === focusIndex.image;
   const dispatch = useDispatch();
-  const projectLabels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
 
   const handlePillClick = (e, objIndex) => {
     // if user isn't attempting a multi-row selection, update focus

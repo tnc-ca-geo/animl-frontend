@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled } from '@stitches/react';
-import { indigo } from '@radix-ui/colors';
+// import { indigo } from '@radix-ui/colors';
 import Heading from './Heading';
 import StatsCard from './StatsCard';
 
@@ -18,7 +18,7 @@ const NumerContainer = styled('div', {
 const LargeNumber = styled('span', {
   fontSize: '30px',
   fontWeight: '$5',
-  color: indigo.indigo11,
+  color: '$hiContrast',
   width: '100%',
 });
 

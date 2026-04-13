@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectLabels, selectProjectLabelsLoading } from '../projectsSlice.js';
+import { selectProjectLabels, selectProjectLabelsLoading } from '../projectsSlice.js';
 import { selectDeleteProjectLabelLoading, fetchTask } from '../../tasks/tasksSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../../components/Spinner';
 import { LabelList } from './components';
@@ -10,9 +10,9 @@ import DeleteLabelsAlert from './DeleteLabelsAlert.jsx';
 
 const ManageLabelsModal = () => {
   const dispatch = useDispatch();
-  const labels = useSelector(selectLabels);
+  const projectLabels = useSelector(selectProjectLabels);
 
-  const sortedLabels = [...labels].sort((labelA, labelB) => {
+  const sortedLabels = [...projectLabels].sort((labelA, labelB) => {
     return labelA.name.toLowerCase() > labelB.name.toLowerCase() ? 1 : -1;
   });
 

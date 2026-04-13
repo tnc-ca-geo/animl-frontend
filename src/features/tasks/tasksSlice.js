@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
@@ -1118,5 +1118,25 @@ export const selectIndependentDetectionStats = (state) => state.tasks.independen
 export const selectIndependentDetectionStatsLoading = (state) =>
   state.tasks.loadingStates.independentDetectionStats;
 export const selectTaskSuccessNotif = (state) => state.tasks.successNotif;
+
+export const selectImageLevelStatsByDeployment = createSelector(
+  [selectImagesStats],
+  (imagesStats) => imagesStats?.imageLevelStatsByDeployment ?? null,
+);
+
+export const selectObjectLevelStatsByDeployment = createSelector(
+  [selectImagesStats],
+  (imagesStats) => imagesStats?.objectLevelStatsByDeployment ?? null,
+);
+
+export const selectBurstLevelStatsByDeployment = createSelector(
+  [selectBurstsStats],
+  (burstsStats) => burstsStats?.burstLevelStatsByDeployment ?? null,
+);
+
+export const selectDetectionsLevelStatsByDeployment = createSelector(
+  [selectIndependentDetectionStats],
+  (independentDetectionStats) => independentDetectionStats?.detectionsLevelStatsByDeployment ?? null,
+);
 
 export default tasksSlice.reducer;

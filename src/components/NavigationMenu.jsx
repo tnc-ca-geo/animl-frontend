@@ -47,8 +47,6 @@ const fadeOut = keyframes({
 const StyledMenu = styled(NavigationMenuPrimitive.Root, {
   position: 'relative',
   display: 'flex',
-  justifyContent: 'center',
-  width: '100vw',
   zIndex: '$4',
 });
 
@@ -191,8 +189,7 @@ const StyledViewport = styled(NavigationMenuPrimitive.Viewport, {
   backgroundColor: '$backgroundLight',
   borderRadius: '$2',
   overflow: 'hidden',
-  boxShadow:
-    'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
+  boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
   height: 'var(--radix-navigation-menu-viewport-height)',
 
   '@media only screen and (min-width: 600px)': {
