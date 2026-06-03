@@ -99,7 +99,7 @@ const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
         />
       )}
 
-      {/* bulk upload view */}
+      {/* bulk upload */}
       {hasRole(userRoles, WRITE_IMAGES_ROLES) && (
         <SidebarNavItem
           state={modalOpen && modalContent === 'bulk-upload-form' ? 'active' : ''}
@@ -110,7 +110,7 @@ const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
         />
       )}
 
-      {/* bulk upload view */}
+      {/* manage users */}
       {hasRole(userRoles, MANAGE_USERS_ROLES) && (
         <SidebarNavItem
           state={modalOpen && modalContent === 'manage-users-form' ? 'active' : ''}
@@ -121,7 +121,7 @@ const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
         />
       )}
 
-      {/* Manage label and tag view */}
+      {/* Manage labels and tags */}
       {hasRole(userRoles, WRITE_PROJECT_ROLES) && (
         <SidebarNavItem
           state={modalOpen && modalContent === 'manage-tags-and-labels-form' ? 'active' : ''}
@@ -131,7 +131,6 @@ const SidebarNav = ({ toggleFiltersPanel, filtersPanelOpen }) => {
           tooltipContent="Manage labels and tags"
         />
       )}
-
     </StyledSidebarNav>
   );
 };
