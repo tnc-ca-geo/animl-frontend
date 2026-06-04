@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { ChatBubbleIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { hasRole, READ_COMMENT_ROLES, WRITE_COMMENT_ROLES } from '../auth/roles.js';
+import { hasRole, READ_COMMENTS_ROLES, WRITE_COMMENTS_ROLES } from '../auth/roles.js';
 import {
   Tooltip,
   TooltipContent,
@@ -81,7 +81,7 @@ export const CommentsPopover = ({ image, userRoles }) => {
         <TooltipTrigger
           asChild
           disabled={
-            !hasRole(userRoles, READ_COMMENT_ROLES) || !hasRole(userRoles, WRITE_COMMENT_ROLES)
+            !hasRole(userRoles, READ_COMMENTS_ROLES) || !hasRole(userRoles, WRITE_COMMENTS_ROLES)
           }
         >
           <PopoverTrigger asChild onClick={() => setIsCommentsPopoverOpen(true)}>

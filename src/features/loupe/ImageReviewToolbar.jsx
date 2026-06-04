@@ -24,8 +24,8 @@ import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js
 import {
   hasRole,
   WRITE_OBJECTS_ROLES,
-  READ_COMMENT_ROLES,
-  WRITE_COMMENT_ROLES,
+  READ_COMMENTS_ROLES,
+  WRITE_COMMENTS_ROLES,
 } from '../auth/roles.js';
 import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
 import { violet, mauve, indigo } from '@radix-ui/colors';
@@ -321,7 +321,8 @@ const ImageReviewToolbar = ({
           {isSmallScreen ? (
             <ToolbarIconButton
               disabled={
-                !hasRole(userRoles, READ_COMMENT_ROLES) || !hasRole(userRoles, WRITE_COMMENT_ROLES)
+                !hasRole(userRoles, READ_COMMENTS_ROLES) ||
+                !hasRole(userRoles, WRITE_COMMENTS_ROLES)
               }
               css={{ position: 'relative' }}
               onClick={() => dispatch(setMobileCommentFocusIndex(image._id))}
