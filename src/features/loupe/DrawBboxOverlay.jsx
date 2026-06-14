@@ -70,8 +70,13 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
   };
 
   const createNewBBox = () => {
-    // create bbox
-    const bbox = absToRel(tempBBox, { width, height });
+    // clamp bbox to image bounds before converting to relative coordinates
+    const clampedLeft = Math.max(0, tempBBox.left);
+    const clampedTop = Math.max(0, tempBBox.top);
+    const clampedWidth = Math.max(0, Math.min(tempBBox.width, width - clampedLeft));
+    const clampedHeight = Math.max(0, Math.min(tempBBox.height, height - clampedTop));
+    const clampedBBox = { left: clampedLeft, top: clampedTop, width: clampedWidth, height: clampedHeight };
+    const bbox = absToRel(clampedBBox, { width, height });
     const newObject = {
       _id: new ObjectID().toString(),
       isTemp: true,
@@ -90,8 +95,8 @@ const DrawBboxOverlay = ({ imgContainerDims, imgDims, setTempObject }) => {
   const startDrawingBBox = () => {
     let newTop = mousePos.y - 2; // subtracting 2px for border
     let newLeft = mousePos.x - 2;
-    newTop = newTop < 0 ? 0 : newTop; // prevent negative values
-    newLeft = newLeft < 0 ? 0 : newLeft;
+    newTop = Math.max(0, Math.min(newTop, height));
+    newLeft = Math.max(0, Math.min(newLeft, width));
     setTempBBox({ ...tempBBox, ...{ top: newTop, left: newLeft } });
     setDrawingBBox(true);
   };
