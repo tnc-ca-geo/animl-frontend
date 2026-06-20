@@ -12,6 +12,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChatBubbleIcon,
+  DotsHorizontalIcon,
+  ClipboardCopyIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import {
@@ -19,7 +21,12 @@ import {
   setMobileCategorySelectorFocus,
   setMobileCommentFocusIndex,
 } from '../review/reviewSlice.js';
-import { addLabelStart, selectIsDrawingBbox, selectIsAddingLabel } from './loupeSlice.js';
+import {
+  addLabelStart,
+  selectIsDrawingBbox,
+  selectIsAddingLabel,
+  copyUrlToClipboard,
+} from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
 import {
   hasRole,
@@ -27,7 +34,7 @@ import {
   READ_COMMENTS_ROLES,
   WRITE_COMMENTS_ROLES,
 } from '../auth/roles.js';
-import { selectGlobalBreakpoint } from '../projects/projectsSlice.js';
+import { selectGlobalBreakpoint, selectSelectedProject } from '../projects/projectsSlice.js';
 import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';
 import { KeyboardKeyHint } from '../../components/KeyboardKeyHint.jsx';
@@ -40,12 +47,24 @@ import {
 } from '../../components/Tooltip.jsx';
 import { globalBreakpoints } from '../../config.js';
 import { CommentsPopover } from './CommentsPopover.jsx';
-import ShareImageButton from './ShareImageButton.jsx';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemIconLeft,
+} from '../../components/Dropdown.jsx';
+import {
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastAction,
+  ToastViewport,
+} from '../../components/Toast.jsx';
+import { truncateString } from '../../app/utils.js';
 
 const Badge = styled('div', {
-  position: 'absolute',
-  top: 1,
-  left: 18,
+  marginLeft: '$1',
   background: indigo.indigo4,
   fontSize: '$1',
   fontWeight: '$5',
@@ -138,7 +157,17 @@ const ImageReviewToolbar = ({
   const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
+  const selectedProject = useSelector(selectSelectedProject);
   const dispatch = useDispatch();
+
+  // Copy URL state and handler (for mobile overflow menu)
+  const [showCopyToast, setShowCopyToast] = useState(false);
+  const handleCopyUrl = () => {
+    const allImagesView = selectedProject.views.find((v) => v.name === 'All images');
+    const shareURL = `${window.location.origin}/app/${selectedProject._id}/${allImagesView._id}?img=${image._id}`;
+    dispatch(copyUrlToClipboard(shareURL));
+    setShowCopyToast(true);
+  };
 
   // manage category selector state (open/closed)
   const isAddingLabel = useSelector(selectIsAddingLabel);
@@ -193,206 +222,241 @@ const ImageReviewToolbar = ({
     : {};
 
   return (
-    <Toolbar
-      // overflow x is needed because the toolbar is too wide on mobile
-      // overflow x automatically sets overflow y which hides the
-      // category menu
-      css={toolbarScrollCss}
-    >
-      {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
-        <AnnotationControls>
-          {/* Repeat last action */}
-          {!isSmallScreen && (
-            <>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
-                    <ReloadIcon />
-                  </ToolbarIconButton>
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={5}>
-                  Repeat last action
-                  <TooltipArrow />
-                </TooltipContent>
-              </Tooltip>
-
-              <Separator />
-            </>
-          )}
-
-          {/* Edit */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {!isSmallScreen && catSelectorOpen ? (
-                <CategorySelector handleCategoryChange={handleCategoryChange} />
-              ) : (
-                <ToolbarIconButton
-                  onClick={handleEditAllLabelsButtonClick}
-                  disabled={allObjectsLocked || image.awaitingPrediction}
-                >
-                  <Pencil1Icon />
-                </ToolbarIconButton>
-              )}
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Edit all labels
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Validate/invalidate */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={(e) => handleValidateAllButtonClick(e, true)}
-                disabled={allObjectsLocked || image.awaitingPrediction}
-              >
-                <CheckIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Validate all labels
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={(e) => handleValidateAllButtonClick(e, false)}
-                disabled={allObjectsLocked || image.awaitingPrediction}
-              >
-                <Cross2Icon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Invalidate all labels
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Mark empty */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={handleMarkEmptyButtonClick}
-                disabled={image.awaitingPrediction}
-              >
-                <ValueNoneIcon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Mark empty
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-
-          <Separator />
-
-          {/* Add object */}
-          {!isSmallScreen && (
-            <>
-              {isDrawingBbox ? (
-                <CancelHint>
-                  <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
-                  <span style={{ paddingBottom: '2px' }}>to cancel</span>
-                </CancelHint>
-              ) : (
+    <>
+      <Toolbar
+        // overflow x is needed because the toolbar is too wide on mobile
+        // overflow x automatically sets overflow y which hides the
+        // category menu
+        css={toolbarScrollCss}
+      >
+        {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
+          <AnnotationControls>
+            {/* Repeat last action */}
+            {!isSmallScreen && (
+              <>
                 <Tooltip>
-                  <TooltipTrigger asChild disabled={isSmallScreen || image.awaitingPrediction}>
-                    <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                      <GroupIcon />
+                  <TooltipTrigger asChild>
+                    <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
+                      <ReloadIcon />
                     </ToolbarIconButton>
                   </TooltipTrigger>
                   <TooltipContent side="top" sideOffset={5}>
-                    Add object
+                    Repeat last action
                     <TooltipArrow />
                   </TooltipContent>
                 </Tooltip>
-              )}
-              <Separator />
-            </>
-          )}
 
-          {/* Comments */}
-          {isSmallScreen ? (
-            <ToolbarIconButton
-              disabled={
-                !hasRole(userRoles, READ_COMMENTS_ROLES) ||
-                !hasRole(userRoles, WRITE_COMMENTS_ROLES)
-              }
-              css={{ position: 'relative' }}
-              onClick={() => dispatch(setMobileCommentFocusIndex(image._id))}
-            >
-              <ChatBubbleIcon />
-              {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
-            </ToolbarIconButton>
-          ) : (
-            <CommentsPopover image={image} userRoles={userRoles} />
-          )}
+                <Separator />
+              </>
+            )}
 
-          <Separator />
+            {/* Edit */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {!isSmallScreen && catSelectorOpen ? (
+                  <CategorySelector handleCategoryChange={handleCategoryChange} />
+                ) : (
+                  <ToolbarIconButton
+                    onClick={handleEditAllLabelsButtonClick}
+                    disabled={allObjectsLocked || image.awaitingPrediction}
+                  >
+                    <Pencil1Icon />
+                  </ToolbarIconButton>
+                )}
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Edit all labels
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
 
-          {/* Unlock */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarIconButton
-                onClick={handleUnlockAllButtonClick}
-                disabled={allObjectsUnlocked || !hasRenderedObjects || image.awaitingPrediction}
-              >
-                <LockOpen1Icon />
-              </ToolbarIconButton>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Unlock all objects
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
+            <Separator />
 
-          {/* On mobile, include the share button as well */}
-          {isSmallScreen && (
-            <>
-              <Separator />
-              <ShareImageButton imageId={image._id} />
-            </>
-          )}
-        </AnnotationControls>
-      )}
+            {/* Validate/invalidate */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={(e) => handleValidateAllButtonClick(e, true)}
+                  disabled={allObjectsLocked || image.awaitingPrediction}
+                >
+                  <CheckIcon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Validate all labels
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={(e) => handleValidateAllButtonClick(e, false)}
+                  disabled={allObjectsLocked || image.awaitingPrediction}
+                >
+                  <Cross2Icon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Invalidate all labels
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
 
-      {/* Increment/Decrement */}
-      {handleIncrementClick !== undefined && (
-        <IncrementControls>
-          <Tooltip>
-            <TooltipTrigger asChild>
+            <Separator />
+
+            {/* Mark empty */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={handleMarkEmptyButtonClick}
+                  disabled={image.awaitingPrediction}
+                >
+                  <ValueNoneIcon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Mark empty
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+
+            <Separator />
+
+            {/* Add object */}
+            {!isSmallScreen && (
+              <>
+                {isDrawingBbox ? (
+                  <CancelHint>
+                    <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
+                    <span style={{ paddingBottom: '2px' }}>to cancel</span>
+                  </CancelHint>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild disabled={isSmallScreen || image.awaitingPrediction}>
+                      <ToolbarIconButton onClick={handleAddObjectButtonClick}>
+                        <GroupIcon />
+                      </ToolbarIconButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" sideOffset={5}>
+                      Add object
+                      <TooltipArrow />
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                <Separator />
+              </>
+            )}
+
+            {/* Unlock */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ToolbarIconButton
+                  onClick={handleUnlockAllButtonClick}
+                  disabled={allObjectsUnlocked || !hasRenderedObjects || image.awaitingPrediction}
+                >
+                  <LockOpen1Icon />
+                </ToolbarIconButton>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Unlock all objects
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+
+            <Separator />
+
+            {/* Comments / Small screen menu */}
+            {isSmallScreen ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <ToolbarIconButton css={{ position: 'relative' }}>
+                    <DotsHorizontalIcon />
+                  </ToolbarIconButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent sideOffset={5}>
+                  <DropdownMenuItem
+                    disabled={
+                      !hasRole(userRoles, READ_COMMENTS_ROLES) ||
+                      !hasRole(userRoles, WRITE_COMMENTS_ROLES)
+                    }
+                    onSelect={() => dispatch(setMobileCommentFocusIndex(image._id))}
+                  >
+                    <DropdownMenuItemIconLeft>
+                      <ChatBubbleIcon />
+                    </DropdownMenuItemIconLeft>
+                    Comments{image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={handleCopyUrl}>
+                    <DropdownMenuItemIconLeft>
+                      <ClipboardCopyIcon />
+                    </DropdownMenuItemIconLeft>
+                    Copy image URL
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <CommentsPopover image={image} userRoles={userRoles} />
+            )}
+          </AnnotationControls>
+        )}
+
+        {/* Increment/Decrement */}
+        {handleIncrementClick !== undefined && (
+          <IncrementControls>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <IconButton
+                    variant="ghost"
+                    size="med"
+                    onClick={() => handleIncrementClick('decrement')}
+                  >
+                    <ChevronLeftIcon />
+                  </IconButton>
+                  <IconButton
+                    variant="ghost"
+                    size="med"
+                    onClick={() => handleIncrementClick('increment')}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={5}>
+                Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
+                <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+          </IncrementControls>
+        )}
+      </Toolbar>
+
+      {/* Copy image URL toast (mobile overflow menu feedback) */}
+      {showCopyToast && (
+        <>
+          <Toast open={showCopyToast} duration={2000} onOpenChange={() => setShowCopyToast(false)}>
+            <ToastTitle variant="green" css={{ marginBottom: 0 }}>
+              URL copied to clipboard
+            </ToastTitle>
+            <ToastDescription asChild>
               <div>
-                <IconButton
-                  variant="ghost"
-                  size="med"
-                  onClick={() => handleIncrementClick('decrement')}
-                >
-                  <ChevronLeftIcon />
-                </IconButton>
-                <IconButton
-                  variant="ghost"
-                  size="med"
-                  onClick={() => handleIncrementClick('increment')}
-                >
-                  <ChevronRightIcon />
-                </IconButton>
+                {truncateString(
+                  `${window.location.origin}/app/${selectedProject?._id}/${selectedProject?.views?.find((v) => v.name === 'All images')?._id}?img=${image._id}`,
+                  40,
+                )}
               </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={5}>
-              Hint: you can use the <KeyboardKeyHint>WASD</KeyboardKeyHint> or{' '}
-              <KeyboardKeyHint>arrow</KeyboardKeyHint> keys to navigate images
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-        </IncrementControls>
+            </ToastDescription>
+            <ToastAction asChild altText="Dismiss">
+              <IconButton variant="ghost">
+                <Cross2Icon />
+              </IconButton>
+            </ToastAction>
+          </Toast>
+          <ToastViewport />
+        </>
       )}
-    </Toolbar>
+    </>
   );
 };
 
