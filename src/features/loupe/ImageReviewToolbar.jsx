@@ -14,6 +14,8 @@ import {
   ChatBubbleIcon,
   DotsHorizontalIcon,
   ClipboardCopyIcon,
+  EyeOpenIcon,
+  EyeClosedIcon,
 } from '@radix-ui/react-icons';
 import IconButton from '../../components/IconButton.jsx';
 import {
@@ -121,13 +123,18 @@ export const ToolbarIconButton = styled(Button, {
     color: violet.violet11,
   },
   svg: {
-    marginRight: '$1',
-    marginLeft: '$1',
+    marginRight: '$1 !important',
+    marginLeft: '$1 !important',
   },
 });
 
 const AnnotationControls = styled('div', {
   display: 'flex',
+});
+
+const LeftGroup = styled('div', {
+  display: 'flex',
+  alignItems: 'center',
 });
 
 const IncrementControls = styled('div', {
@@ -153,6 +160,8 @@ const ImageReviewToolbar = ({
   handleAddObjectButtonClick,
   handleUnlockAllButtonClick,
   handleIncrementClick,
+  bboxesVisible = true,
+  toggleBboxesVisible,
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
@@ -229,178 +238,215 @@ const ImageReviewToolbar = ({
         // category menu
         css={toolbarScrollCss}
       >
-        {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
-          <AnnotationControls>
-            {/* Repeat last action */}
-            {!isSmallScreen && (
-              <>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ToolbarIconButton onClick={handleRepeatAction} disabled={!lastAction}>
-                      <ReloadIcon />
-                    </ToolbarIconButton>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" sideOffset={5}>
-                    Repeat last action
-                    <TooltipArrow />
-                  </TooltipContent>
-                </Tooltip>
-
-                <Separator />
-              </>
-            )}
-
-            {/* Edit */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                {!isSmallScreen && catSelectorOpen ? (
-                  <CategorySelector handleCategoryChange={handleCategoryChange} />
-                ) : (
-                  <ToolbarIconButton
-                    onClick={handleEditAllLabelsButtonClick}
-                    disabled={allObjectsLocked || image.awaitingPrediction}
-                  >
-                    <Pencil1Icon />
-                  </ToolbarIconButton>
-                )}
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Edit all labels
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
-
-            <Separator />
-
-            {/* Validate/invalidate */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <ToolbarIconButton
-                  onClick={(e) => handleValidateAllButtonClick(e, true)}
-                  disabled={allObjectsLocked || image.awaitingPrediction}
-                >
-                  <CheckIcon />
-                </ToolbarIconButton>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Validate all labels
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <ToolbarIconButton
-                  onClick={(e) => handleValidateAllButtonClick(e, false)}
-                  disabled={allObjectsLocked || image.awaitingPrediction}
-                >
-                  <Cross2Icon />
-                </ToolbarIconButton>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Invalidate all labels
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
-
-            <Separator />
-
-            {/* Mark empty */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <ToolbarIconButton
-                  onClick={handleMarkEmptyButtonClick}
-                  disabled={image.awaitingPrediction}
-                >
-                  <ValueNoneIcon />
-                </ToolbarIconButton>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Mark empty
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
-
-            <Separator />
-
-            {/* Add object */}
-            {!isSmallScreen && (
-              <>
-                {isDrawingBbox ? (
-                  <CancelHint>
-                    <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
-                    <span style={{ paddingBottom: '2px' }}>to cancel</span>
-                  </CancelHint>
-                ) : (
+        <LeftGroup>
+          {hasRole(userRoles, WRITE_OBJECTS_ROLES) && (
+            <AnnotationControls>
+              {/* Repeat last action */}
+              {!isSmallScreen && (
+                <>
                   <Tooltip>
-                    <TooltipTrigger asChild disabled={isSmallScreen || image.awaitingPrediction}>
-                      <ToolbarIconButton onClick={handleAddObjectButtonClick}>
-                        <GroupIcon />
+                    <TooltipTrigger asChild>
+                      <ToolbarIconButton
+                        onClick={handleRepeatAction}
+                        disabled={!lastAction || !bboxesVisible}
+                      >
+                        <ReloadIcon />
                       </ToolbarIconButton>
                     </TooltipTrigger>
                     <TooltipContent side="top" sideOffset={5}>
-                      Add object
+                      Repeat last action
                       <TooltipArrow />
                     </TooltipContent>
                   </Tooltip>
-                )}
-                <Separator />
-              </>
-            )}
 
-            {/* Unlock */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <ToolbarIconButton
-                  onClick={handleUnlockAllButtonClick}
-                  disabled={allObjectsUnlocked || !hasRenderedObjects || image.awaitingPrediction}
-                >
-                  <LockOpen1Icon />
-                </ToolbarIconButton>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={5}>
-                Unlock all objects
-                <TooltipArrow />
-              </TooltipContent>
-            </Tooltip>
+                  <Separator />
+                </>
+              )}
 
-            <Separator />
+              {/* Edit all Labels */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {!isSmallScreen && catSelectorOpen && bboxesVisible ? (
+                    <CategorySelector handleCategoryChange={handleCategoryChange} />
+                  ) : (
+                    <ToolbarIconButton
+                      onClick={handleEditAllLabelsButtonClick}
+                      disabled={allObjectsLocked || image.awaitingPrediction || !bboxesVisible}
+                    >
+                      <Pencil1Icon />
+                    </ToolbarIconButton>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Edit all labels
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
 
-            {/* Comments / Small screen menu */}
-            {isSmallScreen ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <ToolbarIconButton css={{ position: 'relative' }}>
-                    <DotsHorizontalIcon />
-                  </ToolbarIconButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent sideOffset={5}>
-                  <DropdownMenuItem
-                    disabled={
-                      !hasRole(userRoles, READ_COMMENTS_ROLES) ||
-                      !hasRole(userRoles, WRITE_COMMENTS_ROLES)
-                    }
-                    onSelect={() => dispatch(setMobileCommentFocusIndex(image._id))}
+              <Separator />
+
+              {/* Validate/invalidate all Labels */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton
+                    onClick={(e) => handleValidateAllButtonClick(e, true)}
+                    disabled={allObjectsLocked || image.awaitingPrediction || !bboxesVisible}
                   >
-                    <DropdownMenuItemIconLeft>
-                      <ChatBubbleIcon />
-                    </DropdownMenuItemIconLeft>
-                    Comments{image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={handleCopyUrl}>
-                    <DropdownMenuItemIconLeft>
-                      <ClipboardCopyIcon />
-                    </DropdownMenuItemIconLeft>
-                    Copy image URL
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <CommentsPopover image={image} userRoles={userRoles} />
-            )}
-          </AnnotationControls>
-        )}
+                    <CheckIcon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Validate all labels
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton
+                    onClick={(e) => handleValidateAllButtonClick(e, false)}
+                    disabled={allObjectsLocked || image.awaitingPrediction || !bboxesVisible}
+                  >
+                    <Cross2Icon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Invalidate all labels
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
 
-        {/* Increment/Decrement */}
+              <Separator />
+
+              {/* Add empty object */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton
+                    onClick={handleMarkEmptyButtonClick}
+                    disabled={image.awaitingPrediction || !bboxesVisible}
+                  >
+                    <ValueNoneIcon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Mark empty
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
+
+              <Separator />
+
+              {/* Add object */}
+              {!isSmallScreen && (
+                <>
+                  {isDrawingBbox ? (
+                    <CancelHint>
+                      <KeyboardKeyHint css={{ marginRight: '4px' }}>esc</KeyboardKeyHint>
+                      <span style={{ paddingBottom: '2px' }}>to cancel</span>
+                    </CancelHint>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger
+                        asChild
+                        disabled={isSmallScreen || image.awaitingPrediction || !bboxesVisible}
+                      >
+                        <ToolbarIconButton
+                          onClick={handleAddObjectButtonClick}
+                          disabled={!bboxesVisible}
+                        >
+                          <GroupIcon />
+                        </ToolbarIconButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={5}>
+                        Add object
+                        <TooltipArrow />
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                  <Separator />
+                </>
+              )}
+
+              {/* Unlock */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton
+                    onClick={handleUnlockAllButtonClick}
+                    disabled={
+                      allObjectsUnlocked ||
+                      !hasRenderedObjects ||
+                      image.awaitingPrediction ||
+                      !bboxesVisible
+                    }
+                  >
+                    <LockOpen1Icon />
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  Unlock all objects
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
+
+              <Separator />
+
+              {/* Toggle bbox visibility */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToolbarIconButton
+                    onClick={toggleBboxesVisible}
+                    data-state={bboxesVisible ? undefined : 'on'}
+                  >
+                    {bboxesVisible ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                  </ToolbarIconButton>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={5}>
+                  {bboxesVisible
+                    ? 'Temporarily hide bounding boxes'
+                    : 'Temporarily show bounding boxes'}
+                  <TooltipArrow />
+                </TooltipContent>
+              </Tooltip>
+
+              <Separator />
+
+              {/* Comments / Small screen menu */}
+              {isSmallScreen ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <ToolbarIconButton css={{ position: 'relative' }}>
+                      <DotsHorizontalIcon />
+                    </ToolbarIconButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent sideOffset={5}>
+                    <DropdownMenuItem
+                      disabled={
+                        !hasRole(userRoles, READ_COMMENTS_ROLES) ||
+                        !hasRole(userRoles, WRITE_COMMENTS_ROLES)
+                      }
+                      onSelect={() => dispatch(setMobileCommentFocusIndex(image._id))}
+                    >
+                      <DropdownMenuItemIconLeft>
+                        <ChatBubbleIcon />
+                      </DropdownMenuItemIconLeft>
+                      Comments
+                      {image.comments?.length > 0 && <Badge>{image.comments?.length}</Badge>}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleCopyUrl}>
+                      <DropdownMenuItemIconLeft>
+                        <ClipboardCopyIcon />
+                      </DropdownMenuItemIconLeft>
+                      Copy image URL
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <CommentsPopover image={image} userRoles={userRoles} />
+              )}
+            </AnnotationControls>
+          )}
+        </LeftGroup>
+
+        {/* Increment/Decrement image */}
         {handleIncrementClick !== undefined && (
           <IncrementControls>
             <Tooltip>

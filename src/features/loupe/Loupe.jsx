@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions as undoActions } from 'redux-undo-redo';
 import { styled } from '../../theme/stitches.config.js';
@@ -172,6 +172,12 @@ const Loupe = () => {
     dispatch(incrementImage(delta));
   };
 
+  const [bboxesVisible, setBboxesVisible] = useState(true);
+  useEffect(() => {
+    setBboxesVisible(true);
+  }, [image?._id]);
+  const toggleBboxesVisible = useCallback(() => setBboxesVisible((v) => !v), []);
+
   // Listen for hotkeys
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
@@ -247,6 +253,7 @@ const Loupe = () => {
               workingImages={workingImages}
               image={image}
               focusIndex={focusIndex}
+              bboxesVisible={bboxesVisible}
               handleMarkEmptyButtonClick={markEmpty}
               handleAddObjectButtonClick={handleAddObjectButtonClick}
               css={{ height: '100%', width: '100%', objectFit: 'contain' }}
@@ -267,6 +274,8 @@ const Loupe = () => {
               handleAddObjectButtonClick={handleAddObjectButtonClick}
               handleUnlockAllButtonClick={handleUnlockAllButtonClick}
               handleIncrementClick={handleIncrementClick}
+              bboxesVisible={bboxesVisible}
+              toggleBboxesVisible={toggleBboxesVisible}
             />
             <ImageTagsToolbar image={image} projectTags={projectTags} />
           </>
