@@ -25,7 +25,7 @@ const ImageFrame = styled('div', {
   position: 'absolute',
 });
 
-const FullSizeImage = ({ workingImages, image, focusIndex }) => {
+const FullSizeImage = ({ workingImages, image, focusIndex, bboxesVisible = true }) => {
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
 
   // track image loading state
@@ -85,7 +85,8 @@ const FullSizeImage = ({ workingImages, image, focusIndex }) => {
             height: imgDims.height,
           }}
         >
-          {objectsToRender &&
+          {bboxesVisible &&
+            objectsToRender &&
             objectsToRender.map((obj) => {
               return (
                 <BoundingBox
@@ -100,7 +101,7 @@ const FullSizeImage = ({ workingImages, image, focusIndex }) => {
                 />
               );
             })}
-          {isDrawingBbox && (
+          {bboxesVisible && isDrawingBbox && (
             <DrawBboxOverlay
               imgContainerDims={imgContainerDims}
               imgDims={imgDims}

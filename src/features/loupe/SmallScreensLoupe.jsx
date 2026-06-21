@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from '../../theme/stitches.config';
 import FullSizeImage from './FullSizeImage';
 import ImageReviewToolbar from './ImageReviewToolbar';
@@ -15,6 +15,7 @@ import {
   objectsManuallyUnlocked,
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
+import { drawBboxEnd } from './loupeSlice.js';
 
 const ImageContainer = styled('div', {
   backgroundColor: '$backgroundBlack',
@@ -118,6 +119,17 @@ export const SmallScreensLoupe = ({ image, idx, workingImages, shouldShowToolbar
     dispatch(objectsManuallyUnlocked({ objects }));
   };
 
+  const [bboxesVisible, setBboxesVisible] = useState(true);
+  useEffect(() => {
+    setBboxesVisible(true);
+  }, [image?._id]);
+  const toggleBboxesVisible = useCallback(() => setBboxesVisible((v) => !v), []);
+
+  // when bboxes are hidden, cancel any in-progress bbox drawing
+  useEffect(() => {
+    if (!bboxesVisible) dispatch(drawBboxEnd());
+  }, [bboxesVisible, dispatch]);
+
   return (
     <FullSizeImageWrapper style={style}>
       <ImageContainer>
@@ -126,6 +138,7 @@ export const SmallScreensLoupe = ({ image, idx, workingImages, shouldShowToolbar
           workingImages={workingImages}
           image={image}
           focusIndex={{ image: idx }}
+          bboxesVisible={bboxesVisible}
           css={{
             height: '100%',
             width: '100%',
@@ -143,6 +156,8 @@ export const SmallScreensLoupe = ({ image, idx, workingImages, shouldShowToolbar
             handleValidateAllButtonClick={handleValidateAllButtonClick}
             handleMarkEmptyButtonClick={markEmpty}
             handleUnlockAllButtonClick={handleUnlockAllButtonClick}
+            bboxesVisible={bboxesVisible}
+            toggleBboxesVisible={toggleBboxesVisible}
           />
           <ImageTagsToolbar image={image} projectTags={projectTags} />
         </ToolbarContainer>
