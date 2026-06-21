@@ -14,7 +14,7 @@ import {
   incrementImage,
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
-import { toggleOpenLoupe, drawBboxStart, addLabelStart } from './loupeSlice.js';
+import { toggleOpenLoupe, drawBboxStart, drawBboxEnd, addLabelStart } from './loupeSlice.js';
 import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
 import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
@@ -24,6 +24,15 @@ import ShareImageButton from './ShareImageButton';
 import { ImageTagsToolbar } from './ImageTagsToolbar.jsx';
 import { ImageMetadata } from './ImageMetadata.jsx';
 import LoupeDropdown from './LoupeDropdown.jsx';
+import {
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastAction,
+  ToastViewport,
+} from '../../components/Toast.jsx';
+import IconButton from '../../components/IconButton.jsx';
+import { Cross2Icon } from '@radix-ui/react-icons';
 
 const ImagePane = styled('div', {
   // display: 'flex',
@@ -178,6 +187,14 @@ const Loupe = () => {
   }, [image?._id]);
   const toggleBboxesVisible = useCallback(() => setBboxesVisible((v) => !v), []);
 
+  // when bboxes are hidden, cancel any in-progress bbox drawing so the toolbar
+  // doesn't get stuck showing the "esc to cancel" hint with no visible overlay
+  useEffect(() => {
+    if (!bboxesVisible) dispatch(drawBboxEnd());
+  }, [bboxesVisible, dispatch]);
+
+  const [showHotkeyBlockedToast, setShowHotkeyBlockedToast] = useState(false);
+
   // Listen for hotkeys
   // TODO: should this all live in the ImageReviewToolbar?
   // TODO: use react synthetic onKeyDown events instead?
@@ -199,23 +216,40 @@ const Loupe = () => {
 
       if (delta) {
         dispatch(incrementImage(delta));
+        return;
       }
 
       // ctrl-z/shift-ctrl-z (undo/redo)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && charCode === 'z') {
+        if (!bboxesVisible) {
+          setShowHotkeyBlockedToast(true);
+          return;
+        }
         dispatch(undoActions.redo());
       } else if ((e.ctrlKey || e.metaKey) && charCode === 'z') {
+        if (!bboxesVisible) {
+          setShowHotkeyBlockedToast(true);
+          return;
+        }
         dispatch(undoActions.undo());
       }
 
       // ctrl-e (edit all)
       if ((e.ctrlKey || e.metaKey) && charCode === 'e' && hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
+        if (!bboxesVisible) {
+          setShowHotkeyBlockedToast(true);
+          return;
+        }
         dispatch(addLabelStart('from-review-toolbar'));
       }
 
       // ctrl-v (repeat last action)
       if ((e.ctrlKey || e.metaKey) && charCode === 'v' && hasRole(userRoles, WRITE_OBJECTS_ROLES)) {
         e.stopPropagation();
+        if (!bboxesVisible) {
+          setShowHotkeyBlockedToast(true);
+          return;
+        }
         handleRepeatAction();
       }
 
@@ -225,7 +259,7 @@ const Loupe = () => {
       //   dispatch(drawBboxStart());
       // }
     },
-    [dispatch, image],
+    [dispatch, image, bboxesVisible, userRoles, handleRepeatAction],
   );
 
   useEffect(() => {
@@ -284,6 +318,28 @@ const Loupe = () => {
           <ShareImageButton imageId={image?._id} />
         </ShareImage>
       </ToolbarContainer>
+      {showHotkeyBlockedToast && (
+        <>
+          <Toast
+            open={showHotkeyBlockedToast}
+            duration={3000}
+            onOpenChange={() => setShowHotkeyBlockedToast(false)}
+          >
+            <ToastTitle variant="red" css={{ marginBottom: 0 }}>
+              Hotkeys disabled
+            </ToastTitle>
+            <ToastDescription asChild>
+              <div>All bounding boxes must be visible to use keyboard shortcuts.</div>
+            </ToastDescription>
+            <ToastAction asChild altText="Dismiss">
+              <IconButton variant="ghost">
+                <Cross2Icon />
+              </IconButton>
+            </ToastAction>
+          </Toast>
+          <ToastViewport />
+        </>
+      )}
     </StyledLoupe>
   );
 };

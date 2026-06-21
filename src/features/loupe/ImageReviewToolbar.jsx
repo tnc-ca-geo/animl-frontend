@@ -161,7 +161,7 @@ const ImageReviewToolbar = ({
   handleUnlockAllButtonClick,
   handleIncrementClick,
   bboxesVisible = true,
-  toggleBboxesVisible,
+  toggleBboxesVisible = () => {},
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);

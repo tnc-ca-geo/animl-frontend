@@ -15,6 +15,7 @@ import {
   objectsManuallyUnlocked,
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
+import { drawBboxEnd } from './loupeSlice.js';
 
 const ImageContainer = styled('div', {
   backgroundColor: '$backgroundBlack',
@@ -123,6 +124,11 @@ export const SmallScreensLoupe = ({ image, idx, workingImages, shouldShowToolbar
     setBboxesVisible(true);
   }, [image?._id]);
   const toggleBboxesVisible = useCallback(() => setBboxesVisible((v) => !v), []);
+
+  // when bboxes are hidden, cancel any in-progress bbox drawing
+  useEffect(() => {
+    if (!bboxesVisible) dispatch(drawBboxEnd());
+  }, [bboxesVisible, dispatch]);
 
   return (
     <FullSizeImageWrapper style={style}>
