@@ -417,7 +417,7 @@ const ImageReviewToolbar = ({
                       <DotsHorizontalIcon />
                     </ToolbarIconButton>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent sideOffset={5}>
+                  <DropdownMenuContent side="top" sideOffset={5}>
                     <DropdownMenuItem
                       disabled={
                         !hasRole(userRoles, READ_COMMENTS_ROLES) ||
