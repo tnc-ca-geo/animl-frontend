@@ -1,12 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import { useSelector } from 'react-redux';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
 import { selectIsDrawingBbox } from './loupeSlice';
+import { selectGlobalBreakpoint } from '../projects/projectsSlice';
+import { globalBreakpoints } from '../../config';
 import { Image } from '../../components/Image';
 import BoundingBox from './BoundingBox';
 import DrawBboxOverlay from './DrawBboxOverlay';
+import ZoomControls from './ZoomControls';
 import { contain } from 'intrinsic-scale';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+
+const ZOOM_EPSILON = 0.01;
+const MIN_SCALE = 1;
+const MAX_SCALE = 8;
 
 const FullImage = styled(Image, {
   width: '100%',
@@ -16,17 +31,27 @@ const FullImage = styled(Image, {
 
 const ImageContainer = styled('div', {
   position: 'relative',
-  // maxWidth: '940px',
   width: '100%',
   height: '100%',
+  overflow: 'hidden',
 });
 
 const ImageFrame = styled('div', {
   position: 'absolute',
 });
 
-const FullSizeImage = ({ workingImages, image, focusIndex, bboxesVisible = true }) => {
+// Fill the parent container so the existing intrinsic-scale layout math
+// keeps working unchanged inside the TransformComponent.
+const transformWrapperStyle = { width: '100%', height: '100%' };
+const transformContentStyle = { width: '100%', height: '100%', position: 'relative' };
+
+const FullSizeImage = forwardRef(function FullSizeImage(
+  { workingImages, image, focusIndex, bboxesVisible = true, onZoomChange },
+  ref,
+) {
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
+  const currentBreakpoint = useSelector(selectGlobalBreakpoint);
+  const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
 
   // track image loading state
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -73,51 +98,117 @@ const FullSizeImage = ({ workingImages, image, focusIndex, bboxesVisible = true 
     objectsToRender.unshift(object);
   });
 
+  // --- Zoom/pan state ---
+  const transformRef = useRef(null);
+  const [scale, setScale] = useState(1);
+  const isZoomed = !isSmallScreen && scale > 1 + ZOOM_EPSILON;
+  const handleTransform = useCallback((_ctxRef, state) => {
+    setScale(state.scale);
+  }, []);
+  useEffect(() => {
+    onZoomChange?.(isZoomed);
+  }, [isZoomed, onZoomChange]);
+
+  // --- HD original-image upgrade ---
+  const originalUrl = image.url?.original;
+  const [useHighRes, setUseHighRes] = useState(false);
+  const [highResReady, setHighResReady] = useState(false);
+  const wantsHighRes = useHighRes || isZoomed;
+  useEffect(() => {
+    if (!wantsHighRes || !originalUrl || highResReady) return;
+    const preload = new window.Image();
+    preload.onload = () => setHighResReady(true);
+    preload.src = originalUrl;
+    return () => {
+      preload.onload = null;
+    };
+  }, [wantsHighRes, originalUrl, highResReady]);
+
+  // Reset zoom + HD state whenever the image changes
+  useEffect(() => {
+    transformRef.current?.resetTransform(0);
+    setScale(1);
+    setUseHighRes(false);
+    setHighResReady(false);
+  }, [image._id]);
+
+  const effectiveSrc = wantsHighRes && originalUrl && highResReady ? originalUrl : image.url.medium;
+
+  // Imperative zoom API used by Loupe for +/-/0 hotkeys
+  useImperativeHandle(ref, () => ({
+    zoomIn: () => transformRef.current?.zoomIn(),
+    zoomOut: () => transformRef.current?.zoomOut(),
+    resetZoom: () => transformRef.current?.resetTransform(),
+  }));
+
   return (
     <ImageContainer className="image-container">
-      {imgLoaded && (
-        <ImageFrame
-          className="image-frame"
-          css={{
-            left: imgDims.x,
-            top: imgDims.y,
-            width: imgDims.width,
-            height: imgDims.height,
-          }}
+      <TransformWrapper
+        ref={transformRef}
+        minScale={MIN_SCALE}
+        maxScale={MAX_SCALE}
+        initialScale={1}
+        centerOnInit
+        disabled={isSmallScreen}
+        wheel={{ step: 0.15 }}
+        doubleClick={{ step: 1.5, mode: 'toggle', disabled: isDrawingBbox }}
+        panning={{ disabled: !isZoomed }}
+        onTransform={handleTransform}
+      >
+        <TransformComponent
+          wrapperStyle={transformWrapperStyle}
+          contentStyle={transformContentStyle}
         >
-          {bboxesVisible &&
-            objectsToRender &&
-            objectsToRender.map((obj) => {
-              return (
-                <BoundingBox
-                  key={obj._id}
-                  imgId={image._id}
+          {imgLoaded && (
+            <ImageFrame
+              className="image-frame"
+              css={{
+                left: imgDims.x,
+                top: imgDims.y,
+                width: imgDims.width,
+                height: imgDims.height,
+              }}
+            >
+              {bboxesVisible &&
+                objectsToRender &&
+                objectsToRender.map((obj) => {
+                  return (
+                    <BoundingBox
+                      key={obj._id}
+                      imgId={image._id}
+                      imgDims={imgDims}
+                      object={obj}
+                      objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
+                      focusIndex={focusIndex}
+                      setTempObject={setTempObject}
+                      awaitingPrediction={image.awaitingPrediction}
+                      isZoomed={isZoomed}
+                    />
+                  );
+                })}
+              {bboxesVisible && isDrawingBbox && !isZoomed && (
+                <DrawBboxOverlay
+                  imgContainerDims={imgContainerDims}
                   imgDims={imgDims}
-                  object={obj}
-                  objectIndex={!obj.isTemp ? currImgObjects.indexOf(obj) : null}
-                  focusIndex={focusIndex}
                   setTempObject={setTempObject}
-                  awaitingPrediction={image.awaitingPrediction}
                 />
-              );
-            })}
-          {bboxesVisible && isDrawingBbox && (
-            <DrawBboxOverlay
-              imgContainerDims={imgContainerDims}
-              imgDims={imgDims}
-              setTempObject={setTempObject}
-            />
+              )}
+            </ImageFrame>
           )}
-          {/*{!imgLoaded &&
-            <SpinnerOverlay css={{ background: 'none'}}>
-              <CircleSpinner />
-            </SpinnerOverlay>
-          }*/}
-        </ImageFrame>
-      )}
-      <FullImage ref={imgEl} src={image.url.medium} onLoad={() => handleImgLoaded()} />
+          <FullImage ref={imgEl} src={effectiveSrc} onLoad={handleImgLoaded} />
+        </TransformComponent>
+        {!isSmallScreen && (
+          <ZoomControls
+            scale={scale}
+            useHighRes={useHighRes}
+            highResReady={highResReady}
+            setUseHighRes={setUseHighRes}
+            hasOriginal={!!originalUrl}
+          />
+        )}
+      </TransformWrapper>
     </ImageContainer>
   );
-};
+});
 
 export default FullSizeImage;

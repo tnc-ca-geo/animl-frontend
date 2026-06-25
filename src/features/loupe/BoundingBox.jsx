@@ -127,6 +127,7 @@ const BoundingBox = ({
   focusIndex,
   setTempObject,
   awaitingPrediction,
+  isZoomed = false,
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const username = useSelector(selectUserUsername);
@@ -288,7 +289,9 @@ const BoundingBox = ({
           onStart={onDragStart}
           onDrag={onDrag}
           onStop={onDragEnd}
-          disabled={isSmallScreen || !isAuthorized || object.locked || awaitingPrediction}
+          disabled={
+            isSmallScreen || !isAuthorized || object.locked || awaitingPrediction || isZoomed
+          }
         >
           <StyledResizableBox
             width={width}
@@ -296,7 +299,9 @@ const BoundingBox = ({
             minConstraints={[0, 0]}
             maxConstraints={[constraintX, constraintY]}
             resizeHandles={
-              isAuthorized && !object.locked && !awaitingPrediction ? ['sw', 'se', 'nw', 'ne'] : []
+              isAuthorized && !object.locked && !awaitingPrediction && !isZoomed
+                ? ['sw', 'se', 'nw', 'ne']
+                : []
             }
             handle={(location) => (
               <ResizeHandle
@@ -342,7 +347,9 @@ const BoundingBox = ({
               )}
               <DragHandle
                 className="drag-handle"
-                disabled={isSmallScreen || !isAuthorized || object.locked || awaitingPrediction}
+                disabled={
+                  isSmallScreen || !isAuthorized || object.locked || awaitingPrediction || isZoomed
+                }
               />
             </>
           </StyledResizableBox>
