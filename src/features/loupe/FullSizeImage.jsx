@@ -99,7 +99,13 @@ const FullSizeImage = forwardRef(function FullSizeImage(
   });
 
   // --- Zoom/pan state ---
+  // NOTE: capturing the controls instance via `onInit` rather than a ref on
+  // <TransformWrapper>. The library reads `props.ref` internally, which
+  // triggers React's "`ref` is not a prop" warning on forwardRef components.
   const transformRef = useRef(null);
+  const handleInit = useCallback((ref) => {
+    transformRef.current = ref;
+  }, []);
   const [scale, setScale] = useState(1);
   const isZoomed = !isSmallScreen && scale > 1 + ZOOM_EPSILON;
   const handleTransform = useCallback((_ctxRef, state) => {
@@ -144,7 +150,6 @@ const FullSizeImage = forwardRef(function FullSizeImage(
   return (
     <ImageContainer className="image-container">
       <TransformWrapper
-        ref={transformRef}
         minScale={MIN_SCALE}
         maxScale={MAX_SCALE}
         initialScale={1}
@@ -153,6 +158,7 @@ const FullSizeImage = forwardRef(function FullSizeImage(
         wheel={{ step: 0.15 }}
         doubleClick={{ step: 1.5, mode: 'toggle', disabled: isDrawingBbox }}
         panning={{ disabled: !isZoomed }}
+        onInit={handleInit}
         onTransform={handleTransform}
       >
         <TransformComponent
