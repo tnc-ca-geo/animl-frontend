@@ -4,7 +4,7 @@ import svgrPlugin from 'vite-plugin-svgr';
 import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'build',
     sourcemap: true,
@@ -17,5 +17,8 @@ export default defineConfig({
       './runtimeConfig': './runtimeConfig.browser',
     },
   },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(mode),
+  },
   plugins: [react(), svgrPlugin(), topLevelAwait()],
-});
+}));

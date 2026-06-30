@@ -1,9 +1,11 @@
 import React from 'react';
 import { styled } from '../../theme/stitches.config';
 import { useControls } from 'react-zoom-pan-pinch';
-import { ZoomInIcon, ZoomOutIcon, ResetIcon, ImageIcon } from '@radix-ui/react-icons';
+import { ZoomInIcon, ZoomOutIcon, ResetIcon } from '@radix-ui/react-icons';
+import { Hd } from 'lucide-react';
 import IconButton from '../../components/IconButton';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip';
+import { yellow } from '@radix-ui/colors';
 
 const ZOOM_EPSILON = 0.01;
 
@@ -29,25 +31,13 @@ const Container = styled('div', {
   },
 });
 
-const ScaleBadge = styled('span', {
-  fontFamily: '$mono',
-  fontSize: '$1',
-  color: '$gray11',
-  minWidth: '36px',
-  textAlign: 'right',
-  userSelect: 'none',
-});
-
-const HdBadge = styled('span', {
-  fontFamily: '$mono',
-  fontSize: '10px',
-  fontWeight: '$5',
-  letterSpacing: '0.5px',
-  padding: '1px 4px',
-  borderRadius: '$1',
-  backgroundColor: '$blue4',
-  color: '$blue11',
-  userSelect: 'none',
+const HdButton = styled('div', {
+  padding: '0px 2px',
+  borderRadius: '$2',
+  backgroundColor: yellow.yellow10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOriginal }) => {
@@ -57,12 +47,48 @@ const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOrigi
 
   return (
     <Container idle={!isZoomed}>
-      {isZoomed && <ScaleBadge>{Math.round(scale * 100)}%</ScaleBadge>}
+      {hasOriginal && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <IconButton
+              variant="ghost"
+              size="small"
+              onClick={() => setUseHighRes((v) => !v)}
+              state={useHighRes ? 'active' : undefined}
+            >
+              <HdButton css={{ backgroundColor: showHdBadge ? yellow.yellow10 : 'transparent' }}>
+                <Hd color={showHdBadge ? '#000' : '#888'} size={18} />
+              </HdButton>
+            </IconButton>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={5}>
+            {useHighRes ? 'Switch to standard resolution' : 'Load high-resolution image'}
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      )}
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <IconButton
+            variant="ghost"
+            size="small"
+            onClick={() => resetTransform()}
+            disabled={!isZoomed}
+          >
+            <ResetIcon width={18} height={18} />
+          </IconButton>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={5}>
+          Reset zoom (0)
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
 
       <Tooltip>
         <TooltipTrigger asChild>
           <IconButton variant="ghost" size="small" onClick={() => zoomOut()} disabled={!isZoomed}>
-            <ZoomOutIcon />
+            <ZoomOutIcon width={18} height={18} />
           </IconButton>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={5}>
@@ -74,7 +100,7 @@ const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOrigi
       <Tooltip>
         <TooltipTrigger asChild>
           <IconButton variant="ghost" size="small" onClick={() => zoomIn()}>
-            <ZoomInIcon />
+            <ZoomInIcon width={18} height={18} />
           </IconButton>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={5}>
@@ -82,44 +108,6 @@ const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOrigi
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <IconButton
-            variant="ghost"
-            size="small"
-            onClick={() => resetTransform()}
-            disabled={!isZoomed}
-          >
-            <ResetIcon />
-          </IconButton>
-        </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={5}>
-          Reset zoom (0)
-          <TooltipArrow />
-        </TooltipContent>
-      </Tooltip>
-
-      {hasOriginal && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <IconButton
-              variant="ghost"
-              size="small"
-              onClick={() => setUseHighRes((v) => !v)}
-              state={useHighRes ? 'active' : undefined}
-            >
-              <ImageIcon />
-            </IconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5}>
-            {useHighRes ? 'Switch to standard resolution' : 'Load high-resolution image'}
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      )}
-
-      {showHdBadge && <HdBadge>HD</HdBadge>}
     </Container>
   );
 };
