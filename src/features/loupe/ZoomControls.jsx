@@ -80,7 +80,7 @@ const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOrigi
           </IconButton>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={5}>
-          Reset zoom (0)
+          Reset zoom
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>
@@ -92,7 +92,7 @@ const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOrigi
           </IconButton>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={5}>
-          Zoom out (-)
+          Zoom out
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>
@@ -104,7 +104,7 @@ const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOrigi
           </IconButton>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={5}>
-          Zoom in (+)
+          Zoom in
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>

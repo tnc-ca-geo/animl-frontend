@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useImperativeHandle,
-  forwardRef,
-} from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useResizeObserver } from '../../app/utils';
 import { styled } from '../../theme/stitches.config';
@@ -45,10 +38,13 @@ const ImageFrame = styled('div', {
 const transformWrapperStyle = { width: '100%', height: '100%' };
 const transformContentStyle = { width: '100%', height: '100%', position: 'relative' };
 
-const FullSizeImage = forwardRef(function FullSizeImage(
-  { workingImages, image, focusIndex, bboxesVisible = true, onZoomChange },
-  ref,
-) {
+const FullSizeImage = ({
+  workingImages,
+  image,
+  focusIndex,
+  bboxesVisible = true,
+  onZoomChange,
+}) => {
   const isDrawingBbox = useSelector(selectIsDrawingBbox);
   const currentBreakpoint = useSelector(selectGlobalBreakpoint);
   const isSmallScreen = globalBreakpoints.lessThanOrEqual(currentBreakpoint, 'xs');
@@ -140,13 +136,6 @@ const FullSizeImage = forwardRef(function FullSizeImage(
 
   const effectiveSrc = wantsHighRes && originalUrl && highResReady ? originalUrl : image.url.medium;
 
-  // Imperative zoom API used by Loupe for +/-/0 hotkeys
-  useImperativeHandle(ref, () => ({
-    zoomIn: () => transformRef.current?.zoomIn(),
-    zoomOut: () => transformRef.current?.zoomOut(),
-    resetZoom: () => transformRef.current?.resetTransform(),
-  }));
-
   return (
     <ImageContainer className="image-container">
       <TransformWrapper
@@ -215,6 +204,6 @@ const FullSizeImage = forwardRef(function FullSizeImage(
       </TransformWrapper>
     </ImageContainer>
   );
-});
+};
 
 export default FullSizeImage;
