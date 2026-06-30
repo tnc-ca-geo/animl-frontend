@@ -111,11 +111,11 @@ const FullSizeImage = ({
     onZoomChange?.(isZoomed);
   }, [isZoomed, onZoomChange]);
 
-  // --- HD original-image upgrade ---
+  // --- HD (original-image) upgrade ---
   const originalUrl = image.url?.original;
-  const [useHighRes, setUseHighRes] = useState(false);
+  const [highResRequested, setHighResRequested] = useState(false);
   const [highResReady, setHighResReady] = useState(false);
-  const wantsHighRes = useHighRes || isZoomed;
+  const wantsHighRes = highResRequested || isZoomed;
   useEffect(() => {
     if (!wantsHighRes || !originalUrl || highResReady) return;
     const preload = new window.Image();
@@ -130,11 +130,11 @@ const FullSizeImage = ({
   useEffect(() => {
     transformRef.current?.resetTransform(0);
     setScale(1);
-    setUseHighRes(false);
+    setHighResRequested(false);
     setHighResReady(false);
   }, [image._id]);
 
-  const effectiveSrc = wantsHighRes && originalUrl && highResReady ? originalUrl : image.url.medium;
+  const effectiveSrc = highResReady ? originalUrl : image.url.medium;
 
   return (
     <ImageContainer className="image-container">
@@ -195,9 +195,9 @@ const FullSizeImage = ({
         {!isSmallScreen && (
           <ZoomControls
             scale={scale}
-            useHighRes={useHighRes}
+            highResRequested={highResRequested}
             highResReady={highResReady}
-            setUseHighRes={setUseHighRes}
+            setHighResRequested={setHighResRequested}
             hasOriginal={!!originalUrl}
           />
         )}

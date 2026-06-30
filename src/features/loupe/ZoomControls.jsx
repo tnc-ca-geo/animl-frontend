@@ -40,29 +40,23 @@ const HdButton = styled('div', {
   justifyContent: 'center',
 });
 
-const ZoomControls = ({ scale, useHighRes, highResReady, setUseHighRes, hasOriginal }) => {
+const ZoomControls = ({ scale, highResReady, setHighResRequested, hasOriginal }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
   const isZoomed = scale > 1 + ZOOM_EPSILON;
-  const showHdBadge = hasOriginal && (useHighRes || isZoomed) && highResReady;
 
   return (
     <Container idle={!isZoomed}>
       {hasOriginal && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <IconButton
-              variant="ghost"
-              size="small"
-              onClick={() => setUseHighRes((v) => !v)}
-              state={useHighRes ? 'active' : undefined}
-            >
-              <HdButton css={{ backgroundColor: showHdBadge ? yellow.yellow10 : 'transparent' }}>
-                <Hd color={showHdBadge ? '#000' : '#888'} size={18} />
+            <IconButton variant="ghost" size="small" onClick={() => setHighResRequested((v) => !v)}>
+              <HdButton css={{ backgroundColor: highResReady ? yellow.yellow10 : 'transparent' }}>
+                <Hd color={highResReady ? '#000' : '#888'} size={18} />
               </HdButton>
             </IconButton>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={5}>
-            {useHighRes ? 'Switch to standard resolution' : 'Load high-resolution image'}
+            {highResReady ? 'High-resolution image loaded' : 'Load high-resolution image'}
             <TooltipArrow />
           </TooltipContent>
         </Tooltip>
