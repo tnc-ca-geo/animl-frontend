@@ -193,6 +193,18 @@ const Loupe = () => {
     if (!bboxesVisible) dispatch(drawBboxEnd());
   }, [bboxesVisible, dispatch]);
 
+  // Track zoom state from FullSizeImage so the toolbar can disable
+  // controls that aren't valid while zoomed (e.g. add-object).
+  const [isZoomed, setIsZoomed] = useState(false);
+  const handleZoomChange = useCallback((zoomed) => setIsZoomed(zoomed), []);
+  useEffect(() => {
+    setIsZoomed(false);
+  }, [image?._id]);
+  // exiting draw mode if user zooms in mid-draw
+  useEffect(() => {
+    if (isZoomed) dispatch(drawBboxEnd());
+  }, [isZoomed, dispatch]);
+
   const [showHotkeyBlockedToast, setShowHotkeyBlockedToast] = useState(false);
 
   // Listen for hotkeys
@@ -290,6 +302,7 @@ const Loupe = () => {
               bboxesVisible={bboxesVisible}
               handleMarkEmptyButtonClick={markEmpty}
               handleAddObjectButtonClick={handleAddObjectButtonClick}
+              onZoomChange={handleZoomChange}
               css={{ height: '100%', width: '100%', objectFit: 'contain' }}
             />
           </ImagePane>
@@ -310,6 +323,7 @@ const Loupe = () => {
               handleIncrementClick={handleIncrementClick}
               bboxesVisible={bboxesVisible}
               toggleBboxesVisible={toggleBboxesVisible}
+              isZoomed={isZoomed}
             />
             <ImageTagsToolbar image={image} projectTags={projectTags} />
           </>

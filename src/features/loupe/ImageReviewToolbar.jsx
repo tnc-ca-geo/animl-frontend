@@ -162,6 +162,7 @@ const ImageReviewToolbar = ({
   handleIncrementClick,
   bboxesVisible = true,
   toggleBboxesVisible = () => {},
+  isZoomed = false,
 }) => {
   const userRoles = useSelector(selectUserCurrentRoles);
   const userId = useSelector(selectUserUsername);
@@ -351,13 +352,13 @@ const ImageReviewToolbar = ({
                       >
                         <ToolbarIconButton
                           onClick={handleAddObjectButtonClick}
-                          disabled={!bboxesVisible}
+                          disabled={!bboxesVisible || isZoomed}
                         >
                           <GroupIcon />
                         </ToolbarIconButton>
                       </TooltipTrigger>
                       <TooltipContent side="top" sideOffset={5}>
-                        Add object
+                        {isZoomed ? 'Reset zoom to draw new bounding boxes' : 'Add object'}
                         <TooltipArrow />
                       </TooltipContent>
                     </Tooltip>
