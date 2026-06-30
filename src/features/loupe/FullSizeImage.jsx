@@ -144,7 +144,7 @@ const FullSizeImage = ({
         initialScale={1}
         centerOnInit
         disabled={isSmallScreen}
-        wheel={{ step: 0.15 }}
+        wheel={{ wheelDisabled: true }}
         doubleClick={{ step: 1.5, mode: 'toggle', disabled: isDrawingBbox }}
         panning={{ disabled: !isZoomed }}
         onInit={handleInit}
