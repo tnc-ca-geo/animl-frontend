@@ -101,7 +101,17 @@ export const userSlice = createSlice({
       state.loadingStates.update.errors.splice(payload, 1);
     },
 
-    clearUser: () => initialState,
+    clearUser: (state) => {
+      // Resets the user-doc slice (preferences + fetch/update state) but leaves
+      // the auth fields alone — those are owned by `userAuthStateChanged`.
+      state.loaded = false;
+      state.updated = null;
+      state.preferences = { ...initialState.preferences };
+      state.loadingStates = {
+        fetch: { isLoading: false, errors: null },
+        update: { isLoading: false, errors: null },
+      };
+    },
   },
 });
 
