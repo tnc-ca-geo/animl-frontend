@@ -14,7 +14,7 @@ import Button from '../../components/Button.jsx';
 import IconButton from '../../components/IconButton.jsx';
 import { DeleteCommentAlert } from './DeleteCommentAlert.jsx';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserUsername } from '../auth/authSlice.js';
+import { selectUserUsername } from '../user/userSlice.js';
 import { DateTime } from 'luxon';
 import { editComment } from '../review/reviewSlice.js';
 import { indigo } from '@radix-ui/colors';
@@ -169,7 +169,7 @@ export const Comment = ({ comment, imageId, onChangeOpen, scrollRef }) => {
   const onEditConfirm = () => {
     // If all the comment's content is removed
     // show the delete comment flow
-    if (editCommentText === "") {
+    if (editCommentText === '') {
       setIsDeleteConfirm(true);
       return;
     }

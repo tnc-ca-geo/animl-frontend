@@ -9,8 +9,8 @@ import {
   DropdownMenuArrow,
   DropdownMenuItemIconLeft,
 } from '../../components/Dropdown.jsx';
-import { selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, DELETE_IMAGES_ROLES, EXPORT_DATA_ROLES } from '../auth/roles.js';
+import { selectUserCurrentRoles } from '../user/userSlice.js';
+import { hasRole, DELETE_IMAGES_ROLES, EXPORT_DATA_ROLES } from '../user/roles.js';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { Download, Trash2 } from 'lucide-react';
 import { setDeleteImagesAlertStatus } from '../images/imagesSlice';

@@ -8,8 +8,8 @@ import {
   selectUserUsername,
   selectUserAuthStatus,
   selectUserIsSuperUser,
-} from '../features/auth/authSlice.js';
-import LoginForm from '../features/auth/LoginForm.jsx';
+} from '../features/user/userSlice.js';
+import LoginForm from '../features/user/LoginForm.jsx';
 import CreateProjectForm from '../features/projects/CreateProjectForm.jsx';
 import EditProjectForm from '../features/projects/EditProjectForm.jsx';
 import SuccessToast from '../components/SuccessToast.jsx';

@@ -12,7 +12,7 @@ import {
 } from '../../components/Tooltip.jsx';
 import { ButtonRow } from '../../components/Form';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
-import { selectUserCurrentRoles } from '../auth/authSlice';
+import { selectUserCurrentRoles } from '../user/userSlice';
 import {
   addUser,
   editUser,
@@ -22,7 +22,7 @@ import {
   selectManageUserErrors,
   resendTempPassword,
 } from './usersSlice.js';
-import { hasRole, MANAGE_USERS_ROLES } from '../auth/roles';
+import { hasRole, MANAGE_USERS_ROLES } from '../user/roles';
 
 const ManageUsersTable = () => {
   const dispatch = useDispatch();

@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '../../theme/stitches.config.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../user/roles.js';
 import { setDeleteImagesAlertStatus } from './imagesSlice.js';
 import {
   toggleOpenLoupe,

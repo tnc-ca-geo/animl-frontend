@@ -21,7 +21,7 @@ import {
 } from '../features/projects/projectsSlice';
 import { MoveRight, X } from 'lucide-react';
 import { SimpleSpinner, SpinnerOverlay } from './Spinner';
-import { selectUserUsername } from '../features/auth/authSlice';
+import { selectUserUsername } from '../features/user/userSlice';
 import { compareLabelNames } from './CategorySelector';
 import Button from './Button';
 

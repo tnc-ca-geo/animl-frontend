@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { connectRouter } from 'connected-react-router';
 import { undoHistoryReducer } from 'redux-undo-redo';
-import authReducer from '../features/auth/authSlice';
+import userReducer from '../features/user/userSlice';
 import filtersReducer from '../features/filters/filtersSlice';
 import imagesReducer from '../features/images/imagesSlice';
 import wirelessCamerasReducer from '../features/cameras/wirelessCamerasSlice';
@@ -17,7 +17,7 @@ import adminReducer from '../features/admin/adminSlice';
 const createRootReducer = (history) =>
   combineReducers({
     router: connectRouter(history),
-    auth: authReducer,
+    user: userReducer,
     projects: projectReducer,
     users: usersReducer,
     filters: filtersReducer,

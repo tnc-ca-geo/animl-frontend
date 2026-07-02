@@ -7,8 +7,8 @@ import {
   selectUserUsername,
   selectUserAuthStatus,
   selectUserIsSuperUser,
-} from '../features/auth/authSlice.js';
-import LoginForm from '../features/auth/LoginForm.jsx';
+} from '../features/user/userSlice.js';
+import LoginForm from '../features/user/LoginForm.jsx';
 import AdminDashboard from '../features/admin/AdminDashboard.jsx';
 
 const AdminDashboardPage = () => {

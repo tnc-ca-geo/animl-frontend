@@ -65,6 +65,12 @@ import {
 } from '../features/upload/uploadSlice';
 import getErrorContent from '../content/Errors';
 import { selectManageUserErrors, dismissManageUsersError } from '../features/projects/usersSlice';
+import {
+  selectUserFetchErrors,
+  dismissUserFetchError,
+  selectUpdatePreferenceErrors,
+  dismissUpdatePreferenceError,
+} from '../features/user/userSlice';
 
 // TODO: add updateAutomationRules errors
 
@@ -95,6 +101,8 @@ const ErrorToast = () => {
   const deleteImagesErrors = useSelector(selectDeleteImagesErrors);
   const deleteProjectLabelErrors = useSelector(selectDeleteProjectLabelErrors);
   const setTimestampOffsetErrors = useSelector(selectSetTimestampOffsetErrors);
+  const userFetchErrors = useSelector(selectUserFetchErrors);
+  const updatePreferenceErrors = useSelector(selectUpdatePreferenceErrors);
 
   const enrichedErrors = [
     enrichErrors(labelsErrors, 'Label Error', 'labels'),
@@ -126,6 +134,8 @@ const ErrorToast = () => {
     enrichErrors(deleteImagesErrors, 'Error Deleting Images', 'deleteImages'),
     enrichErrors(deleteProjectLabelErrors, 'Error Deleting Label', 'deleteProjectLabel'),
     enrichErrors(setTimestampOffsetErrors, 'Error Updating Timestamp', 'setTimestampOffset'),
+    enrichErrors(userFetchErrors, 'Error Loading User', 'userFetch'),
+    enrichErrors(updatePreferenceErrors, 'Error Updating User Preference', 'updatePreference'),
   ];
 
   const errors = enrichedErrors.reduce(
@@ -197,6 +207,8 @@ const dismissErrorActions = {
   deleteImages: (i) => dismissDeleteImagesError(i),
   deleteProjectLabel: (i) => dismissDeleteProjectLabelTaskError(i),
   setTimestampOffset: (i) => dismissSetTimestampOffsetError(i),
+  userFetch: (i) => dismissUserFetchError(i),
+  updatePreference: (i) => dismissUpdatePreferenceError(i),
 };
 
 function enrichErrors(errors, title, entity) {

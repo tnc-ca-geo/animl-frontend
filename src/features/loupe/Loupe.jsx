@@ -15,8 +15,8 @@ import {
 } from '../review/reviewSlice.js';
 import { selectProjectTags } from '../projects/projectsSlice.js';
 import { toggleOpenLoupe, drawBboxStart, drawBboxEnd, addLabelStart } from './loupeSlice.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../user/roles.js';
 import PanelHeader from '../../components/PanelHeader.jsx';
 import FullSizeImage from './FullSizeImage.jsx';
 import ImageReviewToolbar from './ImageReviewToolbar.jsx';
