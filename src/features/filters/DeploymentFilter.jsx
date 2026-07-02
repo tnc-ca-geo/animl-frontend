@@ -17,6 +17,7 @@ const HeaderRow = styled('div', {
   gap: '$2',
   paddingRight: '$2',
   borderBottom: '1px solid $border',
+  backgroundColor: '$backgroundLight',
 });
 
 const HeaderCheckboxSlot = styled('div', {

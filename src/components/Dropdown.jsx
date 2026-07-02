@@ -49,6 +49,7 @@ const itemStyles = {
   fontSize: '$3',
   fontWeight: '$2',
   lineHeight: 1,
+  fontFamily: '$roboto',
   color: '$textDark',
   borderRadius: 3,
   display: 'flex',
@@ -91,7 +92,9 @@ const StyledRadioItem = styled(DropdownMenuPrimitive.RadioItem, {
 
 const StyledLabel = styled(DropdownMenuPrimitive.Label, {
   paddingLeft: 25,
-  // fontSize: '$3',
+  fontFamily: '$roboto',
+  fontSize: '$3',
+  fontWeight: '$2',
   lineHeight: '25px',
   color: mauve.mauve11,
 });

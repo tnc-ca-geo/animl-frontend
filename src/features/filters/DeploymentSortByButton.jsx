@@ -1,4 +1,5 @@
 import React from 'react';
+import IconButton from '../../components/IconButton.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '../../theme/stitches.config';
 import {
@@ -8,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuArrow,
   DropdownMenuItemIconLeft,
+  DropdownMenuLabel,
 } from '../../components/Dropdown.jsx';
 import { ArrowUpDown, Check } from 'lucide-react';
 import {
@@ -26,7 +28,7 @@ const StyledDropdownMenuTrigger = styled(DropdownMenuTrigger, {
   border: 'none',
   backgroundColor: 'transparent',
   padding: '0',
-  color: '$textMedium',
+  color: '$textDark',
   borderRadius: '$1',
   cursor: 'pointer',
   '&:hover': {
@@ -47,10 +49,13 @@ const DeploymentSortByButton = ({ projectId }) => {
 
   return (
     <DropdownMenu>
-      <StyledDropdownMenuTrigger aria-label="Sort deployments">
-        <ArrowUpDown size={14} />
+      <StyledDropdownMenuTrigger asChild aria-label="Sort deployments">
+        <IconButton variant="ghost">
+          <ArrowUpDown size={14} />
+        </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={5}>
+        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
         {DEPLOYMENT_SORT_ORDERS.map((order) => (
           <DropdownMenuItem key={order} onSelect={handleSelect(order)}>
             <DropdownMenuItemIconLeft>
