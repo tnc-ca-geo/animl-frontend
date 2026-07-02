@@ -55,7 +55,7 @@ const DeploymentSortByButton = ({ projectId }) => {
         </IconButton>
       </StyledDropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={5}>
-        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+        <DropdownMenuLabel>Sort deployments</DropdownMenuLabel>
         {DEPLOYMENT_SORT_ORDERS.map((order) => (
           <DropdownMenuItem key={order} onSelect={handleSelect(order)}>
             <DropdownMenuItemIconLeft>

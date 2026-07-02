@@ -1,5 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { call } from '../../api';
+import { normalizeErrors } from '../../app/utils.js';
 import { selectSelectedProject } from '../projects/projectsSlice';
 import { DEFAULT_DEPLOYMENT_SORT_ORDER } from './constants';
 
@@ -70,6 +71,9 @@ export const userSlice = createSlice({
     fetchUserFailure: (state, { payload }) => {
       state.loadingStates.fetch = { isLoading: false, errors: payload };
     },
+    dismissUserFetchError: (state, { payload }) => {
+      state.loadingStates.fetch.errors.splice(payload, 1);
+    },
 
     // Optimistic local write of a single preference
     setPreferenceLocal: (state, { payload }) => {
@@ -93,6 +97,9 @@ export const userSlice = createSlice({
         state.preferences.deploymentsSortOrder = { ...(payload.previous || {}) };
       }
     },
+    dismissUpdatePreferenceError: (state, { payload }) => {
+      state.loadingStates.update.errors.splice(payload, 1);
+    },
 
     clearUser: () => initialState,
   },
@@ -103,10 +110,12 @@ export const {
   fetchUserStart,
   fetchUserSuccess,
   fetchUserFailure,
+  dismissUserFetchError,
   setPreferenceLocal,
   updatePreferenceStart,
   updatePreferenceSuccess,
   updatePreferenceFailure,
+  dismissUpdatePreferenceError,
   clearUser,
 } = userSlice.actions;
 
@@ -117,7 +126,7 @@ export const fetchUser = () => {
       const res = await call({ request: 'getUser' });
       dispatch(fetchUserSuccess(res.me));
     } catch (err) {
-      dispatch(fetchUserFailure(err));
+      dispatch(fetchUserFailure(normalizeErrors(err, 'GET_USER_ERROR')));
     }
   };
 };
@@ -142,7 +151,13 @@ export const setPreference = ({ name, value }) => {
       });
       dispatch(updatePreferenceSuccess(res.updateUserPreferences));
     } catch (err) {
-      dispatch(updatePreferenceFailure({ name, previous, error: err }));
+      dispatch(
+        updatePreferenceFailure({
+          name,
+          previous,
+          error: normalizeErrors(err, 'UPDATE_USER_PREFERENCE_ERROR'),
+        }),
+      );
     }
   };
 };
@@ -172,5 +187,8 @@ export const selectAllDeploymentsSortOrders = (state) =>
   state.user.preferences.deploymentsSortOrder;
 export const selectDeploymentsSortOrder = (projectId) => (state) =>
   state.user.preferences.deploymentsSortOrder[projectId] ?? DEFAULT_DEPLOYMENT_SORT_ORDER;
+
+export const selectUserFetchErrors = (state) => state.user.loadingStates.fetch.errors;
+export const selectUpdatePreferenceErrors = (state) => state.user.loadingStates.update.errors;
 
 export default userSlice.reducer;
