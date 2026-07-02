@@ -29,13 +29,13 @@ import {
   selectIsAddingLabel,
   copyUrlToClipboard,
 } from './loupeSlice.js';
-import { selectUserUsername, selectUserCurrentRoles } from '../auth/authSlice.js';
+import { selectUserUsername, selectUserCurrentRoles } from '../user/userSlice.js';
 import {
   hasRole,
   WRITE_OBJECTS_ROLES,
   READ_COMMENTS_ROLES,
   WRITE_COMMENTS_ROLES,
-} from '../auth/roles.js';
+} from '../user/roles.js';
 import { selectGlobalBreakpoint, selectSelectedProject } from '../projects/projectsSlice.js';
 import { violet, mauve, indigo } from '@radix-ui/colors';
 import Button from '../../components/Button.jsx';

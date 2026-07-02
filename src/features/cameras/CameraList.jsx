@@ -16,7 +16,7 @@ import {
   TooltipArrow,
   TooltipTrigger,
 } from '../../components/Tooltip.jsx';
-import { selectUserCurrentRoles } from '../auth/authSlice';
+import { selectUserCurrentRoles } from '../user/userSlice';
 import {
   unregisterCamera,
   registerCamera,
@@ -44,7 +44,7 @@ import {
   WRITE_CAMERA_REGISTRATION_ROLES,
   WRITE_CAMERA_SERIAL_NUMBER_ROLES,
   WRITE_DEPLOYMENTS_ROLES,
-} from '../auth/roles';
+} from '../user/roles';
 import DeleteCameraAlert from './DeleteCameraAlert.jsx';
 
 const StyledCameraList = styled('div', {

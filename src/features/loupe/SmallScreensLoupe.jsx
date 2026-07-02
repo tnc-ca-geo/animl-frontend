@@ -5,7 +5,7 @@ import ImageReviewToolbar from './ImageReviewToolbar';
 import { ImageTagsToolbar } from './ImageTagsToolbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { ImageMetadata } from './ImageMetadata';
-import { selectUserUsername } from '../auth/authSlice';
+import { selectUserUsername } from '../user/userSlice';
 import {
   selectLastAction,
   selectLastCategoryApplied,

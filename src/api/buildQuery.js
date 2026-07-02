@@ -1033,6 +1033,37 @@ const queries = {
     variables: { input },
   }),
 
+  getUser: () => ({
+    template: `
+      query Me {
+        me {
+          username
+          updated
+          preferences {
+            deploymentsSortOrder {
+              projectId
+              sortOrder
+            }
+          }
+        }
+      }
+    `,
+  }),
+
+  updateUserPreferences: (input) => ({
+    template: `
+      mutation UpdateUserPreferences($input: UpdateUserPreferencesInput!) {
+        updateUserPreferences(input: $input) {
+          deploymentsSortOrder {
+            projectId
+            sortOrder
+          }
+        }
+      }
+    `,
+    variables: { input },
+  }),
+
   getPlatformStats: (input) => ({
     template: `
       query GetPlatformStats($input: PlatformStatsInput) {

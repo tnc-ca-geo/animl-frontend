@@ -2,7 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { styled } from '../theme/stitches.config.js';
 import { Link } from 'react-router-dom';
-import { selectUserUsername, selectUserAuthStatus, selectUserIsSuperUser } from '../features/auth/authSlice.js';
+import {
+  selectUserUsername,
+  selectUserAuthStatus,
+  selectUserIsSuperUser,
+} from '../features/user/userSlice.js';
 import { selectRouterLocation } from '../features/images/imagesSlice.js';
 import ProjectAndViewNav from '../features/projects/ProjectAndViewNav.jsx';
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -124,7 +128,12 @@ const NavBar = () => {
           </a>
         </NavLinks>
       )}
-      <HamburgerMenu appActive={appActive} signedIn={signedIn} signOut={signOut} isSuperUser={isSuperUser} />
+      <HamburgerMenu
+        appActive={appActive}
+        signedIn={signedIn}
+        signOut={signOut}
+        isSuperUser={isSuperUser}
+      />
     </StyledNav>
   );
 };

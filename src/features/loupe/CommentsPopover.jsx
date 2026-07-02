@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '../../theme/stitches.config.js';
 import { ChatBubbleIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { hasRole, READ_COMMENTS_ROLES, WRITE_COMMENTS_ROLES } from '../auth/roles.js';
+import { hasRole, READ_COMMENTS_ROLES, WRITE_COMMENTS_ROLES } from '../user/roles.js';
 import {
   Tooltip,
   TooltipContent,

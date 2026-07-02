@@ -7,7 +7,7 @@ import Button from '../../components/Button.jsx';
 // eslint-disable-next-line import/no-unresolved
 import '@aws-amplify/ui-react/styles.css';
 import { useSelector } from 'react-redux';
-import { selectUserUsername } from './authSlice.js';
+import { selectUserUsername } from './userSlice.js';
 import Callout from '../../components/Callout.jsx';
 
 const LoginScreen = styled('div', {

@@ -14,8 +14,8 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
 import { FloatingToolbar } from './FloatingToolbar.jsx';
 import { SmallScreensLoupe } from '../loupe/SmallScreensLoupe.jsx';
-import { selectUserCurrentRoles } from '../auth/authSlice.js';
-import { hasRole, WRITE_OBJECTS_ROLES } from '../auth/roles.js';
+import { selectUserCurrentRoles } from '../user/userSlice.js';
+import { hasRole, WRITE_OBJECTS_ROLES } from '../user/roles.js';
 import { CommentsDialog } from '../loupe/CommentsDialog.jsx';
 import { CategorySelectorDialog } from '../../components/CategorySelectorDialog.jsx';
 

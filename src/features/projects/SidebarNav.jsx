@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserCurrentRoles } from '../auth/authSlice';
+import { selectUserCurrentRoles } from '../user/userSlice';
 import {
   hasRole,
   WRITE_AUTOMATION_RULES_ROLES,
@@ -8,7 +8,7 @@ import {
   WRITE_IMAGES_ROLES,
   MANAGE_USERS_ROLES,
   WRITE_PROJECT_ROLES,
-} from '../auth/roles';
+} from '../user/roles';
 import { styled } from '../../theme/stitches.config.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
