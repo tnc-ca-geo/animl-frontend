@@ -66,9 +66,7 @@ const RegisterCameraForm = () => {
                 </FormFieldWrapper>
                 <FormFieldWrapper>
                   <label htmlFor="cameraId">
-                    {values.make.value === 'RidgeTec' || values.make.value === 'Swift'
-                      ? 'IMEI Number'
-                      : 'Camera Serial Number'}
+                    {values.make.value === 'RidgeTec' ? 'IMEI Number' : 'Camera Serial Number'}
                   </label>
                   <Field
                     name="cameraId"
