@@ -21,6 +21,7 @@ export const SUPPORTED_WIRELESS_CAMS = [
   'CUDDEBACK',
   'RECONYX',
   'SPARTAN',
+  'Swift',
 ];
 
 export const IN_MAINTENANCE_MODE = false;
