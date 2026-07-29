@@ -10,6 +10,7 @@ const API_URLS = {
 const stage = import.meta.env.VITE_STAGE || process.env.NODE_ENV;
 
 export const API_URL = API_URLS[stage];
+export const AWS_AUTH_CONFIG = AWS_AUTH_CONFIGS[stage];
 export const IMAGE_QUERY_LIMITS = [10, 50, 100];
 export const SYNC_IMAGE_DELETE_LIMIT = 300; // when deleting w/o using task handler
 export const ASYNC_IMAGE_DELETE_BY_ID_LIMIT = 3000; // when deleting using task handler (by _id). Constrained by POST request size limits
@@ -37,13 +38,23 @@ export const GA_CONFIG = {
   },
 };
 
-export const AWS_AUTH_CONFIG = {
+export const AWS_AUTH_CONFIGS = {
+  dev: {
+    aws_project_region: 'us-west-2',
+    aws_cognito_identity_pool_id: 'us-west-2:ec0e358f-765a-4690-a206-4b8421311c56',
+    aws_cognito_region: 'us-west-2',
+    aws_user_pools_id: 'us-west-2_zdTG7X6HQ',
+    aws_user_pools_web_client_id: '4h1utmsejvuul5vm1ffg0rq9pi',
+    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  },
+  prod: {
   aws_project_region: 'us-west-2',
   aws_cognito_identity_pool_id: 'us-west-2:6730746c-113a-42c0-ba21-8508bcc5ebb4',
   aws_cognito_region: 'us-west-2',
   aws_user_pools_id: 'us-west-2_9JixUpkYT',
   aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
   aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  }
 };
 
 const globalBreakpointValues = [
