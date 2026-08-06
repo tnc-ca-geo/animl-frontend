@@ -14,11 +14,11 @@ const initialState = {
       isLoading: false,
       operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
-      noneFound: false,
     },
     imagesCount: {
       isLoading: false,
       errors: null,
+      noneFound: false,
     },
     imageContext: {
       isLoading: false,
@@ -52,7 +52,6 @@ export const imagesSlice = createSlice({
         isLoading: false,
         operation: null,
         errors: null,
-        noneFound: false,
       };
     },
 
@@ -60,14 +59,12 @@ export const imagesSlice = createSlice({
       let ls = state.loadingStates.images;
       ls.isLoading = true;
       ls.operation = 'fetching';
-      ls.noneFound = false;
     },
 
     getImagesFailure: (state, { payload }) => {
       let ls = state.loadingStates.images;
       ls.isLoading = false;
       ls.operation = null;
-      ls.noneFound = false;
       ls.errors = payload;
     },
 
@@ -90,19 +87,21 @@ export const imagesSlice = createSlice({
       let ls = state.loadingStates.imagesCount;
       ls.isLoading = true;
       ls.errors = null;
+      ls.noneFound = false;
     },
 
     getImagesCountFailure: (state, { payload }) => {
       let ls = state.loadingStates.imagesCount;
       ls.isLoading = false;
       ls.errors = payload;
+      ls.noneFound = false;
     },
 
     getImagesCountSuccess: (state, { payload }) => {
-      state.loadingStates.images.noneFound = payload.imagesCount.count === 0;
       state.loadingStates.imagesCount = {
         isLoading: false,
         errors: null,
+        noneFound: payload.imagesCount.count === 0,
       };
       state.pageInfo.count = payload.imagesCount.count;
     },
@@ -366,6 +365,7 @@ export const selectHasNext = (state) => state.images.pageInfo.hasNext;
 export const selectImagesCount = (state) => state.images.pageInfo.count;
 export const selectImagesCountLoading = (state) => state.images.loadingStates.imagesCount;
 export const selectImagesLoading = (state) => state.images.loadingStates.images;
+export const selectNoneFound = (state) => state.images.loadingStates.imagesCount.noneFound;
 export const selectImagesErrors = (state) => state.images.loadingStates.images.errors;
 export const selectVisibleRows = (state) => state.images.visibleRows;
 export const selectPreFocusImage = (state) => state.images.preFocusImage;
