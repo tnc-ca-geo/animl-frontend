@@ -27,7 +27,11 @@ const registerCameraSchema = Yup.object().shape({
 });
 
 const RegisterCameraForm = () => {
-  const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({ value: m, label: m }));
+  const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({
+    value: m.make,
+    label: m.make,
+    uniqueIdField: m.uniqueIdField,
+  }));
   const dispatch = useDispatch();
 
   const handleRegisterCameraSubmit = (formVals, resetForm) => {
@@ -65,11 +69,7 @@ const RegisterCameraForm = () => {
                   />
                 </FormFieldWrapper>
                 <FormFieldWrapper>
-                  <label htmlFor="cameraId">
-                    {values.make.value === 'RidgeTec' || values.make.value === 'Swift'
-                      ? 'IMEI Number'
-                      : 'Camera Serial Number'}
-                  </label>
+                  <label htmlFor="cameraId">Camera {values.make?.uniqueIdField || ' ID'} </label>
                   <Field
                     name="cameraId"
                     id="cameraId"
@@ -99,6 +99,14 @@ export default RegisterCameraForm;
 const RegisterCameraHelp = () => (
   <div style={{ maxWidth: '320px' }}>
     To integrate a new wireless camera, you first need to pair, or &quot;register&quot; it, with
-    your Project.
+    your Project. For detailed documentation on how to configure specific camera makes for
+    integration with Animl, please visit our{' '}
+    <a
+      href="https://guides.animl.camera/tnc-wireless-camera-trap-documentation/intro"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Wireless Camera Trap Documentation
+    </a>
   </div>
 );

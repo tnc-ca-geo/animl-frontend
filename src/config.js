@@ -16,12 +16,13 @@ export const ASYNC_IMAGE_DELETE_BY_ID_LIMIT = 3000; // when deleting using task 
 export const ASYNC_IMAGE_DELETE_BY_FILTER_LIMIT = 200000; // when deleting using task handler (by filter). Constrained by task Lambda timeout
 
 export const SUPPORTED_WIRELESS_CAMS = [
-  'BuckEyeCam',
-  'RidgeTec',
-  'CUDDEBACK',
-  'RECONYX',
-  'SPARTAN',
-  'Swift',
+  { make: 'BuckEyeCam', uniqueIdField: 'Serial Number' },
+  { make: 'RidgeTec', uniqueIdField: 'IMEI Number' },
+  { make: 'CUDDEBACK', uniqueIdField: 'Name' },
+  { make: 'RECONYX', uniqueIdField: 'Serial Number' },
+  { make: 'SPARTAN', uniqueIdField: 'Description / Unique ID' },
+  { make: 'Swift', uniqueIdField: 'IMEI Number' },
+  { make: 'UOVision', uniqueIdField: 'Name' },
 ];
 
 export const IN_MAINTENANCE_MODE = false;
