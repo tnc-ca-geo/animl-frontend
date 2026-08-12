@@ -1,4 +1,3 @@
-import { uniqueId } from 'lodash';
 import { createBreakpoints } from './app/utils';
 
 const API_URLS = {

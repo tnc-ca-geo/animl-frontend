@@ -99,6 +99,14 @@ export default RegisterCameraForm;
 const RegisterCameraHelp = () => (
   <div style={{ maxWidth: '320px' }}>
     To integrate a new wireless camera, you first need to pair, or &quot;register&quot; it, with
-    your Project.
+    your Project. For detailed documentation on how to configure specific camera makes for
+    integration with Animl, please visit our{' '}
+    <a
+      href="https://guides.animl.camera/tnc-wireless-camera-trap-documentation/intro"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Wireless Camera Trap Documentation
+    </a>
   </div>
 );
