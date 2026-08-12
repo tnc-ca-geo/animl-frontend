@@ -27,7 +27,11 @@ const registerCameraSchema = Yup.object().shape({
 });
 
 const RegisterCameraForm = () => {
-  const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({ value: m, label: m }));
+  const makeOptions = SUPPORTED_WIRELESS_CAMS.map((m) => ({
+    value: m.make,
+    label: m.make,
+    uniqueIdField: m.uniqueIdField,
+  }));
   const dispatch = useDispatch();
 
   const handleRegisterCameraSubmit = (formVals, resetForm) => {
@@ -65,11 +69,7 @@ const RegisterCameraForm = () => {
                   />
                 </FormFieldWrapper>
                 <FormFieldWrapper>
-                  <label htmlFor="cameraId">
-                    {values.make.value === 'RidgeTec' || values.make.value === 'Swift'
-                      ? 'IMEI Number'
-                      : 'Camera Serial Number'}
-                  </label>
+                  <label htmlFor="cameraId">Camera {values.make?.uniqueIdField || ' ID'} </label>
                   <Field
                     name="cameraId"
                     id="cameraId"
