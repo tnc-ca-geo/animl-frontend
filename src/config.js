@@ -22,6 +22,7 @@ export const SUPPORTED_WIRELESS_CAMS = [
   'RECONYX',
   'SPARTAN',
   'Swift',
+  'UOVision',
 ];
 
 export const IN_MAINTENANCE_MODE = false;
