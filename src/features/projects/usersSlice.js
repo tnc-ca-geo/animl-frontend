@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
+import { selectSelectedProjectId } from './projectsSlice';
 
 const initialState = {
   users: [],
@@ -157,11 +158,9 @@ export const fetchUsers = () => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'getUsers',
@@ -181,11 +180,9 @@ export const updateUser = (values) => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         await call({
           projId,
           request: 'updateUser',
@@ -206,11 +203,9 @@ export const createUser = (values) => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const username = values.email.toLowerCase();
         await call({
           projId,
@@ -232,11 +227,9 @@ export const resendTempPassword = (values) => {
 
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         await call({
           projId,
           request: 'resendTempPassword',

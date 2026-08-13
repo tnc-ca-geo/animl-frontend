@@ -20,6 +20,9 @@ const DeleteViewForm = ({ handleClose }) => {
   const [queuedForClose, setQueuedForClose] = useState(false);
   const viewsLoading = useSelector(selectViewsLoading);
   const selectedView = useSelector(selectSelectedView);
+  // hold on to the view this form was opened for: a successful deletion selects
+  // the default view, and the form stays mounted until the effect below closes it
+  const [viewToDelete] = useState(selectedView);
   const dispatch = useDispatch();
 
   // TODO: extract into hook?
@@ -41,14 +44,15 @@ const DeleteViewForm = ({ handleClose }) => {
       )}
       <FormWrapper>
         <Formik
-          initialValues={{ viewId: selectedView._id }}
+          initialValues={{ viewId: viewToDelete._id }}
           validationSchema={deleteViewSchema}
           onSubmit={(values) => handleDeleteViewSubmit(values)}
         >
           {() => (
             <Form>
               <HelperText>
-                Are you sure you&apos;d like to delete the <ViewName>{selectedView.name}</ViewName> view?
+                Are you sure you&apos;d like to delete the <ViewName>{viewToDelete.name}</ViewName>{' '}
+                view?
               </HelperText>
               <Field name="viewId" type="hidden" />
               <ButtonRow>

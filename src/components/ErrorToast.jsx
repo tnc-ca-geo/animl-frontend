@@ -12,8 +12,10 @@ import {
   dismissTagsError,
 } from '../features/review/reviewSlice';
 import {
-  selectProjectsErrors,
-  dismissProjectsError,
+  selectProjectStubsErrors,
+  dismissProjectStubsError,
+  selectProjectErrors,
+  dismissProjectError,
   selectViewsErrors,
   dismissViewsError,
   selectModelsErrors,
@@ -79,7 +81,8 @@ const ErrorToast = () => {
   const labelsErrors = useSelector(selectLabelsErrors);
   const tagsErrors = useSelector(selectTagsErrors);
   const commentsErrors = useSelector(selectCommentsErrors);
-  const projectsErrors = useSelector(selectProjectsErrors);
+  const projectStubsErrors = useSelector(selectProjectStubsErrors);
+  const projectErrors = useSelector(selectProjectErrors);
   const viewsErrors = useSelector(selectViewsErrors);
   const depsErrors = useSelector(selectDeploymentsErrors);
   const modelsErrors = useSelector(selectModelsErrors);
@@ -109,7 +112,8 @@ const ErrorToast = () => {
     enrichErrors(tagsErrors, 'Tag Error', 'tags'),
     enrichErrors(projectTagErrors, 'Tag Error', 'projectTags'),
     enrichErrors(commentsErrors, 'Comment Error', 'comments'),
-    enrichErrors(projectsErrors, 'Project Error', 'projects'),
+    enrichErrors(projectStubsErrors, 'Project Error', 'projectStubs'),
+    enrichErrors(projectErrors, 'Project Error', 'project'),
     enrichErrors(viewsErrors, 'View Error', 'views'),
     enrichErrors(depsErrors, 'Deployment Error', 'deployments'),
     enrichErrors(modelsErrors, 'Model Error', 'models'),
@@ -186,7 +190,8 @@ const dismissErrorActions = {
   tags: (i) => dismissTagsError(i),
   projectTags: (i) => dismissProjectTagErrors(i),
   comments: (i) => dismissCommentsError(i),
-  projects: (i) => dismissProjectsError(i),
+  projectStubs: (i) => dismissProjectStubsError(i),
+  project: (i) => dismissProjectError(i),
   createProject: (i) => dismissCreateProjectError(i),
   updateProject: (i) => dismissUpdateProjectError(i),
   views: (i) => dismissViewsError(i),

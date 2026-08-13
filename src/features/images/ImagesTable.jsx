@@ -26,7 +26,7 @@ import { selectLoupeOpen } from '../loupe/loupeSlice';
 import { Image } from '../../components/Image';
 import LabelPills from './LabelPills';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner';
-import { selectProjectsLoading } from '../projects/projectsSlice';
+import { selectAnyProjectLoading } from '../projects/projectsSlice';
 import DeleteImagesAlert from './DeleteImagesAlert.jsx';
 import { columnConfig, columnsToHideMap, defaultColumnDims, tableBreakpoints } from './config';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
@@ -171,7 +171,7 @@ const ReviewedIcon = ({ reviewed }) => (
 
 const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const projectsLoading = useSelector(selectAnyProjectLoading);
   const imagesLoading = useSelector(selectImagesLoading);
   const isLoupeOpen = useSelector(selectLoupeOpen);
   const focusIndex = useSelector(selectFocusIndex);
@@ -313,7 +313,7 @@ const ImagesTable = ({ workingImages, hasNext, loadNextPage }) => {
 
   return (
     <TableContainer ref={ref}>
-      {(projectsLoading.isLoading || imagesLoading.isLoading) && (
+      {(projectsLoading || imagesLoading.isLoading) && (
         <SpinnerOverlay>
           <SimpleSpinner />
         </SpinnerOverlay>

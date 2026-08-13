@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectImagesCount, selectImagesCountLoading } from '../images/imagesSlice.js';
 import {
   selectModalOpen,
-  selectSelectedProject,
+  selectSelectedProjectId,
   setModalOpen,
   setModalContent,
-  fetchProjects,
+  fetchProject,
 } from '../projects/projectsSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 import { InfoCircledIcon, SymbolIcon } from '@radix-ui/react-icons';
@@ -95,12 +95,13 @@ const FiltersPanelFooter = ({ areActionsDisabled = false }) => {
   imagesCount = imagesCount && imagesCount.toLocaleString('en-US');
   const imagesCountLoading = useSelector(selectImagesCountLoading);
   const modalOpen = useSelector(selectModalOpen);
-  const selectedProj = useSelector(selectSelectedProject);
+  const selectedProjectId = useSelector(selectSelectedProjectId);
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
+    if (!selectedProjectId) return;
     dispatch(toggleOpenLoupe(false));
-    dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+    dispatch(fetchProject(selectedProjectId));
   };
 
   const handleModalToggle = (content) => {

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
 import { call } from '../../api';
-import { setSelectedProjAndView } from '../projects/projectsSlice';
+import { selectSelectedProjectId } from '../projects/projectsSlice';
 import { normalizeErrors } from '../../app/utils';
 
 const initialState = {
@@ -233,15 +233,6 @@ export const uploadSlice = createSlice({
       state.filter = payload;
     },
   },
-
-  extraReducers: (builder) => {
-    builder.addCase(setSelectedProjAndView, (state, { payload }) => {
-      if (payload.newProjSelected) {
-        // reset upload states
-        state = initialState;
-      }
-    });
-  },
 });
 
 export const {
@@ -275,8 +266,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       dispatch(uploadStart());
 
       const { file, overrideSerial } = payload;
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
       const chunkSizeInMB = 100;
       const chunkSize = 1024 * 1024 * chunkSizeInMB;
@@ -285,7 +275,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       // initialize multipart upload
       const initRes = await call({
         request: 'createUpload',
-        projId: selectedProj._id,
+        projId,
         input: {
           originalFile: file.name,
           partCount,
@@ -296,7 +286,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
       if (overrideSerial.length) {
         await call({
           request: 'updateBatch',
-          projId: selectedProj._id,
+          projId,
           input: {
             _id: initRes.createUpload.batch,
             overrideSerial,
@@ -370,7 +360,7 @@ export const uploadMultipartFile = (payload) => async (dispatch, getState) => {
           uploadedParts.sort((a, b) => a.PartNumber - b.PartNumber);
           await call({
             request: 'closeUpload',
-            projId: selectedProj._id,
+            projId,
             input: {
               batchId: initRes.createUpload.batch,
               multipartUploadId: initRes.createUpload.multipartUploadId,
@@ -432,11 +422,10 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       dispatch(uploadStart());
 
       const { file, overrideSerial } = payload;
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
       const uploadUrl = await call({
         request: 'createUpload',
-        projId: selectedProj._id,
+        projId,
         input: {
           originalFile: file.name,
         },
@@ -447,7 +436,7 @@ export const uploadFile = (payload) => async (dispatch, getState) => {
       if (overrideSerial.length) {
         await call({
           request: 'updateBatch',
-          projId: selectedProj._id,
+          projId,
           input: {
             _id: uploadUrl.createUpload.batch,
             overrideSerial,
@@ -489,14 +478,13 @@ export const fetchBatches =
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       if (token) {
         dispatch(fetchBatchesStart());
-        const projects = getState().projects.projects;
-        const selectedProj = projects.find((proj) => proj.selected);
+        const projId = selectSelectedProjectId(getState());
         const pageInfo = getState().uploads.pageInfo;
         const filter = getState().uploads.filter;
 
         const batches = await call({
           request: 'getBatches',
-          projId: selectedProj._id,
+          projId,
           input: { filter, pageInfo, page },
         });
 
@@ -514,12 +502,11 @@ export const stopBatch = (id) => async (dispatch, getState) => {
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
       dispatch(stopBatchStart({ batch: id }));
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
       await call({
         request: 'stopBatch',
-        projId: selectedProj._id,
+        projId,
         input: { id },
       });
 
@@ -537,12 +524,11 @@ export const redriveBatch = (id) => async (dispatch, getState) => {
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
       dispatch(redriveBatchStart({ batch: id }));
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
       await call({
         request: 'redriveBatch',
-        projId: selectedProj._id,
+        projId,
         input: { id },
       });
 

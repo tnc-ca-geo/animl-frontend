@@ -1,5 +1,6 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import { Auth } from 'aws-amplify';
+import { push } from 'connected-react-router';
 import { call } from '../../api';
 import { registerCameraSuccess, unregisterCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import { deleteProjectLabelTaskStart, editDeploymentsSuccess } from '../tasks/tasksSlice';
@@ -7,14 +8,37 @@ import { clearImages } from '../images/imagesSlice.js';
 import { normalizeErrors } from '../../app/utils.js';
 
 const initialState = {
-  projects: [],
+  // lightweight stubs for every Project the user has access to.
+  // shape: { _id, name, description, views: [{ _id, name }] }
+  projectStubs: [],
+  // full detail for the currently selected Project (or null while loading)
+  project: null,
+  // full detail for a Project being edited in the superuser EditProjectForm.
+  // deliberately kept separate from `project` because a superuser can edit a
+  // Project other than the one they currently have open.
+  editingProject: null,
+  selectedProjectId: null,
+  selectedViewId: null,
+  // id of the most recently requested Project detail fetch, used to discard
+  // responses that have been superseded by a newer selection
+  requestedProjectId: null,
   modelOptions: [],
   loadingStates: {
-    projects: {
+    projectStubs: {
       isLoading: false,
       operation: null /* 'fetching', 'updating', 'deleting' */,
       errors: null,
       noneFound: false,
+    },
+    project: {
+      isLoading: false,
+      operation: null,
+      errors: null,
+    },
+    editingProject: {
+      isLoading: false,
+      operation: null,
+      errors: null,
     },
     createProject: {
       isLoading: false,
@@ -76,60 +100,122 @@ const initialState = {
   automationRules: [],
 };
 
+const findDefaultViewId = (views) => views?.find((v) => v.name === 'All images')?._id ?? null;
+
+// derive the lightweight nav-menu representation of a Project from full detail
+const toProjectStub = (project) => ({
+  _id: project._id,
+  name: project.name,
+  description: project.description,
+  views: (project.views || []).map((v) => ({ _id: v._id, name: v.name })),
+});
+
+// keep the nav-menu stub in sync whenever we learn something new about a Project
+const syncProjectStub = (state, project) => {
+  const idx = state.projectStubs.findIndex((stub) => stub._id === project._id);
+  if (idx !== -1) state.projectStubs[idx] = toProjectStub(project);
+};
+
+// keep a Project's stub views in sync after a view is created/updated/deleted
+const syncProjectStubViews = (state, projId, views) => {
+  const stub = state.projectStubs.find((s) => s._id === projId);
+  if (stub) stub.views = views.map((v) => ({ _id: v._id, name: v.name }));
+};
+
 export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
-    getProjectsStart: (state) => {
-      const ls = { isLoading: true, operation: 'fetching', errors: null };
-      state.loadingStates.projects = ls;
+    getProjectStubsStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null, noneFound: false };
+      state.loadingStates.projectStubs = ls;
     },
 
-    getProjectsFailure: (state, { payload }) => {
-      const ls = { isLoading: false, operation: null, errors: payload };
-      state.loadingStates.projects = ls;
+    getProjectStubsFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload, noneFound: false };
+      state.loadingStates.projectStubs = ls;
     },
 
-    getProjectsSuccess: (state, { payload }) => {
+    getProjectStubsSuccess: (state, { payload }) => {
       const noneFound = !payload.projects || payload.projects.length === 0;
-      const ls = { isLoading: false, operation: null, errors: null, noneFound };
-      state.loadingStates.projects = ls;
-      if (noneFound) {
-        state.projects = [];
-      } else if (state.projects.length) {
-        payload.projects.forEach((newProj) => {
-          const idx = state.projects.findIndex((oldProj) => oldProj._id === newProj._id);
-          if (idx !== -1) state.projects[idx] = newProj;
-        });
-      } else {
-        state.projects = payload.projects;
-      }
+      state.loadingStates.projectStubs = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound,
+      };
+      state.projectStubs = payload.projects || [];
     },
 
-    dismissProjectsError: (state, { payload }) => {
+    dismissProjectStubsError: (state, { payload }) => {
       const index = payload;
-      state.loadingStates.projects.errors.splice(index, 1);
+      state.loadingStates.projectStubs.errors.splice(index, 1);
+    },
+
+    getProjectStart: (state, { payload }) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.project = ls;
+      state.requestedProjectId = payload;
+    },
+
+    getProjectFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.project = ls;
+    },
+
+    getProjectSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.project = ls;
+      state.project = payload.project;
+      syncProjectStub(state, payload.project);
+    },
+
+    dismissProjectError: (state, { payload }) => {
+      const index = payload;
+      state.loadingStates.project.errors.splice(index, 1);
+    },
+
+    getEditingProjectStart: (state) => {
+      const ls = { isLoading: true, operation: 'fetching', errors: null };
+      state.loadingStates.editingProject = ls;
+    },
+
+    getEditingProjectFailure: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: payload };
+      state.loadingStates.editingProject = ls;
+    },
+
+    getEditingProjectSuccess: (state, { payload }) => {
+      const ls = { isLoading: false, operation: null, errors: null };
+      state.loadingStates.editingProject = ls;
+      state.editingProject = payload.project;
+    },
+
+    clearEditingProject: (state) => {
+      state.editingProject = null;
+      state.loadingStates.editingProject = { isLoading: false, operation: null, errors: null };
+    },
+
+    // dispatched when the user navigates to a different Project, before that
+    // Project's detail has been fetched. Other slices listen for this to reset
+    // their project-scoped state.
+    //
+    // NOTE: `project` is deliberately left in place until the incoming Project's
+    // detail lands. Clearing the selected ids is enough to make the nav, the
+    // images panel and the view-dependent controls go quiet, and it avoids
+    // yanking labels/tags/cameraConfigs out from under components that are still
+    // mounted while the fetch is in flight.
+    projectChanged: (state) => {
+      state.selectedProjectId = null;
+      state.selectedViewId = null;
+      state.unsavedViewChanges = false;
+      state.loadingStates.project.errors = null;
+      state.loadingStates.models.errors = null;
     },
 
     setSelectedProjAndView: (state, { payload }) => {
-      let selectedProj = state.projects.find((p) => p.selected);
-
-      if (payload.newProjSelected) {
-        state.projects.forEach((p) => {
-          p.selected = p._id === payload.projId;
-          if (p._id === payload.projId) selectedProj = p;
-        });
-
-        state.loadingStates.projects.errors = null;
-        state.loadingStates.models.errors = null;
-      }
-
-      if (payload.newViewSelected) {
-        selectedProj.views.forEach((v) => {
-          v.selected = v._id === payload.viewId;
-        });
-      }
-
+      state.selectedProjectId = payload.projId;
+      state.selectedViewId = payload.viewId ?? findDefaultViewId(state.project?.views);
       state.loadingStates.views.errors = null;
     },
 
@@ -151,7 +237,7 @@ export const projectsSlice = createSlice({
       };
       state.loadingStates.createProject = ls;
 
-      state.projects = [...state.projects, project];
+      state.projectStubs.push(toProjectStub(project));
       state.successNotif = {
         title: 'Created Project',
         message: 'Project created successfully!',
@@ -177,8 +263,9 @@ export const projectsSlice = createSlice({
       const { project } = payload.updateProject;
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.updateProject = ls;
-      const idx = state.projects.findIndex((p) => p._id === project._id);
-      if (idx !== -1) state.projects[idx] = project;
+      if (state.project?._id === project._id) state.project = project;
+      if (state.editingProject?._id === project._id) state.editingProject = project;
+      syncProjectStub(state, project);
       state.successNotif = {
         title: 'Updated Project',
         message: 'Project updated successfully!',
@@ -219,16 +306,14 @@ export const projectsSlice = createSlice({
       };
       state.loadingStates.views = ls;
 
-      let viewInState = false;
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.views.forEach((view, i) => {
-        if (view._id === payload.view._id) {
-          viewInState = true;
-          proj.views[i] = { ...proj.views[i], ...payload.view };
+      if (state.project?._id === payload.projId) {
+        const idx = state.project.views.findIndex((v) => v._id === payload.view._id);
+        if (idx !== -1) {
+          state.project.views[idx] = { ...state.project.views[idx], ...payload.view };
+        } else {
+          state.project.views.push(payload.view);
         }
-      });
-      if (!viewInState) {
-        proj.views.push(payload.view);
+        syncProjectStubViews(state, payload.projId, state.project.views);
       }
       state.successNotif = {
         title: 'View Saved',
@@ -240,8 +325,10 @@ export const projectsSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.views = ls;
 
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.views = proj.views.filter((view) => view._id !== payload.viewId);
+      if (state.project?._id === payload.projId) {
+        state.project.views = state.project.views.filter((view) => view._id !== payload.viewId);
+        syncProjectStubViews(state, payload.projId, state.project.views);
+      }
     },
 
     dismissViewsError: (state, { payload }) => {
@@ -319,7 +406,8 @@ export const projectsSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.models = ls;
 
-      const proj = state.projects.find((p) => p._id === payload.projId);
+      if (state.project?._id !== payload.projId) return;
+      const proj = state.project;
       payload.mlModels.forEach((model) => {
         if (!proj.mlModels) proj.mlModels = [model];
         else if (!proj.mlModels.includes(model._id)) proj.mlModels.push(model);
@@ -363,8 +451,7 @@ export const projectsSlice = createSlice({
         errors: null,
       };
       state.loadingStates.projectLabels = ls;
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = payload.labels;
+      if (state.project?._id === payload.projId) state.project.labels = payload.labels;
     },
 
     createProjectLabelFailure: (state, { payload }) => {
@@ -384,8 +471,7 @@ export const projectsSlice = createSlice({
         errors: null,
       };
       state.loadingStates.projectLabels = ls;
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.labels = payload.labels;
+      if (state.project?._id === payload.projId) state.project.labels = payload.labels;
     },
 
     updateProjectLabelFailure: (state, { payload }) => {
@@ -430,8 +516,7 @@ export const projectsSlice = createSlice({
       };
       state.loadingStates.projectTags = ls;
 
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags;
+      if (state.project?._id === payload.projId) state.project.tags = payload.tags;
     },
 
     createProjectTagFailure: (state, { payload }) => {
@@ -448,8 +533,7 @@ export const projectsSlice = createSlice({
       const ls = { isLoading: false, operation: null, errors: null };
       state.loadingStates.projectTags = ls;
 
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags;
+      if (state.project?._id === payload.projId) state.project.tags = payload.tags;
     },
 
     deleteProjectTagFailure: (state, { payload }) => {
@@ -470,8 +554,7 @@ export const projectsSlice = createSlice({
       };
       state.loadingStates.projectTags = ls;
 
-      const proj = state.projects.find((p) => p._id === payload.projId);
-      proj.tags = payload.tags;
+      if (state.project?._id === payload.projId) state.project.tags = payload.tags;
     },
 
     updateProjectTagFailure: (state, { payload }) => {
@@ -511,22 +594,21 @@ export const projectsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(registerCameraSuccess, (state, { payload }) => {
-        const proj = state.projects.find((p) => p._id === payload.project._id);
-        proj.cameraConfigs = payload.project.cameraConfigs;
+        if (state.project?._id !== payload.project._id) return;
+        state.project.cameraConfigs = payload.project.cameraConfigs;
       })
       .addCase(unregisterCameraSuccess, (state, { payload }) => {
         // if a project is returned & it's the default_project
         // update the default_project's cameraConfig array in state
         if (payload.project && payload.project._id === 'default_project') {
-          const defaultProj = state.projects.find((p) => p._id === 'default_project');
-          if (!defaultProj) return;
-          defaultProj.cameraConfigs = payload.project.cameraConfigs;
+          if (state.project?._id !== 'default_project') return;
+          state.project.cameraConfigs = payload.project.cameraConfigs;
         }
       })
       .addCase(editDeploymentsSuccess, (state, { payload }) => {
         const editedCamConfig = payload.cameraConfig;
-        const proj = state.projects.find((p) => p._id === payload.projId);
-        for (const camConfig of proj.cameraConfigs) {
+        if (state.project?._id !== payload.projId) return;
+        for (const camConfig of state.project.cameraConfigs) {
           if (camConfig._id === editedCamConfig._id) {
             camConfig.deployments = editedCamConfig.deployments;
           }
@@ -540,12 +622,24 @@ export const projectsSlice = createSlice({
 });
 
 export const {
-  getProjectsStart,
-  getProjectsFailure,
-  getProjectsSuccess,
+  getProjectStubsStart,
+  getProjectStubsFailure,
+  getProjectStubsSuccess,
+  dismissProjectStubsError,
+
+  getProjectStart,
+  getProjectFailure,
+  getProjectSuccess,
+  dismissProjectError,
+
+  getEditingProjectStart,
+  getEditingProjectFailure,
+  getEditingProjectSuccess,
+  clearEditingProject,
+
+  projectChanged,
   setSelectedProjAndView,
   setUnsavedViewChanges,
-  dismissProjectsError,
   dismissProjectTagErrors,
   createProjectStart,
   createProjectSuccess,
@@ -609,24 +703,69 @@ export const {
   setGlobalBreakpoint,
 } = projectsSlice.actions;
 
-// fetchProjects thunk
-export const fetchProjects = (payload) => async (dispatch) => {
+// fetch lightweight stubs for every Project the user has access to.
+// this is what populates the Project nav menu.
+export const fetchProjectStubs = () => async (dispatch) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
 
     if (token) {
-      dispatch(getProjectsStart());
-      const projects = await call({
-        request: 'getProjects',
-        ...(payload && { input: payload }),
-      });
-      dispatch(getProjectsSuccess(projects));
+      dispatch(getProjectStubsStart());
+      const projects = await call({ request: 'getProjectStubs' });
+      dispatch(getProjectStubsSuccess(projects));
     }
   } catch (err) {
     console.log('err: ', err);
     const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
-    dispatch(getProjectsFailure(errs));
+    dispatch(getProjectStubsFailure(errs));
+  }
+};
+
+// fetch full detail for a single Project
+export const fetchProject = (projId) => async (dispatch, getState) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
+    if (token) {
+      dispatch(getProjectStart(projId));
+      const res = await call({ request: 'getProject', input: projId });
+      // the user may have selected a different Project while this was in
+      // flight. bail rather than let a slow response overwrite a newer one -
+      // filtersSlice also derives its available filters from getProjectSuccess.
+      if (selectRequestedProjectId(getState()) !== projId) return;
+      const project = res.projects[0];
+      if (!project) throw new Error(`Project ${projId} not found`);
+      dispatch(getProjectSuccess({ project }));
+    }
+  } catch (err) {
+    console.log('err: ', err);
+    if (selectRequestedProjectId(getState()) !== projId) return;
+    const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
+    dispatch(getProjectFailure(errs));
+  }
+};
+
+// fetch full detail for an arbitrary Project, for the superuser EditProjectForm.
+// kept separate from fetchProject so editing a Project doesn't disturb the one
+// the user currently has open.
+export const fetchEditingProject = (projId) => async (dispatch) => {
+  try {
+    const currentUser = await Auth.currentAuthenticatedUser();
+    const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
+
+    if (token) {
+      dispatch(getEditingProjectStart());
+      const res = await call({ request: 'getProject', input: projId });
+      const project = res.projects[0];
+      if (!project) throw new Error(`Project ${projId} not found`);
+      dispatch(getEditingProjectSuccess({ project }));
+    }
+  } catch (err) {
+    console.log('err: ', err);
+    const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
+    dispatch(getEditingProjectFailure(errs));
   }
 };
 
@@ -679,11 +818,18 @@ export const editView = (operation, payload) => {
       dispatch(editViewStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      // view selection lives in the URL, so navigate rather than dispatching
+      // setSelectedProjAndView directly. projectsListeners.js picks the change
+      // up and commits it to state.
+      const selectView = (viewId) => {
+        if (selectSelectedViewId(getState()) !== viewId) {
+          dispatch(push(`/app/${projId}/${viewId}`));
+        }
+      };
+
+      if (token && projId) {
         switch (operation) {
           case 'create': {
             const res = await call({
@@ -693,7 +839,7 @@ export const editView = (operation, payload) => {
             });
             const view = res.createView.view;
             dispatch(saveViewSuccess({ projId, view }));
-            dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
+            selectView(view._id);
             break;
           }
           case 'update': {
@@ -704,7 +850,7 @@ export const editView = (operation, payload) => {
             });
             const view = res.updateView.view;
             dispatch(saveViewSuccess({ projId, view }));
-            dispatch(setSelectedProjAndView({ projId, viewId: view._id }));
+            selectView(view._id);
             break;
           }
           case 'delete': {
@@ -715,7 +861,10 @@ export const editView = (operation, payload) => {
             });
             const updatedProj = res.deleteView.project;
             const dfltView = updatedProj.views.find((view) => view.name === 'All images');
-            dispatch(setSelectedProjAndView({ projId, viewId: dfltView._id }));
+            // select the default view *before* removing the deleted one, so
+            // selectSelectedView never briefly resolves to undefined while
+            // DeleteViewForm is still mounted
+            selectView(dfltView._id);
             dispatch(deleteViewSuccess({ projId, viewId: payload.viewId }));
             break;
           }
@@ -739,11 +888,9 @@ export const updateAutomationRules = (payload) => {
       dispatch(updateAutomationRulesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'updateAutomationRules',
@@ -766,11 +913,9 @@ export const fetchAutomationRules = () => {
       dispatch(getAutomationRulesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           request: 'getProjectAutomationRules',
           input: { _ids: [projId] },
@@ -792,11 +937,9 @@ export const fetchModels = (payload) => {
       dispatch(getModelsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'getModels',
@@ -838,11 +981,9 @@ export const createProjectTag = (payload) => {
       dispatch(createProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'createProjectTag',
@@ -863,11 +1004,9 @@ export const deleteProjectTag = (payload) => {
       dispatch(deleteProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'deleteProjectTag',
@@ -875,7 +1014,7 @@ export const deleteProjectTag = (payload) => {
         });
         dispatch(deleteProjectTagSuccess({ projId, tags: res.deleteProjectTag.tags }));
         dispatch(clearImages());
-        dispatch(fetchProjects({ _ids: [projId] }));
+        dispatch(fetchProject(projId));
       }
     } catch (err) {
       console.log(`error attempting to delete tag: `, err);
@@ -890,11 +1029,9 @@ export const updateProjectTag = (payload) => {
       dispatch(updateProjectTagStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'updateProjectTag',
@@ -916,11 +1053,9 @@ export const createProjectLabel = (payload) => {
       dispatch(createProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'createProjectLabel',
@@ -941,11 +1076,9 @@ export const updateProjectLabel = (payload) => {
       dispatch(updateProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'updateProjectLabel',
@@ -966,11 +1099,9 @@ export const deleteProjectLabel = (payload) => {
       dispatch(deleteProjectLabelStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: 'deleteProjectLabel',
@@ -990,7 +1121,7 @@ export const deleteProjectLabel = (payload) => {
         } else {
           dispatch(deleteProjectLabelSuccess({ projId }));
           dispatch(clearImages());
-          dispatch(fetchProjects({ _ids: [projId] }));
+          dispatch(fetchProject(projId));
         }
       }
     } catch (err) {
@@ -1001,17 +1132,19 @@ export const deleteProjectLabel = (payload) => {
 };
 
 // Selectors
-export const selectProjects = (state) => state.projects.projects;
-export const selectSelectedProject = (state) =>
-  state.projects.projects.find((proj) => proj.selected);
-export const selectSelectedProjectId = createSelector([selectSelectedProject], (proj) =>
-  proj ? proj._id : null,
-);
+export const selectProjectStubs = (state) => state.projects.projectStubs;
+export const selectSelectedProject = (state) => state.projects.project;
+export const selectSelectedProjectId = (state) => state.projects.selectedProjectId;
+export const selectRequestedProjectId = (state) => state.projects.requestedProjectId;
+export const selectSelectedViewId = (state) => state.projects.selectedViewId;
+export const selectEditingProject = (state) => state.projects.editingProject;
+export const selectEditingProjectLoading = (state) => state.projects.loadingStates.editingProject;
 export const selectViews = createSelector([selectSelectedProject], (proj) =>
   proj ? proj.views : null,
 );
-export const selectSelectedView = createSelector([selectViews], (views) =>
-  views ? views.find((view) => view.selected) : null,
+export const selectSelectedView = createSelector(
+  [selectViews, selectSelectedViewId],
+  (views, viewId) => (views ? views.find((view) => view._id === viewId) : null),
 );
 export const selectUnsavedViewChanges = (state) => state.projects.unsavedViewChanges;
 export const selectMLModels = createSelector([selectSelectedProject], (proj) =>
@@ -1028,7 +1161,14 @@ export const selectProjectTags = createSelector([selectSelectedProject], (proj) 
 );
 export const selectProjectTagsLoading = (state) =>
   state.projects.loadingStates.projectTags.isLoading;
-export const selectProjectsLoading = (state) => state.projects.loadingStates.projects;
+export const selectProjectStubsLoading = (state) => state.projects.loadingStates.projectStubs;
+export const selectProjectLoading = (state) => state.projects.loadingStates.project;
+// true while either the Project list or the selected Project's detail is in
+// flight - between them they cover the whole "we don't have a Project yet" window
+export const selectAnyProjectLoading = createSelector(
+  [selectProjectStubsLoading, selectProjectLoading],
+  (stubs, project) => stubs.isLoading || project.isLoading,
+);
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;
 export const selectModelsLoadingState = (state) => state.projects.loadingStates.models;
@@ -1036,7 +1176,8 @@ export const selectModalOpen = (state) => state.projects.modalOpen;
 export const selectModalContent = (state) => state.projects.modalContent;
 export const selectSelectedCamera = (state) => state.projects.selectedCamera;
 export const selectGlobalBreakpoint = (state) => state.projects.globalBreakpoint;
-export const selectProjectsErrors = (state) => state.projects.loadingStates.projects.errors;
+export const selectProjectStubsErrors = (state) => state.projects.loadingStates.projectStubs.errors;
+export const selectProjectErrors = (state) => state.projects.loadingStates.project.errors;
 export const selectViewsErrors = (state) => state.projects.loadingStates.views.errors;
 export const selectModelsErrors = (state) => state.projects.loadingStates.models.errors;
 export const selectCreateProjectsErrors = (state) =>

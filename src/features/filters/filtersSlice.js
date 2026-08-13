@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { registerCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import {
-  setSelectedProjAndView,
+  getProjectSuccess,
   createProjectLabelSuccess,
   updateProjectLabelSuccess,
   createProjectTagSuccess,
@@ -113,14 +113,14 @@ export const filtersSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(setSelectedProjAndView, (state, { payload }) => {
+      .addCase(getProjectSuccess, (state, { payload }) => {
         const { cameraConfigs, labels, tags } = payload.project;
         updateAvailDepFilters(state, cameraConfigs);
         updateAvailCamFilters(state, cameraConfigs);
         updateAvailLabelFilters(state, labels);
         updateAvailTagFilters(state, tags);
-        // set all filters to new selected view? We're currently handling this
-        // by dispatching setActiveFilters from setSelectedProjAndViewMiddleware
+        // active filters are set separately, by the setActiveFiltersToSelectedView
+        // middleware, once a view has been selected
       })
       .addCase(createProjectLabelSuccess, (state, { payload }) => {
         updateAvailLabelFilters(state, payload.labels);
