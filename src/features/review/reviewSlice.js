@@ -5,6 +5,7 @@ import { findImage, findObject, findLabel, isImageReviewed } from '../../app/uti
 import { enqueue } from './requestQueue';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { getImagesSuccess, clearImages, deleteImagesSuccess } from '../images/imagesSlice';
+import { selectSelectedProjectId } from '../projects/projectsSlice';
 
 const initialState = {
   workingImages: [],
@@ -348,13 +349,12 @@ export const editLabel = (operation, entity, payload) => {
       await enqueue(async () => {
         const currentUser = await Auth.currentAuthenticatedUser();
         const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-        const projects = getState().projects.projects;
-        const selectedProj = projects.find((proj) => proj.selected);
+        const projId = selectSelectedProjectId(getState());
 
-        if (token && selectedProj) {
+        if (token && projId) {
           const req = operation + entity.charAt(0).toUpperCase() + entity.slice(1);
           await call({
-            projId: selectedProj._id,
+            projId,
             request: req,
             input: payload,
           });
@@ -385,13 +385,12 @@ export const editComment = (operation, payload) => {
       dispatch(editCommentStart(operation));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const req = `${operation}ImageComment`;
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: req,
           input: payload,
         });
@@ -421,14 +420,13 @@ export const editTag = (operation, payload) => {
       await enqueue(async () => {
         const currentUser = await Auth.currentAuthenticatedUser();
         const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-        const projects = getState().projects.projects;
-        const selectedProj = projects.find((proj) => proj.selected);
+        const projId = selectSelectedProjectId(getState());
 
-        if (token && selectedProj) {
+        if (token && projId) {
           const req = `${operation}ImageTags`;
 
           await call({
-            projId: selectedProj._id,
+            projId,
             request: req,
             input: payload,
           });

@@ -3,7 +3,8 @@ import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
 import {
-  fetchProjects,
+  fetchProject,
+  selectSelectedProjectId,
   setModalOpen,
   setModalContent,
   setSelectedCamera,
@@ -517,20 +518,22 @@ export const tasksSlice = createSlice({
 
       // GraphQL errors come in an array
       if (Array.isArray(payload)) {
-        ls.errors = payload.map(err => ({
+        ls.errors = payload.map((err) => ({
           message: err.message || 'An error occurred',
           extensions: {
-            code: err.extensions?.code || 'UNKNOWN_ERROR'
-          }
+            code: err.extensions?.code || 'UNKNOWN_ERROR',
+          },
         }));
       } else {
         // Single error case (network, auth issues, etc)
-        ls.errors = [{
-          message: error.message || error.toString(),
-          extensions: {
-            code: error.extensions?.code || error.code || 'UNKNOWN_ERROR'
-          }
-        }];
+        ls.errors = [
+          {
+            message: error.message || error.toString(),
+            extensions: {
+              code: error.extensions?.code || error.code || 'UNKNOWN_ERROR',
+            },
+          },
+        ];
       }
     },
 
@@ -628,7 +631,7 @@ export const {
   setTimestampOffsetFailure,
   clearSetTimestampOffsetTask,
   dismissSetTimestampOffsetError,
-  
+
   dismissTaskSuccessNotif,
 } = tasksSlice.actions;
 
@@ -638,12 +641,11 @@ export const fetchTask = (taskId) => {
     try {
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj && taskId) {
+      if (token && projId && taskId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'getTask',
           input: { taskId },
         });
@@ -685,7 +687,7 @@ export const fetchTask = (taskId) => {
                 const deploymentsLoadingState = getState().tasks.loadingStates.deployments;
                 dispatch(
                   editDeploymentsSuccess({
-                    projId: selectedProj._id,
+                    projId,
                     cameraConfig,
                     operation,
                     reqPayload: deploymentsLoadingState.reqPayload,
@@ -701,7 +703,7 @@ export const fetchTask = (taskId) => {
                 dispatch(setModalOpen(false));
                 dispatch(setModalContent(null));
                 dispatch(setSelectedCamera(null));
-                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+                dispatch(fetchProject(projId));
               },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
@@ -714,7 +716,7 @@ export const fetchTask = (taskId) => {
                 dispatch(setSelectedCamera(null));
                 dispatch(setDeleteCameraAlertStatus({ isOpen: false }));
                 dispatch(clearCameraImageCount());
-                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+                dispatch(fetchProject(projId));
               },
               FAIL: (res) => dispatch(updateDeleteCameraFailure(res)),
             },
@@ -755,7 +757,7 @@ export const fetchTask = (taskId) => {
               COMPLETE: (res) => {
                 dispatch(deleteProjectLabelTaskSuccess(res));
                 dispatch(clearImages());
-                dispatch(fetchProjects({ _ids: [selectedProj._id] }));
+                dispatch(fetchProject(projId));
               },
               FAIL: (res) => dispatch(deleteProjectLabelTaskFailure(res)),
             },
@@ -797,12 +799,11 @@ export const fetchStats = (filters) => {
       dispatch(getStatsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'getStats',
           input: {
             filters,
@@ -823,12 +824,11 @@ export const fetchBurstsStats = (filters) => {
       dispatch(getBurstsStatsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'getStats',
           input: {
             filters,
@@ -849,12 +849,11 @@ export const fetchIndependentDetectionStats = (filters, independenceInterval) =>
       dispatch(getIndependentDetectionStatsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'getStats',
           input: {
             filters,
@@ -883,12 +882,11 @@ export const exportAnnotations = ({
       dispatch(exportAnnotationsStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'exportAnnotations',
           input: {
             format,
@@ -913,12 +911,11 @@ export const exportErrors = ({ filters }) => {
       dispatch(exportErrorsStart({ batch: filters.batch }));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'exportErrors',
           input: { filters },
         });
@@ -942,11 +939,9 @@ export const editDeployments = (operation, payload) => {
       dispatch(editDeploymentsStart(payload));
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      const projId = selectedProj._id;
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
           projId,
           request: operation,
@@ -968,12 +963,11 @@ export const updateCameraSerialNumber = (payload) => {
       dispatch(updateCameraSerialNumberStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'updateCameraSerialNumber',
           input: payload,
         });
@@ -991,11 +985,10 @@ export const deleteCamera = (payload) => {
       dispatch(updateDeleteCameraStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      if (token && selectedProj) {
+      const projId = selectSelectedProjectId(getState());
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'deleteCameraConfig',
           input: payload,
         });
@@ -1019,19 +1012,18 @@ export const deleteImagesTask = ({ imageIds = [], filters = null }) => {
       dispatch(deleteImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      if (token && selectedProj) {
+      const projId = selectSelectedProjectId(getState());
+      if (token && projId) {
         if (filters !== null) {
           const res = await call({
-            projId: selectedProj._id,
+            projId,
             request: 'deleteImagesByFilterTask',
             input: { filters },
           });
           dispatch(deleteImagesUpdate({ taskId: res.deleteImagesByFilterTask._id }));
         } else {
           const res = await call({
-            projId: selectedProj._id,
+            projId,
             request: 'deleteImagesTask',
             input: { imageIds },
           });
@@ -1057,19 +1049,18 @@ export const setTimestampOffsetTask = ({ imageIds = [], filters = null, offsetMs
       dispatch(setTimestampOffsetStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
-      if (token && selectedProj) {
+      const projId = selectSelectedProjectId(getState());
+      if (token && projId) {
         if (filters !== null) {
           const res = await call({
-            projId: selectedProj._id,
+            projId,
             request: 'setTimestampOffsetByFilterTask',
             input: { filters, offsetMs },
           });
           dispatch(setTimestampOffsetUpdate({ taskId: res.setTimestampOffsetByFilterTask._id }));
         } else {
           const res = await call({
-            projId: selectedProj._id,
+            projId,
             request: 'setTimestampOffsetBatchTask',
             input: { imageIds, offsetMs },
           });
@@ -1136,7 +1127,8 @@ export const selectBurstLevelStatsByDeployment = createSelector(
 
 export const selectDetectionsLevelStatsByDeployment = createSelector(
   [selectIndependentDetectionStats],
-  (independentDetectionStats) => independentDetectionStats?.detectionsLevelStatsByDeployment ?? null,
+  (independentDetectionStats) =>
+    independentDetectionStats?.detectionsLevelStatsByDeployment ?? null,
 );
 
 export default tasksSlice.reducer;

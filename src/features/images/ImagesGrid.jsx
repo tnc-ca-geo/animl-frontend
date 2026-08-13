@@ -9,7 +9,7 @@ import { selectFocusChangeType, selectFocusIndex } from '../review/reviewSlice.j
 import { useEffectAfterMount } from '../../app/utils.js';
 import { sortBy } from 'lodash';
 import { selectImagesLoading, sortChanged } from './imagesSlice.js';
-import { selectProjectsLoading } from '../projects/projectsSlice.js';
+import { selectProjectLoading } from '../projects/projectsSlice.js';
 import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { RatsNoneFound } from './RatsNoneFound.jsx';
 import { FloatingToolbar } from './FloatingToolbar.jsx';
@@ -41,7 +41,7 @@ const GridImage = ({ uniqueId, imgUrl, onClickImage, style }) => {
 export const ImagesGrid = ({ workingImages, hasNext, loadNextPage }) => {
   const dispatch = useDispatch();
   const focusIndex = useSelector(selectFocusIndex);
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const projectsLoading = useSelector(selectProjectLoading);
   const imagesLoading = useSelector(selectImagesLoading);
   const userRoles = useSelector(selectUserCurrentRoles);
 

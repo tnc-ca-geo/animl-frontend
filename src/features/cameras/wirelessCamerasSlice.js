@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { call } from '../../api';
 import { Auth } from 'aws-amplify';
-import { setSelectedProjAndView } from '../projects/projectsSlice';
+import { projectChanged, selectSelectedProjectId } from '../projects/projectsSlice';
 
 const initialState = {
   wirelessCameras: [],
@@ -147,16 +147,14 @@ export const wirelessCamerasSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    builder.addCase(setSelectedProjAndView, (state, { payload }) => {
-      if (payload.newProjSelected) {
-        state.wirelessCameras = [];
-        state.loadingState = {
-          isLoading: false,
-          operation: null,
-          errors: null,
-          noneFound: null,
-        };
-      }
+    builder.addCase(projectChanged, (state) => {
+      state.wirelessCameras = [];
+      state.loadingState = {
+        isLoading: false,
+        operation: null,
+        errors: null,
+        noneFound: null,
+      };
     });
   },
 });
@@ -193,10 +191,9 @@ export const fetchWirelessCameras = () => async (dispatch, getState) => {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
     if (token) {
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
       const res = await call({
-        projId: selectedProj._id,
+        projId,
         request: 'getWirelessCameras',
       });
       dispatch(getWirelessCamerasSuccess(res.wirelessCameras));
@@ -213,12 +210,11 @@ export const registerCamera = (payload, resetFormCallback) => {
       dispatch(registerCameraStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         const res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'registerCamera',
           input: payload,
         });
@@ -238,12 +234,11 @@ export const unregisterCamera = (payload) => async (dispatch, getState) => {
     dispatch(unregisterCameraStart());
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
+    const projId = selectSelectedProjectId(getState());
 
-    if (token && selectedProj) {
+    if (token && projId) {
       const res = await call({
-        projId: selectedProj._id,
+        projId,
         request: 'unregisterCamera',
         input: payload,
       });
@@ -260,12 +255,11 @@ export const fetchCameraImageCount = (payload) => async (dispatch, getState) => 
     dispatch(cameraImageCountStart(payload));
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
+    const projId = selectSelectedProjectId(getState());
 
-    if (token && selectedProj) {
+    if (token && projId) {
       const res = await call({
-        projId: selectedProj._id,
+        projId,
         request: 'getImagesCount',
         input: { filters: { cameras: [payload.cameraId] } },
       });

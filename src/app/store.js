@@ -4,10 +4,10 @@ import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from './rootReducer';
 import { preFocusImage } from '../features/images/imagesMiddleware';
 import {
-  enrichProjAndViewPayload,
   setActiveFiltersToSelectedView,
   diffFilters,
 } from '../features/projects/projectsMiddleware';
+import { projectsListener } from '../features/projects/projectsListeners';
 import { focusMiddleware } from '../features/review/focusMiddleware';
 import { labelMiddleware } from '../features/review/labelMiddleware';
 import { objectMiddleware } from '../features/review/objectMiddleware';
@@ -21,8 +21,8 @@ const store = configureStore({
   reducer: createRootReducer(history),
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
+      .prepend(projectsListener.middleware)
       .concat(routerMiddleware(history))
-      .concat(enrichProjAndViewPayload)
       .concat(preFocusImage)
       .concat(diffFilters)
       .concat(setActiveFiltersToSelectedView)

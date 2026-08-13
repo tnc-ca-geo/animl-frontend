@@ -1,24 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { styled } from '../../theme/stitches.config.js';
 import { SimpleSpinner } from '../../components/Spinner.jsx';
 import {
-  fetchProjects,
-  selectProjects,
-  selectSelectedProject,
-  selectProjectsLoading,
+  selectProjectStubs,
+  selectSelectedProjectId,
+  selectSelectedViewId,
+  selectProjectStubsLoading,
+  selectProjectLoading,
   selectViews,
-  selectSelectedView,
   selectUnsavedViewChanges,
-  setSelectedProjAndView,
 } from './projectsSlice.js';
-import {
-  selectRouterLocation,
-  fetchImageContext,
-  preFocusImageStart,
-  clearImages,
-} from '../images/imagesSlice.js';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -157,105 +150,57 @@ const ViewportPosition = styled('div', {
 });
 
 const ProjectAndViewNav = () => {
-  const projectsLoading = useSelector(selectProjectsLoading);
-  const projects = useSelector(selectProjects);
-  const selectedProj = useSelector(selectSelectedProject);
+  const stubsLoading = useSelector(selectProjectStubsLoading);
+  const projectLoading = useSelector(selectProjectLoading);
+  const projectStubs = useSelector(selectProjectStubs);
+  const selectedProjectId = useSelector(selectSelectedProjectId);
+  const selectedViewId = useSelector(selectSelectedViewId);
   const views = useSelector(selectViews);
-  const selectedView = useSelector(selectSelectedView);
   const unsavedViewChanges = useSelector(selectUnsavedViewChanges);
-  const routerLocation = useSelector(selectRouterLocation);
-  const paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
-  const appActive = paths[0] === 'app';
   const dispatch = useDispatch();
 
-  // fetch projects
-  useEffect(() => {
-    const { isLoading, noneFound, errors } = projectsLoading;
-    if (!projects.length && !isLoading && !noneFound && !errors) {
-      dispatch(fetchProjects());
-    }
-  }, [projects, projectsLoading, dispatch]);
-
-  // push initial selected project & view to URL
-  useEffect(() => {
-    if (appActive) {
-      const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
-      const projectsReady = !projectsLoading.isLoading && projects.length;
-      const idsInPath = projIdInPath && viewIdInPath;
-
-      if (projectsReady && !idsInPath && !unsavedViewChanges) {
-        // TODO: check that there are projects & views in state that match the Ids
-        const projId = projIdInPath || projects[0]._id;
-        const proj = projects.find((p) => p._id === projId);
-        const defaultView = proj.views.find((v) => v.name === 'All images');
-        const viewId = viewIdInPath || defaultView._id;
-        dispatch(push(`/app/${projId}/${viewId}`));
-      }
-    }
-  }, [projects, projectsLoading, unsavedViewChanges, routerLocation, appActive, dispatch]);
-
-  // react to changes in URL & dispatch selected project and view to state
-  useEffect(() => {
-    if (appActive) {
-      const { projIdInPath, viewIdInPath } = getIdsFromPath(routerLocation);
-      const projectsReady = !projectsLoading.isLoading && projects.length;
-      const idsInPath = projIdInPath && viewIdInPath;
-
-      if (projectsReady && idsInPath) {
-        // TODO: check that there are projects & views in state that match the Ids
-        dispatch(
-          setSelectedProjAndView({
-            projId: projIdInPath,
-            viewId: viewIdInPath,
-          }),
-        );
-
-        // if 'img' detected in query params,
-        // kick off pre-focused-image initialization sequence
-        const query = routerLocation.query;
-        if ('img' in query && validateImgId(query.img)) {
-          dispatch(preFocusImageStart(query.img));
-          dispatch(fetchImageContext(query.img));
-        }
-      }
-    }
-  }, [projects.length, projectsLoading, routerLocation, appActive, dispatch]);
+  // Project & View selection is driven entirely by the URL and reconciled in
+  // projectsListeners.js. This component only renders the menus and pushes new
+  // URLs; it never reads or writes selection state directly.
+  const selectedProjStub = projectStubs.find((p) => p._id === selectedProjectId);
+  const selectedView = views?.find((v) => v._id === selectedViewId);
+  const isLoading = stubsLoading.isLoading || projectLoading.isLoading;
 
   const handleProjectMenuItemClick = (projId) => {
-    if (projId === selectedProj._id) return;
-    const project = projects.find((p) => p._id === projId);
-    const viewId = project.views.find((v) => v.name === 'All images')._id;
-    dispatch(clearImages());
-    dispatch(push(`/app/${projId}/${viewId}`));
+    if (projId === selectedProjectId) return;
+    const project = projectStubs.find((p) => p._id === projId);
+    const defaultView = project.views.find((v) => v.name === 'All images') ?? project.views[0];
+    if (!defaultView) return;
+    dispatch(push(`/app/${projId}/${defaultView._id}`));
   };
 
   const handleViewMenuItemClick = (viewId) => {
-    if (viewId === selectedView._id) return;
-    dispatch(push(`/app/${selectedProj._id}/${viewId}`));
+    if (viewId === selectedViewId) return;
+    dispatch(push(`/app/${selectedProjectId}/${viewId}`));
   };
 
   return (
     <NavigationMenu css={{ justifyContent: 'center', width: '100vw' }}>
-      <SimpleSpinner size="sm" display={projectsLoading.isLoading} />
-      {projectsLoading.noneFound && (
+      <SimpleSpinner size="sm" display={isLoading} />
+      {stubsLoading.noneFound && (
         <NoneFoundAlert>Rats! You don&apos;t have access to any projects yet!</NoneFoundAlert>
       )}
-      {selectedView && (
+      {selectedProjStub && selectedView && (
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTriggerWithCaret onPointerMove={(e) => e.preventDefault()}>
-              <NavigationMenuTriggerText>{selectedProj.name}</NavigationMenuTriggerText>
+              <NavigationMenuTriggerText>{selectedProjStub.name}</NavigationMenuTriggerText>
             </NavigationMenuTriggerWithCaret>
             <NavigationMenuContent onPointerMove={(e) => e.preventDefault()}>
               <MenuTitle>Projects</MenuTitle>
               <ContentList layout="one">
-                {projects
+                {projectStubs
                   .toSorted((a, b) => a.name.localeCompare(b.name))
                   .map((proj) => (
                     <ContentListItem
                       key={proj._id}
                       title={proj.name}
-                      selected={proj.selected}
+                      selected={proj._id === selectedProjectId}
                       onClick={() => handleProjectMenuItemClick(proj._id)}
                     >
                       {proj.description}
@@ -281,7 +226,7 @@ const ProjectAndViewNav = () => {
                     <ContentListItem
                       key={view._id}
                       title={view.name}
-                      selected={view.selected}
+                      selected={view._id === selectedViewId}
                       onClick={() => handleViewMenuItemClick(view._id)}
                     >
                       {view.description}
@@ -301,16 +246,5 @@ const ProjectAndViewNav = () => {
     </NavigationMenu>
   );
 };
-
-function validateImgId(imgId) {
-  const hash = imgId.includes(':') ? imgId.split(':')[1] : imgId;
-  const regexExp = /^[a-f0-9]{32}$/gi;
-  return regexExp.test(hash);
-}
-
-function getIdsFromPath(routerLocation) {
-  let paths = routerLocation.pathname.split('/').filter((p) => p.length > 0);
-  return { projIdInPath: paths[1], viewIdInPath: paths[2] };
-}
 
 export default ProjectAndViewNav;

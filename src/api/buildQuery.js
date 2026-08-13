@@ -210,16 +210,42 @@ const projectAutomationRuleFields = `
   }
 `;
 
+// Lightweight representation of a Project, used to populate the Project & View
+// nav menus for every Project a user has access to. Full Project detail is only
+// ever fetched for the currently selected Project (see getProject below).
+const projectStubFields = `
+  _id
+  name
+  description
+  views {
+    _id
+    name
+  }
+`;
+
 const queries = {
-  getProjects: (input) => ({
+  // fetch lightweight stubs for every Project the user has access to
+  getProjectStubs: () => ({
     template: `
-      query GetProjects($input: QueryProjectsInput) {
+      query GetProjectStubs {
+        projects {
+          ${projectStubFields}
+        }
+      }
+    `,
+    variables: {},
+  }),
+
+  // fetch full detail for a single Project
+  getProject: (projId) => ({
+    template: `
+      query GetProject($input: QueryProjectsInput) {
         projects(input: $input) {
           ${projectFields}
         }
       }
     `,
-    variables: { input: input },
+    variables: { input: { _ids: [projId] } },
   }),
 
   getProjectAutomationRules: (input) => ({

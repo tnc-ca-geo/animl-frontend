@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { call } from '../../api';
 import { enrichImages } from './utils';
 import { setActiveFilters } from '../filters/filtersSlice';
+import { selectSelectedProject, selectSelectedProjectId } from '../projects/projectsSlice';
 import { IMAGE_QUERY_LIMITS } from '../../config';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice';
 
@@ -227,8 +228,7 @@ export const fetchImages = (filters, page = 'current') => {
       dispatch(getImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const selectedProj = selectSelectedProject(getState());
       const pageInfo = getState().images.pageInfo;
 
       if (token && selectedProj) {
@@ -257,12 +257,11 @@ export const fetchImagesCount = (filters) => {
       dispatch(getImagesCountStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         let res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'getImagesCount',
           input: { filters },
         });
@@ -287,12 +286,11 @@ export const fetchImageContext = (imgId) => {
       dispatch(getImageContextStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
-      const projects = getState().projects.projects;
-      const selectedProj = projects.find((proj) => proj.selected);
+      const projId = selectSelectedProjectId(getState());
 
-      if (token && selectedProj) {
+      if (token && projId) {
         let res = await call({
-          projId: selectedProj._id,
+          projId,
           request: 'getImage',
           input: { imageId: imgId },
         });
@@ -332,12 +330,11 @@ export const deleteImages = (imageIds) => async (dispatch, getState) => {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
 
-    const projects = getState().projects.projects;
-    const selectedProj = projects.find((proj) => proj.selected);
+    const projId = selectSelectedProjectId(getState());
 
-    if (token && selectedProj) {
+    if (token && projId) {
       await call({
-        projId: selectedProj._id,
+        projId,
         request: 'deleteImages',
         input: { imageIds },
       });

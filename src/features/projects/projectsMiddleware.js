@@ -11,7 +11,6 @@ import {
   checkboxOnlyButtonClicked,
 } from '../filters/filtersSlice';
 import {
-  selectProjects,
   setSelectedProjAndView,
   saveViewSuccess,
   selectSelectedView,
@@ -20,47 +19,19 @@ import {
 } from './projectsSlice';
 import { editDeploymentsSuccess } from '../tasks/tasksSlice';
 
-// enrich newly selected project and view payload
-export const enrichProjAndViewPayload = (store) => (next) => (action) => {
-  if (setSelectedProjAndView.match(action)) {
-    let { projId, viewId } = action.payload;
+// filter categories stored as arrays of ids
+const ID_FILTER_CATEGORIES = ['cameras', 'deployments', 'labels', 'tags'];
 
-    // add project to payload (used in filtersSlice extraReducers)
-    const projects = selectProjects(store.getState());
-    const projToSelect = projects.find((proj) => proj._id === projId);
-    action.payload.project = projToSelect;
+// Toggling an id off and back on appends it to the end of the array, so the
+// order of these arrays carries no meaning. Sort them before diffing, otherwise
+// manually restoring a view's filters can leave the view looking "edited".
+const sortIdFilters = (filters) =>
+  _.mapValues(filters, (value, category) =>
+    ID_FILTER_CATEGORIES.includes(category) && Array.isArray(value) ? [...value].sort() : value,
+  );
 
-    // add default viewId to payload if not specified in payload
-    if (!viewId) {
-      const defaultView = projToSelect.views.find((v) => v.name === 'All images');
-      action.payload.viewId = defaultView._id;
-      viewId = defaultView._id;
-    }
-
-    // find and add view to payload (used in setSelectedViewMiddleware)
-    projects.forEach((p) => {
-      p.views.forEach((v) => {
-        if (v._id === viewId) action.payload.view = v;
-      });
-    });
-
-    // indicate whether there will be a view and/or project change
-    const currSelectedProj = projects.find((p) => p.selected);
-    if (currSelectedProj) {
-      const currSelectedView = currSelectedProj.views.find((v) => v.selected);
-      action.payload.newProjSelected = currSelectedProj._id !== projId;
-      action.payload.newViewSelected = currSelectedView._id !== viewId;
-    } else {
-      // we're setting selected project for the first time
-      action.payload.newProjSelected = true;
-      action.payload.newViewSelected = true;
-    }
-
-    next(action);
-  } else {
-    next(action);
-  }
-};
+const filtersMatch = (activeFilters, viewFilters) =>
+  _.isEqual(sortIdFilters(activeFilters), sortIdFilters(viewFilters));
 
 // track whether active filters match selected view filters
 export const diffFilters = (store) => (next) => (action) => {
@@ -81,8 +52,7 @@ export const diffFilters = (store) => (next) => (action) => {
     const activeFilters = selectActiveFilters(store.getState());
     const selectedView = selectSelectedView(store.getState());
     if (activeFilters && selectedView) {
-      const match = _.isEqual(activeFilters, selectedView.filters);
-      store.dispatch(setUnsavedViewChanges(!match));
+      store.dispatch(setUnsavedViewChanges(!filtersMatch(activeFilters, selectedView.filters)));
     }
   } else {
     next(action);
@@ -97,8 +67,10 @@ export const setActiveFiltersToSelectedView = (store) => (next) => (action) => {
     store.dispatch(undoActions.clear());
 
     next(action);
-    const newFilters = action.payload.view.filters;
-    store.dispatch(setActiveFilters(newFilters));
+    // read the newly selected view back out of state rather than off the action
+    // payload, so callers only ever have to supply { projId, viewId }
+    const selectedView = selectSelectedView(store.getState());
+    if (selectedView) store.dispatch(setActiveFilters(selectedView.filters));
   } else {
     next(action);
   }

@@ -20,11 +20,15 @@ import { SimpleSpinner, SpinnerOverlay } from '../../components/Spinner.jsx';
 import { buildLocation } from '../../app/utils.js';
 
 import {
-  fetchProjects,
+  fetchProjectStubs,
+  fetchEditingProject,
+  clearEditingProject,
   fetchModelOptions,
   updateProject,
-  selectProjects,
-  selectProjectsLoading,
+  selectProjectStubs,
+  selectProjectStubsLoading,
+  selectEditingProject,
+  selectEditingProjectLoading,
   selectModelOptions,
   selectModelOptionsLoading,
   selectUpdateProjectLoading,
@@ -175,18 +179,15 @@ const NonRemovableMultiValueRemove = (existingModelIds) => {
 
 const EditProjectForm = () => {
   const dispatch = useDispatch();
-  const projects = useSelector(selectProjects);
-  const projectsLoading = useSelector(selectProjectsLoading);
+  const projectStubs = useSelector(selectProjectStubs);
+  const projectStubsLoading = useSelector(selectProjectStubsLoading);
+  const selectedProject = useSelector(selectEditingProject);
+  const editingProjectLoading = useSelector(selectEditingProjectLoading);
   const mlModels = useSelector(selectModelOptions);
   const mlModelsOptionsIsLoading = useSelector(selectModelOptionsLoading);
   const updateProjectIsLoading = useSelector(selectUpdateProjectLoading);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [inferredTimezone, setInferredTimezone] = useState(null);
-
-  const selectedProject = useMemo(
-    () => projects.find((p) => p._id === selectedProjectId),
-    [projects, selectedProjectId],
-  );
 
   const initialValues = useMemo(
     () =>
@@ -220,10 +221,10 @@ const EditProjectForm = () => {
 
   const projectOptions = useMemo(
     () =>
-      projects
+      projectStubs
         .filter((p) => p._id !== 'default_project')
         .map((p) => ({ value: p._id, label: p.name })),
-    [projects],
+    [projectStubs],
   );
 
   const mlModelOptions = useMemo(
@@ -236,19 +237,26 @@ const EditProjectForm = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchProjects());
+    dispatch(fetchProjectStubs());
     dispatch(fetchModelOptions());
+    return () => {
+      dispatch(clearEditingProject());
+    };
   }, []);
 
   const handleProjectSelect = useCallback(
     (name, { value }) => {
       setSelectedProjectId(value);
-      dispatch(fetchProjects({ _ids: [value] }));
+      dispatch(fetchEditingProject(value));
     },
     [dispatch],
   );
 
-  const isLoading = projectsLoading.isLoading || mlModelsOptionsIsLoading || updateProjectIsLoading;
+  const isLoading =
+    projectStubsLoading.isLoading ||
+    editingProjectLoading.isLoading ||
+    mlModelsOptionsIsLoading ||
+    updateProjectIsLoading;
 
   return (
     <>
@@ -275,7 +283,7 @@ const EditProjectForm = () => {
           </FormFieldWrapper>
         </FieldRow>
 
-        {selectedProject && (
+        {selectedProject && selectedProject._id === selectedProjectId && (
           <Formik
             key={selectedProjectId}
             initialValues={initialValues}
@@ -286,7 +294,7 @@ const EditProjectForm = () => {
               if (Object.keys(diffs).length === 0) return;
               dispatch(
                 updateProject(selectedProjectId, diffs, () => {
-                  dispatch(fetchProjects({ _ids: [selectedProjectId] }));
+                  dispatch(fetchEditingProject(selectedProjectId));
                 }),
               );
             }}
