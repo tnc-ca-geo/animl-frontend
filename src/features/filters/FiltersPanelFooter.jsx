@@ -99,6 +99,7 @@ const FiltersPanelFooter = ({ areActionsDisabled = false }) => {
   const dispatch = useDispatch();
 
   const handleRefreshClick = () => {
+    if (!selectedProjectId) return;
     dispatch(toggleOpenLoupe(false));
     dispatch(fetchProject(selectedProjectId));
   };

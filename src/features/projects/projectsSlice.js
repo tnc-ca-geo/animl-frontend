@@ -19,6 +19,9 @@ const initialState = {
   editingProject: null,
   selectedProjectId: null,
   selectedViewId: null,
+  // id of the most recently requested Project detail fetch, used to discard
+  // responses that have been superseded by a newer selection
+  requestedProjectId: null,
   modelOptions: [],
   loadingStates: {
     projectStubs: {
@@ -149,9 +152,10 @@ export const projectsSlice = createSlice({
       state.loadingStates.projectStubs.errors.splice(index, 1);
     },
 
-    getProjectStart: (state) => {
+    getProjectStart: (state, { payload }) => {
       const ls = { isLoading: true, operation: 'fetching', errors: null };
       state.loadingStates.project = ls;
+      state.requestedProjectId = payload;
     },
 
     getProjectFailure: (state, { payload }) => {
@@ -719,20 +723,25 @@ export const fetchProjectStubs = () => async (dispatch) => {
 };
 
 // fetch full detail for a single Project
-export const fetchProject = (projId) => async (dispatch) => {
+export const fetchProject = (projId) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
     const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
 
     if (token) {
-      dispatch(getProjectStart());
+      dispatch(getProjectStart(projId));
       const res = await call({ request: 'getProject', input: projId });
+      // the user may have selected a different Project while this was in
+      // flight. bail rather than let a slow response overwrite a newer one -
+      // filtersSlice also derives its available filters from getProjectSuccess.
+      if (selectRequestedProjectId(getState()) !== projId) return;
       const project = res.projects[0];
       if (!project) throw new Error(`Project ${projId} not found`);
       dispatch(getProjectSuccess({ project }));
     }
   } catch (err) {
     console.log('err: ', err);
+    if (selectRequestedProjectId(getState()) !== projId) return;
     const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
     dispatch(getProjectFailure(errs));
   }
@@ -1126,6 +1135,7 @@ export const deleteProjectLabel = (payload) => {
 export const selectProjectStubs = (state) => state.projects.projectStubs;
 export const selectSelectedProject = (state) => state.projects.project;
 export const selectSelectedProjectId = (state) => state.projects.selectedProjectId;
+export const selectRequestedProjectId = (state) => state.projects.requestedProjectId;
 export const selectSelectedViewId = (state) => state.projects.selectedViewId;
 export const selectEditingProject = (state) => state.projects.editingProject;
 export const selectEditingProjectLoading = (state) => state.projects.loadingStates.editingProject;
@@ -1153,6 +1163,12 @@ export const selectProjectTagsLoading = (state) =>
   state.projects.loadingStates.projectTags.isLoading;
 export const selectProjectStubsLoading = (state) => state.projects.loadingStates.projectStubs;
 export const selectProjectLoading = (state) => state.projects.loadingStates.project;
+// true while either the Project list or the selected Project's detail is in
+// flight - between them they cover the whole "we don't have a Project yet" window
+export const selectAnyProjectLoading = createSelector(
+  [selectProjectStubsLoading, selectProjectLoading],
+  (stubs, project) => stubs.isLoading || project.isLoading,
+);
 export const selectViewsLoading = (state) => state.projects.loadingStates.views;
 export const selectAutomationRulesLoading = (state) => state.projects.loadingStates.automationRules;
 export const selectModelsLoadingState = (state) => state.projects.loadingStates.models;
