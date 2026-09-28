@@ -2,11 +2,8 @@ import React from 'react';
 import { styled } from '../../theme/stitches.config';
 import { useControls } from 'react-zoom-pan-pinch';
 import { ZoomInIcon, ZoomOutIcon, ResetIcon } from '@radix-ui/react-icons';
-import { Hd } from 'lucide-react';
 import IconButton from '../../components/IconButton';
-import { SimpleSpinner } from '../../components/Spinner';
 import { Tooltip, TooltipContent, TooltipArrow, TooltipTrigger } from '../../components/Tooltip';
-import { yellow } from '@radix-ui/colors';
 
 const ZOOM_EPSILON = 0.01;
 
@@ -32,59 +29,12 @@ const Container = styled('div', {
   },
 });
 
-const HdButton = styled('div', {
-  padding: '0px 2px',
-  borderRadius: '$2',
-  backgroundColor: yellow.yellow10,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const ZoomControls = ({
-  scale,
-  highResRequested,
-  highResReady,
-  setHighResRequested,
-  hasOriginal,
-}) => {
+const ZoomControls = ({ scale }) => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
   const isZoomed = scale > 1 + ZOOM_EPSILON;
-  const isLoadingHighRes = highResRequested && !highResReady;
-  const hdActionable = !highResReady && !isLoadingHighRes;
-
-  let hdTooltip;
-  if (highResReady) hdTooltip = 'High-resolution image loaded';
-  else if (isLoadingHighRes) hdTooltip = 'Loading high-resolution image…';
-  else hdTooltip = 'Load high-resolution image';
 
   return (
     <Container idle={!isZoomed}>
-      {hasOriginal && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <IconButton
-              variant="ghost"
-              size="small"
-              onClick={hdActionable ? () => setHighResRequested(true) : undefined}
-              css={{ cursor: hdActionable ? 'pointer' : 'default' }}
-            >
-              {isLoadingHighRes ? (
-                <SimpleSpinner size="sm" />
-              ) : (
-                <HdButton css={{ backgroundColor: highResReady ? yellow.yellow10 : 'transparent' }}>
-                  <Hd color={highResReady ? '#000' : '#888'} size={18} />
-                </HdButton>
-              )}
-            </IconButton>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={5}>
-            {hdTooltip}
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      )}
-
       <Tooltip>
         <TooltipTrigger asChild>
           <IconButton
