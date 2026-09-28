@@ -120,13 +120,13 @@ const NavBar = () => {
             </a>
           </NavLinks>
           <ResponsiveSignOut onClick={signOut} size="small">
-            Sign out
+            Log out
           </ResponsiveSignOut>
         </>
       )}
       {!appActive && (
         <NavLinks>
-          <PrimaryLink to="/app">Sign in</PrimaryLink>
+          <PrimaryLink to="/app">Log in</PrimaryLink>
           {/*<Link to='/case-studies'>Case studies</Link>*/}
           <a href="https://docs.animl.camera" target="_blank" rel="noreferrer">
             Documentation

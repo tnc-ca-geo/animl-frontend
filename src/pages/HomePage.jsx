@@ -68,6 +68,7 @@ const PrimaryCTA = styled(Button, {
   height: '$6',
   fontSize: '$3',
   fontWeight: '$4',
+  textTransform: 'none',
   svg: {
     marginRight: '0px',
   },
@@ -83,7 +84,7 @@ const PrimaryCTA = styled(Button, {
 });
 
 const SecondaryCTA = styled(Link, {
-  marginRight: '$6',
+  marginLeft: '$6',
   borderRadius: '$4',
   fontSize: '$3',
   fontWeight: '$4',
@@ -159,15 +160,15 @@ const AppPage = () => {
           </a>
         </Subheader>
         <CTAs>
-          <SecondaryCTA to="/app">Sign in</SecondaryCTA>
           <PrimaryCTA
             as="a"
             target="_blank"
             rel="noreferrer"
             href="https://forms.office.com/pages/responsepage.aspx?id=wW2-eY7Xu0uyK9mUwKQXpwzCMkfW3t1Lik2xYkZp01pUNTEyM0c5NFpaNlhJWUgwVEdJTk9VUVdTRS4u"
           >
-            <p style={{ marginRight: '10px' }}> Start for free </p> <MoveRight size="16" />
+            <p style={{ marginRight: '10px' }}> Sign up </p> <MoveRight size="16" />
           </PrimaryCTA>
+          <SecondaryCTA to="/app">Log in</SecondaryCTA>
         </CTAs>
       </Hero>
       <Screenshot css={{ '@bp1': { width: '80%', margin: '$5 auto' } }}>
