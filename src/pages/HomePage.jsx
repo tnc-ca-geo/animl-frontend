@@ -1,5 +1,6 @@
 import React from 'react';
 import { styled } from '../theme/stitches.config';
+import { Link } from 'react-router-dom';
 import { Box } from '../components/Box';
 import screenshot from '../assets/animl-screenshot.png';
 import { violet } from '@radix-ui/colors';
@@ -53,8 +54,14 @@ const Subheader = styled('div', {
   },
 });
 
-const CTA = styled(Button, {
+const CTAs = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   marginTop: '$5',
+});
+
+const PrimaryCTA = styled(Button, {
   borderRadius: '$4',
   paddingLeft: '$5',
   paddingRight: '$5',
@@ -72,6 +79,19 @@ const CTA = styled(Button, {
   '&:hover svg': {
     transform: 'translateX(4px)',
     transition: 'transform 0.2s ease-in-out',
+  },
+});
+
+const SecondaryCTA = styled(Link, {
+  marginRight: '$6',
+  borderRadius: '$4',
+  fontSize: '$3',
+  fontWeight: '$4',
+  color: '$textDark',
+  textDecoration: 'none',
+  '&:hover': {
+    cursor: 'pointer',
+    textDecoration: 'underline',
   },
 });
 
@@ -138,14 +158,17 @@ const AppPage = () => {
             The Nature Conservancy
           </a>
         </Subheader>
-        <CTA
-          as="a"
-          target="_blank"
-          rel="noreferrer"
-          href="https://forms.office.com/pages/responsepage.aspx?id=wW2-eY7Xu0uyK9mUwKQXpwzCMkfW3t1Lik2xYkZp01pUNTEyM0c5NFpaNlhJWUgwVEdJTk9VUVdTRS4u"
-        >
-          <p style={{ marginRight: '10px' }}> Sign up </p> <MoveRight size="16" />
-        </CTA>
+        <CTAs>
+          <SecondaryCTA to="/app">Sign in</SecondaryCTA>
+          <PrimaryCTA
+            as="a"
+            target="_blank"
+            rel="noreferrer"
+            href="https://forms.office.com/pages/responsepage.aspx?id=wW2-eY7Xu0uyK9mUwKQXpwzCMkfW3t1Lik2xYkZp01pUNTEyM0c5NFpaNlhJWUgwVEdJTk9VUVdTRS4u"
+          >
+            <p style={{ marginRight: '10px' }}> Start for free </p> <MoveRight size="16" />
+          </PrimaryCTA>
+        </CTAs>
       </Hero>
       <Screenshot css={{ '@bp1': { width: '80%', margin: '$5 auto' } }}>
         <img src={screenshot} alt="animl user interface screenshot" />
