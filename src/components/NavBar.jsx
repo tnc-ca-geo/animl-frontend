@@ -78,6 +78,16 @@ const StyledNav = styled('nav', {
   },
 });
 
+const PrimaryLink = styled(Link, {
+  fontWeight: '500',
+  '&&': {
+    color: '$textDark',
+  },
+  '&:hover': {
+    color: '$gray12',
+  },
+});
+
 const NavBar = () => {
   const { signOut } = useAuthenticator((context) => [context.user]);
   const authStatus = useSelector(selectUserAuthStatus);
@@ -110,13 +120,13 @@ const NavBar = () => {
             </a>
           </NavLinks>
           <ResponsiveSignOut onClick={signOut} size="small">
-            Sign out
+            Log out
           </ResponsiveSignOut>
         </>
       )}
       {!appActive && (
         <NavLinks>
-          <Link to="/app">Application</Link>
+          <PrimaryLink to="/app">Log in</PrimaryLink>
           {/*<Link to='/case-studies'>Case studies</Link>*/}
           <a href="https://docs.animl.camera" target="_blank" rel="noreferrer">
             Documentation
