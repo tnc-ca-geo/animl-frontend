@@ -113,24 +113,21 @@ const FullSizeImage = ({
 
   // --- HD (original-image) upgrade ---
   const originalUrl = image.url?.original;
-  const [highResRequested, setHighResRequested] = useState(false);
   const [highResReady, setHighResReady] = useState(false);
-  const wantsHighRes = highResRequested || isZoomed;
   useEffect(() => {
-    if (!wantsHighRes || !originalUrl || highResReady) return;
+    if (!isZoomed || !originalUrl || highResReady) return;
     const preload = new window.Image();
     preload.onload = () => setHighResReady(true);
     preload.src = originalUrl;
     return () => {
       preload.onload = null;
     };
-  }, [wantsHighRes, originalUrl, highResReady]);
+  }, [isZoomed, originalUrl, highResReady]);
 
   // Reset zoom + HD state whenever the image changes
   useEffect(() => {
     transformRef.current?.resetTransform(0);
     setScale(1);
-    setHighResRequested(false);
     setHighResReady(false);
   }, [image._id]);
 
@@ -192,15 +189,7 @@ const FullSizeImage = ({
           )}
           <FullImage ref={imgEl} src={effectiveSrc} onLoad={handleImgLoaded} />
         </TransformComponent>
-        {!isSmallScreen && (
-          <ZoomControls
-            scale={scale}
-            highResRequested={highResRequested}
-            highResReady={highResReady}
-            setHighResRequested={setHighResRequested}
-            hasOriginal={!!originalUrl}
-          />
-        )}
+        {!isSmallScreen && <ZoomControls scale={scale} />}
       </TransformWrapper>
     </ImageContainer>
   );
