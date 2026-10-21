@@ -1,14 +1,14 @@
 import { createBreakpoints } from './app/utils';
 
 const API_URLS = {
-  // dev: 'http://localhost:3000/dev/external', // if serving animl-api locally
-  dev: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
+  // development: 'http://localhost:3000/dev/external', // if serving animl-api locally
+  development: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
   staging: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external',
   production: 'https://4634jgo56f.execute-api.us-west-2.amazonaws.com/prod/external/',
 };
 
 const AWS_AUTH_CONFIGS = {
-  dev: {
+  development: {
     aws_project_region: 'us-west-2',
     aws_cognito_identity_pool_id: 'us-west-2:6730746c-113a-42c0-ba21-8508bcc5ebb4',
     aws_cognito_region: 'us-west-2',
