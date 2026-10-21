@@ -1,10 +1,29 @@
 import { createBreakpoints } from './app/utils';
 
 const API_URLS = {
-  // development: 'http://localhost:3000/dev/external', // if serving animl-api locally
-  development: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
+  // dev: 'http://localhost:3000/dev/external', // if serving animl-api locally
+  dev: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external', // if using dev animl-api stack on AWS
   staging: 'https://ko0yratczi.execute-api.us-west-2.amazonaws.com/dev/external',
   production: 'https://4634jgo56f.execute-api.us-west-2.amazonaws.com/prod/external/',
+};
+
+const AWS_AUTH_CONFIGS = {
+  dev: {
+    aws_project_region: 'us-west-2',
+    aws_cognito_identity_pool_id: 'us-west-2:6730746c-113a-42c0-ba21-8508bcc5ebb4',
+    aws_cognito_region: 'us-west-2',
+    aws_user_pools_id: 'us-west-2_9JixUpkYT',
+    aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
+    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  },
+  prod: {
+    aws_project_region: 'us-west-2',
+    aws_cognito_identity_pool_id: 'us-west-2:6730746c-113a-42c0-ba21-8508bcc5ebb4',
+    aws_cognito_region: 'us-west-2',
+    aws_user_pools_id: 'us-west-2_9JixUpkYT',
+    aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
+    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  }
 };
 
 const stage = import.meta.env.VITE_STAGE || process.env.NODE_ENV;
@@ -39,24 +58,6 @@ export const GA_CONFIG = {
   },
 };
 
-export const AWS_AUTH_CONFIGS = {
-  dev: {
-    aws_project_region: 'us-west-2',
-    aws_cognito_identity_pool_id: 'us-west-2:6730746c-113a-42c0-ba21-8508bcc5ebb4',
-    aws_cognito_region: 'us-west-2',
-    aws_user_pools_id: 'us-west-2_9JixUpkYT',
-    aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
-    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-  },
-  prod: {
-    aws_project_region: 'us-west-2',
-    aws_cognito_identity_pool_id: 'us-west-2:6730746c-113a-42c0-ba21-8508bcc5ebb4',
-    aws_cognito_region: 'us-west-2',
-    aws_user_pools_id: 'us-west-2_9JixUpkYT',
-    aws_user_pools_web_client_id: '40mcp5odj5aek6r91g6quos3er',
-    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-  }
-};
 
 const globalBreakpointValues = [
   ['xxs', 540],
