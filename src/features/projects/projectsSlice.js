@@ -767,6 +767,7 @@ export const fetchProject = (projId) => async (dispatch, getState) => {
  * the user's unsaved filter edits.
  */
 export const refreshProjectData = (projId) => async (dispatch, getState) => {
+  if (selectSelectedProjectId(getState()) !== projId) return;
   dispatch(clearImages());
   await dispatch(fetchProject(projId));
 
