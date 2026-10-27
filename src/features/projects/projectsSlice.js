@@ -4,7 +4,12 @@ import { push } from 'connected-react-router';
 import { call } from '../../api';
 import { registerCameraSuccess, unregisterCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import { deleteProjectLabelTaskStart, editDeploymentsSuccess } from '../tasks/tasksSlice';
-import { clearImages, fetchImages, fetchImagesCount } from '../images/imagesSlice.js';
+import {
+  clearImages,
+  fetchImages,
+  fetchImagesCount,
+  selectImageContextLoading,
+} from '../images/imagesSlice.js';
 import { normalizeErrors } from '../../app/utils.js';
 
 const initialState = {
@@ -777,6 +782,14 @@ export const refreshProjectData = (projId) => async (dispatch, getState) => {
   // the user may have navigated to a different Project while the fetch was in
   // flight; that navigation does its own image fetch, so don't race it
   if (selectSelectedProjectId(getState()) !== projId) return;
+
+  // a `?img=` deep link is still resolving. fetchImageContext swaps in the
+  // linked image's filters when it lands, so fetching now would query with the
+  // outgoing filters and hand preFocusImage a result set that cannot contain
+  // the linked image. ImagesPanel's effect is keyed on imageContext loading and
+  // fetches as soon as it settles - on failure as well as success - so bail and
+  // let it do the work.
+  if (selectImageContextLoading(getState()).isLoading) return;
 
   const filters = getState().filters.activeFilters;
   dispatch(fetchImages(filters));
