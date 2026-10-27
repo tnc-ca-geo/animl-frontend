@@ -768,6 +768,9 @@ export const fetchProject = (projId) => async (dispatch, getState) => {
  */
 export const refreshProjectData = (projId) => async (dispatch, getState) => {
   if (selectSelectedProjectId(getState()) !== projId) return;
+  // clearImages also discards undo/redo history, via the
+  // clearUndoHistoryWithImages middleware - entries referencing images that
+  // this refresh drops out of `workingImages` are no longer replayable
   dispatch(clearImages());
   await dispatch(fetchProject(projId));
 

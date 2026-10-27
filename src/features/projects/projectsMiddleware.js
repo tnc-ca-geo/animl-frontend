@@ -59,9 +59,11 @@ export const diffFilters = (store) => (next) => (action) => {
   }
 };
 
-// clear undo/redo history and apply selected view's filters to active filters
-// TODO: should we also do this when user clicks 'refresh button'?
-// e.g. if any action reversions depend on focus index we should.
+// clear undo/redo history and apply selected view's filters to active filters.
+// the clearUndoHistoryWithImages middleware covers every path that drops the
+// loaded images (including the refresh button), but a View change doesn't clear
+// them until its fetch resolves, so the history is dropped eagerly here rather
+// than left replayable against images that are on their way out.
 export const setActiveFiltersToSelectedView = (store) => (next) => (action) => {
   if (setSelectedProjAndView.match(action)) {
     store.dispatch(undoActions.clear());
