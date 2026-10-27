@@ -3,7 +3,7 @@ import { Auth } from 'aws-amplify';
 import { call } from '../../api';
 import { enrichCameraConfigs } from './utils';
 import {
-  fetchProject,
+  refreshProjectData,
   selectSelectedProjectId,
   setModalOpen,
   setModalContent,
@@ -12,7 +12,6 @@ import {
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
 import { setFocus, setSelectedImageIndices } from '../review/reviewSlice.js';
 import {
-  clearImages,
   fetchImages,
   fetchImagesCount,
   setDeleteImagesAlertStatus,
@@ -703,7 +702,7 @@ export const fetchTask = (taskId) => {
                 dispatch(setModalOpen(false));
                 dispatch(setModalContent(null));
                 dispatch(setSelectedCamera(null));
-                dispatch(fetchProject(projId));
+                dispatch(refreshProjectData(projId));
               },
               FAIL: (res) => dispatch(updateCameraSerialNumberFailure(res)),
             },
@@ -716,7 +715,7 @@ export const fetchTask = (taskId) => {
                 dispatch(setSelectedCamera(null));
                 dispatch(setDeleteCameraAlertStatus({ isOpen: false }));
                 dispatch(clearCameraImageCount());
-                dispatch(fetchProject(projId));
+                dispatch(refreshProjectData(projId));
               },
               FAIL: (res) => dispatch(updateDeleteCameraFailure(res)),
             },
@@ -756,8 +755,7 @@ export const fetchTask = (taskId) => {
             DeleteProjectLabel: {
               COMPLETE: (res) => {
                 dispatch(deleteProjectLabelTaskSuccess(res));
-                dispatch(clearImages());
-                dispatch(fetchProject(projId));
+                dispatch(refreshProjectData(projId));
               },
               FAIL: (res) => dispatch(deleteProjectLabelTaskFailure(res)),
             },
