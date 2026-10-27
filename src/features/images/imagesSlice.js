@@ -293,8 +293,12 @@ export const fetchImagesCount = (filters) => {
       }
     } catch (err) {
       if (isStaleImagesRequest(getState, requestedProjId)) return;
-      if (err.message.includes('Network request failed')) {
-        dispatch(getImagesCountFailure(err.message));
+      // Amplify rejects with a bare string rather than an Error when there is
+      // no authenticated session, so `err.message` can't be assumed to exist -
+      // reading it blindly throws a TypeError out of this catch block
+      const message = typeof err === 'string' ? err : err?.message;
+      if (message?.includes('Network request failed')) {
+        dispatch(getImagesCountFailure(message));
       } else {
         dispatch(getImagesCountFailure(err));
       }
