@@ -221,9 +221,20 @@ export const {
   setDeleteImagesAlertStatus,
 } = imagesSlice.actions;
 
+// A request is superseded once the user commits to a different Project.
+// `selectedProjectId` is null between `projectChanged` and
+// `setSelectedProjAndView`, so an in-flight request is treated as stale for the
+// whole navigation window rather than only once the new Project lands.
+const isStaleImagesRequest = (getState, requestedProjId) =>
+  selectSelectedProjectId(getState()) !== requestedProjId;
+
 // fetchImages thunk
 export const fetchImages = (filters, page = 'current') => {
   return async (dispatch, getState) => {
+    // capture the Project this request belongs to before the thunk awaits
+    // anything, so a response that lands after the user has switched Projects
+    // can be discarded instead of overwriting the new Project's images
+    const requestedProjId = selectSelectedProjectId(getState());
     try {
       dispatch(getImagesStart());
       const currentUser = await Auth.currentAuthenticatedUser();
@@ -231,18 +242,25 @@ export const fetchImages = (filters, page = 'current') => {
       const selectedProj = selectSelectedProject(getState());
       const pageInfo = getState().images.pageInfo;
 
-      if (token && selectedProj) {
+      if (token && selectedProj && !isStaleImagesRequest(getState, requestedProjId)) {
         let res = await call({
           projId: selectedProj._id,
           request: 'getImages',
           input: { filters, pageInfo, page },
         });
 
+        // a newer Project owns the table now. bail before clearing it, and
+        // leave the loading state alone: either the request that superseded
+        // this one settles it, or `clearImages` already did as part of the
+        // Project switch
+        if (isStaleImagesRequest(getState, requestedProjId)) return;
+
         res = enrichImages(res, selectedProj.cameraConfigs);
         if (page !== 'next') dispatch(clearImages());
         dispatch(getImagesSuccess(res));
       }
     } catch (err) {
+      if (isStaleImagesRequest(getState, requestedProjId)) return;
       dispatch(getImagesFailure(err));
     }
   };
@@ -253,22 +271,28 @@ export const fetchImages = (filters, page = 'current') => {
 // https://github.com/tnc-ca-geo/animl-api/issues/160
 export const fetchImagesCount = (filters) => {
   return async (dispatch, getState) => {
+    const requestedProjId = selectSelectedProjectId(getState());
     try {
       dispatch(getImagesCountStart());
       const currentUser = await Auth.currentAuthenticatedUser();
       const token = currentUser.getSignInUserSession().getIdToken().getJwtToken();
       const projId = selectSelectedProjectId(getState());
 
-      if (token && projId) {
+      if (token && projId && !isStaleImagesRequest(getState, requestedProjId)) {
         let res = await call({
           projId,
           request: 'getImagesCount',
           input: { filters },
         });
 
+        // discard a count that belongs to a Project the user has navigated away
+        // from, rather than report it against the newly selected one
+        if (isStaleImagesRequest(getState, requestedProjId)) return;
+
         dispatch(getImagesCountSuccess(res));
       }
     } catch (err) {
+      if (isStaleImagesRequest(getState, requestedProjId)) return;
       if (err.message.includes('Network request failed')) {
         dispatch(getImagesCountFailure(err.message));
       } else {
