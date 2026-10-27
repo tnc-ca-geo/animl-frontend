@@ -1,6 +1,6 @@
+import { actions as undoActions } from 'redux-undo-redo';
 import { selectWorkingImages, setFocus } from '../review/reviewSlice';
 import { toggleOpenLoupe } from '../loupe/loupeSlice';
-import { actions as undoActions } from 'redux-undo-redo';
 import {
   clearImages,
   getImagesSuccess,
