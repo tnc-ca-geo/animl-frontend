@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import createRootReducer from './rootReducer';
-import { preFocusImage } from '../features/images/imagesMiddleware';
+import { clearUndoHistoryWithImages, preFocusImage } from '../features/images/imagesMiddleware';
 import {
   setActiveFiltersToSelectedView,
   diffFilters,
@@ -24,6 +24,7 @@ const store = configureStore({
       .prepend(projectsListener.middleware)
       .concat(routerMiddleware(history))
       .concat(preFocusImage)
+      .concat(clearUndoHistoryWithImages)
       .concat(diffFilters)
       .concat(setActiveFiltersToSelectedView)
       .concat(focusMiddleware)

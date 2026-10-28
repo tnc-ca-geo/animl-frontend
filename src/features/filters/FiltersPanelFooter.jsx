@@ -9,7 +9,7 @@ import {
   selectSelectedProjectId,
   setModalOpen,
   setModalContent,
-  fetchProject,
+  refreshProjectData,
 } from '../projects/projectsSlice.js';
 import { toggleOpenLoupe } from '../loupe/loupeSlice.js';
 import { InfoCircledIcon, SymbolIcon } from '@radix-ui/react-icons';
@@ -101,7 +101,7 @@ const FiltersPanelFooter = ({ areActionsDisabled = false }) => {
   const handleRefreshClick = () => {
     if (!selectedProjectId) return;
     dispatch(toggleOpenLoupe(false));
-    dispatch(fetchProject(selectedProjectId));
+    dispatch(refreshProjectData(selectedProjectId));
   };
 
   const handleModalToggle = (content) => {

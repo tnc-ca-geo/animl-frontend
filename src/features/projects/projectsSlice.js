@@ -4,7 +4,12 @@ import { push } from 'connected-react-router';
 import { call } from '../../api';
 import { registerCameraSuccess, unregisterCameraSuccess } from '../cameras/wirelessCamerasSlice';
 import { deleteProjectLabelTaskStart, editDeploymentsSuccess } from '../tasks/tasksSlice';
-import { clearImages } from '../images/imagesSlice.js';
+import {
+  clearImages,
+  fetchImages,
+  fetchImagesCount,
+  selectImageContextLoading,
+} from '../images/imagesSlice.js';
 import { normalizeErrors } from '../../app/utils.js';
 
 const initialState = {
@@ -722,7 +727,10 @@ export const fetchProjectStubs = () => async (dispatch) => {
   }
 };
 
-// fetch full detail for a single Project
+// fetch full detail for a single Project.
+// NOTE: this refreshes Project state only. If the change that prompted the
+// re-fetch also invalidates the images table (labels, tags, cameras, a manual
+// refresh), dispatch `refreshProjectData` instead.
 export const fetchProject = (projId) => async (dispatch, getState) => {
   try {
     const currentUser = await Auth.currentAuthenticatedUser();
@@ -745,6 +753,47 @@ export const fetchProject = (projId) => async (dispatch, getState) => {
     const errs = normalizeErrors(err, 'GET_PROJECTS_ERROR');
     dispatch(getProjectFailure(errs));
   }
+};
+
+/**
+ * Re-fetch the currently selected Project *and* the images it contains.
+ *
+ * Anything that invalidates both Project detail and the images derived from it
+ * (deleting a Label or Tag, deleting a Camera, the "Refresh data" button) must
+ * go through this rather than dispatching `fetchProject` on its own.
+ *
+ * `projectsListener` only reconciles on `LOCATION_CHANGE`, and `ImagesPanel`
+ * only re-fetches when `activeFilters` changes identity, so a bare
+ * `fetchProject` refreshes Project state while leaving the images table
+ * untouched - or, when paired with `clearImages`, permanently empty.
+ *
+ * NOTE: images are deliberately re-fetched with the *current* active filters
+ * rather than the selected view's saved filters, so refreshing never discards
+ * the user's unsaved filter edits.
+ */
+export const refreshProjectData = (projId) => async (dispatch, getState) => {
+  if (selectSelectedProjectId(getState()) !== projId) return;
+  // clearImages also discards undo/redo history, via the
+  // clearUndoHistoryWithImages middleware - entries referencing images that
+  // this refresh drops out of `workingImages` are no longer replayable
+  dispatch(clearImages());
+  await dispatch(fetchProject(projId));
+
+  // the user may have navigated to a different Project while the fetch was in
+  // flight; that navigation does its own image fetch, so don't race it
+  if (selectSelectedProjectId(getState()) !== projId) return;
+
+  // a `?img=` deep link is still resolving. fetchImageContext swaps in the
+  // linked image's filters when it lands, so fetching now would query with the
+  // outgoing filters and hand preFocusImage a result set that cannot contain
+  // the linked image. ImagesPanel's effect is keyed on imageContext loading and
+  // fetches as soon as it settles - on failure as well as success - so bail and
+  // let it do the work.
+  if (selectImageContextLoading(getState()).isLoading) return;
+
+  const filters = getState().filters.activeFilters;
+  dispatch(fetchImages(filters));
+  dispatch(fetchImagesCount(filters));
 };
 
 // fetch full detail for an arbitrary Project, for the superuser EditProjectForm.
@@ -1013,8 +1062,7 @@ export const deleteProjectTag = (payload) => {
           input: payload,
         });
         dispatch(deleteProjectTagSuccess({ projId, tags: res.deleteProjectTag.tags }));
-        dispatch(clearImages());
-        dispatch(fetchProject(projId));
+        dispatch(refreshProjectData(projId));
       }
     } catch (err) {
       console.log(`error attempting to delete tag: `, err);
@@ -1120,8 +1168,7 @@ export const deleteProjectLabel = (payload) => {
           dispatch(deleteProjectLabelSuccess({ projId }));
         } else {
           dispatch(deleteProjectLabelSuccess({ projId }));
-          dispatch(clearImages());
-          dispatch(fetchProject(projId));
+          dispatch(refreshProjectData(projId));
         }
       }
     } catch (err) {
