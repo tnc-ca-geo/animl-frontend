@@ -29,12 +29,18 @@ const FormHeader = styled('div', {
 const newDeploymentSchema = Yup.object().shape({
   name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('A name is required'),
   description: Yup.string().min(2, 'Too Short!').max(500, 'Too Long!'),
-  longitude: Yup.number().test('is-decimal', 'Coordinates must be in decimal degrees', (value) =>
-    (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
-  ),
-  latitude: Yup.number().test('is-decimal', 'Coordinates must be in decimal degrees', (value) =>
-    (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
-  ),
+  longitude: Yup.number()
+    .min(-180, 'Longitude must be between -180 and 180')
+    .max(180, 'Longitude must be between -180 and 180')
+    .test('is-decimal', 'Coordinates must be in decimal degrees', (value) =>
+      (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
+    ),
+  latitude: Yup.number()
+    .min(-90, 'Latitude must be between -90 and 90. Are latitude and longitude swapped?')
+    .max(90, 'Latitude must be between -90 and 90. Are latitude and longitude swapped?')
+    .test('is-decimal', 'Coordinates must be in decimal degrees', (value) =>
+      (value + '').match(/^-?[0-9]\d*(\.\d+)?$/),
+    ),
   startDate: Yup.date()
     .transform((value, originalValue, context) => {
       if (context.isType(value)) return value;
