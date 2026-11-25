@@ -2,6 +2,7 @@
 // Usage: node scripts/upload-operation-manifest.mjs <dev|staging|prod> [--finalize] [--dry-run]
 // Run without --finalize before deploying the bundle and with --finalize after it deploys successfully.
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { parse, print } from 'graphql';
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import queries from '../src/api/buildQuery.js';
@@ -12,6 +13,8 @@ const API_STAGE = { dev: 'dev', staging: 'dev', prod: 'prod' };
 const RETENTION_DAYS = 30;
 const MANIFEST_KEY = 'operation-manifest.json';
 const MAX_ATTEMPTS = 5;
+// animl-api re-reads the manifest on an unknown operation at most this often (missRefreshMs in operationAllowlist.ts)
+const API_MISS_REFRESH_SECONDS = 30;
 
 const stage = process.argv[2];
 const dryRun = process.argv.includes('--dry-run');
@@ -23,6 +26,7 @@ if (!API_STAGE[stage]) {
   process.exit(1);
 }
 const bucket = `animl-operation-allowlist-${API_STAGE[stage]}`;
+const frontendBucket = `animl-frontend-${stage}`;
 
 // Factories only need inputs to build variables; any property access on this stub returns the stub
 const stubInput = new Proxy(
@@ -51,6 +55,19 @@ async function fetchExisting(s3) {
   }
 }
 
+// index.html references the build's content-hashed assets, so it identifies which bundle is live
+async function isBuildLive(s3) {
+  const local = readFileSync(new URL('../build/index.html', import.meta.url), 'utf8');
+  try {
+    const res = await s3.send(new GetObjectCommand({ Bucket: frontendBucket, Key: 'index.html' }));
+    return (await res.Body.transformToString()) === local;
+  } catch (err) {
+    // Another deploy may be mid-upload (serverless-finch empties the bucket first)
+    if (err.name === 'NoSuchKey') return false;
+    throw err;
+  }
+}
+
 // Operations in any stage's active set stay allowed; others are pruned RETENTION_DAYS after they leave every active set.
 // Before deploy, the stage's previous set stays active alongside the new one, so a failed deploy retires nothing.
 function mergeManifest(existing, current, now) {
@@ -66,7 +83,13 @@ function mergeManifest(existing, current, now) {
   const cutoff = now.getTime() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
 
   const operations = {};
-  const stats = { current: Object.keys(current).length, stillActive: 0, retired: 0, pruned: 0 };
+  const stats = {
+    current: Object.keys(current).length,
+    added: Object.keys(current).filter((h) => !existing.operations[h]).length,
+    stillActive: 0,
+    retired: 0,
+    pruned: 0,
+  };
   for (const [hash, { document, opKey, retiredAt }] of Object.entries(existing.operations)) {
     if (current[hash]) continue;
     if (active.has(hash)) {
@@ -100,10 +123,20 @@ const s3 = new S3Client({ region: 'us-west-2' });
 
 for (let attempt = 1; ; attempt++) {
   const { manifest: existing, etag } = await fetchExisting(s3);
+
+  // Checked after each read so a deploy that lands mid-finalize fails the conditional write and is re-checked
+  if (finalize && !(await isBuildLive(s3))) {
+    console.log(
+      `Skipping finalize: build/index.html is not the live bundle in s3://${frontendBucket} ` +
+        '(another deploy replaced it). Operations stay active until a live bundle is finalized.',
+    );
+    break;
+  }
+
   const { manifest, stats } = mergeManifest(existing, current, new Date());
   console.log(
     `Operation manifest for s3://${bucket}/${MANIFEST_KEY} (${stage}${finalize ? ', finalize' : ''}): ` +
-      `${stats.current} current, ${stats.stillActive} still active (previous bundle or other stages), ` +
+      `${stats.current} current (${stats.added} new), ${stats.stillActive} still active (previous bundle or other stages), ` +
       `${stats.retired} retired (in grace period), ${stats.pruned} pruned`,
   );
 
@@ -124,10 +157,17 @@ for (let attempt = 1; ; attempt++) {
       }),
     );
     console.log('Uploaded.');
-    break;
   } catch (err) {
     if (!isWriteConflict(err) || attempt >= MAX_ATTEMPTS) throw err;
     console.log(`Manifest changed during upload (attempt ${attempt}); retrying...`);
     await new Promise((resolve) => setTimeout(resolve, 250 * attempt + Math.random() * 500));
+    continue;
   }
+
+  if (!finalize && stats.added > 0) {
+    const wait = API_MISS_REFRESH_SECONDS + 5;
+    console.log(`Waiting ${wait}s for API containers to be able to pick up the new operations...`);
+    await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+  }
+  break;
 }
