@@ -91,9 +91,10 @@
     "build:staging": "env-cmd -f .env.staging npm run build",
     "serve": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "deploy-dev": "npm run build:dev && sls client deploy --no-confirm --stage dev && sls deploy --stage dev",
-    "deploy-staging": "npm run build:staging && sls client deploy --no-confirm --stage staging  && sls deploy --stage staging",
-    "deploy-prod": "npm run build && sls client deploy --no-confirm --stage prod && sls deploy --stage prod",
+    "upload-manifest": "AWS_PROFILE=${AWS_PROFILE:-animl} node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/upload-operation-manifest.mjs",
+    "deploy-dev": "npm run build:dev && npm run upload-manifest -- dev && sls client deploy --no-confirm --stage dev && sls deploy --stage dev && npm run upload-manifest -- dev --finalize",
+    "deploy-staging": "npm run build:staging && npm run upload-manifest -- staging && sls client deploy --no-confirm --stage staging  && sls deploy --stage staging && npm run upload-manifest -- staging --finalize",
+    "deploy-prod": "npm run build && npm run upload-manifest -- prod && sls client deploy --no-confirm --stage prod && sls deploy --stage prod && npm run upload-manifest -- prod --finalize",
     "prepare": "husky"
   },
   "eslintConfig": {
@@ -106,9 +107,11 @@
     }
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1177.0",
     "@vitejs/plugin-react": "^4.0.1",
     "eslint-plugin-react-refresh": "^0.4.5",
     "husky": "^9.0.11",
+    "serverless": "^3.40.0",
     "serverless-finch": "^4.0.3",
     "vite": "^4.3.9",
     "vite-plugin-svgr": "^3.2.0",
