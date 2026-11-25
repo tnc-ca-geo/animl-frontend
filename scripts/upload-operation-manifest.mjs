@@ -1,5 +1,6 @@
 // Uploads the GraphQL documents in src/api/buildQuery.js to the animl-api operation allowlist.
-// Usage: node scripts/upload-operation-manifest.mjs <dev|staging|prod> [--dry-run]
+// Usage: node scripts/upload-operation-manifest.mjs <dev|staging|prod> [--finalize] [--dry-run]
+// Run without --finalize before deploying the bundle and with --finalize after it deploys successfully.
 import { createHash } from 'node:crypto';
 import { parse, print } from 'graphql';
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -14,9 +15,10 @@ const MAX_ATTEMPTS = 5;
 
 const stage = process.argv[2];
 const dryRun = process.argv.includes('--dry-run');
+const finalize = process.argv.includes('--finalize');
 if (!API_STAGE[stage]) {
   console.error(
-    `Usage: upload-operation-manifest.mjs <${Object.keys(API_STAGE).join('|')}> [--dry-run]`,
+    `Usage: upload-operation-manifest.mjs <${Object.keys(API_STAGE).join('|')}> [--finalize] [--dry-run]`,
   );
   process.exit(1);
 }
@@ -49,22 +51,27 @@ async function fetchExisting(s3) {
   }
 }
 
-// Operations in any stage's current bundle stay active; others are pruned RETENTION_DAYS after they leave every active set
+// Operations in any stage's active set stay allowed; others are pruned RETENTION_DAYS after they leave every active set.
+// Before deploy, the stage's previous set stays active alongside the new one, so a failed deploy retires nothing.
 function mergeManifest(existing, current, now) {
+  const previous = existing.activeStages?.[stage];
+  const hashes = finalize
+    ? Object.keys(current)
+    : [...new Set([...(previous?.hashes ?? []), ...Object.keys(current)])];
   const activeStages = {
     ...existing.activeStages,
-    [stage]: { deployedAt: now.toISOString(), hashes: Object.keys(current) },
+    [stage]: { deployedAt: finalize ? now.toISOString() : previous?.deployedAt, hashes },
   };
   const active = new Set(Object.values(activeStages).flatMap((s) => s.hashes));
   const cutoff = now.getTime() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
 
   const operations = {};
-  const stats = { current: Object.keys(current).length, otherStages: 0, retired: 0, pruned: 0 };
+  const stats = { current: Object.keys(current).length, stillActive: 0, retired: 0, pruned: 0 };
   for (const [hash, { document, opKey, retiredAt }] of Object.entries(existing.operations)) {
     if (current[hash]) continue;
     if (active.has(hash)) {
       operations[hash] = { document, opKey };
-      stats.otherStages++;
+      stats.stillActive++;
       continue;
     }
     const retired = retiredAt ?? now.toISOString();
@@ -95,9 +102,9 @@ for (let attempt = 1; ; attempt++) {
   const { manifest: existing, etag } = await fetchExisting(s3);
   const { manifest, stats } = mergeManifest(existing, current, new Date());
   console.log(
-    `Operation manifest for s3://${bucket}/${MANIFEST_KEY} (${stage}): ${stats.current} current, ` +
-      `${stats.otherStages} active in other stages, ${stats.retired} retired (in grace period), ` +
-      `${stats.pruned} pruned`,
+    `Operation manifest for s3://${bucket}/${MANIFEST_KEY} (${stage}${finalize ? ', finalize' : ''}): ` +
+      `${stats.current} current, ${stats.stillActive} still active (previous bundle or other stages), ` +
+      `${stats.retired} retired (in grace period), ${stats.pruned} pruned`,
   );
 
   if (dryRun) {

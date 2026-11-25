@@ -92,9 +92,9 @@
     "serve": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "upload-manifest": "AWS_PROFILE=${AWS_PROFILE:-animl} node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/upload-operation-manifest.mjs",
-    "deploy-dev": "npm run build:dev && npm run upload-manifest -- dev && sls client deploy --no-confirm --stage dev && sls deploy --stage dev",
-    "deploy-staging": "npm run build:staging && npm run upload-manifest -- staging && sls client deploy --no-confirm --stage staging  && sls deploy --stage staging",
-    "deploy-prod": "npm run build && npm run upload-manifest -- prod && sls client deploy --no-confirm --stage prod && sls deploy --stage prod",
+    "deploy-dev": "npm run build:dev && npm run upload-manifest -- dev && sls client deploy --no-confirm --stage dev && sls deploy --stage dev && npm run upload-manifest -- dev --finalize",
+    "deploy-staging": "npm run build:staging && npm run upload-manifest -- staging && sls client deploy --no-confirm --stage staging  && sls deploy --stage staging && npm run upload-manifest -- staging --finalize",
+    "deploy-prod": "npm run build && npm run upload-manifest -- prod && sls client deploy --no-confirm --stage prod && sls deploy --stage prod && npm run upload-manifest -- prod --finalize",
     "prepare": "husky"
   },
   "eslintConfig": {
