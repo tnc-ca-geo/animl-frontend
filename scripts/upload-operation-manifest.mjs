@@ -90,10 +90,12 @@ function mergeManifest(existing, current, now) {
     retired: 0,
     pruned: 0,
   };
-  for (const [hash, { document, opKey, retiredAt }] of Object.entries(existing.operations)) {
+  for (const [hash, { document, opKey, addedAt, retiredAt }] of Object.entries(
+    existing.operations,
+  )) {
     if (current[hash]) continue;
     if (active.has(hash)) {
-      operations[hash] = { document, opKey };
+      operations[hash] = { document, opKey, addedAt };
       stats.stillActive++;
       continue;
     }
@@ -102,15 +104,30 @@ function mergeManifest(existing, current, now) {
       stats.pruned++;
       continue;
     }
-    operations[hash] = { document, opKey, retiredAt: retired };
+    operations[hash] = { document, opKey, addedAt, retiredAt: retired };
     stats.retired++;
   }
-  Object.assign(operations, current);
+  for (const [hash, entry] of Object.entries(current)) {
+    // Entries from before addedAt was tracked have been in the manifest long enough to need no wait
+    const addedAt = existing.operations[hash]
+      ? existing.operations[hash].addedAt
+      : now.toISOString();
+    operations[hash] = { ...entry, addedAt };
+  }
 
   return {
     manifest: { version: 2, updatedAt: now.toISOString(), activeStages, operations },
     stats,
   };
+}
+
+// Measured from when each operation first entered the manifest (by any deploy), so overlapping deploys and retries still wait
+function cooldownRemainingMs(manifest, current, nowMs) {
+  const addedTimes = Object.keys(current)
+    .map((h) => Date.parse(manifest.operations[h]?.addedAt))
+    .filter((t) => !Number.isNaN(t));
+  if (!addedTimes.length) return 0;
+  return Math.max(0, Math.max(...addedTimes) + (API_MISS_REFRESH_SECONDS + 5) * 1000 - nowMs);
 }
 
 function isWriteConflict(err) {
@@ -164,10 +181,14 @@ for (let attempt = 1; ; attempt++) {
     continue;
   }
 
-  if (!finalize && stats.added > 0) {
-    const wait = API_MISS_REFRESH_SECONDS + 5;
-    console.log(`Waiting ${wait}s for API containers to be able to pick up the new operations...`);
-    await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+  if (!finalize) {
+    const waitMs = cooldownRemainingMs(manifest, current, Date.now());
+    if (waitMs > 0) {
+      console.log(
+        `Waiting ${Math.ceil(waitMs / 1000)}s for API containers to be able to pick up recently added operations...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
   }
   break;
 }
