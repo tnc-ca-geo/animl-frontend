@@ -7,9 +7,10 @@ import queries from '../src/api/buildQuery.js';
 
 // Frontend staging talks to the dev API (see src/config.js)
 const API_STAGE = { dev: 'dev', staging: 'dev', prod: 'prod' };
-// Keep operations from older bundles that may still be cached in users' browsers
+// Grace period for operations no stage's current bundle uses; users may still have older bundles cached
 const RETENTION_DAYS = 30;
 const MANIFEST_KEY = 'operation-manifest.json';
+const MAX_ATTEMPTS = 5;
 
 const stage = process.argv[2];
 const dryRun = process.argv.includes('--dry-run');
@@ -41,46 +42,85 @@ function collectOperations() {
 async function fetchExisting(s3) {
   try {
     const res = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: MANIFEST_KEY }));
-    return JSON.parse(await res.Body.transformToString());
+    return { manifest: JSON.parse(await res.Body.transformToString()), etag: res.ETag };
   } catch (err) {
-    if (err.name === 'NoSuchKey') return { version: 1, operations: {} };
+    if (err.name === 'NoSuchKey') return { manifest: { operations: {} }, etag: null };
     throw err;
   }
 }
 
+// Operations in any stage's current bundle stay active; others are pruned RETENTION_DAYS after they leave every active set
+function mergeManifest(existing, current, now) {
+  const activeStages = {
+    ...existing.activeStages,
+    [stage]: { deployedAt: now.toISOString(), hashes: Object.keys(current) },
+  };
+  const active = new Set(Object.values(activeStages).flatMap((s) => s.hashes));
+  const cutoff = now.getTime() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
+
+  const operations = {};
+  const stats = { current: Object.keys(current).length, otherStages: 0, retired: 0, pruned: 0 };
+  for (const [hash, { document, opKey, retiredAt }] of Object.entries(existing.operations)) {
+    if (current[hash]) continue;
+    if (active.has(hash)) {
+      operations[hash] = { document, opKey };
+      stats.otherStages++;
+      continue;
+    }
+    const retired = retiredAt ?? now.toISOString();
+    if (Date.parse(retired) < cutoff) {
+      stats.pruned++;
+      continue;
+    }
+    operations[hash] = { document, opKey, retiredAt: retired };
+    stats.retired++;
+  }
+  Object.assign(operations, current);
+
+  return {
+    manifest: { version: 2, updatedAt: now.toISOString(), activeStages, operations },
+    stats,
+  };
+}
+
+function isWriteConflict(err) {
+  const status = err.$metadata?.httpStatusCode;
+  return err.name === 'PreconditionFailed' || status === 412 || status === 409;
+}
+
 const current = collectOperations();
-const now = new Date();
-const cutoff = now.getTime() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
-
 const s3 = new S3Client({ region: 'us-west-2' });
-const existing = await fetchExisting(s3);
 
-const merged = {};
-for (const [hash, entry] of Object.entries(existing.operations)) {
-  if (!current[hash] && Date.parse(entry.lastSeen) >= cutoff) merged[hash] = entry;
-}
-for (const [hash, entry] of Object.entries(current)) {
-  merged[hash] = { ...entry, lastSeen: now.toISOString() };
-}
-
-const manifest = { version: 1, updatedAt: now.toISOString(), operations: merged };
-const retained = Object.keys(merged).length - Object.keys(current).length;
-const pruned = Object.keys(existing.operations).filter((h) => !merged[h]).length;
-console.log(
-  `Operation manifest for s3://${bucket}/${MANIFEST_KEY}: ${Object.keys(current).length} current, ` +
-    `${retained} retained from previous builds, ${pruned} pruned`,
-);
-
-if (dryRun) {
-  console.log('Dry run, not uploading.');
-} else {
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: MANIFEST_KEY,
-      Body: JSON.stringify(manifest, null, 2),
-      ContentType: 'application/json',
-    }),
+for (let attempt = 1; ; attempt++) {
+  const { manifest: existing, etag } = await fetchExisting(s3);
+  const { manifest, stats } = mergeManifest(existing, current, new Date());
+  console.log(
+    `Operation manifest for s3://${bucket}/${MANIFEST_KEY} (${stage}): ${stats.current} current, ` +
+      `${stats.otherStages} active in other stages, ${stats.retired} retired (in grace period), ` +
+      `${stats.pruned} pruned`,
   );
-  console.log('Uploaded.');
+
+  if (dryRun) {
+    console.log('Dry run, not uploading.');
+    break;
+  }
+
+  try {
+    // Conditional write so concurrent deploys can't overwrite each other's changes
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: MANIFEST_KEY,
+        Body: JSON.stringify(manifest, null, 2),
+        ContentType: 'application/json',
+        ...(etag ? { IfMatch: etag } : { IfNoneMatch: '*' }),
+      }),
+    );
+    console.log('Uploaded.');
+    break;
+  } catch (err) {
+    if (!isWriteConflict(err) || attempt >= MAX_ATTEMPTS) throw err;
+    console.log(`Manifest changed during upload (attempt ${attempt}); retrying...`);
+    await new Promise((resolve) => setTimeout(resolve, 250 * attempt + Math.random() * 500));
+  }
 }
